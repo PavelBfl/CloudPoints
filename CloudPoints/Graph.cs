@@ -62,6 +62,16 @@ namespace CloudPoints
 			}
 		}
 
+		public void GetPath<TValue>(TNode begin, TNode end, IAccumulator<TEdge, TValue> accumulator)
+		{
+			
+		}
+
+		private void GetPath<TValue>(TValue length, TNode current)
+		{
+			
+		}
+
 		private class NodeLinks : INodeLinks<TEdge>
 		{
 			public HashSet<TEdge> AsBegin { get; } = new HashSet<TEdge>();
@@ -83,5 +93,12 @@ namespace CloudPoints
 			public TNode Begin { get; }
 			public TNode End { get; }
 		}
+	}
+
+	public interface IAccumulator<TEdge, TValue> : IComparer<TValue>
+	{
+		TValue Zero();
+
+		TValue Add(TValue current, TEdge edge);
 	}
 }
