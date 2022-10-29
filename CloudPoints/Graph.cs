@@ -1,29 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace CloudPoints
 {
 	public class Graph<TNode, TEdge>
 	{
-		private Dictionary<TNode, NodeLinks> NodesLinks { get; } = new Dictionary<TNode, NodeLinks>();
-		private Dictionary<TEdge, EdgeLinks> EdgesLinks { get; } = new Dictionary<TEdge, EdgeLinks>();
+		private NodesCollection<TNode, TEdge> NodesCollection { get; } = new NodesCollection<TNode, TEdge>();
+		private EdgesCollection<TNode, TEdge> EdgesCollection { get; } = new EdgesCollection<TNode, TEdge>();
 
-		public IReadOnlyCollection<TNode> Nodes => NodesLinks.Keys;
+		public IReadOnlyDictionary<TNode, INodeLinks<TEdge>> Nodes => NodesCollection;
 
-		public IReadOnlyCollection<TEdge> Edges => EdgesLinks.Keys;
-
-		public INodeLinks<TEdge> GetNodeLinks(TNode node) => NodesLinks[node];
-
-		public IEdgeLinks<TNode> GetEdgeLinks(TEdge edge) => EdgesLinks[edge];
+		public IReadOnlyDictionary<TEdge, IEdgeLinks<TNode>> Edges => EdgesCollection;
 
 		public void Add(TNode node)
 		{
-			NodesLinks.Add(node, new NodeLinks());
+			NodesCollection.Add(node, new NodeLinks<TEdge>());
 		}
 
 		public bool Remove(TNode node)
 		{
-			if (NodesLinks.Remove(node, out var links))
+			if (NodesCollection.Remove(node, out var links))
 			{
 				foreach (var edge in links.AsBegin.Concat(links.AsEnd))
 				{
@@ -39,10 +37,10 @@ namespace CloudPoints
 
 		public void Add(TNode begin, TNode end, TEdge edge)
 		{
-			var beginLink = NodesLinks[begin];
-			var endLink = NodesLinks[end];
+			var beginLink = NodesCollection[begin];
+			var endLink = NodesCollection[end];
 
-			EdgesLinks.Add(edge, new EdgeLinks(begin, end));
+			EdgesCollection.Add(edge, new EdgeLinks<TNode>(begin, end));
 
 			beginLink.AsBegin.Add(edge);
 			endLink.AsEnd.Add(edge);
@@ -50,10 +48,10 @@ namespace CloudPoints
 
 		public bool Remove(TEdge edge)
 		{
-			if (EdgesLinks.Remove(edge, out var links))
+			if (EdgesCollection.Remove(edge, out var links))
 			{
-				NodesLinks[links.Begin].AsBegin.Remove(edge);
-				NodesLinks[links.End].AsEnd.Remove(edge);
+				NodesCollection[links.Begin].AsBegin.Remove(edge);
+				NodesCollection[links.End].AsEnd.Remove(edge);
 				return false;
 			}
 			else
@@ -62,43 +60,82 @@ namespace CloudPoints
 			}
 		}
 
-		public void GetPath<TValue>(TNode begin, TNode end, IAccumulator<TEdge, TValue> accumulator)
+		public IEnumerable<Path<TNode, TEdge, TLength>> GetShortestPath<TLength>(TNode begin, TNode end, IAccumulator<TEdge, TLength> accumulator)
 		{
-			
-		}
-
-		private void GetPath<TValue>(TValue length, TNode current)
-		{
-			
-		}
-
-		private class NodeLinks : INodeLinks<TEdge>
-		{
-			public HashSet<TEdge> AsBegin { get; } = new HashSet<TEdge>();
-			public HashSet<TEdge> AsEnd { get; } = new HashSet<TEdge>();
-
-			IReadOnlyCollection<TEdge> INodeLinks<TEdge>.AsBegin => AsBegin;
-
-			IReadOnlyCollection<TEdge> INodeLinks<TEdge>.AsEnd => AsEnd;
-		}
-
-		private class EdgeLinks : IEdgeLinks<TNode>
-		{
-			public EdgeLinks(TNode begin, TNode end)
+			var posts = new Dictionary<TNode, Post<TLength>>();
+			foreach (var node in Nodes.Keys)
 			{
-				Begin = begin;
-				End = end;
+				posts.Add(node, new Post<TLength>(accumulator));
 			}
 
-			public TNode Begin { get; }
-			public TNode End { get; }
+			GetShortestPath(Enumerable.Empty<object>(), begin, accumulator.Zero(), accumulator, posts);
+
+			var post = posts[end];
+			foreach (var path in post.Paths)
+			{
+				yield return new Path<TNode, TEdge, TLength>(post.Length, path);
+			}
 		}
-	}
 
-	public interface IAccumulator<TEdge, TValue> : IComparer<TValue>
-	{
-		TValue Zero();
+		private void GetShortestPath<TLength>(IEnumerable<object> path, TNode current, TLength length, IAccumulator<TEdge, TLength> accumulator, Dictionary<TNode, Post<TLength>> posts)
+		{
+			var pathToCurrent = path.Append(current);
+			if (posts[current].TrySetLength(pathToCurrent, length))
+			{
+				foreach (var edge in Nodes[current].AsBegin)
+				{
+					GetShortestPath(pathToCurrent.Append(edge), Edges[edge].End, accumulator.Add(length, edge), accumulator, posts);
+				}
+			}
+		}
 
-		TValue Add(TValue current, TEdge edge);
+		private class Post<TLength>
+		{
+			public Post(IAccumulator<TEdge, TLength> accumulator)
+			{
+				Accumulator = accumulator ?? throw new ArgumentNullException(nameof(accumulator));
+				Length = Accumulator.Invinite();
+			}
+
+			private IAccumulator<TEdge, TLength> Accumulator { get; }
+
+			public TLength Length { get; private set; }
+
+			public ICollection<IEnumerable<object>> Paths { get; } = new List<IEnumerable<object>>();
+
+			public bool TrySetLength(IEnumerable<object> path, TLength newLength)
+			{
+				if (path is null)
+				{
+					throw new ArgumentNullException(nameof(path));
+				}
+
+				var compare = Accumulator.Compare(newLength, Length);
+
+				if (compare < 0)
+				{
+					return SetLength(path, newLength, true);
+				}
+				else if (compare == 0)
+				{
+					return SetLength(path, newLength, false);
+				}
+				else
+				{
+					return false;
+				}
+			}
+
+			private bool SetLength(IEnumerable<object> path, TLength newLength, bool clear)
+			{
+				if (clear)
+				{
+					Paths.Clear();
+				}
+				Paths.Add(path);
+				Length = newLength;
+				return true;
+			}
+		}
 	}
 }
