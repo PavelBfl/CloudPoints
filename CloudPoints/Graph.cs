@@ -6,6 +6,8 @@ using System.Xml.Linq;
 namespace CloudPoints
 {
 	public class Graph<TNode, TEdge>
+		where TNode : notnull
+		where TEdge : notnull
 	{
 		private NodesCollection<TNode, TEdge> NodesCollection { get; } = new NodesCollection<TNode, TEdge>();
 		private EdgesCollection<TNode, TEdge> EdgesCollection { get; } = new EdgesCollection<TNode, TEdge>();
