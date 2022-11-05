@@ -2,13 +2,20 @@
 
 namespace CloudPoints
 {
-	internal class NodeLinks<TEdge> : INodeLinks<TEdge>
+	internal class NodeLinks<TNode> : INodeLinks<TNode>
 	{
-		public HashSet<TEdge> AsBegin { get; } = new HashSet<TEdge>();
-		public HashSet<TEdge> AsEnd { get; } = new HashSet<TEdge>();
+		public NodeLinks(IEqualityComparer<EdgeLinks<TNode>> equalityComparer)
+		{
+			AsBegin = new HashSet<EdgeLinks<TNode>>(equalityComparer);
+			AsEnd = new HashSet<EdgeLinks<TNode>>(equalityComparer);
+		}
 
-		IReadOnlyCollection<TEdge> INodeLinks<TEdge>.AsBegin => AsBegin;
+		public HashSet<EdgeLinks<TNode>> AsBegin { get; }
 
-		IReadOnlyCollection<TEdge> INodeLinks<TEdge>.AsEnd => AsEnd;
+		public HashSet<EdgeLinks<TNode>> AsEnd { get; }
+
+		IReadOnlyCollection<EdgeLinks<TNode>> INodeLinks<TNode>.AsBegin => AsBegin;
+
+		IReadOnlyCollection<EdgeLinks<TNode>> INodeLinks<TNode>.AsEnd => AsEnd;
 	}
 }

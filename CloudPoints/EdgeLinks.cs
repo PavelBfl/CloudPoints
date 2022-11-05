@@ -1,6 +1,8 @@
-﻿namespace CloudPoints
+﻿using System;
+
+namespace CloudPoints
 {
-	internal class EdgeLinks<TNode> : IEdgeLinks<TNode>
+	public readonly struct EdgeLinks<TNode>
 	{
 		public EdgeLinks(TNode begin, TNode end)
 		{

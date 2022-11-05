@@ -9,16 +9,26 @@ namespace CloudPoints
 		where TNode : notnull
 		where TEdge : notnull
 	{
-		private NodesCollection<TNode, TEdge> NodesCollection { get; } = new NodesCollection<TNode, TEdge>();
-		private EdgesCollection<TNode, TEdge> EdgesCollection { get; } = new EdgesCollection<TNode, TEdge>();
+		public Graph(IEqualityComparer<TNode>? nodeComparer = null)
+		{
+			LinkComparer = new EdgeLinkComparer(nodeComparer ?? EqualityComparer<TNode>.Default);
+			NodesCollection = new NodesCollection<TNode>(NodeComparer);
+			EdgesCollection = new Dictionary<EdgeLinks<TNode>, TEdge>(LinkComparer);
+		}
 
-		public IReadOnlyDictionary<TNode, INodeLinks<TEdge>> Nodes => NodesCollection;
+		private NodesCollection<TNode> NodesCollection { get; }
+		private Dictionary<EdgeLinks<TNode>, TEdge> EdgesCollection { get; }
 
-		public IReadOnlyDictionary<TEdge, IEdgeLinks<TNode>> Edges => EdgesCollection;
+		public IReadOnlyDictionary<TNode, INodeLinks<TNode>> Nodes => NodesCollection;
+
+		public IReadOnlyDictionary<EdgeLinks<TNode>, TEdge> Edges => EdgesCollection;
+
+		private EdgeLinkComparer LinkComparer { get; }
+		public IEqualityComparer<TNode> NodeComparer => LinkComparer.Source;
 
 		public void Add(TNode node)
 		{
-			NodesCollection.Add(node, new NodeLinks<TEdge>());
+			NodesCollection.Add(node, new NodeLinks<TNode>(LinkComparer));
 		}
 
 		public bool Remove(TNode node)
@@ -27,7 +37,7 @@ namespace CloudPoints
 			{
 				foreach (var edge in links.AsBegin.Concat(links.AsEnd))
 				{
-					Remove(edge);
+					Remove(edge.Begin, edge.End);
 				}
 				return true;
 			}
@@ -42,18 +52,20 @@ namespace CloudPoints
 			var beginLink = NodesCollection[begin];
 			var endLink = NodesCollection[end];
 
-			EdgesCollection.Add(edge, new EdgeLinks<TNode>(begin, end));
+			var edgeLink = new EdgeLinks<TNode>(begin, end);
+			EdgesCollection.Add(edgeLink, edge);
 
-			beginLink.AsBegin.Add(edge);
-			endLink.AsEnd.Add(edge);
+			beginLink.AsBegin.Add(edgeLink);
+			endLink.AsEnd.Add(edgeLink);
 		}
 
-		public bool Remove(TEdge edge)
+		public bool Remove(TNode begin, TNode end)
 		{
-			if (EdgesCollection.Remove(edge, out var links))
+			var edgeLink = new EdgeLinks<TNode>(begin, end);
+			if (EdgesCollection.Remove(edgeLink))
 			{
-				NodesCollection[links.Begin].AsBegin.Remove(edge);
-				NodesCollection[links.End].AsEnd.Remove(edge);
+				NodesCollection[begin].AsBegin.Remove(edgeLink);
+				NodesCollection[end].AsEnd.Remove(edgeLink);
 				return false;
 			}
 			else
@@ -86,7 +98,7 @@ namespace CloudPoints
 			{
 				foreach (var edge in Nodes[current].AsBegin)
 				{
-					GetShortestPath(pathToCurrent.Append(edge), Edges[edge].End, accumulator.Add(length, edge), accumulator, posts);
+					GetShortestPath(pathToCurrent.Append(edge), edge.End, accumulator.Add(length, Edges[edge]), accumulator, posts);
 				}
 			}
 		}
@@ -137,6 +149,23 @@ namespace CloudPoints
 				Paths.Add(path);
 				Length = newLength;
 				return true;
+			}
+		}
+
+		private sealed class EdgeLinkComparer : IEqualityComparer<EdgeLinks<TNode>>
+		{
+			public EdgeLinkComparer(IEqualityComparer<TNode> source) => Source = source ?? throw new ArgumentNullException(nameof(source));
+
+			public IEqualityComparer<TNode> Source { get; }
+
+			public bool Equals(EdgeLinks<TNode> x, EdgeLinks<TNode> y) => Source.Equals(x.Begin, y.Begin) && Source.Equals(x.End, y.End);
+
+			public int GetHashCode(EdgeLinks<TNode> obj)
+			{
+				var result = default(HashCode);
+				result.Add(obj.Begin, Source);
+				result.Add(obj.End, Source);
+				return result.ToHashCode();
 			}
 		}
 	}

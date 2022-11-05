@@ -2,9 +2,9 @@
 
 namespace CloudPoints
 {
-	public interface INodeLinks<out TEdge>
+	public interface INodeLinks<TNode>
 	{
-		IReadOnlyCollection<TEdge> AsBegin { get; }
-		IReadOnlyCollection<TEdge> AsEnd { get; }
+		IReadOnlyCollection<EdgeLinks<TNode>> AsBegin { get; }
+		IReadOnlyCollection<EdgeLinks<TNode>> AsEnd { get; }
 	}
 }

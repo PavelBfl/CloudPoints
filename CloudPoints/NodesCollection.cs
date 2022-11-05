@@ -1,24 +1,30 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CloudPoints
 {
-	internal class NodesCollection<TNode, TEdge> : Dictionary<TNode, NodeLinks<TEdge>>, IReadOnlyDictionary<TNode, INodeLinks<TEdge>>
+	internal class NodesCollection<TNode> : Dictionary<TNode, NodeLinks<TNode>>, IReadOnlyDictionary<TNode, INodeLinks<TNode>>
 	{
-		INodeLinks<TEdge> IReadOnlyDictionary<TNode, INodeLinks<TEdge>>.this[TNode key] => this[key];
+		public NodesCollection(IEqualityComparer<TNode> comparer)
+			: base(comparer)
+		{
+		}
 
-		IEnumerable<TNode> IReadOnlyDictionary<TNode, INodeLinks<TEdge>>.Keys => Keys;
+		INodeLinks<TNode> IReadOnlyDictionary<TNode, INodeLinks<TNode>>.this[TNode key] => this[key];
 
-		IEnumerable<INodeLinks<TEdge>> IReadOnlyDictionary<TNode, INodeLinks<TEdge>>.Values => Values;
+		IEnumerable<TNode> IReadOnlyDictionary<TNode, INodeLinks<TNode>>.Keys => Keys;
 
-		IEnumerator<KeyValuePair<TNode, INodeLinks<TEdge>>> IEnumerable<KeyValuePair<TNode, INodeLinks<TEdge>>>.GetEnumerator()
+		IEnumerable<INodeLinks<TNode>> IReadOnlyDictionary<TNode, INodeLinks<TNode>>.Values => Values;
+
+		IEnumerator<KeyValuePair<TNode, INodeLinks<TNode>>> IEnumerable<KeyValuePair<TNode, INodeLinks<TNode>>>.GetEnumerator()
 		{
 			foreach (var pair in this)
 			{
-				yield return new KeyValuePair<TNode, INodeLinks<TEdge>>(pair.Key, pair.Value);
+				yield return new KeyValuePair<TNode, INodeLinks<TNode>>(pair.Key, pair.Value);
 			}
 		}
 
-		bool IReadOnlyDictionary<TNode, INodeLinks<TEdge>>.TryGetValue(TNode key, out INodeLinks<TEdge> value)
+		bool IReadOnlyDictionary<TNode, INodeLinks<TNode>>.TryGetValue(TNode key, out INodeLinks<TNode> value)
 		{
 			if (TryGetValue(key, out var links))
 			{
@@ -27,7 +33,7 @@ namespace CloudPoints
 			}
 			else
 			{
-				value = default;
+				value = default!;
 				return false;
 			}
 		}
