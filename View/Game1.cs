@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -27,7 +28,7 @@ namespace View
 			}
 		}
 
-		private static void RegularPoligon(SpriteBatch spriteBatch, Vector2 center, float radius, int verticesCount, float offset = 0)
+		private static void RegularPoligon(SpriteBatch spriteBatch, Vector2 center, float radius, int verticesCount, Color color, float offset = 0)
 		{
 			const float FULL_ROUND = MathF.PI * 2;
 
@@ -46,7 +47,7 @@ namespace View
 				vertices[i] = new Vector2(x, y) + center;
 			}
 
-			DrawPolygon(spriteBatch, vertices, Color.Red);
+			DrawPolygon(spriteBatch, vertices, color);
 		}
 
 		private static float ToAngle(Vector2 vector) => MathF.Atan2(vector.Y, vector.X);
@@ -61,6 +62,12 @@ namespace View
 		private SpriteBatch _spriteBatch;
 
 		private World World { get; }
+		private MovementPiece MovementPiece { get; }
+
+		private static T GetRandomItem<T>(IReadOnlyList<T> collection)
+			=> collection[Random.Shared.Next(collection.Count)];
+
+		private HexNode NextNode { get; set; }
 
 		public Game1()
 		{
@@ -69,6 +76,9 @@ namespace View
 			IsMouseVisible = true;
 
 			World = new();
+			MovementPiece = new(World, GetRandomItem(World.Grid.Nodes.Keys.ToArray()));
+			NextNode = GetRandomItem(World.Grid.Nodes.Keys.Except(new[] { MovementPiece.Current }).ToArray());
+			MovementPiece.MoveTo(NextNode);
 		}
 
 		protected override void Initialize()
@@ -88,13 +98,20 @@ namespace View
 			// TODO: use this.Content to load your game content here
 		}
 
+		private KeyboardState prevState;
 		protected override void Update(GameTime gameTime)
 		{
 			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
 			{
 				Exit();
 			}
-
+			else if (Keyboard.GetState().IsKeyDown(Keys.Space) && !prevState.IsKeyDown(Keys.Space))
+			{
+				World.TimeAxis.MoveNext();
+				NextNode = GetRandomItem(World.Grid.Nodes.Keys.Except(new[] { MovementPiece.Current }).ToArray());
+				MovementPiece.MoveTo(NextNode);
+			}
+			prevState = Keyboard.GetState();
 			// TODO: Add your update logic here
 
 			base.Update(gameTime);
@@ -117,7 +134,35 @@ namespace View
 						cellY++;
 					}
 
-					RegularPoligon(_spriteBatch, new(cellX * CellWidth + Size, cellY * CellHeight + Size), Size, 6);
+					var location = new Vector2(cellX * CellWidth + Size, cellY * CellHeight + Size);
+					RegularPoligon(
+						_spriteBatch,
+						location,
+						Size,
+						6,
+						Color.Red
+					);
+
+					if (MovementPiece.Current == World.Table[iX, iY])
+					{
+						RegularPoligon(
+							_spriteBatch,
+							location,
+							Size * 0.8f,
+							6,
+							Color.Green
+						);
+					}
+					if (NextNode == World.Table[iX, iY])
+					{
+						RegularPoligon(
+							_spriteBatch,
+							location,
+							Size * 0.8f,
+							6,
+							Color.Yellow
+						);
+					}
 				}
 			}
 
