@@ -3,7 +3,7 @@ using TimeLine;
 
 namespace Core
 {
-	public class MovementPiece : Particle
+	public class MovementPiece : Piece
 	{
 		public MovementPiece(World owner, HexNode current)
 			: base(owner)
