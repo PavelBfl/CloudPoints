@@ -64,7 +64,7 @@ namespace Core
 
 		private static bool TryGetItem(HexNode[,] grid, int col, int row, out HexNode result)
 		{
-			if (col < 0 || grid.GetLength(0) >= col || row < 0 || grid.GetLength(1) >= row)
+			if (col < 0 || grid.GetLength(0) <= col || row < 0 || grid.GetLength(1) <= row)
 			{
 				result = default!;
 				return false;

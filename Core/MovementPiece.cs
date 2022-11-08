@@ -15,7 +15,7 @@ namespace Core
 
 		public void MoveTo(HexNode node)
 		{
-			Owner.TimeAxis.Registry(Owner.TimeAxis.Current + 1, new MoveCommand(this, node));
+			Add(Owner.TimeAxis.Current + 1, new MoveCommand(this, node));
 		}
 
 		private class MoveCommand : CommandBase

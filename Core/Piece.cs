@@ -13,39 +13,38 @@ namespace Core
 
 		}
 
-		private SortedList<int, ICommand> LocalQueue { get; } = new SortedList<int, ICommand>();
-
-		private int IdCounter { get; set; } = 0;
+		private SortedList<long, ICommand> LocalQueue { get; } = new SortedList<long, ICommand>();
 
 		public IReadOnlyList<ICommand> CommandsQueue => new ReadOnlyCollection<ICommand>(LocalQueue.Values);
 
-		protected void Add(ICommand command)
+		protected void Add(long time, ICommand command)
 		{
 			if (command is null)
 			{
 				throw new ArgumentNullException(nameof(command));
 			}
 
-			var localCommand = new LocalCommand(this, IdCounter++, command);
-			LocalQueue.Add(localCommand.Id, localCommand);
+			var localCommand = new LocalCommand(this, time, command);
+			LocalQueue.Add(localCommand.Time, localCommand);
+			Owner.TimeAxis.Registry(time, localCommand);
 		}
 
 		private sealed class LocalCommand : ICommand
 		{
-			public LocalCommand(Piece owner, int id, ICommand source)
+			public LocalCommand(Piece owner, long time, ICommand source)
 			{
 				Owner = owner ?? throw new ArgumentNullException(nameof(owner));
-				Id = id;
+				Time = time;
 				Source = source ?? throw new ArgumentNullException(nameof(source));
 			}
 
 			public Piece Owner { get; }
-			public int Id { get; }
+			public long Time { get; }
 			public ICommand Source { get; }
 
 			public void Dispose()
 			{
-				Owner.LocalQueue.Remove(Id);
+				Owner.LocalQueue.Remove(Time);
 				Source.Dispose();
 			}
 

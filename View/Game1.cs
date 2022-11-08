@@ -52,7 +52,7 @@ namespace View
 
 		private static float ToAngle(Vector2 vector) => MathF.Atan2(vector.Y, vector.X);
 
-		private static float Size { get; } = 15;
+		private static float Size { get; } = 20;
 		private static float Width { get; } = Size * 2;
 		private static float Height { get; } = MathF.Sqrt(3) * Size;
 		private static float CellWidth { get; } = Width / 4;
@@ -67,6 +67,17 @@ namespace View
 		private static T GetRandomItem<T>(IReadOnlyList<T> collection)
 			=> collection[Random.Shared.Next(collection.Count)];
 
+		private void NextMove()
+		{
+			var applicantsNodes = World.Grid.Edges.Keys
+				.Where(x => x.Begin == MovementPiece.Current)
+				.Select(x => x.End)
+				.ToArray();
+
+			NextNode = GetRandomItem(applicantsNodes);
+			MovementPiece.MoveTo(NextNode);
+		}
+
 		private HexNode NextNode { get; set; }
 
 		public Game1()
@@ -77,8 +88,8 @@ namespace View
 
 			World = new();
 			MovementPiece = new(World, GetRandomItem(World.Grid.Nodes.Keys.ToArray()));
-			NextNode = GetRandomItem(World.Grid.Nodes.Keys.Except(new[] { MovementPiece.Current }).ToArray());
-			MovementPiece.MoveTo(NextNode);
+
+			NextMove();
 		}
 
 		protected override void Initialize()
@@ -108,8 +119,8 @@ namespace View
 			else if (Keyboard.GetState().IsKeyDown(Keys.Space) && !prevState.IsKeyDown(Keys.Space))
 			{
 				World.TimeAxis.MoveNext();
-				NextNode = GetRandomItem(World.Grid.Nodes.Keys.Except(new[] { MovementPiece.Current }).ToArray());
-				MovementPiece.MoveTo(NextNode);
+
+				NextMove();
 			}
 			prevState = Keyboard.GetState();
 			// TODO: Add your update logic here
@@ -164,6 +175,28 @@ namespace View
 						);
 					}
 				}
+			}
+
+			const float CELL_SIZE = 40;
+			for (var i = 0; i < MovementPiece.CommandsQueue.Count; i++)
+			{
+				var position = new Vector2(
+					i * CELL_SIZE + 5,
+					_graphics.PreferredBackBufferHeight - CELL_SIZE - 5
+				);
+
+				DrawPolygon(
+					_spriteBatch,
+					new Vector2[]
+					{
+						position,
+						position + new Vector2(CELL_SIZE, 0),
+						position + new Vector2(CELL_SIZE, CELL_SIZE),
+						position + new Vector2(0, CELL_SIZE),
+					},
+					Color.Red,
+					1
+				);
 			}
 
 			_spriteBatch.End();
