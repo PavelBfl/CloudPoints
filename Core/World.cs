@@ -16,7 +16,7 @@ namespace Core
 			{
 				for (var iRow = 0; iRow < ROWS_COUNT; iRow++)
 				{
-					var node = new HexNode(this);
+					var node = new HexNode(this, iCol, iRow);
 					Table[iCol, iRow] = node;
 					Grid.Add(node);
 				}
@@ -49,12 +49,13 @@ namespace Core
 						Grid.Add(current, nearNode, 1);
 					}
 
-					if (TryGetItem(Table, iCol + 1, iRow + 1, out nearNode))
+					var rowOffset = iCol % 2 == 0 ? 1 : -1;
+					if (TryGetItem(Table, iCol + 1, iRow + rowOffset, out nearNode))
 					{
 						Grid.Add(current, nearNode, 1);
 					}
 
-					if (TryGetItem(Table, iCol - 1, iRow - 1, out nearNode))
+					if (TryGetItem(Table, iCol - 1, iRow + rowOffset, out nearNode))
 					{
 						Grid.Add(current, nearNode, 1);
 					}

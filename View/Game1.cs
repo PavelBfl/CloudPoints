@@ -134,6 +134,7 @@ namespace View
 
 			_spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
 
+			var locations = new Vector2[World.Table.GetLength(0), World.Table.GetLength(1)];
 			for (var iX = 0; iX < World.Table.GetLength(0); iX++)
 			{
 				for (var iY = 0; iY < World.Table.GetLength(1); iY++)
@@ -146,6 +147,7 @@ namespace View
 					}
 
 					var location = new Vector2(cellX * CellWidth + Size, cellY * CellHeight + Size);
+					locations[iX, iY] = location;
 					RegularPoligon(
 						_spriteBatch,
 						location,
@@ -174,6 +176,20 @@ namespace View
 							Color.Yellow
 						);
 					}
+				}
+			}
+
+			foreach (var begin in World.Grid.Nodes.Keys)
+			{
+				foreach (var end in World.Grid.Nodes[begin].AsBegin)
+				{
+					DrawLine(
+						_spriteBatch,
+						locations[begin.Col, begin.Row],
+						locations[end.End.Col, end.End.Row],
+						Color.Blue,
+						1
+					);
 				}
 			}
 
