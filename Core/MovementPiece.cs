@@ -11,29 +11,11 @@ namespace Core
 			Current = current ?? throw new ArgumentNullException(nameof(current));
 		}
 
-		public HexNode Current { get; private set; }
+		public HexNode Current { get; set; }
 
-		public void MoveTo(HexNode node)
+		public void Enqueue(ICommand command)
 		{
-			Add(Owner.TimeAxis.Current + 1, new MoveCommand(this, node));
-		}
-
-		private class MoveCommand : CommandBase
-		{
-			public MoveCommand(MovementPiece owner, HexNode nextNode)
-			{
-				Owner = owner ?? throw new ArgumentNullException(nameof(owner));
-				NextNode = nextNode ?? throw new ArgumentNullException(nameof(nextNode));
-			}
-
-			private MovementPiece Owner { get; }
-
-			private HexNode NextNode { get; }
-
-			public override void Execute()
-			{
-				Owner.Current = NextNode;
-			}
+			Add(Owner.TimeAxis.Current + CommandsQueue.Count + 1, command);
 		}
 	}
 }
