@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CloudPoints
+﻿namespace StepFlow.CollectionsNodes
 {
 	public readonly struct EdgeLinks<TNode>
 	{

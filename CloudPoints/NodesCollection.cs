@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace CloudPoints
+namespace StepFlow.CollectionsNodes
 {
 	internal class NodesCollection<TNode> : Dictionary<TNode, NodeLinks<TNode>>, IReadOnlyDictionary<TNode, INodeLinks<TNode>>
 	{

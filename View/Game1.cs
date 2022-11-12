@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using TimeLine;
+using StepFlow.Core;
+using StepFlow.TimeLine;
 
-namespace View
+namespace StepFlow.View
 {
 	public class Game1 : Game
 	{

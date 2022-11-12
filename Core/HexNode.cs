@@ -1,4 +1,4 @@
-﻿namespace Core
+﻿namespace StepFlow.Core
 {
 	public class HexNode : Particle
 	{

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TimeLine
+namespace StepFlow.TimeLine
 {
 	public interface ICommand : IDisposable
 	{

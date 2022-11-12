@@ -1,4 +1,4 @@
-﻿namespace TimeLine
+﻿namespace StepFlow.TimeLine
 {
 	public class CommandBase : ICommand
 	{

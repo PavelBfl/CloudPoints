@@ -1,7 +1,7 @@
-﻿using CloudPoints;
-using TimeLine;
+﻿using StepFlow.CollectionsNodes;
+using StepFlow.TimeLine;
 
-namespace Core
+namespace StepFlow.Core
 {
 	public class World
 	{

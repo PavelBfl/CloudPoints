@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
 
-namespace CloudPoints
+namespace StepFlow.CollectionsNodes
 {
 	public class Graph<TNode, TEdge>
 		where TNode : notnull

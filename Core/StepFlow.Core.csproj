@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CloudPoints\CloudPoints.csproj" />
-    <ProjectReference Include="..\TimeLine\TimeLine.csproj" />
+    <ProjectReference Include="..\CloudPoints\StepFlow.CollectionsNodes.csproj" />
+    <ProjectReference Include="..\TimeLine\StepFlow.TimeLine.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CloudPoints
+namespace StepFlow.CollectionsNodes
 {
 	public interface IAccumulator<TEdge, TValue> : IComparer<TValue>
 	{

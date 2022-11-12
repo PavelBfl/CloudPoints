@@ -1,7 +1,7 @@
 ﻿using System;
-using TimeLine;
+using StepFlow.TimeLine;
 
-namespace Core
+namespace StepFlow.Core
 {
 	public class MovementPiece : Piece
 	{

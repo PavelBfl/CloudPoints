@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.32916.344
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudPoints", "CloudPoints\CloudPoints.csproj", "{2AA7F1A9-8233-46D4-B167-27472EBCE1A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StepFlow.CollectionsNodes", "CloudPoints\StepFlow.CollectionsNodes.csproj", "{2AA7F1A9-8233-46D4-B167-27472EBCE1A6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TimeLine", "TimeLine\TimeLine.csproj", "{BA310757-A0EA-4096-97A0-FD90102C21F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StepFlow.TimeLine", "TimeLine\StepFlow.TimeLine.csproj", "{BA310757-A0EA-4096-97A0-FD90102C21F5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{C08C3B77-33A9-40B8-A712-7870D52A4E3E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StepFlow.Core", "Core\StepFlow.Core.csproj", "{C08C3B77-33A9-40B8-A712-7870D52A4E3E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "View", "View\View.csproj", "{592F242C-CC7A-4C4E-BC1D-85BA668EBE51}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StepFlow.View", "View\StepFlow.View.csproj", "{592F242C-CC7A-4C4E-BC1D-85BA668EBE51}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

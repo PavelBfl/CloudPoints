@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using TimeLine;
+using StepFlow.TimeLine;
 
-namespace Core
+namespace StepFlow.Core
 {
 	public class Piece : Particle
 	{

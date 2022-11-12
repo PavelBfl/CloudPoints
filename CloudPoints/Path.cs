@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CloudPoints
+namespace StepFlow.CollectionsNodes
 {
 	public class Path<TNode, TEdge, TLength>
 	{

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Core
+namespace StepFlow.Core
 {
 	public class Particle
 	{
