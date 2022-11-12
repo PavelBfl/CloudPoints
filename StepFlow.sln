@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StepFlow.Core", "Core\StepF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StepFlow.View", "View\StepFlow.View.csproj", "{592F242C-CC7A-4C4E-BC1D-85BA668EBE51}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StepFlow.ViewModel", "StepFlow.ViewModel\StepFlow.ViewModel.csproj", "{4E30DC9D-A167-4A68-969A-EA6C27AA5A32}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{592F242C-CC7A-4C4E-BC1D-85BA668EBE51}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{592F242C-CC7A-4C4E-BC1D-85BA668EBE51}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{592F242C-CC7A-4C4E-BC1D-85BA668EBE51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E30DC9D-A167-4A68-969A-EA6C27AA5A32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E30DC9D-A167-4A68-969A-EA6C27AA5A32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E30DC9D-A167-4A68-969A-EA6C27AA5A32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E30DC9D-A167-4A68-969A-EA6C27AA5A32}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

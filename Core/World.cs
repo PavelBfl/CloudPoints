@@ -1,20 +1,29 @@
-﻿using StepFlow.CollectionsNodes;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using StepFlow.CollectionsNodes;
 using StepFlow.TimeLine;
 
 namespace StepFlow.Core
 {
 	public class World
 	{
-		public World()
+		public World(int colsCount, int rowsCount)
 		{
-			const int COLS_COUNT = 10;
-			const int ROWS_COUNT = 10;
-
-			Table = new HexNode[COLS_COUNT, ROWS_COUNT];
-
-			for (var iCol = 0; iCol < COLS_COUNT; iCol++)
+			if (colsCount < 0)
 			{
-				for (var iRow = 0; iRow < ROWS_COUNT; iRow++)
+				throw new ArgumentOutOfRangeException(nameof(colsCount));
+			}
+
+			if (rowsCount < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(rowsCount));
+			}
+
+			Table = new HexNode[colsCount, rowsCount];
+
+			for (var iCol = 0; iCol < colsCount; iCol++)
+			{
+				for (var iRow = 0; iRow < rowsCount; iRow++)
 				{
 					var node = new HexNode(this, iCol, iRow);
 					Table[iCol, iRow] = node;
@@ -22,40 +31,40 @@ namespace StepFlow.Core
 				}
 			}
 
-			for (var iCol = 0; iCol < COLS_COUNT; iCol++)
+			for (var iCol = 0; iCol < colsCount; iCol++)
 			{
-				for (var iRow = 0; iRow < ROWS_COUNT; iRow++)
+				for (var iRow = 0; iRow < rowsCount; iRow++)
 				{
 					var current = Table[iCol, iRow];
 
-					HexNode nearNode;
-					if (TryGetItem(Table, iCol, iRow - 1, out nearNode))
+					HexNode? nearNode;
+					if (TryGetNode(iCol, iRow - 1, out nearNode))
 					{
 						Grid.Add(current, nearNode, 1);
 					}
 
-					if (TryGetItem(Table, iCol, iRow + 1, out nearNode))
+					if (TryGetNode(iCol, iRow + 1, out nearNode))
 					{
 						Grid.Add(current, nearNode, 1);
 					}
 
-					if (TryGetItem(Table, iCol - 1, iRow, out nearNode))
+					if (TryGetNode(iCol - 1, iRow, out nearNode))
 					{
 						Grid.Add(current, nearNode, 1);
 					}
 
-					if (TryGetItem(Table, iCol + 1, iRow, out nearNode))
+					if (TryGetNode(iCol + 1, iRow, out nearNode))
 					{
 						Grid.Add(current, nearNode, 1);
 					}
 
 					var rowOffset = iCol % 2 == 0 ? 1 : -1;
-					if (TryGetItem(Table, iCol + 1, iRow + rowOffset, out nearNode))
+					if (TryGetNode(iCol + 1, iRow + rowOffset, out nearNode))
 					{
 						Grid.Add(current, nearNode, 1);
 					}
 
-					if (TryGetItem(Table, iCol - 1, iRow + rowOffset, out nearNode))
+					if (TryGetNode(iCol - 1, iRow + rowOffset, out nearNode))
 					{
 						Grid.Add(current, nearNode, 1);
 					}
@@ -63,21 +72,27 @@ namespace StepFlow.Core
 			}
 		}
 
-		private static bool TryGetItem(HexNode[,] grid, int col, int row, out HexNode result)
+		public int ColsCount => Table.GetLength(0);
+
+		public int RowsCount => Table.GetLength(1);
+
+		public HexNode this[int col, int row] => Table[col, row];
+
+		public bool TryGetNode(int col, int row, [MaybeNullWhen(false)] out HexNode result)
 		{
-			if (col < 0 || grid.GetLength(0) <= col || row < 0 || grid.GetLength(1) <= row)
+			if (col < 0 || ColsCount <= col || row < 0 || RowsCount <= row)
 			{
 				result = default!;
 				return false;
 			}
 			else
 			{
-				result = grid[col, row];
+				result = Table[col, row];
 				return true;
 			}
 		}
 
-		public HexNode[,] Table { get; }
+		private HexNode[,] Table { get; }
 
 		public Graph<HexNode, int> Grid { get; } = new Graph<HexNode, int>();
 

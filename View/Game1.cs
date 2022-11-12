@@ -6,6 +6,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StepFlow.Core;
 using StepFlow.TimeLine;
+using StepFlow.View.Controlers;
+using StepFlow.ViewModel;
 
 namespace StepFlow.View
 {
@@ -78,52 +80,47 @@ namespace StepFlow.View
 		private static float CellWidth { get; } = Width / 4;
 		private static float CellHeight { get; } = Height / 2;
 
-		private GraphicsDeviceManager _graphics;
-		private SpriteBatch _spriteBatch;
+		private GraphicsDeviceManager Graphics { get; }
 
-		private World World { get; }
-		private MovementPiece MovementPiece { get; }
+		private SpriteBatch? spriteBatch;
 
-		private static T GetRandomItem<T>(IReadOnlyList<T> collection)
-			=> collection[Random.Shared.Next(collection.Count)];
+		public SpriteBatch SpriteBatch => spriteBatch ?? throw new InvalidOperationException();
 
-		private HexNodeView[,] TableView { get; }
-
-		private HashSet<MoveCommand> Commands { get; } = new HashSet<MoveCommand>();
+		private WorldVm World { get; }
+		private MovementPieceView MovementPiece { get; }
 
 		public Game1()
 		{
-			_graphics = new GraphicsDeviceManager(this);
+			Graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "Content";
 			IsMouseVisible = true;
 
-			World = new();
-			MovementPiece = new(World, GetRandomItem(World.Grid.Nodes.Keys.ToArray()));
-
-			var xCount = World.Table.GetLength(0);
-			var yCount = World.Table.GetLength(1);
-			TableView = new HexNodeView[xCount, yCount];
-			for (var iX = 0; iX < xCount; iX++)
+			World = new(new(10, 10));
+			for (var iCol = 0; iCol < World.ColsCount; iCol++)
 			{
-				for (var iY = 0; iY < yCount; iY++)
+				for (var iRow = 0; iRow < World.RowsCount; iRow++)
 				{
-					var cellX = iX * 3;
-					var cellY = iY * 2;
-					if (iX % 2 == 0)
+					var cellX = iCol * 3;
+					var cellY = iRow * 2;
+					if (iCol % 2 == 0)
 					{
 						cellY++;
 					}
 
 					var location = new Vector2(cellX * CellWidth + Size, cellY * CellHeight + Size);
 
-					TableView[iX, iY] = new HexNodeView(World.Table[iX, iY])
+					var view = new HexNodeView(this, World[iCol, iRow])
 					{
 						Color = Color.Red,
 						Size = Size,
 						Location = location
 					};
+
+					Components.Add(view);
 				}
 			}
+
+			MovementPiece = new(this, new(new()));
 		}
 
 		protected override void Initialize()
@@ -135,7 +132,7 @@ namespace StepFlow.View
 
 		protected override void LoadContent()
 		{
-			_spriteBatch = new SpriteBatch(GraphicsDevice);
+			spriteBatch = new SpriteBatch(GraphicsDevice);
 
 			Pixel = new(GraphicsDevice, 1, 1);
 			Pixel.SetData(new[] { Color.White });
@@ -144,6 +141,13 @@ namespace StepFlow.View
 		}
 
 		private KeyboardState prevKeyboardState;
+
+		public bool IsKeyOnPress(Keys key) => Keyboard.GetState().IsKeyDown(key) && !prevKeyboardState.IsKeyDown(key);
+
+		public bool MouseButtonOnPress() => Mouse.GetState().LeftButton == ButtonState.Pressed && prevMouseState.LeftButton != ButtonState.Pressed;
+
+		public Point MousePosition() => Mouse.GetState().Position;
+
 		private MouseState prevMouseState;
 		protected override void Update(GameTime gameTime)
 		{
@@ -155,28 +159,18 @@ namespace StepFlow.View
 			{
 				World.TimeAxis.MoveNext();
 			}
-			prevKeyboardState = Keyboard.GetState();
-
-			var mouseState = Mouse.GetState();
-			foreach (var view in TableView.OfType<HexNodeView>())
-			{
-				view.IsSelected = view.Contains(mouseState.Position);
-				if (view.IsSelected && mouseState.LeftButton == ButtonState.Pressed && prevMouseState.LeftButton != ButtonState.Pressed)
-				{
-					MovementPiece.Enqueue(new MoveCommand(MovementPiece, view.Source, Commands));
-				}
-			}
-
-			prevMouseState = mouseState;
 
 			base.Update(gameTime);
+
+			prevKeyboardState = Keyboard.GetState();
+			prevMouseState = Mouse.GetState();
 		}
 
 		protected override void Draw(GameTime gameTime)
 		{
 			GraphicsDevice.Clear(Color.Black);
 
-			_spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
+			spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
 
 			var planings = Commands.Select(x => x.NextNode).ToHashSet();
 			for (var iX = 0; iX < TableView.GetLength(0); iX++)
@@ -198,7 +192,7 @@ namespace StepFlow.View
 						hexNodeView.State = NodeState.Node;
 					}
 
-					hexNodeView.Draw(_spriteBatch);
+					hexNodeView.Draw(spriteBatch);
 				}
 			}
 
@@ -207,11 +201,11 @@ namespace StepFlow.View
 			{
 				var position = new Vector2(
 					i * CELL_SIZE + 5,
-					_graphics.PreferredBackBufferHeight - CELL_SIZE - 5
+					Graphics.PreferredBackBufferHeight - CELL_SIZE - 5
 				);
 
 				DrawPolygon(
-					_spriteBatch,
+					spriteBatch,
 					new Vector2[]
 					{
 						position,
@@ -224,141 +218,9 @@ namespace StepFlow.View
 				);
 			}
 
-			_spriteBatch.End();
+			spriteBatch.End();
 
 			base.Draw(gameTime);
-		}
-
-		public class HexNodeView
-		{
-			public HexNodeView(HexNode source)
-			{
-				Source = source ?? throw new ArgumentNullException(nameof(source));
-			}
-
-			public HexNode Source { get; }
-
-			private Vector2 location = Vector2.Zero;
-			public Vector2 Location
-			{
-				get => location;
-				set
-				{
-					if (Location != value)
-					{
-						location = value;
-						ClearCache();
-					}
-				}
-			}
-
-			private float size = 0;
-			public float Size
-			{
-				get => size;
-				set
-				{
-					if (Size != value)
-					{
-						size = value;
-						ClearCache();
-					}
-				}
-			}
-
-			public Color Color { get; set; } = Color.Black;
-
-			public NodeState State { get; set; } = NodeState.Node;
-
-			public bool IsSelected { get; set; } = false;
-
-			private void ClearCache()
-			{
-				vertices = null;
-				innerVertices = null;
-			}
-
-			private Vector2[]? vertices = null;
-			private Vector2[] Vertices => vertices ??= GetRegularPoligon(Size, 6, 0).Select(x => x + Location).ToArray();
-
-			private Vector2[]? innerVertices = null;
-			private Vector2[] InnerVertices => innerVertices ??= GetRegularPoligon(Size * 0.8f, 6, 0).Select(x => x + Location).ToArray();
-
-			public void Draw(SpriteBatch spriteBatch)
-			{
-				DrawPolygon(spriteBatch, Vertices, IsSelected ? Color.Blue : Color);
-
-				Color? stateColor = null;
-				switch (State)
-				{
-					case NodeState.Current:
-						stateColor = Color.Green;
-						break;
-					case NodeState.Planned:
-						stateColor = Color.Yellow;
-						break;
-				}
-
-				if (stateColor is { } color)
-				{
-					DrawPolygon(spriteBatch, InnerVertices, color);
-				}
-			}
-
-			public bool Contains(Point point)
-			{
-				var result = false;
-				var prevIndex = Vertices.Length - 1;
-				for (int i = 0; i < Vertices.Length; i++)
-				{
-					var prevPoint = Vertices[prevIndex];
-					var currentPoint = Vertices[i];
-					if (currentPoint.Y < point.Y && prevPoint.Y >= point.Y || prevPoint.Y < point.Y && currentPoint.Y >= point.Y)
-					{
-						if (currentPoint.X + (point.Y - currentPoint.Y) / (prevPoint.Y - currentPoint.Y) * (prevPoint.X - currentPoint.X) < point.X)
-						{
-							result = !result;
-						}
-					}
-					prevIndex = i;
-				}
-				return result;
-			}
-		}
-
-		public enum NodeState
-		{
-			Node,
-			Current,
-			Planned,
-		}
-	}
-
-	public class MoveCommand : CommandBase
-	{
-		public MoveCommand(MovementPiece owner, HexNode nextNode, ICollection<MoveCommand> container)
-		{
-			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
-			NextNode = nextNode ?? throw new ArgumentNullException(nameof(nextNode));
-			Container = container ?? throw new ArgumentNullException(nameof(container));
-
-			Container.Add(this);
-		}
-
-		public MovementPiece Owner { get; }
-
-		public HexNode NextNode { get; }
-
-		public ICollection<MoveCommand> Container { get; }
-
-		public override void Execute()
-		{
-			Owner.Current = NextNode;
-		}
-
-		public override void Dispose()
-		{
-			Container.Remove(this);
 		}
 	}
 }
