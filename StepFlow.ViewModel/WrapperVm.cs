@@ -14,6 +14,6 @@ namespace StepFlow.ViewModel
 			Source = source;
 		}
 
-		protected T Source { get; }
+		internal T Source { get; }
 	}
 }

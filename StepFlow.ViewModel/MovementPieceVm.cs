@@ -7,40 +7,52 @@ namespace StepFlow.ViewModel
 {
 	public class MovementPieceVm : WrapperVm<MovementPiece>
 	{
-		public MovementPieceVm(MovementPiece source) : base(source, true)
+		public MovementPieceVm(WorldVm world, HexNodeVm hexNode)
+			: base(new MovementPiece(world.Source, hexNode.Source), true)
 		{
+			current = hexNode;
+
+			Current.State = NodeState.Current;
 		}
+
+		private HexNodeVm current;
+		public HexNodeVm Current
+		{
+			get => current;
+			set
+			{
+				if (Current != value)
+				{
+					Current.State = NodeState.Node;
+					current = value;
+					Current.State = NodeState.Current;
+					Source.Current = Current.Source;
+				}
+			}
+		}
+
+		public IReadOnlyList<ICommand> CommandQueue => Source.CommandsQueue;
 
 		public void MoveTo(HexNodeVm node)
 		{
-			
+			Source.Enqueue(new MoveCommand(this, node));
 		}
 
 		private class MoveCommand : CommandBase
 		{
-			public MoveCommand(MovementPiece owner, HexNode nextNode, ICollection<MoveCommand> container)
+			public MoveCommand(MovementPieceVm owner, HexNodeVm nextNode)
 			{
 				Owner = owner ?? throw new ArgumentNullException(nameof(owner));
 				NextNode = nextNode ?? throw new ArgumentNullException(nameof(nextNode));
-				Container = container ?? throw new ArgumentNullException(nameof(container));
-
-				Container.Add(this);
 			}
 
-			public MovementPiece Owner { get; }
+			public MovementPieceVm Owner { get; }
 
-			public HexNode NextNode { get; }
-
-			public ICollection<MoveCommand> Container { get; }
+			public HexNodeVm NextNode { get; }
 
 			public override void Execute()
 			{
 				Owner.Current = NextNode;
-			}
-
-			public override void Dispose()
-			{
-				Container.Remove(this);
 			}
 		}
 	}

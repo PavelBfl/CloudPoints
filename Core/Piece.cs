@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Linq;
 using StepFlow.TimeLine;
 
 namespace StepFlow.Core
@@ -13,9 +13,9 @@ namespace StepFlow.Core
 
 		}
 
-		private SortedList<long, ICommand> LocalQueue { get; } = new SortedList<long, ICommand>();
+		private LocalQueue Queue { get; } = new LocalQueue();
 
-		public IReadOnlyList<ICommand> CommandsQueue => new ReadOnlyCollection<ICommand>(LocalQueue.Values);
+		public IReadOnlyList<ICommand> CommandsQueue => Queue;
 
 		protected void Add(long time, ICommand command)
 		{
@@ -25,8 +25,15 @@ namespace StepFlow.Core
 			}
 
 			var localCommand = new LocalCommand(this, time, command);
-			LocalQueue.Add(localCommand.Time, localCommand);
+			Queue.Add(localCommand.Time, localCommand);
 			Owner.TimeAxis.Registry(time, localCommand);
+		}
+
+		private sealed class LocalQueue : SortedList<long, LocalCommand>, IReadOnlyList<ICommand>
+		{
+			ICommand IReadOnlyList<ICommand>.this[int index] => base[index];
+
+			IEnumerator<ICommand> IEnumerable<ICommand>.GetEnumerator() => Values.Select(x => x.Source).GetEnumerator();
 		}
 
 		private sealed class LocalCommand : ICommand
@@ -44,7 +51,7 @@ namespace StepFlow.Core
 
 			public void Dispose()
 			{
-				Owner.LocalQueue.Remove(Time);
+				Owner.Queue.Remove(Time);
 				Source.Dispose();
 			}
 

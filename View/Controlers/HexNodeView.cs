@@ -1,40 +1,16 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Microsoft.Xna.Framework;
 using StepFlow.ViewModel;
 
 namespace StepFlow.View.Controlers
 {
-	public class ViewBase : DrawableGameComponent
+	public class HexView : ViewBase
 	{
-		public ViewBase(Game1 game)
+		public HexView(Game1 game)
 			: base(game)
-		{
-		}
-
-		public Game1 Game => (Game1)base.Game;
-	}
-
-	public class WrappaerView<T> : ViewBase
-	{
-		public WrappaerView(Game1 game, T source, bool checkSourceNull = false)
-			: base(game)
-		{
-			if (checkSourceNull && source is null)
-			{
-				throw new ArgumentNullException(nameof(source));
-			}
-
-			Source = source;
-		}
-
-		public T Source { get; }
-	}
-
-	public class HexNodeView : WrappaerView<HexNodeVm>
-	{
-		public HexNodeView(Game1 game, HexNodeVm source)
-			: base(game, source, true)
 		{
 		}
 
@@ -48,6 +24,7 @@ namespace StepFlow.View.Controlers
 				{
 					location = value;
 					ClearCache();
+					OnPropertyChanged();
 				}
 			}
 		}
@@ -62,56 +39,26 @@ namespace StepFlow.View.Controlers
 				{
 					size = value;
 					ClearCache();
+					OnPropertyChanged();
 				}
 			}
 		}
 
 		public Color Color { get; set; } = Color.Black;
 
-		public NodeState State { get; set; } = NodeState.Node;
-
-		public bool IsSelected { get; set; } = false;
-
 		private void ClearCache()
 		{
 			vertices = null;
-			innerVertices = null;
 		}
 
 		private Vector2[]? vertices = null;
-		private Vector2[] Vertices => vertices ??= Utils.GetRegularPoligon(Size, 6, 0).Select(x => x + Location).ToArray();
-
-		private Vector2[]? innerVertices = null;
-		private Vector2[] InnerVertices => innerVertices ??= Utils.GetRegularPoligon(Size * 0.8f, 6, 0).Select(x => x + Location).ToArray();
+		public Vector2[] Vertices => vertices ??= Utils.GetRegularPoligon(Size, 6, 0).Select(x => x + Location).ToArray();
 
 		public override void Draw(GameTime gameTime)
 		{
-			Game.SpriteBatch.DrawPolygon(Vertices, IsSelected ? Color.Blue : Color);
-
-			Color? stateColor = null;
-			switch (State)
-			{
-				case NodeState.Current:
-					stateColor = Color.Green;
-					break;
-				case NodeState.Planned:
-					stateColor = Color.Yellow;
-					break;
-			}
-
-			if (stateColor is { } color)
-			{
-				Game.SpriteBatch.DrawPolygon(InnerVertices, color);
-			}
+			Game.SpriteBatch.DrawPolygon(Vertices, Color);
 
 			base.Draw(gameTime);
-		}
-
-		public override void Update(GameTime gameTime)
-		{
-			Source.IsSelected = Contains(Game.MousePosition());
-
-			base.Update(gameTime);
 		}
 
 		public bool Contains(Point point)
@@ -135,18 +82,95 @@ namespace StepFlow.View.Controlers
 		}
 	}
 
-	public enum NodeState
+	public class HexNodeView : HexView
 	{
-		Node,
-		Current,
-		Planned,
-	}
-
-	public class MovementPieceView : WrappaerView<MovementPieceVm>
-	{
-		public MovementPieceView(Game1 game, MovementPieceVm source)
-			: base(game, source, true)
+		public HexNodeView(Game1 game, HexNodeVm source)
+			: base(game)
 		{
+			Source = source ?? throw new ArgumentNullException(nameof(source));
+
+			InnerHex = new HexView(game)
+			{
+				Size = Size * InnerPtc,
+				Location = Location,
+			};
+			Game.Components.Add(InnerHex);
+
+			Source.PropertyChanged += SourcePropertyChanged;
+		}
+
+
+		public HexNodeVm Source { get; }
+
+		public float InnerPtc { get; set; } = 0.8f;
+
+		private HexView InnerHex { get; }
+
+		private void SourcePropertyChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			switch (e.PropertyName)
+			{
+				case nameof(HexNodeVm.State):
+					switch (Source.State)
+					{
+						case NodeState.Current:
+							InnerHex.Visible = true;
+							InnerHex.Color = Color.Green;
+							break;
+						case NodeState.Planned:
+							InnerHex.Visible = true;
+							InnerHex.Color = Color.Yellow;
+							break;
+						default:
+							InnerHex.Visible = false;
+							break;
+					}
+					break;
+			}
+		}
+
+		protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+		{
+			switch (propertyName)
+			{
+				case nameof(Size):
+					InnerHex.Size = Size * InnerPtc;
+					break;
+				case nameof(Location):
+					InnerHex.Location = Location;
+					break;
+			}
+
+			base.OnPropertyChanged(propertyName);
+		}
+
+		public override void Draw(GameTime gameTime)
+		{
+			Game.SpriteBatch.DrawPolygon(Vertices, Source.IsSelected ? Color.Blue : Color);
+			base.Draw(gameTime);
+		}
+
+		public override void Update(GameTime gameTime)
+		{
+			Source.IsSelected = Contains(Game.MousePosition());
+			if (Source.IsSelected && Game.MouseButtonOnPress())
+			{
+				Source.State = NodeState.Planned;
+			}
+
+			base.Update(gameTime);
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				Game.Components.Remove(InnerHex);
+
+				Source.PropertyChanged -= SourcePropertyChanged;
+			}
+
+			base.Dispose(disposing);
 		}
 	}
 }
