@@ -5,14 +5,20 @@ using StepFlow.TimeLine;
 
 namespace StepFlow.ViewModel
 {
-	public class MovementPieceVm : WrapperVm<MovementPiece>
+	public interface IPieceVm
+	{
+		void MoveTo(HexNodeVm node);
+	}
+
+	public class MovementPieceVm : WrapperVm<MovementPiece>, IPieceVm
 	{
 		public MovementPieceVm(WorldVm world, HexNodeVm hexNode)
 			: base(new MovementPiece(world.Source, hexNode.Source), true)
 		{
 			current = hexNode;
+			Owner = world ?? throw new ArgumentNullException(nameof(world));
 
-			Current.State = NodeState.Current;
+			Current.SetCurrent();
 		}
 
 		private HexNodeVm current;
@@ -23,13 +29,15 @@ namespace StepFlow.ViewModel
 			{
 				if (Current != value)
 				{
-					Current.State = NodeState.Node;
+					Current.SetNode();
 					current = value;
-					Current.State = NodeState.Current;
+					Current.SetCurrent();
 					Source.Current = Current.Source;
 				}
 			}
 		}
+
+		public WorldVm Owner { get; }
 
 		public IReadOnlyList<ICommand> CommandQueue => Source.CommandsQueue;
 

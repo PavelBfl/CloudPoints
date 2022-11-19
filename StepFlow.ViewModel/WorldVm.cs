@@ -12,7 +12,7 @@ namespace StepFlow.ViewModel
 			{
 				for (var iRow = 0; iRow < RowsCount; iRow++)
 				{
-					Table[iCol, iRow] = new HexNodeVm(Source[iCol, iRow]);
+					Table[iCol, iRow] = new HexNodeVm(this, Source[iCol, iRow]);
 				}
 			}
 
@@ -28,5 +28,7 @@ namespace StepFlow.ViewModel
 		private HexNodeVm[,] Table { get; }
 
 		public AxisVm TimeAxis { get; }
+
+		public IPieceVm? Current { get; set; }
 	}
 }

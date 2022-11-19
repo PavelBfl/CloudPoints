@@ -1,87 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using Microsoft.Xna.Framework;
 using StepFlow.ViewModel;
 
 namespace StepFlow.View.Controlers
 {
-	public class HexView : ViewBase
-	{
-		public HexView(Game1 game)
-			: base(game)
-		{
-		}
-
-		private Vector2 location = Vector2.Zero;
-		public Vector2 Location
-		{
-			get => location;
-			set
-			{
-				if (Location != value)
-				{
-					location = value;
-					ClearCache();
-					OnPropertyChanged();
-				}
-			}
-		}
-
-		private float size = 0;
-		public float Size
-		{
-			get => size;
-			set
-			{
-				if (Size != value)
-				{
-					size = value;
-					ClearCache();
-					OnPropertyChanged();
-				}
-			}
-		}
-
-		public Color Color { get; set; } = Color.Black;
-
-		private void ClearCache()
-		{
-			vertices = null;
-		}
-
-		private Vector2[]? vertices = null;
-		public Vector2[] Vertices => vertices ??= Utils.GetRegularPoligon(Size, 6, 0).Select(x => x + Location).ToArray();
-
-		public override void Draw(GameTime gameTime)
-		{
-			Game.SpriteBatch.DrawPolygon(Vertices, Color);
-
-			base.Draw(gameTime);
-		}
-
-		public bool Contains(Point point)
-		{
-			var result = false;
-			var prevIndex = Vertices.Length - 1;
-			for (int i = 0; i < Vertices.Length; i++)
-			{
-				var prevPoint = Vertices[prevIndex];
-				var currentPoint = Vertices[i];
-				if (currentPoint.Y < point.Y && prevPoint.Y >= point.Y || prevPoint.Y < point.Y && currentPoint.Y >= point.Y)
-				{
-					if (currentPoint.X + (point.Y - currentPoint.Y) / (prevPoint.Y - currentPoint.Y) * (prevPoint.X - currentPoint.X) < point.X)
-					{
-						result = !result;
-					}
-				}
-				prevIndex = i;
-			}
-			return result;
-		}
-	}
-
 	public class HexNodeView : HexView
 	{
 		public HexNodeView(Game1 game, HexNodeVm source)
@@ -115,11 +39,11 @@ namespace StepFlow.View.Controlers
 					{
 						case NodeState.Current:
 							InnerHex.Visible = true;
-							InnerHex.Color = Color.Green;
+							InnerHex.Color = Microsoft.Xna.Framework.Color.Green;
 							break;
 						case NodeState.Planned:
 							InnerHex.Visible = true;
-							InnerHex.Color = Color.Yellow;
+							InnerHex.Color = Microsoft.Xna.Framework.Color.Yellow;
 							break;
 						default:
 							InnerHex.Visible = false;
@@ -146,7 +70,7 @@ namespace StepFlow.View.Controlers
 
 		public override void Draw(GameTime gameTime)
 		{
-			Game.SpriteBatch.DrawPolygon(Vertices, Source.IsSelected ? Color.Blue : Color);
+			Game.SpriteBatch.DrawPolygon(Vertices, Source.IsSelected ? Microsoft.Xna.Framework.Color.Blue : Color);
 			base.Draw(gameTime);
 		}
 
@@ -155,7 +79,7 @@ namespace StepFlow.View.Controlers
 			Source.IsSelected = Contains(Game.MousePosition());
 			if (Source.IsSelected && Game.MouseButtonOnPress())
 			{
-				Source.State = NodeState.Planned;
+				Source.SetPlanned();
 			}
 
 			base.Update(gameTime);

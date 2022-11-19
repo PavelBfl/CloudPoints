@@ -23,6 +23,7 @@ namespace StepFlow.View
 
 		private WorldVm World { get; }
 		private MovementPieceView MovementPiece { get; }
+		private AxisVm Axis { get; }
 
 		public Game1()
 		{
@@ -56,7 +57,10 @@ namespace StepFlow.View
 			}
 
 			MovementPiece = new(this, new MovementPieceVm(World, World[0, 0]));
+			World.Current = MovementPiece.Source;
 			Components.Add(MovementPiece);
+
+			Components.Add(new AxisView(this, World.TimeAxis));
 		}
 
 		protected override void Initialize()
