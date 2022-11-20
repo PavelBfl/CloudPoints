@@ -11,7 +11,7 @@ namespace StepFlow.View.Controlers
 
 		public abstract IReadOnlyList<Vector2> GetVertices();
 
-		public Microsoft.Xna.Framework.Color Color { get; set; } = Microsoft.Xna.Framework.Color.Black;
+		public Color Color { get; set; } = Color.Black;
 
 		public override void Draw(GameTime gameTime)
 		{

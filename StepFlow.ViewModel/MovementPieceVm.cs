@@ -2,21 +2,63 @@
 using System;
 using StepFlow.Core;
 using StepFlow.TimeLine;
+using System.Collections.Specialized;
+using System.Collections;
 
 namespace StepFlow.ViewModel
 {
 	public interface IPieceVm
 	{
+		CommandsQueueVm CommandQueue { get; }
+	}
+
+	public interface IMovementPieceVm : IPieceVm
+	{
 		void MoveTo(HexNodeVm node);
 	}
 
-	public class MovementPieceVm : WrapperVm<MovementPiece>, IPieceVm
+	public class PieceVm<T> : WrapperVm<T>, IPieceVm
+		where T : Piece
 	{
-		public MovementPieceVm(WorldVm world, HexNodeVm hexNode)
-			: base(new MovementPiece(world.Source, hexNode.Source), true)
+		public PieceVm(WorldVm world, T source) : base(source, true)
+		{
+			Owner = world ?? throw new ArgumentNullException(nameof(world));
+			CommandQueue = new CommandsQueueVm(Source);
+		}
+
+		public WorldVm Owner { get; }
+
+		public CommandsQueueVm CommandQueue { get; }
+
+	}
+	public class CommandsQueueVm : IReadOnlyList<ICommand>, INotifyCollectionChanged
+		{
+			public CommandsQueueVm(Piece source)
+			{
+				Source = source ?? throw new ArgumentNullException(nameof(source));
+			}
+
+			public ICommand this[int index] => Source.CommandsQueue[index];
+
+			public int Count => Source.CommandsQueue.Count;
+
+			private Piece Source { get; }
+
+			public event NotifyCollectionChangedEventHandler? CollectionChanged;
+
+			public void Add(ICommand command) => Source.Add(command);
+
+			public IEnumerator<ICommand> GetEnumerator() => Source.CommandsQueue.GetEnumerator();
+
+			IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+		}
+
+	public class MovementPieceVm : PieceVm<MovementPiece>, IMovementPieceVm
+	{
+		public MovementPieceVm(WorldVm owner, HexNodeVm hexNode)
+			: base(owner, new MovementPiece(owner.Source, hexNode.Source))
 		{
 			current = hexNode;
-			Owner = world ?? throw new ArgumentNullException(nameof(world));
 
 			Current.SetCurrent();
 		}
@@ -36,10 +78,6 @@ namespace StepFlow.ViewModel
 				}
 			}
 		}
-
-		public WorldVm Owner { get; }
-
-		public IReadOnlyList<ICommand> CommandQueue => Source.CommandsQueue;
 
 		public void MoveTo(HexNodeVm node)
 		{

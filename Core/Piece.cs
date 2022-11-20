@@ -5,6 +5,55 @@ using StepFlow.TimeLine;
 
 namespace StepFlow.Core
 {
+	public interface ISubCommand : ICommand
+	{
+		Piece Owner { get; }
+	}
+
+	public class CommandsQueie
+	{
+		public Piece Owner { get; }
+
+		public void Add(ICommand command)
+		{
+			if (command is null)
+			{
+				throw new ArgumentNullException();
+			}
+
+
+		}
+
+		private void RemoveProtected(SubCommand command)
+		{
+			if (command is null)
+			{
+				throw new ArgumentNullException(nameof(command));
+			}
+
+
+		}
+
+		private sealed class SubCommand : CommandBase, ISubCommand
+		{
+			public SubCommand(Piece owner, CommandsQueie ownerQueue)
+			{
+				Owner = owner ?? throw new ArgumentNullException(nameof(owner));
+				OwnerQueue = ownerQueue ?? throw new ArgumentNullException(nameof(ownerQueue));
+			}
+
+			public Piece Owner { get; }
+			public CommandsQueie OwnerQueue { get; }
+
+			public override void Dispose()
+			{
+				base.Dispose();
+
+				OwnerQueue.RemoveProtected(this);
+			}
+		}
+	}
+
 	public class Piece : Particle
 	{
 		public Piece(World owner)
@@ -17,16 +66,16 @@ namespace StepFlow.Core
 
 		public IReadOnlyList<ICommand> CommandsQueue => Queue;
 
-		protected void Add(long time, ICommand command)
+		public void Add(ICommand command)
 		{
 			if (command is null)
 			{
 				throw new ArgumentNullException(nameof(command));
 			}
 
-			var localCommand = new LocalCommand(this, time, command);
+			var localCommand = new LocalCommand(this, Owner.TimeAxis.Current + CommandsQueue.Count + 1, command);
 			Queue.Add(localCommand.Time, localCommand);
-			Owner.TimeAxis.Registry(time, localCommand);
+			Owner.TimeAxis.Registry(localCommand.Time, localCommand);
 		}
 
 		private sealed class LocalQueue : SortedList<long, LocalCommand>, IReadOnlyList<ICommand>

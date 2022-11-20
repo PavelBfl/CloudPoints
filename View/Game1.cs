@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -23,7 +25,7 @@ namespace StepFlow.View
 
 		private WorldVm World { get; }
 		private MovementPieceView MovementPiece { get; }
-		private AxisVm Axis { get; }
+		private List<RectView> Commands { get; } = new List<RectView>();
 
 		public Game1()
 		{
@@ -61,6 +63,13 @@ namespace StepFlow.View
 			Components.Add(MovementPiece);
 
 			Components.Add(new AxisView(this, World.TimeAxis));
+
+			MovementPiece.Source.CommandQueue.CollectionChanged += MovementPieceCommandsCollectionChanged;
+		}
+
+		private void MovementPieceCommandsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+		{
+			
 		}
 
 		protected override void Initialize()
@@ -87,10 +96,6 @@ namespace StepFlow.View
 			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
 			{
 				Exit();
-			}
-			else if (Keyboard.GetState().IsKeyDown(Keys.Space) && !prevKeyboardState.IsKeyDown(Keys.Space))
-			{
-				World.TimeAxis.MoveNext();
 			}
 
 			base.Update(gameTime);
