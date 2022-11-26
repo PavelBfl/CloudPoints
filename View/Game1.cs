@@ -24,7 +24,7 @@ namespace StepFlow.View
 		public SpriteBatch SpriteBatch => spriteBatch ?? throw new InvalidOperationException();
 
 		private WorldVm World { get; }
-		private MovementPieceView MovementPiece { get; }
+		private IPieceVm CurrentPiece { get; }
 		private List<RectView> Commands { get; } = new List<RectView>();
 
 		public Game1()
@@ -58,18 +58,10 @@ namespace StepFlow.View
 				}
 			}
 
-			MovementPiece = new(this, new MovementPieceVm(World, World[0, 0]));
-			World.Current = MovementPiece.Source;
-			Components.Add(MovementPiece);
+			CurrentPiece = World[0, 0].CreateSimple();
+			World.Current = CurrentPiece;
 
 			Components.Add(new AxisView(this, World.TimeAxis));
-
-			MovementPiece.Source.CommandQueue.CollectionChanged += MovementPieceCommandsCollectionChanged;
-		}
-
-		private void MovementPieceCommandsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-		{
-			
 		}
 
 		protected override void Initialize()

@@ -1,11 +1,11 @@
 ﻿using System;
 using StepFlow.Core;
+using StepFlow.Core.Preset;
 
 namespace StepFlow.ViewModel
 {
 	public class HexNodeVm : WrapperVm<HexNode>
 	{
-
 		public HexNodeVm(WorldVm owner, HexNode source) : base(source, true)
 		{
 			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
@@ -34,6 +34,8 @@ namespace StepFlow.ViewModel
 			get => state;
 			private set => SetValue(ref state, value);
 		}
+
+		public PieceVm<Piece> CreateSimple() => new PieceVm<Piece>(Owner, new Piece(Owner.Source, Source));
 	}
 
 	public enum NodeState
