@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing.Printing;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Microsoft.Xna.Framework;
@@ -70,9 +69,27 @@ namespace StepFlow.View.Controlers
 
 		public System.Drawing.RectangleF Bound => bound ??= CreateBound();
 
-		public Margin Margin { get; set; }
+		private Margin margin;
+		public Margin Margin
+		{
+			get => margin;
+			set
+			{
+				margin = value;
+				bound = null;
+			}
+		}
 
-		public System.Drawing.SizeF Size { get; set; }
+		private System.Drawing.SizeF size;
+		public System.Drawing.SizeF Size
+		{
+			get => size;
+			set
+			{
+				size = value;
+				bound = null;
+			}
+		}
 
 		private System.Drawing.RectangleF CreateBound()
 		{
@@ -116,20 +133,43 @@ namespace StepFlow.View.Controlers
 		}
 
 		public IList<CellSize> Columns { get; }
+
 		public IList<CellSize> Rows { get; }
+
+		private Dictionary<ViewLayout, CellPlace> Childs { get; } = new();
+
+		public void Add(ViewLayout child, CellPosition position)
+		{
+			var cellPlace = new CellPlace(System.Drawing.RectangleF.Empty)
+			{
+				Position = position,
+			};
+			child.PlaceOwner = cellPlace;
+
+			Childs.Add(child, cellPlace);
+			Refresh();
+		}
 
 		private void Refresh()
 		{
-			var columnsPixels = ToInstance(Columns, Bound.Width);
-			var rowsPixels = ToInstance(Rows, Bound.Height);
+			var columnsPixels = ToInstance(Columns, Bound.X, Bound.Width);
+			var rowsPixels = ToInstance(Rows, Bound.Y, Bound.Height);
 
-
+			foreach (var place in Childs.Values)
+			{
+				var position = place.Position;
+				place.Place = new System.Drawing.RectangleF(
+					x: columnsPixels[position.Column].Position,
+					y: rowsPixels[position.Row].Position,
+					width: columnsPixels.Skip(position.Column).Take(position.ColumnSpan).Select(x => x.Length).Sum(),
+					height: rowsPixels.Skip(position.Row).Take(position.RowSpan).Select(x => x.Length).Sum()
+				);
+			}
 		}
 
-		private static Range[] ToInstance(IList<CellSize> items, float size)
+		private static Range[] ToInstance(IList<CellSize> items, float positionOffset, float size)
 		{
 			var result = new Range[items.Count];
-			var positionOffset = 0f;
 			for (var i = 0; i < items.Count; i++)
 			{
 				var cell = items[i];
@@ -148,6 +188,32 @@ namespace StepFlow.View.Controlers
 		}
 
 		private readonly record struct Range(float Position, float Length);
+
+		private sealed class CellPlace : IPlace
+		{
+			public CellPlace(System.Drawing.RectangleF place)
+			{
+				Place = place;
+			}
+
+			private System.Drawing.RectangleF place;
+			public System.Drawing.RectangleF Place
+			{
+				get => place;
+				set
+				{
+					if (Place != value)
+					{
+						place = value;
+						PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Place)));
+					}
+				}
+			}
+
+			public CellPosition Position { get; set; }
+
+			public event PropertyChangedEventHandler? PropertyChanged;
+		}
 
 		private sealed class Lines : IList<CellSize>, IReadOnlyList<CellSize>
 		{
@@ -258,6 +324,19 @@ namespace StepFlow.View.Controlers
 
 	public struct Margin
 	{
+		public Margin(float all)
+			: this(all, all, all, all)
+		{
+		}
+
+		public Margin(float? left, float? right, float? top, float? bottom)
+		{
+			Left = left;
+			Right = right;
+			Top = top;
+			Bottom = bottom;
+		}
+
 		public float? Left { get; set; }
 		public float? Right { get; set; }
 		public float? Top { get; set; }
