@@ -24,6 +24,7 @@
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\StepFlow.Common\StepFlow.Common.csproj" />
     <ProjectReference Include="..\StepFlow.ViewModel\StepFlow.ViewModel.csproj" />
   </ItemGroup>
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
