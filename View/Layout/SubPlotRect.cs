@@ -15,7 +15,7 @@ namespace StepFlow.View.Layout
 				if (OwnerBounds != value)
 				{
 					ownerBounds = value;
-					bounds = null;
+					CleanBounds();
 					OnPropertyChanged();
 				}
 			}
@@ -35,7 +35,7 @@ namespace StepFlow.View.Layout
 				if (Margin != value)
 				{
 					margin = value;
-					bounds = null;
+					CleanBounds();
 					OnPropertyChanged();
 				}
 			}
@@ -51,10 +51,16 @@ namespace StepFlow.View.Layout
 				if (Size != value)
 				{
 					size = value;
-					bounds = null;
+					CleanBounds();
 					OnPropertyChanged();
 				}
 			}
+		}
+
+		private void CleanBounds()
+		{
+			bounds = null;
+			OnPropertyChanged(nameof(Bounds));
 		}
 
 		private RectangleF CreateBound()

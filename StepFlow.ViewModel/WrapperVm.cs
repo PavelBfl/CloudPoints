@@ -1,8 +1,9 @@
 ﻿using System;
+using StepFlow.Common;
 
 namespace StepFlow.ViewModel
 {
-	public class WrapperVm<T> : BaseVm
+	public class WrapperVm<T> : BaseNotifyer
 	{
 		public WrapperVm(T source, bool checkSourceNull = false)
 		{

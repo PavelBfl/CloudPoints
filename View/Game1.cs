@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using StepFlow.View.Controlers;
 using StepFlow.View.Controls;
 using StepFlow.View.Layout;
 using StepFlow.ViewModel;
@@ -26,38 +24,70 @@ namespace StepFlow.View
 
 		public SpriteBatch SpriteBatch => spriteBatch ?? throw new InvalidOperationException();
 
+		private WorldVm World { get; }
+
+		private GridPlot Root { get; }
+
+		private SubPlotRect MainPlace { get; }
+
+		private GridPlot Queue { get; }
+
 		public Game1()
 		{
 			Graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "Content";
 			IsMouseVisible = true;
 
-			var grid = new GridPlot()
+			World = new WorldVm(new Core.World(10, 10));
+			World.PropertyChanging += WorldPropertyChanging;
+			World.PropertyChanged += WorldPropertyChanged;
+
+			Root = new GridPlot()
 			{
 				OwnerBounds = new System.Drawing.RectangleF(0, 0, Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight),
-				Margin = new Margin(5),
-				Columns =
-				{
-					new CellSize(1, UnitMeasure.Ptc),
-					new CellSize(100, UnitMeasure.Pixels),
-				},
-				Rows =
-				{
-					new CellSize(0.5f, UnitMeasure.Ptc),
-					new CellSize(0.5f, UnitMeasure.Ptc),
-				}
+				Margin = new Margin(0),
 			};
-			var root = new Control(this, grid);
-			Components.Add(root);
-
-			var cellPlot = new SubPlotRect()
+			MainPlace = new SubPlotRect()
 			{
-				Margin = new Margin(5),
+				Margin = new Margin(0),
 			};
-			grid.Add(cellPlot, new CellPosition(0, 0));
-			var cell = new Control(this, cellPlot);
+			Queue = new GridPlot()
+			{
+				Margin = new Margin(0),
+			};
+			Root.Add(MainPlace, new CellPosition(0, 0));
+			Root.Add(Queue, new CellPosition(0, 1));
+		}
 
-			Components.Add(cell);
+		private void WorldPropertyChanging(object? sender, PropertyChangingEventArgs e)
+		{
+			switch (e.PropertyName)
+			{
+				case nameof(WorldVm.Current):
+					if (World.Current is not null)
+					{
+						World.Current.CommandQueue.CollectionChanged -= WorldCurrentCommandQueueCollectionChanged;
+					}
+					break;
+			}
+		}
+
+		private void WorldPropertyChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			switch (e.PropertyName)
+			{
+				case nameof(WorldVm.Current):
+					if (World.Current is not null)
+					{
+						World.Current.CommandQueue.CollectionChanged += WorldCurrentCommandQueueCollectionChanged;
+					}
+					break;
+			}
+		}
+
+		private void WorldCurrentCommandQueueCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+		{
+			
 		}
 
 		protected override void Initialize()

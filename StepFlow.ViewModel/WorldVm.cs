@@ -29,6 +29,12 @@ namespace StepFlow.ViewModel
 
 		public AxisVm TimeAxis { get; }
 
-		public IPieceVm? Current { get; set; }
+		private IPieceVm? current = null;
+
+		public IPieceVm? Current
+		{
+			get => current;
+			set => SetValue(ref current, value);
+		}
 	}
 }
