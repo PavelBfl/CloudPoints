@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace StepFlow.View.Layout
+namespace StepFlow.Layout
 {
 	public struct CellPosition
 	{

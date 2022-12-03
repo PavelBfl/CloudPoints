@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-namespace StepFlow.View.Layout
+namespace StepFlow.Layout
 {
 	public class GridPlot : SubPlotRect
 	{
@@ -18,7 +18,7 @@ namespace StepFlow.View.Layout
 
 		public IList<CellSize> Rows { get; }
 
-		private Dictionary<SubPlotRect, CellPlot> Childs { get; } = new();
+		private Dictionary<SubPlotRect, CellPlot> Childs { get; } = new Dictionary<SubPlotRect, CellPlot>();
 
 		public void Add(SubPlotRect child, CellPosition position)
 		{
@@ -75,7 +75,17 @@ namespace StepFlow.View.Layout
 			return result;
 		}
 
-		private readonly record struct Range(float Position, float Length);
+		private struct Range
+		{
+			public Range(float position, float length)
+			{
+				Position = position;
+				Length = length;
+			}
+
+			public float Position { get; set; }
+			public float Length { get; set; }
+		}
 
 		private sealed class CellPlot
 		{
@@ -117,7 +127,7 @@ namespace StepFlow.View.Layout
 
 			public bool IsReadOnly => false;
 
-			private List<CellSize> Items { get; } = new();
+			private List<CellSize> Items { get; } = new List<CellSize>();
 
 			private GridPlot Owner { get; }
 

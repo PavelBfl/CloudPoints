@@ -1,4 +1,4 @@
-﻿namespace StepFlow.View.Layout
+﻿namespace StepFlow.Layout
 {
 	public struct CellSize
 	{

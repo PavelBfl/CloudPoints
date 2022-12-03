@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Specialized;
-using System.ComponentModel;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using StepFlow.View.Controls;
-using StepFlow.View.Layout;
-using StepFlow.ViewModel;
+using StepFlow.ViewModel.Layout;
 
 namespace StepFlow.View
 {
@@ -24,13 +20,7 @@ namespace StepFlow.View
 
 		public SpriteBatch SpriteBatch => spriteBatch ?? throw new InvalidOperationException();
 
-		private WorldVm World { get; }
-
-		private GridPlot Root { get; }
-
-		private SubPlotRect MainPlace { get; }
-
-		private GridPlot Queue { get; }
+		private RootVm Root { get; }
 
 		public Game1()
 		{
@@ -38,56 +28,7 @@ namespace StepFlow.View
 			Content.RootDirectory = "Content";
 			IsMouseVisible = true;
 
-			World = new WorldVm(new Core.World(10, 10));
-			World.PropertyChanging += WorldPropertyChanging;
-			World.PropertyChanged += WorldPropertyChanged;
-
-			Root = new GridPlot()
-			{
-				OwnerBounds = new System.Drawing.RectangleF(0, 0, Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight),
-				Margin = new Margin(0),
-			};
-			MainPlace = new SubPlotRect()
-			{
-				Margin = new Margin(0),
-			};
-			Queue = new GridPlot()
-			{
-				Margin = new Margin(0),
-			};
-			Root.Add(MainPlace, new CellPosition(0, 0));
-			Root.Add(Queue, new CellPosition(0, 1));
-		}
-
-		private void WorldPropertyChanging(object? sender, PropertyChangingEventArgs e)
-		{
-			switch (e.PropertyName)
-			{
-				case nameof(WorldVm.Current):
-					if (World.Current is not null)
-					{
-						World.Current.CommandQueue.CollectionChanged -= WorldCurrentCommandQueueCollectionChanged;
-					}
-					break;
-			}
-		}
-
-		private void WorldPropertyChanged(object? sender, PropertyChangedEventArgs e)
-		{
-			switch (e.PropertyName)
-			{
-				case nameof(WorldVm.Current):
-					if (World.Current is not null)
-					{
-						World.Current.CommandQueue.CollectionChanged += WorldCurrentCommandQueueCollectionChanged;
-					}
-					break;
-			}
-		}
-
-		private void WorldCurrentCommandQueueCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-		{
-			
+			Root = new RootVm(10, 10);
 		}
 
 		protected override void Initialize()

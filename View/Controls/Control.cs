@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using StepFlow.View.Layout;
+using StepFlow.Layout;
 
 namespace StepFlow.View.Controls
 {
@@ -82,5 +82,16 @@ namespace StepFlow.View.Controls
 			yield return new Vector2(bounds.Right, bounds.Bottom);
 			yield return new Vector2(bounds.Left, bounds.Bottom);
 		}
+	}
+
+	public class GridRect : Rect
+	{
+		public GridRect(Game game, GridPlot grid)
+			: base(game, grid)
+		{
+			Grid = grid ?? throw new ArgumentNullException(nameof(grid));
+		}
+
+		public GridPlot Grid { get; }
 	}
 }

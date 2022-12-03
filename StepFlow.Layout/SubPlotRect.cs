@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using StepFlow.Common;
 
-namespace StepFlow.View.Layout
+namespace StepFlow.Layout
 {
 	public class SubPlotRect : BaseNotifyer
 	{
