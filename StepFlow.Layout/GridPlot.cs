@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Drawing;
 using System.Linq;
 
@@ -12,39 +14,26 @@ namespace StepFlow.Layout
 		{
 			Columns = new Lines(this);
 			Rows = new Lines(this);
+			ChildsInner = new GridChildsCollection(this);
 		}
 
 		public IList<CellSize> Columns { get; }
 
 		public IList<CellSize> Rows { get; }
 
-		private Dictionary<SubPlotRect, CellPlot> Childs { get; } = new Dictionary<SubPlotRect, CellPlot>();
+		private GridChildsCollection ChildsInner { get; }
 
-		public void Add(SubPlotRect child, CellPosition position)
-		{
-			if (child is null)
-			{
-				throw new ArgumentNullException(nameof(child));
-			}
-
-			var cellPlace = new CellPlot(RectangleF.Empty, child)
-			{
-				Position = position,
-			};
-
-			Childs.Add(child, cellPlace);
-			Refresh();
-		}
+		public IGridChildsCollection Childs => ChildsInner;
 
 		private void Refresh()
 		{
 			var columnsPixels = ToInstance(Columns, Bounds.X, Bounds.Width);
 			var rowsPixels = ToInstance(Rows, Bounds.Y, Bounds.Height);
 
-			foreach (var place in Childs.Values)
+			foreach (var place in Childs)
 			{
 				var position = place.Position;
-				place.Bounds = new RectangleF(
+				place.Child.OwnerBounds = new RectangleF(
 					x: columnsPixels[position.Column].Position,
 					y: rowsPixels[position.Row].Position,
 					width: columnsPixels.Skip(position.Column).Take(position.ColumnSpan).Select(x => x.Length).Sum(),
@@ -87,29 +76,30 @@ namespace StepFlow.Layout
 			public float Length { get; set; }
 		}
 
-		private sealed class CellPlot
+		private sealed class CellPlot : ICellPlot
 		{
-			public CellPlot(RectangleF bounds, SubPlotRect child)
+			public CellPlot(GridPlot owner, SubPlotRect child)
 			{
-				Bounds = bounds;
+				Owner = owner ?? throw new ArgumentNullException(nameof(owner));
 				Child = child ?? throw new ArgumentNullException(nameof(child));
 			}
 
-			private RectangleF bounds;
-			public RectangleF Bounds
+			private GridPlot Owner { get; }
+
+			private CellPosition position;
+
+			public CellPosition Position
 			{
-				get => bounds;
+				get => position;
 				set
 				{
-					if (Bounds != value)
+					if (Position != value)
 					{
-						bounds = value;
-						Child.OwnerBounds = Bounds;
+						position = value;
+						Owner.Refresh();
 					}
 				}
 			}
-
-			public CellPosition Position { get; set; }
 
 			public SubPlotRect Child { get; }
 		}
@@ -176,5 +166,58 @@ namespace StepFlow.Layout
 
 			IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 		}
+
+		private class GridChildsCollection : ObservableCollection<CellPlot>, IGridChildsCollection
+		{
+			public GridChildsCollection(GridPlot owner)
+			{
+				Owner = owner ?? throw new ArgumentNullException(nameof(owner));
+			}
+
+			ICellPlot IReadOnlyList<ICellPlot>.this[int index] => this[index];
+
+			private GridPlot Owner { get; }
+
+			public void Add(SubPlotRect plot, CellPosition position)
+			{
+				Add(new CellPlot(Owner, plot)
+				{
+					Position = position
+				});
+			}
+
+			public void Remove(SubPlotRect plot)
+			{
+				int? findIndex = null;
+				for (var i = 0; i < Count; i++)
+				{
+					if (EqualityComparer<SubPlotRect>.Default.Equals(plot, this[i].Child))
+					{
+						findIndex = i;
+						break;
+					}
+				}
+
+				if (findIndex is { } instanceIndex)
+				{
+					RemoveAt(instanceIndex);
+				}
+			}
+
+			IEnumerator<ICellPlot> IEnumerable<ICellPlot>.GetEnumerator() => GetEnumerator();
+		}
+	}
+
+	public interface ICellPlot
+	{
+		CellPosition Position { get; }
+
+		SubPlotRect Child { get; }
+	}
+
+	public interface IGridChildsCollection : IReadOnlyList<ICellPlot>, INotifyCollectionChanged
+	{
+		void Add(SubPlotRect plot, CellPosition position);
+		void Remove(SubPlotRect plot);
 	}
 }

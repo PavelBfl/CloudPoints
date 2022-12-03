@@ -39,8 +39,8 @@ namespace StepFlow.ViewModel.Layout
 				Margin = new Margin(0),
 			};
 
-			Root.Add(ActionPlot, new CellPosition(0, 0));
-			Root.Add(QueueCommandsContainer, new CellPosition(0, 1));
+			Root.Childs.Add(ActionPlot, new CellPosition(0, 0));
+			Root.Childs.Add(QueueCommandsContainer, new CellPosition(0, 1));
 		}
 
 		private void WorldPropertyChanging(object sender, PropertyChangingEventArgs e)

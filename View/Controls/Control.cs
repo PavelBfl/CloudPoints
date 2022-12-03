@@ -4,44 +4,27 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using StepFlow.Common;
 using StepFlow.Layout;
 
 namespace StepFlow.View.Controls
 {
-	public class Control : DrawableGameComponent, INotifyCollectionChanged
+	public class Control : DrawableGameComponent
 	{
-		public Control(Game game, SubPlotRect boundProvider)
+		public Control(Game game)
 			: base(game)
 		{
-			BoundProvider = boundProvider ?? throw new ArgumentNullException(nameof(boundProvider));
 		}
-
-		public SubPlotRect BoundProvider { get; }
-
-		public event NotifyCollectionChangedEventHandler? CollectionChanged;
 	}
 
 	public abstract class PolygonBase : Control
 	{
-		public PolygonBase(Game game, SubPlotRect boundProvider)
-			: base(game, boundProvider)
+		public PolygonBase(Game game)
+			: base(game)
 		{
-			BoundProvider.PropertyChanged += BoundProviderPropertyChanged;
 		}
 
-		private void BoundProviderPropertyChanged(object? sender, PropertyChangedEventArgs e)
-		{
-			if (e.PropertyName == nameof(SubPlotRect.Bounds))
-			{
-				vertices = null;
-			}
-		}
-
-		private Vector2[]? vertices = null;
-
-		public IReadOnlyList<Vector2> Vertices => vertices ??= CreateVertices().ToArray();
-
-		protected abstract IEnumerable<Vector2> CreateVertices();
+		public abstract IReadOnlyList<Vector2> Vertices { get; }
 
 		public Color Color { get; set; } = Color.Black;
 
@@ -67,30 +50,75 @@ namespace StepFlow.View.Controls
 		}
 	}
 
-	public class Rect : PolygonBase
+	public class PlotControl : PolygonBase
 	{
-		public Rect(Game game, SubPlotRect boundProvider)
-			: base(game, boundProvider)
+		public PlotControl(Game game)
+			: base(game)
 		{
 		}
 
-		protected override IEnumerable<Vector2> CreateVertices()
+		private SubPlotRect? plot;
+
+		public SubPlotRect? Plot
 		{
-			var bounds = BoundProvider.Bounds;
-			yield return new Vector2(bounds.Left, bounds.Top);
-			yield return new Vector2(bounds.Right, bounds.Top);
-			yield return new Vector2(bounds.Right, bounds.Bottom);
-			yield return new Vector2(bounds.Left, bounds.Bottom);
+			get => plot;
+			set
+			{
+				if (Plot != value)
+				{
+					NotifyPropertyExtentions.TryUnsubscrible(Plot, PlotPropertyChanged);
+					plot = value;
+					NotifyPropertyExtentions.TrySubscrible(Plot, PlotPropertyChanged);
+				}
+			}
+		}
+
+		private void PlotPropertyChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			vertices = null;
+		}
+
+		private Vector2[]? vertices;
+
+		public override IReadOnlyList<Vector2> Vertices
+		{
+			get
+			{
+				if (vertices is null)
+				{
+					var bounds = Plot?.Bounds ?? System.Drawing.RectangleF.Empty;
+					vertices = new Vector2[]
+					{
+						new Vector2(bounds.Left, bounds.Top),
+						new Vector2(bounds.Right, bounds.Top),
+						new Vector2(bounds.Right, bounds.Bottom),
+						new Vector2(bounds.Left, bounds.Bottom),
+					};
+				}
+
+				return vertices;
+			}
 		}
 	}
 
-	public class GridRect : Rect
+	public class GridControl : PlotControl
 	{
-		public GridRect(Game game, GridPlot grid)
-			: base(game, grid)
+		public GridControl(Game game, GridPlot grid)
+			: base(game)
 		{
 			Grid = grid ?? throw new ArgumentNullException(nameof(grid));
+			Grid.Childs.CollectionChanged += GridChildsCollectionChanged;
 		}
+
+		private void GridChildsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+		{
+			while (Grid.Childs.Count > Childs.Count)
+			{
+
+			}
+		}
+
+		private List<PlotControl> Childs { get; } = new List<PlotControl>();
 
 		public GridPlot Grid { get; }
 	}
