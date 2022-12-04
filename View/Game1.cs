@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using StepFlow.View.Controls;
 using StepFlow.ViewModel.Layout;
 
 namespace StepFlow.View
@@ -29,6 +30,11 @@ namespace StepFlow.View
 			IsMouseVisible = true;
 
 			Root = new RootVm(10, 10);
+			Root.Root.OwnerBounds = new System.Drawing.RectangleF(0, 0, Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight);
+			Root.Root.Margin = new Layout.Margin(1);
+			Root.Root.Refresh();
+
+			Components.Add(new GridControl(this, Root.Root));
 		}
 
 		protected override void Initialize()

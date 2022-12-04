@@ -26,17 +26,21 @@ namespace StepFlow.ViewModel.Layout
 				{
 					new CellSize(1, UnitMeasure.Ptc),
 					new CellSize(100, UnitMeasure.Pixels),
+				},
+				Columns =
+				{
+					new CellSize(1, UnitMeasure.Ptc),
 				}
 			};
 
 			ActionPlot = new SubPlotRect()
 			{
-				Margin = new Margin(0),
+				Margin = new Margin(2),
 			};
 
 			QueueCommandsContainer = new GridPlot()
 			{
-				Margin = new Margin(0),
+				Margin = new Margin(2),
 			};
 
 			Root.Childs.Add(ActionPlot, new CellPosition(0, 0));

@@ -25,7 +25,8 @@ namespace StepFlow.Layout
 
 		public IGridChildsCollection Childs => ChildsInner;
 
-		private void Refresh()
+		// TODO Can be private
+		public void Refresh()
 		{
 			var columnsPixels = ToInstance(Columns, Bounds.X, Bounds.Width);
 			var rowsPixels = ToInstance(Rows, Bounds.Y, Bounds.Height);
