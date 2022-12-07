@@ -41,6 +41,10 @@ namespace StepFlow.ViewModel.Layout
 			QueueCommandsContainer = new GridPlot()
 			{
 				Margin = new Margin(2),
+				Rows =
+				{
+					new CellSize(1, UnitMeasure.Ptc),
+				}
 			};
 
 			Root.Childs.Add(ActionPlot, new CellPosition(0, 0));
@@ -52,7 +56,7 @@ namespace StepFlow.ViewModel.Layout
 			switch (e.PropertyName)
 			{
 				case nameof(WorldVm.Current):
-					NotifyPropertyExtentions.TrySubscrible(World.Current?.CommandQueue, CommandQueueCollectionChanged);
+					NotifyPropertyExtentions.TryUnsubscrible(World.Current?.CommandQueue, CommandQueueCollectionChanged);
 					break;
 			}
 		}
@@ -62,7 +66,7 @@ namespace StepFlow.ViewModel.Layout
 			switch (e.PropertyName)
 			{
 				case nameof(WorldVm.Current):
-					NotifyPropertyExtentions.TryUnsubscrible(World.Current?.CommandQueue, CommandQueueCollectionChanged);
+					NotifyPropertyExtentions.TrySubscrible(World.Current?.CommandQueue, CommandQueueCollectionChanged);
 					break;
 			}
 		}
@@ -73,18 +77,30 @@ namespace StepFlow.ViewModel.Layout
 
 			while (commandQueue.Count > QueueCommandInner.Count)
 			{
-				QueueCommandInner.Add(new CommandLayout());
+				QueueCommandsContainer.Columns.Add(new CellSize(50, UnitMeasure.Pixels));
+
+				var newCommand = new CommandLayout()
+				{
+					Margin = new Margin(5, null, 5, 5),
+					Size = new System.Drawing.SizeF(50, 50),
+				};
+				QueueCommandsContainer.Childs.Add(newCommand, new CellPosition(QueueCommandsContainer.Columns.Count - 1, 0));
+				QueueCommandInner.Add(newCommand);
 			}
 
 			while (commandQueue.Count < QueueCommandInner.Count)
 			{
+				QueueCommandsContainer.Childs.Remove(QueueCommandInner[QueueCommandInner.Count - 1]);
 				QueueCommandInner.RemoveAt(QueueCommandInner.Count - 1);
+				QueueCommandsContainer.Columns.RemoveAt(QueueCommandsContainer.Columns.Count - 1);
 			}
 
 			for (var i = 0; i < commandQueue.Count; i++)
 			{
 				QueueCommandInner[i].Command = commandQueue[i];
 			}
+
+			QueueCommandsContainer.Refresh();
 		}
 
 		public WorldVm World { get; }

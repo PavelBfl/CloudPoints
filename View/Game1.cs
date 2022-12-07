@@ -35,6 +35,13 @@ namespace StepFlow.View
 			Root.Root.Refresh();
 
 			Components.Add(new GridControl(this, Root.Root));
+
+			Root.World.Current = Root.World[0, 0].CreateSimple();
+
+			Root.World.Current.MoveTo(Root.World[0, 1]);
+			Root.World.Current.MoveTo(Root.World[0, 2]);
+			Root.World.Current.MoveTo(Root.World[0, 3]);
+			Root.World.Current.MoveTo(Root.World[0, 4]);
 		}
 
 		protected override void Initialize()
