@@ -83,8 +83,6 @@ namespace StepFlow.View
 
 		public static IEnumerable<Vector2> GetRegularPoligon(float radius, int verticesCount, float offset)
 		{
-			const float FULL_ROUND = MathF.PI * 2;
-
 			if (verticesCount < 3)
 			{
 				throw new ArgumentOutOfRangeException(nameof(verticesCount));
@@ -92,7 +90,7 @@ namespace StepFlow.View
 
 			for (var i = 0; i < verticesCount; i++)
 			{
-				var angleStep = FULL_ROUND / verticesCount * i + offset;
+				var angleStep = MathF.Tau / verticesCount * i + offset;
 
 				var x = MathF.Cos(angleStep) * radius;
 				var y = MathF.Sin(angleStep) * radius;

@@ -9,12 +9,6 @@ namespace StepFlow.View
 {
 	public class Game1 : Game
 	{
-		private static float Size { get; } = 20;
-		private static float Width { get; } = Size * 2;
-		private static float Height { get; } = MathF.Sqrt(3) * Size;
-		private static float CellWidth { get; } = Width / 4;
-		private static float CellHeight { get; } = Height / 2;
-
 		private GraphicsDeviceManager Graphics { get; }
 
 		private SpriteBatch? spriteBatch;
@@ -42,6 +36,12 @@ namespace StepFlow.View
 			Root.World.Current.MoveTo(Root.World[0, 2]);
 			Root.World.Current.MoveTo(Root.World[0, 3]);
 			Root.World.Current.MoveTo(Root.World[0, 4]);
+
+			var hexGrid = new HexGrid(this, Root.World, Root.ActionPlot)
+			{
+				Size = 20,
+			};
+			Components.Add(hexGrid);
 		}
 
 		protected override void Initialize()

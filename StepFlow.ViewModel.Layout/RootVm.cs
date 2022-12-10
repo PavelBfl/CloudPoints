@@ -35,12 +35,12 @@ namespace StepFlow.ViewModel.Layout
 
 			ActionPlot = new SubPlotRect()
 			{
-				Margin = new Margin(2),
+				Margin = new Margin(0),
 			};
 
 			QueueCommandsContainer = new GridPlot()
 			{
-				Margin = new Margin(2),
+				Margin = new Margin(0),
 				Rows =
 				{
 					new CellSize(1, UnitMeasure.Ptc),
@@ -77,11 +77,11 @@ namespace StepFlow.ViewModel.Layout
 
 			while (commandQueue.Count > QueueCommandInner.Count)
 			{
-				QueueCommandsContainer.Columns.Add(new CellSize(50, UnitMeasure.Pixels));
+				QueueCommandsContainer.Columns.Add(new CellSize(QueueCommandsContainer.Bounds.Height, UnitMeasure.Pixels));
 
 				var newCommand = new CommandLayout()
 				{
-					Margin = new Margin(5, null, 5, 5),
+					Margin = new Margin(5),
 					Size = new System.Drawing.SizeF(50, 50),
 				};
 				QueueCommandsContainer.Childs.Add(newCommand, new CellPosition(QueueCommandsContainer.Columns.Count - 1, 0));
