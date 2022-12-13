@@ -39,6 +39,8 @@ namespace StepFlow.View
 
 			var hexGrid = new HexGrid(this, Root.World, Root.ActionPlot)
 			{
+				Orientation = HexOrientation.Flat,
+				OffsetOdd = false,
 				Size = 20,
 			};
 			Components.Add(hexGrid);

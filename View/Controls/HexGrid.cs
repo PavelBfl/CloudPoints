@@ -10,6 +10,14 @@ namespace StepFlow.View.Controls
 {
 	public class HexGrid : Control
 	{
+		private static float BigRadiusToFlatRatio { get; } = MathF.Sqrt(3);
+		private static (float Pointy, float Flat, float CellPointy, float CellFlat) GetSize(float bigRadius)
+		{
+			var pointy = bigRadius * 2;
+			var flat = bigRadius * BigRadiusToFlatRatio;
+			return (pointy, flat, pointy / 4, flat / 2);
+		}
+
 		public HexGrid(Game game, WorldVm source, SubPlotRect plot) : base(game)
 		{
 			Source = source ?? throw new ArgumentNullException(nameof(source));
@@ -100,16 +108,10 @@ namespace StepFlow.View.Controls
 			switch (Orientation)
 			{
 				case HexOrientation.Flat:
-					Width = Size * 2;
-					Height = MathF.Sqrt(3) * Size;
-					CellWidth = Width / 4;
-					CellHeight = Height / 2;
+					(Width, Height, CellWidth, CellHeight) = GetSize(Size);
 					break;
 				case HexOrientation.Pointy:
-					Width = MathF.Sqrt(3) * Size;
-					Height = 3 / 2 * Size;
-					CellWidth = Width / 2;
-					CellHeight = Height / 4;
+					(Height, Width, CellHeight, CellWidth) = GetSize(Size);
 					break;
 				default: throw EnumNotSupportedException.Create(Orientation);
 			}
@@ -119,6 +121,11 @@ namespace StepFlow.View.Controls
 		public float Height { get; private set; }
 		public float CellWidth { get; private set; }
 		public float CellHeight { get; private set; }
+
+		internal Vector2 GetPosition(Point cellPosition) => new Vector2(
+			cellPosition.X * CellWidth + Plot.Bounds.Left + Width / 2,
+			cellPosition.Y * CellHeight + Plot.Bounds.Top + Height / 2
+		);
 
 		protected override void Dispose(bool disposing)
 		{

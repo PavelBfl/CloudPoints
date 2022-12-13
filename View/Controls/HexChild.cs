@@ -9,6 +9,10 @@ namespace StepFlow.View.Controls
 	public class HexChild : PolygonBase
 	{
 		private const int HEX_VERTICES_COUNT = 6;
+		private const int POINTY_SPACING = 3;
+		private const int FLAT_SPACING = 2;
+		private const float FLAT_ANGLE_OFFSET = 0;
+		private float PointyAngleOffset { get; } = MathF.Tau / (HEX_VERTICES_COUNT * 2);
 
 		public HexChild(Game game, HexGrid owner, Point position) : base(game)
 		{
@@ -28,30 +32,26 @@ namespace StepFlow.View.Controls
 		{
 			var offsetAngle = Owner.Orientation switch
 			{
-				HexOrientation.Flat => 0,
-				HexOrientation.Pointy => MathF.Tau / (HEX_VERTICES_COUNT * 2),
+				HexOrientation.Flat => FLAT_ANGLE_OFFSET,
+				HexOrientation.Pointy => PointyAngleOffset,
 				_ => throw EnumNotSupportedException.Create(Owner.Orientation),
 			};
-
-			var lineOffset = Owner.OffsetOdd ? 1 : 0;
 
 			var cellPosition = Owner.Orientation switch
 			{
 				HexOrientation.Flat => new Point(
-					Position.X * 3,
-					Position.Y * 2 + (IsOdd(Position.X) == Owner.OffsetOdd ? 1 : 0)
+					Position.X * POINTY_SPACING,
+					Position.Y * FLAT_SPACING + (IsOdd(Position.X) == Owner.OffsetOdd ? 1 : 0)
 				),
 				HexOrientation.Pointy => new Point(
-					Position.X * 2 + (IsOdd(Position.Y) == Owner.OffsetOdd ? 1 : 0),
-					Position.Y * 3
+					Position.X * FLAT_SPACING + (IsOdd(Position.Y) == Owner.OffsetOdd ? 1 : 0),
+					Position.Y * POINTY_SPACING
 				),
 				_ => throw EnumNotSupportedException.Create(Owner.Orientation),
 			};
 
-			var cellOffset = new Vector2(
-				cellPosition.X * Owner.CellWidth,
-				cellPosition.Y * Owner.CellHeight
-			) + new Vector2(20);
+
+			var cellOffset = Owner.GetPosition(cellPosition);
 
 			return Utils.GetRegularPoligon(Owner.Size, HEX_VERTICES_COUNT, offsetAngle)
 				.Select(x => x + cellOffset)

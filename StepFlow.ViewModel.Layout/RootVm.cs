@@ -35,7 +35,7 @@ namespace StepFlow.ViewModel.Layout
 
 			ActionPlot = new SubPlotRect()
 			{
-				Margin = new Margin(0),
+				Margin = new Margin(5),
 			};
 
 			QueueCommandsContainer = new GridPlot()
