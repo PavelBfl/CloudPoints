@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using StepFlow.Common;
+using StepFlow.Core;
+using StepFlow.ViewModel;
 
 namespace StepFlow.View.Controls
 {
@@ -14,14 +16,14 @@ namespace StepFlow.View.Controls
 		private const float FLAT_ANGLE_OFFSET = 0;
 		private float PointyAngleOffset { get; } = MathF.Tau / (HEX_VERTICES_COUNT * 2);
 
-		public HexChild(Game game, HexGrid owner, Point position) : base(game)
+		public HexChild(Game game, HexGrid owner, HexNodeVm source) : base(game)
 		{
 			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
-			Position = position;
+			Source = source ?? throw new ArgumentNullException(nameof(source));
 		}
 
 		public HexGrid Owner { get; }
-		public Point Position { get; }
+		public HexNodeVm Source { get; }
 
 		private Vector2[]? vertices;
 		public override IReadOnlyList<Vector2> Vertices => vertices ??= CreateVertices();
@@ -37,15 +39,16 @@ namespace StepFlow.View.Controls
 				_ => throw EnumNotSupportedException.Create(Owner.Orientation),
 			};
 
+			var position = Source.Position;
 			var cellPosition = Owner.Orientation switch
 			{
 				HexOrientation.Flat => new Point(
-					Position.X * POINTY_SPACING,
-					Position.Y * FLAT_SPACING + (IsOdd(Position.X) == Owner.OffsetOdd ? 1 : 0)
+					position.X * POINTY_SPACING,
+					position.Y * FLAT_SPACING + (IsOdd(position.X) == Owner.OffsetOdd ? 1 : 0)
 				),
 				HexOrientation.Pointy => new Point(
-					Position.X * FLAT_SPACING + (IsOdd(Position.Y) == Owner.OffsetOdd ? 1 : 0),
-					Position.Y * POINTY_SPACING
+					position.X * FLAT_SPACING + (IsOdd(position.Y) == Owner.OffsetOdd ? 1 : 0),
+					position.Y * POINTY_SPACING
 				),
 				_ => throw EnumNotSupportedException.Create(Owner.Orientation),
 			};

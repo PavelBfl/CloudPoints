@@ -4,14 +4,15 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using StepFlow.Common;
+using StepFlow.Core;
 using StepFlow.Layout;
 
 namespace StepFlow.ViewModel.Layout
 {
 	public class RootVm : IDisposable
 	{
-		public RootVm(int colsCount, int rowsCount)
-			: this(new WorldVm(new Core.World(colsCount, rowsCount)))
+		public RootVm(int colsCount, int rowsCount, HexOrientation orientation, bool offsetOdd)
+			: this(new WorldVm(new World(colsCount, rowsCount, orientation, offsetOdd)))
 		{
 		}
 

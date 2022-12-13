@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using StepFlow.Core;
 using StepFlow.Core.Preset;
 
@@ -6,12 +7,15 @@ namespace StepFlow.ViewModel
 {
 	public class HexNodeVm : WrapperVm<HexNode>
 	{
-		public HexNodeVm(WorldVm owner, HexNode source) : base(source, true)
+		public HexNodeVm(WorldVm owner, HexNode source, Point position) : base(source, true)
 		{
 			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
+			Position = position;
 		}
 
 		public WorldVm Owner { get; }
+
+		public Point Position { get; }
 
 		public bool IsSelected { get; set; }
 

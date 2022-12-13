@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using StepFlow.Common;
+using StepFlow.Core;
 using StepFlow.Layout;
 using StepFlow.ViewModel;
 
@@ -27,7 +28,7 @@ namespace StepFlow.View.Controls
 			{
 				for (var iRow = 0; iRow < Source.RowsCount; iRow++)
 				{
-					var child = new HexChild(Game, this, new Point(iCol, iRow));
+					var child = new HexChild(Game, this, Source[iCol, iRow]);
 					Childs[iCol, iRow] = child;
 					Game.Components.Add(child);
 				}

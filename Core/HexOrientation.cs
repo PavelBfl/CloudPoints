@@ -1,4 +1,4 @@
-﻿namespace StepFlow.View.Controls
+﻿namespace StepFlow.Core
 {
 	public enum HexOrientation
 	{

@@ -7,7 +7,20 @@ namespace StepFlow.Core
 {
 	public class World
 	{
-		public World(int colsCount, int rowsCount)
+		private static void Inverse<T>(T[,] array)
+		{
+			var colsCount = array.GetLength(0);
+
+			for (var iCol = 0; iCol < colsCount; iCol++)
+			{
+				for (var iRow = 0; iRow < iCol; iRow++)
+				{
+					(array[iCol, iRow], array[iRow, iCol]) = (array[iRow, iCol], array[iCol, iRow]);
+				}
+			}
+		}
+
+		public World(int colsCount, int rowsCount, HexOrientation orientation, bool offsetOdd)
 		{
 			if (colsCount < 0)
 			{
@@ -58,7 +71,7 @@ namespace StepFlow.Core
 						Grid.Add(current, nearNode, 1);
 					}
 
-					var rowOffset = iCol % 2 == 0 ? 1 : -1;
+					var rowOffset = (iCol % 2 == 1) == offsetOdd ? 1 : -1;
 					if (TryGetNode(iCol + 1, iRow + rowOffset, out nearNode))
 					{
 						Grid.Add(current, nearNode, 1);
@@ -69,6 +82,11 @@ namespace StepFlow.Core
 						Grid.Add(current, nearNode, 1);
 					}
 				}
+			}
+
+			if (orientation == HexOrientation.Pointy)
+			{
+				Inverse(Table);
 			}
 		}
 

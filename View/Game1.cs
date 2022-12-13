@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using StepFlow.Core;
 using StepFlow.View.Controls;
 using StepFlow.ViewModel.Layout;
 
@@ -23,7 +24,7 @@ namespace StepFlow.View
 			Content.RootDirectory = "Content";
 			IsMouseVisible = true;
 
-			Root = new RootVm(10, 10);
+			Root = new RootVm(10, 10, HexOrientation.Flat, false);
 			Root.Root.OwnerBounds = new System.Drawing.RectangleF(0, 0, Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight);
 			Root.Root.Margin = new Layout.Margin(1);
 			Root.Root.Refresh();
@@ -39,8 +40,6 @@ namespace StepFlow.View
 
 			var hexGrid = new HexGrid(this, Root.World, Root.ActionPlot)
 			{
-				Orientation = HexOrientation.Flat,
-				OffsetOdd = false,
 				Size = 20,
 			};
 			Components.Add(hexGrid);
