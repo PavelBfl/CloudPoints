@@ -97,5 +97,25 @@ namespace StepFlow.View
 				yield return new Vector2(x, y);
 			}
 		}
+
+		public static bool Contains(IReadOnlyList<Vector2> vertices, Vector2 point)
+		{
+			var result = false;
+			var prevIndex = vertices.Count - 1;
+			for (var i = 0; i < vertices.Count; i++)
+			{
+				var prevPoint = vertices[prevIndex];
+				var currentPoint = vertices[i];
+				if (currentPoint.Y < point.Y && prevPoint.Y >= point.Y || prevPoint.Y < point.Y && currentPoint.Y >= point.Y)
+				{
+					if (currentPoint.X + (point.Y - currentPoint.Y) / (prevPoint.Y - currentPoint.Y) * (prevPoint.X - currentPoint.X) < point.X)
+					{
+						result = !result;
+					}
+				}
+				prevIndex = i;
+			}
+			return result;
+		}
 	}
 }

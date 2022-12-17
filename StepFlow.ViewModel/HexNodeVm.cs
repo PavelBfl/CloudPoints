@@ -7,15 +7,14 @@ namespace StepFlow.ViewModel
 {
 	public class HexNodeVm : WrapperVm<HexNode>
 	{
-		public HexNodeVm(WorldVm owner, HexNode source, Point position) : base(source, true)
+		public HexNodeVm(WorldVm owner, HexNode source) : base(source, true)
 		{
 			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
-			Position = position;
 		}
 
 		public WorldVm Owner { get; }
 
-		public Point Position { get; }
+		public Point Position => new Point(Source.Col, Source.Row);
 
 		public bool IsSelected { get; set; }
 
@@ -39,7 +38,11 @@ namespace StepFlow.ViewModel
 			private set => SetValue(ref state, value);
 		}
 
-		public PieceVm<Piece> CreateSimple() => new PieceVm<Piece>(Owner, new Piece(Owner.Source, Source));
+		public PieceVm<Piece> CreateSimple() => new PieceVm<Piece>(
+			Owner,
+			new Piece(Owner.Source, Source),
+			this
+		);
 	}
 
 	public enum NodeState

@@ -34,9 +34,13 @@ namespace StepFlow.View
 			Root.World.Current = Root.World[0, 0].CreateSimple();
 
 			Root.World.Current.MoveTo(Root.World[0, 1]);
+			Root.World[0, 1].SetPlanned();
 			Root.World.Current.MoveTo(Root.World[0, 2]);
+			Root.World[0, 2].SetPlanned();
 			Root.World.Current.MoveTo(Root.World[0, 3]);
+			Root.World[0, 3].SetPlanned();
 			Root.World.Current.MoveTo(Root.World[0, 4]);
+			Root.World[0, 4].SetPlanned();
 
 			var hexGrid = new HexGrid(this, Root.World, Root.ActionPlot)
 			{

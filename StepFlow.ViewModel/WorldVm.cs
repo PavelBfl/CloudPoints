@@ -12,7 +12,7 @@ namespace StepFlow.ViewModel
 			{
 				for (var iRow = 0; iRow < RowsCount; iRow++)
 				{
-					Table[iCol, iRow] = new HexNodeVm(this, Source[iCol, iRow], new System.Drawing.Point(iCol, iRow));
+					Table[iCol, iRow] = new HexNodeVm(this, Source[iCol, iRow]);
 				}
 			}
 

@@ -23,6 +23,9 @@ namespace StepFlow.View.Controls
 		{
 			Source = source ?? throw new ArgumentNullException(nameof(source));
 
+			Plot = plot ?? throw new ArgumentNullException(nameof(plot));
+			Plot.PropertyChanged += PlotPropertyChanged;
+
 			Childs = new HexChild[Source.ColsCount, Source.RowsCount];
 			for (var iCol = 0; iCol < Source.ColsCount; iCol++)
 			{
@@ -33,9 +36,6 @@ namespace StepFlow.View.Controls
 					Game.Components.Add(child);
 				}
 			}
-
-			Plot = plot ?? throw new ArgumentNullException(nameof(plot));
-			Plot.PropertyChanged += PlotPropertyChanged;
 
 			Refresh();
 		}
@@ -51,11 +51,16 @@ namespace StepFlow.View.Controls
 			switch (e.PropertyName)
 			{
 				case nameof(SubPlotRect.Bounds):
-					foreach (var child in Childs.Cast<HexChild>())
-					{
-						child.Clear();
-					}
+					ChildsClear();
 					break;
+			}
+		}
+
+		private void ChildsClear()
+		{
+			foreach (var child in Childs.Cast<HexChild>())
+			{
+				child.Clear();
 			}
 		}
 
@@ -116,6 +121,8 @@ namespace StepFlow.View.Controls
 					break;
 				default: throw EnumNotSupportedException.Create(Orientation);
 			}
+
+			ChildsClear();
 		}
 
 		public float Width { get; private set; }
