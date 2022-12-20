@@ -8,7 +8,7 @@ namespace StepFlow.ViewModel
 	public class PieceVm<T> : WrapperVm<T>, IPieceVm
 		where T : Piece
 	{
-		public PieceVm(WorldVm world, T source, HexNodeVm current) : base(source, true)
+		public PieceVm(WorldVm world, T source) : base(source, true)
 		{
 			Owner = world ?? throw new ArgumentNullException(nameof(world));
 			Current = current ?? throw new ArgumentNullException(nameof(current));
@@ -17,19 +17,31 @@ namespace StepFlow.ViewModel
 
 		public WorldVm Owner { get; }
 
-		private HexNodeVm current;
-		public HexNodeVm Current
+		private bool isSelected = false;
+		public bool IsSelected
+		{
+			get => isSelected;
+			set
+			{
+				if (IsSelected != value)
+				{
+					isSelected = value;
+
+					CommandQueue.IsSelected = IsSelected;
+				}
+			}
+		}
+
+		private HexNodeVm? current;
+		public HexNodeVm? Current
 		{
 			get => current;
 			set
 			{
 				if (Current != value)
 				{
-					Current?.SetNode();
-
 					current = value;
-
-					Current.SetCurrent();
+					Source.Current = Current?.Source;
 				}
 			}
 		}

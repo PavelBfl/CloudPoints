@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using StepFlow.Core;
-using StepFlow.Core.Preset;
 
 namespace StepFlow.ViewModel
 {
@@ -18,31 +17,23 @@ namespace StepFlow.ViewModel
 
 		public bool IsSelected { get; set; }
 
-		public void SetNode() => State = NodeState.Node;
-
-		public void SetCurrent() => State = NodeState.Current;
-
-		public void SetPlanned()
-		{
-			if (Owner.Current is { } current)
-			{
-				current.MoveTo(this);
-				State = NodeState.Planned;
-			}
-		}
-
 		private NodeState state = NodeState.Node;
 		public NodeState State
 		{
 			get => state;
-			private set => SetValue(ref state, value);
+			set => SetValue(ref state, value);
 		}
 
 		public PieceVm<Piece> CreateSimple() => new PieceVm<Piece>(
 			Owner,
-			new Piece(Owner.Source, Source),
-			this
-		);
+			new Piece(Owner.Source)
+			{
+				Current = Source,
+			}
+		)
+		{
+			Current = this,
+		};
 	}
 
 	public enum NodeState

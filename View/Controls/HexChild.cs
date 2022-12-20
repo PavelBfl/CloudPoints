@@ -144,13 +144,20 @@ namespace StepFlow.View.Controls
 		{
 			var game = ((Game1)Game);
 
-			if (Contains(game.MousePosition().ToVector2()))
+			var mouseContains = Contains(game.MousePosition().ToVector2());
+
+			if (mouseContains)
 			{
 				Color = Color.Blue;
 			}
 			else
 			{
 				Color = Color.Red;
+			}
+
+			if (mouseContains && game.MouseButtonOnPress())
+			{
+				// TODO Реализовать выбор текущей фигуры
 			}
 
 			base.Update(gameTime);

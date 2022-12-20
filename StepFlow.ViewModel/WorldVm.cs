@@ -34,7 +34,27 @@ namespace StepFlow.ViewModel
 		public IPieceVm? Current
 		{
 			get => current;
-			set => SetValue(ref current, value);
+			set
+			{
+				if (!Equals(Current, value))
+				{
+					OnPropertyChanging();
+
+					if (Current is { })
+					{
+						Current.IsSelected = false;
+					}
+
+					current = value;
+
+					if (Current is { })
+					{
+						Current.IsSelected = true;
+					}
+
+					OnPropertyChanged();
+				}
+			}
 		}
 	}
 }

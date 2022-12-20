@@ -1,15 +1,12 @@
-﻿using System;
-
-namespace StepFlow.Core
+﻿namespace StepFlow.Core
 {
 	public class Piece : Particle
 	{
-		public Piece(World owner, HexNode current)
+		public Piece(World owner)
 			: base(owner)
 		{
-			Current = current ?? throw new ArgumentNullException(nameof(current));
 		}
 
-		public HexNode Current { get; set; }
+		public HexNode? Current { get; set; }
 	}
 }

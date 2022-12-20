@@ -2,7 +2,7 @@
 
 namespace StepFlow.ViewModel
 {
-	public interface IPieceVm
+	public interface IPieceVm : ISelectable
 	{
 		CommandsQueueVm CommandQueue { get; }
 
