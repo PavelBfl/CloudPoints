@@ -34,7 +34,7 @@ namespace StepFlow.Core
 
 		private sealed class LocalQueue : SortedList<long, LocalCommand>, IReadOnlyList<ICommand>
 		{
-			ICommand IReadOnlyList<ICommand>.this[int index] => Values[index];
+			ICommand IReadOnlyList<ICommand>.this[int index] => Values[index].Source;
 
 			IEnumerator<ICommand> IEnumerable<ICommand>.GetEnumerator() => Values.Select(x => x.Source).GetEnumerator();
 		}

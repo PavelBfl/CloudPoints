@@ -5,8 +5,9 @@ namespace StepFlow.ViewModel
 	public interface IPieceVm : ISelectable
 	{
 		CommandsQueueVm CommandQueue { get; }
+		HexNodeVm? Current { get; set; }
 
-		void Add(ICommand command);
+		void Add(ICommandVm command);
 
 		void MoveTo(HexNodeVm node);
 	}

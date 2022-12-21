@@ -11,7 +11,6 @@ namespace StepFlow.ViewModel
 		public PieceVm(WorldVm world, T source) : base(source, true)
 		{
 			Owner = world ?? throw new ArgumentNullException(nameof(world));
-			Current = current ?? throw new ArgumentNullException(nameof(current));
 			CommandQueue = new CommandsQueueVm(Source);
 		}
 
@@ -28,6 +27,11 @@ namespace StepFlow.ViewModel
 					isSelected = value;
 
 					CommandQueue.IsSelected = IsSelected;
+
+					if (Current is { })
+					{
+						Current.State = IsSelected ? NodeState.Current : NodeState.Node;
+					}
 				}
 			}
 		}
@@ -48,7 +52,7 @@ namespace StepFlow.ViewModel
 
 		public CommandsQueueVm CommandQueue { get; }
 
-		public void Add(ICommand command) => CommandQueue.Add(command);
+		public void Add(ICommandVm command) => CommandQueue.Add(command);
 
 		public void MoveTo(HexNodeVm node)
 		{
@@ -57,7 +61,7 @@ namespace StepFlow.ViewModel
 				throw new ArgumentNullException(nameof(node));
 			}
 
-			Add(new MoveCommand(Source, node.Source));
+			Add(new MoveCommandVm(this, node));
 		}
 	}
 }

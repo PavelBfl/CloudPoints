@@ -79,7 +79,7 @@ namespace StepFlow.View.Controlers
 			Source.IsSelected = Contains(Game.MousePosition());
 			if (Source.IsSelected && Game.MouseButtonOnPress())
 			{
-				Source.SetPlanned();
+				
 			}
 
 			base.Update(gameTime);
