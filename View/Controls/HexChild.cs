@@ -62,13 +62,18 @@ namespace StepFlow.View.Controls
 
 		private void UpdateState()
 		{
-			InnerControl.Color = Source.State switch
+			if (Source.State.HasFlag(NodeState.Current))
 			{
-				NodeState.Node => default,
-				NodeState.Current => Color.Yellow,
-				NodeState.Planned => Color.Green,
-				_ => throw EnumNotSupportedException.Create(Source.State),
-			};
+				InnerControl.Color = Color.Yellow;
+			}
+			else if (Source.State.HasFlag(NodeState.Planned))
+			{
+				InnerControl.Color = Color.Green;
+			}
+			else
+			{
+				InnerControl.Color = default;
+			}
 		}
 
 		private System.Drawing.RectangleF? bounds;
@@ -146,17 +151,22 @@ namespace StepFlow.View.Controls
 
 			var mouseContains = Contains(game.MousePosition().ToVector2());
 
-			if (mouseContains)
-			{
-				Color = Color.Blue;
-			}
-			else
-			{
-				Color = Color.Red;
-			}
+			Color = mouseContains ? Color.Blue : Color.Red;
 
 			if (mouseContains && game.MouseButtonOnPress())
 			{
+				if (game.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
+				{
+					var last = Source.CreateSimple();
+					Source.Owner.Current = last;
+				}
+				else if (game.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift))
+				{
+					foreach (var piece in Source.Owner.Pieces.Where(x => x.IsSelected))
+					{
+						piece.MoveTo(Source);
+					}
+				}
 				// TODO Реализовать выбор текущей фигуры
 			}
 

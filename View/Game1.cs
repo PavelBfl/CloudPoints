@@ -31,13 +31,6 @@ namespace StepFlow.View
 
 			Components.Add(new GridControl(this, Root.Root));
 
-			Root.World.Current = Root.World[0, 0].CreateSimple();
-
-			Root.World.Current.MoveTo(Root.World[0, 1]);
-			Root.World.Current.MoveTo(Root.World[0, 2]);
-			Root.World.Current.MoveTo(Root.World[0, 3]);
-			Root.World.Current.MoveTo(Root.World[0, 4]);
-
 			var hexGrid = new HexGrid(this, Root.World, Root.ActionPlot)
 			{
 				Size = 20,
@@ -56,6 +49,8 @@ namespace StepFlow.View
 		}
 
 		private KeyboardState prevKeyboardState;
+
+		public bool IsKeyDown(Keys key) => Keyboard.GetState().IsKeyDown(key);
 
 		public bool IsKeyOnPress(Keys key) => Keyboard.GetState().IsKeyDown(key) && !prevKeyboardState.IsKeyDown(key);
 

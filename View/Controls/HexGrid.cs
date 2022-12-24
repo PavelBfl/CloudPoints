@@ -135,6 +135,18 @@ namespace StepFlow.View.Controls
 			cellPosition.Y * CellHeight + Plot.Bounds.Top + Height / 2
 		);
 
+		public override void Update(GameTime gameTime)
+		{
+			var game = (Game1)Game;
+
+			if (game.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.Space))
+			{
+				Source.TimeAxis.MoveNext();
+			}
+
+			base.Update(gameTime);
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)

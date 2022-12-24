@@ -1,7 +1,5 @@
 ﻿using System;
 using StepFlow.Core;
-using StepFlow.Core.Preset;
-using StepFlow.TimeLine;
 
 namespace StepFlow.ViewModel
 {
@@ -12,6 +10,8 @@ namespace StepFlow.ViewModel
 		{
 			Owner = world ?? throw new ArgumentNullException(nameof(world));
 			CommandQueue = new CommandsQueueVm(Source);
+
+			Owner.Pieces.Add(this);
 		}
 
 		public WorldVm Owner { get; }
@@ -44,8 +44,18 @@ namespace StepFlow.ViewModel
 			{
 				if (Current != value)
 				{
+					if (Current is { })
+					{
+						Current.State = NodeState.Node;
+					}
+
 					current = value;
 					Source.Current = Current?.Source;
+
+					if (Current is { })
+					{
+						Current.State = NodeState.Current;
+					}
 				}
 			}
 		}

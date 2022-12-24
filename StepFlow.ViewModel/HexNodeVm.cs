@@ -34,12 +34,15 @@ namespace StepFlow.ViewModel
 		{
 			Current = this,
 		};
+
+		public override string ToString() => Source.ToString();
 	}
 
+	[Flags]
 	public enum NodeState
 	{
-		Node,
-		Current,
-		Planned,
+		Node = 0x0,
+		Current = 0x1,
+		Planned = 0x2,
 	}
 }

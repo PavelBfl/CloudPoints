@@ -1,4 +1,5 @@
-﻿using StepFlow.Core;
+﻿using System.Collections.Generic;
+using StepFlow.Core;
 
 namespace StepFlow.ViewModel
 {
@@ -28,6 +29,8 @@ namespace StepFlow.ViewModel
 		private HexNodeVm[,] Table { get; }
 
 		public AxisVm TimeAxis { get; }
+
+		public ICollection<IPieceVm> Pieces { get; } = new HashSet<IPieceVm>();
 
 		private IPieceVm? current = null;
 

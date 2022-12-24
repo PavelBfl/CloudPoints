@@ -60,16 +60,15 @@ namespace StepFlow.ViewModel
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-		private sealed class LocalCommand : CommandBase, ICommandVm
+		private sealed class LocalCommand : CommandWrapper<ICommandVm>, ICommandVm
 		{
 			public LocalCommand(CommandsQueueVm owner, ICommandVm source)
+				: base(source)
 			{
 				Owner = owner ?? throw new ArgumentNullException(nameof(owner));
-				Source = source ?? throw new ArgumentNullException(nameof(source));
 			}
 
 			public CommandsQueueVm Owner { get; }
-			public ICommandVm Source { get; }
 
 			public bool IsSelected { get => Source.IsSelected; set => Source.IsSelected = value; }
 
@@ -111,7 +110,14 @@ namespace StepFlow.ViewModel
 
 		private void Refresh()
 		{
-			NextNode.State = IsSelected ? NodeState.Planned : NodeState.Node;
+			if (IsSelected)
+			{
+				NextNode.State |= NodeState.Planned;
+			}
+			else
+			{
+				NextNode.State &= ~NodeState.Planned;
+			}
 		}
 
 		public override void Execute()
