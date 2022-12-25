@@ -111,6 +111,7 @@ namespace StepFlow.Common
 			if (obj is { })
 			{
 				obj.CollectionChanged += handler;
+				handler(obj, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 				return true;
 			}
 			else
