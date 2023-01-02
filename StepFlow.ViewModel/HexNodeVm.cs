@@ -17,6 +17,8 @@ namespace StepFlow.ViewModel
 
 		public bool IsSelected { get; set; }
 
+		public bool IsOccupied => Source.IsOccupied;
+
 		private NodeState state = NodeState.Node;
 		public NodeState State
 		{

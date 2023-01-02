@@ -15,6 +15,8 @@
 
 		public int Row { get; }
 
+		public bool IsOccupied { get; set; } = false;
+
 		public override string ToString() => string.Format(VIEW_FORMAT, Col, Row);
 	}
 }

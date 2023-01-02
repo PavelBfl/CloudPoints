@@ -10,4 +10,8 @@
     <ProjectReference Include="..\TimeLine\StepFlow.TimeLine.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Preset\" />
+  </ItemGroup>
+
 </Project>
