@@ -1,23 +1,15 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Linq;
-using StepFlow.Core;
-using StepFlow.TimeLine;
 
 namespace StepFlow.ViewModel
 {
-	public class CommandsQueueVm : IReadOnlyList<ICommandVm>, INotifyCollectionChanged, ISelectable
+	public class CommandsQueueVm : ObservableCollection<ICommandVm>, INotifyCollectionChanged, ISelectable
 	{
-		public CommandsQueueVm(Piece source)
+		public CommandsQueueVm(IPieceVm source)
 		{
 			Source = source ?? throw new ArgumentNullException(nameof(source));
 		}
-
-		public ICommandVm this[int index] => (ICommandVm)Source.CommandsQueue[index];
-
-		public int Count => Source.CommandsQueue.Count;
 
 		private bool isSelected;
 		public bool IsSelected
@@ -37,92 +29,34 @@ namespace StepFlow.ViewModel
 			}
 		}
 
-		private Piece Source { get; }
+		private IPieceVm Source { get; }
 
-		public event NotifyCollectionChangedEventHandler? CollectionChanged;
-
-		public void Add(ICommandVm command)
+		private void ValidateItem(ICommandVm item)
 		{
-			if (command is null)
+			if (item is null)
 			{
-				throw new ArgumentNullException(nameof(command));
+				throw new ArgumentNullException(nameof(item));
 			}
 
-			command.IsSelected = IsSelected;
-			Source.Add(new LocalCommand(this, command)
+			if (Source.Current != item)
 			{
-				IsSelected = IsSelected
-			});
-			CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, command));
-		}
-
-		public IEnumerator<ICommandVm> GetEnumerator() => Source.CommandsQueue.Select(x => (ICommandVm)x).GetEnumerator();
-
-		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-		private sealed class LocalCommand : CommandWrapper<ICommandVm>, ICommandVm
-		{
-			public LocalCommand(CommandsQueueVm owner, ICommandVm source)
-				: base(source)
-			{
-				Owner = owner ?? throw new ArgumentNullException(nameof(owner));
-			}
-
-			public CommandsQueueVm Owner { get; }
-
-			public bool IsSelected { get => Source.IsSelected; set => Source.IsSelected = value; }
-
-			public override void Dispose()
-			{
-				base.Dispose();
-				Owner.CollectionChanged?.Invoke(Owner, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, Source));
-			}
-		}
-	}
-
-	public class MoveCommandVm : CommandBase, ICommandVm
-	{
-		public MoveCommandVm(IPieceVm piece, HexNodeVm nextNode)
-		{
-			Piece = piece ?? throw new ArgumentNullException(nameof(piece));
-			NextNode = nextNode ?? throw new ArgumentNullException(nameof(nextNode));
-
-			Refresh();
-		}
-
-		public IPieceVm Piece { get; }
-		public HexNodeVm NextNode { get; }
-
-		private bool isSelected;
-		public bool IsSelected
-		{
-			get => isSelected;
-			set
-			{
-				if (IsSelected != value)
-				{
-					isSelected = value;
-
-					Refresh();
-				}
+				// TODO Переделать на константу
+				throw new InvalidOperationException("Failed sync command with piece");
 			}
 		}
 
-		private void Refresh()
+		protected override void InsertItem(int index, ICommandVm item)
 		{
-			if (IsSelected)
-			{
-				NextNode.State |= NodeState.Planned;
-			}
-			else
-			{
-				NextNode.State &= ~NodeState.Planned;
-			}
+			ValidateItem(item);
+
+			base.InsertItem(index, item);
 		}
 
-		public override void Execute()
+		protected override void SetItem(int index, ICommandVm item)
 		{
-			Piece.Current = NextNode;
+			ValidateItem(item);
+
+			base.SetItem(index, item);
 		}
 	}
 }

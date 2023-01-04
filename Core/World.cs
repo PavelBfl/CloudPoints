@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using StepFlow.CollectionsNodes;
-using StepFlow.Core.Commands;
-using StepFlow.TimeLine;
 
 namespace StepFlow.Core
 {
@@ -21,7 +19,7 @@ namespace StepFlow.Core
 			}
 		}
 
-		public World(int colsCount, int rowsCount, HexOrientation orientation, bool offsetOdd, INodedBuilder<INodedCommand> nodedBuilder)
+		public World(int colsCount, int rowsCount, HexOrientation orientation, bool offsetOdd)
 		{
 			if (colsCount < 0)
 			{
@@ -32,8 +30,6 @@ namespace StepFlow.Core
 			{
 				throw new ArgumentOutOfRangeException(nameof(rowsCount));
 			}
-
-			NodeBuilder = nodedBuilder ?? throw new ArgumentNullException(nameof(nodedBuilder));
 
 			Table = new HexNode[colsCount, rowsCount];
 
@@ -116,9 +112,5 @@ namespace StepFlow.Core
 		private HexNode[,] Table { get; }
 
 		public Graph<HexNode, int> Grid { get; } = new Graph<HexNode, int>();
-
-		public INodedBuilder<INodedCommand> NodeBuilder { get; }
-
-		public Axis TimeAxis { get; } = new Axis();
 	}
 }

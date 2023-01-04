@@ -15,9 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StepFlow.ViewModel", "StepF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StepFlow.Common", "StepFlow.Common\StepFlow.Common.csproj", "{7E1734BE-74F2-462A-AE5F-95A8931B2B30}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StepFlow.Layout", "StepFlow.Layout\StepFlow.Layout.csproj", "{63B1CB7C-9158-4FCA-A8B0-F4BD34523397}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StepFlow.Layout", "StepFlow.Layout\StepFlow.Layout.csproj", "{63B1CB7C-9158-4FCA-A8B0-F4BD34523397}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StepFlow.ViewModel.Layout", "StepFlow.ViewModel.Layout\StepFlow.ViewModel.Layout.csproj", "{675577AF-BD4B-4C91-9660-F66D17645283}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StepFlow.ViewModel.Layout", "StepFlow.ViewModel.Layout\StepFlow.ViewModel.Layout.csproj", "{675577AF-BD4B-4C91-9660-F66D17645283}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

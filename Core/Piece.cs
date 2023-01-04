@@ -1,6 +1,4 @@
-﻿using System.Windows.Input;
-
-namespace StepFlow.Core
+﻿namespace StepFlow.Core
 {
 	public class Piece : Particle
 	{
@@ -17,24 +15,13 @@ namespace StepFlow.Core
 			{
 				if (Current != value)
 				{
-					if (Current is { })
-					{
-						Current.IsOccupied = false;
-					}
+					Current?.Occupiers.Remove(this);
 
 					current = value;
 
-					if (Current is { })
-					{
-						Current.IsOccupied = true;
-					}
+					Current?.Occupiers.Add(this);
 				}
 			}
 		}
-	}
-
-	public interface ICommandProvider
-	{
-		ICommand Create(string commandName);
 	}
 }

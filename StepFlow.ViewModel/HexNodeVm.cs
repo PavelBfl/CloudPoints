@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using StepFlow.Core;
 
 namespace StepFlow.ViewModel
@@ -17,7 +18,7 @@ namespace StepFlow.ViewModel
 
 		public bool IsSelected { get; set; }
 
-		public bool IsOccupied => Source.IsOccupied;
+		public bool IsOccupied => Source.Occupiers.Any();
 
 		private NodeState state = NodeState.Node;
 		public NodeState State

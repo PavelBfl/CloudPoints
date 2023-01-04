@@ -2,12 +2,13 @@
 
 namespace StepFlow.ViewModel
 {
-	public class AxisVm : WrapperVm<Axis>
+	public class AxisVm : Axis<ICommandVm>
 	{
-		public AxisVm(Axis source) : base(source, true)
+		protected override void RegistryHandle(ICommandVm command)
 		{
-		}
+			base.RegistryHandle(command);
 
-		public bool MoveNext() => Source.MoveNext();
+			command.Current?.CommandQueue.Add(command);
+		}
 	}
 }

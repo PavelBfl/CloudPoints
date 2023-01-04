@@ -17,7 +17,7 @@ namespace StepFlow.ViewModel
 				}
 			}
 
-			TimeAxis = new AxisVm(Source.TimeAxis);
+			TimeAxis = new AxisVm();
 		}
 
 		public int ColsCount => Source.ColsCount;

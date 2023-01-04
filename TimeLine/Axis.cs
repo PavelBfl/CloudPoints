@@ -3,13 +3,14 @@ using System.Collections.Generic;
 
 namespace StepFlow.TimeLine
 {
-	public class Axis
+	public class Axis<T>
+		where T : notnull, ICommand
 	{
 		public long Current { get; private set; } = 0;
 
-		private SortedDictionary<long, ICollection<ICommand>> Commands { get; } = new SortedDictionary<long, ICollection<ICommand>>();
+		private SortedDictionary<long, ICollection<T>> Commands { get; } = new SortedDictionary<long, ICollection<T>>();
 
-		public void Registry(long time, ICommand command)
+		public void Registry(long time, T command)
 		{
 			if (time <= Current)
 			{
@@ -27,11 +28,17 @@ namespace StepFlow.TimeLine
 			}
 			else
 			{
-				Commands.Add(time, new HashSet<ICommand>()
+				Commands.Add(time, new HashSet<T>()
 				{
 					command,
 				});
 			}
+
+			RegistryHandle(command);
+		}
+
+		protected virtual void RegistryHandle(T command)
+		{
 		}
 
 		public bool MoveNext()

@@ -10,7 +10,7 @@ namespace StepFlow.ViewModel
 		public PieceVm(WorldVm world, T source) : base(source, true)
 		{
 			Owner = world ?? throw new ArgumentNullException(nameof(world));
-			CommandQueue = new CommandsQueueVm(Source);
+			CommandQueue = new CommandsQueueVm(this);
 
 			Owner.Pieces.Add(this);
 		}
@@ -71,8 +71,6 @@ namespace StepFlow.ViewModel
 			{
 				throw new ArgumentNullException(nameof(node));
 			}
-
-			Add(new MoveCommandVm(this, node));
 		}
 	}
 }
