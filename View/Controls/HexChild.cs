@@ -162,7 +162,7 @@ namespace StepFlow.View.Controls
 				}
 				else if (game.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift))
 				{
-					foreach (var piece in Source.Owner.Pieces.Where(x => x.IsSelected))
+					foreach (var piece in Source.Owner.Pieces.Where(x => x.IsMark))
 					{
 						piece.MoveTo(Source);
 					}

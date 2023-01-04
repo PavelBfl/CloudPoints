@@ -2,7 +2,7 @@
 
 namespace StepFlow.ViewModel
 {
-	public interface ICommandVm : ICommand, ISelectable
+	public interface ICommandVm : ICommand, IMarkered
 	{
 		IPieceVm? Current { get; }
 	}

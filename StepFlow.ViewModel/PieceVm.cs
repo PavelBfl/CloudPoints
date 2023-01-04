@@ -17,21 +17,21 @@ namespace StepFlow.ViewModel
 
 		public WorldVm Owner { get; }
 
-		private bool isSelected = false;
-		public bool IsSelected
+		private bool isMark = false;
+		public bool IsMark
 		{
-			get => isSelected;
+			get => isMark;
 			set
 			{
-				if (IsSelected != value)
+				if (IsMark != value)
 				{
-					isSelected = value;
+					isMark = value;
 
-					CommandQueue.IsSelected = IsSelected;
+					CommandQueue.IsMark = IsMark;
 
 					if (Current is { })
 					{
-						Current.State = IsSelected ? NodeState.Current : NodeState.Node;
+						Current.State = IsMark ? NodeState.Current : NodeState.Node;
 					}
 				}
 			}

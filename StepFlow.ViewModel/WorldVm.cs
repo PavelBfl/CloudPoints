@@ -45,14 +45,14 @@ namespace StepFlow.ViewModel
 
 					if (Current is { })
 					{
-						Current.IsSelected = false;
+						Current.IsMark = false;
 					}
 
 					current = value;
 
 					if (Current is { })
 					{
-						Current.IsSelected = true;
+						Current.IsMark = true;
 					}
 
 					OnPropertyChanged();

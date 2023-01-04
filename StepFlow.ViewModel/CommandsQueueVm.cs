@@ -4,26 +4,26 @@ using System.Collections.Specialized;
 
 namespace StepFlow.ViewModel
 {
-	public class CommandsQueueVm : ObservableCollection<ICommandVm>, INotifyCollectionChanged, ISelectable
+	public class CommandsQueueVm : ObservableCollection<ICommandVm>, INotifyCollectionChanged, IMarkered
 	{
 		public CommandsQueueVm(IPieceVm source)
 		{
 			Source = source ?? throw new ArgumentNullException(nameof(source));
 		}
 
-		private bool isSelected;
-		public bool IsSelected
+		private bool isMark;
+		public bool IsMark
 		{
-			get => isSelected;
+			get => isMark;
 			set
 			{
-				if (IsSelected != value)
+				if (IsMark != value)
 				{
-					isSelected = value;
+					isMark = value;
 
 					foreach (var command in this)
 					{
-						command.IsSelected = IsSelected;
+						command.IsMark = IsMark;
 					}
 				}
 			}
