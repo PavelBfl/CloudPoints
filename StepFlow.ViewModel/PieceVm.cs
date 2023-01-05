@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using StepFlow.Core;
+using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
@@ -71,6 +72,14 @@ namespace StepFlow.ViewModel
 			{
 				throw new ArgumentNullException(nameof(node));
 			}
+
+			Owner.TimeAxis.Registry(
+				CommandQueue.Count + 1,
+				new MoveCommand(this, node)
+				{
+					IsMark = IsMark,
+				}
+			);
 		}
 	}
 }

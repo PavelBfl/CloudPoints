@@ -1,14 +1,19 @@
-﻿using StepFlow.TimeLine;
+﻿using System;
+using System.Net.Http.Headers;
+using StepFlow.TimeLine;
 
 namespace StepFlow.ViewModel
 {
 	public class AxisVm : Axis<ICommandVm>
 	{
-		protected override void RegistryHandle(ICommandVm command)
+		protected override ICommandVm RegistryHandle(ICommandVm command)
 		{
-			base.RegistryHandle(command);
+			if (command is null)
+			{
+				throw new ArgumentNullException(nameof(command));
+			}
 
-			command.Current?.CommandQueue.Add(command);
+			return command.Current?.CommandQueue.Registry(command) ?? command;
 		}
 	}
 }

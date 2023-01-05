@@ -16,8 +16,6 @@ namespace StepFlow.ViewModel
 
 		public Point Position => new Point(Source.Col, Source.Row);
 
-		public bool IsSelected { get; set; }
-
 		public bool IsOccupied => Source.Occupiers.Any();
 
 		private NodeState state = NodeState.Node;

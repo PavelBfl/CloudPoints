@@ -22,24 +22,16 @@ namespace StepFlow.TimeLine
 				throw new ArgumentNullException(nameof(command));
 			}
 
-			if (Commands.TryGetValue(time, out var commands))
+			if (!Commands.TryGetValue(time, out var commands))
 			{
-				commands.Add(command);
-			}
-			else
-			{
-				Commands.Add(time, new HashSet<T>()
-				{
-					command,
-				});
+				commands = new HashSet<T>();
+				Commands.Add(time, commands);
 			}
 
-			RegistryHandle(command);
+			commands.Add(RegistryHandle(command));
 		}
 
-		protected virtual void RegistryHandle(T command)
-		{
-		}
+		protected virtual T RegistryHandle(T command) => command;
 
 		public bool MoveNext()
 		{

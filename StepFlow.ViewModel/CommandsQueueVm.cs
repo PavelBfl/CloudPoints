@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using StepFlow.TimeLine;
 
 namespace StepFlow.ViewModel
 {
@@ -29,6 +30,15 @@ namespace StepFlow.ViewModel
 			}
 		}
 
+		public ICommandVm Registry(ICommandVm command)
+		{
+			ValidateItem(command);
+
+			var result = new LocalCommand(this, command);
+			Add(result);
+			return result;
+		}
+
 		private IPieceVm Source { get; }
 
 		private void ValidateItem(ICommandVm item)
@@ -38,25 +48,39 @@ namespace StepFlow.ViewModel
 				throw new ArgumentNullException(nameof(item));
 			}
 
-			if (Source.Current != item)
+			if (Source != item.Current)
 			{
 				// TODO Переделать на константу
 				throw new InvalidOperationException("Failed sync command with piece");
 			}
 		}
 
-		protected override void InsertItem(int index, ICommandVm item)
+		private ICommandVm WrapItem(ICommandVm item)
 		{
 			ValidateItem(item);
 
-			base.InsertItem(index, item);
+			return new LocalCommand(this, item);
 		}
 
-		protected override void SetItem(int index, ICommandVm item)
+		private class LocalCommand : CommandWrapper<ICommandVm>, ICommandVm
 		{
-			ValidateItem(item);
+			public LocalCommand(CommandsQueueVm owner, ICommandVm source) : base(source)
+			{
+				Owner = owner ?? throw new ArgumentNullException(nameof(owner));
+			}
 
-			base.SetItem(index, item);
+			public CommandsQueueVm Owner { get; }
+
+			public IPieceVm? Current => Source.Current;
+
+			public bool IsMark { get => Source.IsMark; set => Source.IsMark = value; }
+
+			public override void Dispose()
+			{
+				Owner.Remove(this);
+
+				base.Dispose();
+			}
 		}
 	}
 }
