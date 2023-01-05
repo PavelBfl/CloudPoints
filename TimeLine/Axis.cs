@@ -28,10 +28,8 @@ namespace StepFlow.TimeLine
 				Commands.Add(time, commands);
 			}
 
-			commands.Add(RegistryHandle(command));
+			commands.Add(command);
 		}
-
-		protected virtual T RegistryHandle(T command) => command;
 
 		public bool MoveNext()
 		{

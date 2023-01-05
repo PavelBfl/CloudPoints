@@ -73,13 +73,10 @@ namespace StepFlow.ViewModel
 				throw new ArgumentNullException(nameof(node));
 			}
 
-			Owner.TimeAxis.Registry(
-				CommandQueue.Count + 1,
-				new MoveCommand(this, node)
-				{
-					IsMark = IsMark,
-				}
-			);
+			CommandQueue.Registry(new MoveCommand(this, node)
+			{
+				IsMark = IsMark,
+			});
 		}
 	}
 }

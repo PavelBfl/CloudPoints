@@ -4,6 +4,7 @@ namespace StepFlow.ViewModel
 {
 	public interface IPieceVm : IMarkered
 	{
+		WorldVm Owner { get; }
 		CommandsQueueVm CommandQueue { get; }
 		HexNodeVm? Current { get; set; }
 

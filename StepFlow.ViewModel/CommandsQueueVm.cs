@@ -30,12 +30,15 @@ namespace StepFlow.ViewModel
 			}
 		}
 
+		// TODO Возможно стоит избавится от метода в пользу перегрузки методов InsertItem и SetItem
 		public ICommandVm Registry(ICommandVm command)
 		{
-			ValidateItem(command);
+			var result = WrapItem(command);
 
-			var result = new LocalCommand(this, command);
+			Source.Owner.TimeAxis.Registry(Count + 1, result);
+
 			Add(result);
+
 			return result;
 		}
 
