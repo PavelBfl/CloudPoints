@@ -3,7 +3,7 @@ using StepFlow.TimeLine;
 
 namespace StepFlow.ViewModel.Layout
 {
-	public class CommandLayout : SubPlotRect
+	public class CommandLayout : RectPlot
 	{
 		public ICommand? Command { get; set; }
 	}

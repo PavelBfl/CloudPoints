@@ -1,9 +1,10 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using StepFlow.Common;
 
 namespace StepFlow.Layout
 {
-	public class SubPlotRect : BaseNotifyer
+	public class RectPlot : BaseNotifyer
 	{
 		private RectangleF ownerBounds;
 
@@ -61,6 +62,11 @@ namespace StepFlow.Layout
 		{
 			bounds = null;
 			OnPropertyChanged(nameof(Bounds));
+			OnChangeBounds();
+		}
+
+		protected virtual void OnChangeBounds()
+		{
 		}
 
 		private RectangleF CreateBound()

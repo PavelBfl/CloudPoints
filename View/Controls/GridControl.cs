@@ -38,7 +38,7 @@ namespace StepFlow.View.Controls
 
 			for (var i = 0; i < Childs.Count; i++)
 			{
-				if (!EqualityComparer<SubPlotRect>.Default.Equals(Grid.Childs[i].Child, Childs[i].Plot))
+				if (!EqualityComparer<RectPlot>.Default.Equals(Grid.Childs[i].Child, Childs[i].Plot))
 				{
 					Childs[i].Dispose();
 					Childs[i] = CreateControl(Grid.Childs[i].Child);
@@ -46,7 +46,7 @@ namespace StepFlow.View.Controls
 			}
 		}
 
-		private PlotControl CreateControl(SubPlotRect plot)
+		private PlotControl CreateControl(RectPlot plot)
 		{
 			var result = plot is GridPlot gridPlot ? new GridControl(Game, gridPlot) : new PlotControl(Game, plot);
 			Game.Components.Add(result);

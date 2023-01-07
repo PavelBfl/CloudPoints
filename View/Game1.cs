@@ -27,7 +27,6 @@ namespace StepFlow.View
 			Root = new RootVm(10, 10, HexOrientation.Flat, false);
 			Root.Root.OwnerBounds = new System.Drawing.RectangleF(0, 0, Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight);
 			Root.Root.Margin = new Layout.Margin(1);
-			Root.Root.Refresh();
 
 			Components.Add(new GridControl(this, Root.Root));
 

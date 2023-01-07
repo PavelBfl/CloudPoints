@@ -19,7 +19,7 @@ namespace StepFlow.View.Controls
 			return (pointy, flat, pointy / 4, flat / 2);
 		}
 
-		public HexGrid(Game game, WorldVm source, SubPlotRect plot) : base(game)
+		public HexGrid(Game game, WorldVm source, RectPlot plot) : base(game)
 		{
 			Source = source ?? throw new ArgumentNullException(nameof(source));
 
@@ -44,13 +44,13 @@ namespace StepFlow.View.Controls
 
 		private HexChild[,] Childs { get; }
 
-		private SubPlotRect Plot { get; }
+		private RectPlot Plot { get; }
 
 		private void PlotPropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
 			switch (e.PropertyName)
 			{
-				case nameof(SubPlotRect.Bounds):
+				case nameof(RectPlot.Bounds):
 					ChildsClear();
 					break;
 			}

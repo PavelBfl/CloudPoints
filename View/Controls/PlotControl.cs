@@ -9,14 +9,14 @@ namespace StepFlow.View.Controls
 {
 	public class PlotControl : PolygonBase
 	{
-		public PlotControl(Game game, SubPlotRect plot)
+		public PlotControl(Game game, RectPlot plot)
 			: base(game)
 		{
 			Plot = plot ?? throw new ArgumentNullException(nameof(plot));
 			NotifyPropertyExtentions.TrySubscrible(Plot, PlotPropertyChanged);
 		}
 
-		public SubPlotRect Plot { get; }
+		public RectPlot Plot { get; }
 
 		private void PlotPropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{

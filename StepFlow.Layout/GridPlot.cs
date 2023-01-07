@@ -2,13 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Drawing;
 using System.Linq;
 
 namespace StepFlow.Layout
 {
-	public class GridPlot : SubPlotRect
+	public class GridPlot : RectPlot
 	{
 		public GridPlot()
 		{
@@ -25,8 +24,9 @@ namespace StepFlow.Layout
 
 		public IGridChildsCollection Childs => ChildsInner;
 
-		// TODO Can be private
-		public void Refresh()
+		protected override void OnChangeBounds() => Refresh();
+
+		private void Refresh()
 		{
 			var columnsPixels = ToInstance(Columns, Bounds.X, Bounds.Width);
 			var rowsPixels = ToInstance(Rows, Bounds.Y, Bounds.Height);
@@ -79,7 +79,7 @@ namespace StepFlow.Layout
 
 		private sealed class CellPlot : ICellPlot
 		{
-			public CellPlot(GridPlot owner, SubPlotRect child)
+			public CellPlot(GridPlot owner, RectPlot child)
 			{
 				Owner = owner ?? throw new ArgumentNullException(nameof(owner));
 				Child = child ?? throw new ArgumentNullException(nameof(child));
@@ -102,7 +102,7 @@ namespace StepFlow.Layout
 				}
 			}
 
-			public SubPlotRect Child { get; }
+			public RectPlot Child { get; }
 		}
 
 		private sealed class Lines : IList<CellSize>, IReadOnlyList<CellSize>
@@ -179,20 +179,22 @@ namespace StepFlow.Layout
 
 			private GridPlot Owner { get; }
 
-			public void Add(SubPlotRect plot, CellPosition position)
+			public void Add(RectPlot plot, CellPosition position)
 			{
 				Add(new CellPlot(Owner, plot)
 				{
 					Position = position
 				});
+
+				Owner.Refresh();
 			}
 
-			public void Remove(SubPlotRect plot)
+			public void Remove(RectPlot plot)
 			{
 				int? findIndex = null;
 				for (var i = 0; i < Count; i++)
 				{
-					if (EqualityComparer<SubPlotRect>.Default.Equals(plot, this[i].Child))
+					if (EqualityComparer<RectPlot>.Default.Equals(plot, this[i].Child))
 					{
 						findIndex = i;
 						break;
@@ -203,22 +205,11 @@ namespace StepFlow.Layout
 				{
 					RemoveAt(instanceIndex);
 				}
+
+				Owner.Refresh();
 			}
 
 			IEnumerator<ICellPlot> IEnumerable<ICellPlot>.GetEnumerator() => GetEnumerator();
 		}
-	}
-
-	public interface ICellPlot
-	{
-		CellPosition Position { get; }
-
-		SubPlotRect Child { get; }
-	}
-
-	public interface IGridChildsCollection : IReadOnlyList<ICellPlot>, INotifyCollectionChanged
-	{
-		void Add(SubPlotRect plot, CellPosition position);
-		void Remove(SubPlotRect plot);
 	}
 }

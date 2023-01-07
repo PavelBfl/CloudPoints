@@ -34,7 +34,7 @@ namespace StepFlow.ViewModel.Layout
 				}
 			};
 
-			ActionPlot = new SubPlotRect()
+			ActionPlot = new RectPlot()
 			{
 				Margin = new Margin(5),
 			};
@@ -100,15 +100,13 @@ namespace StepFlow.ViewModel.Layout
 			{
 				QueueCommandInner[i].Command = commandQueue[i];
 			}
-
-			QueueCommandsContainer.Refresh();
 		}
 
 		public WorldVm World { get; }
 
 		public GridPlot Root { get; }
 
-		public SubPlotRect ActionPlot { get; }
+		public RectPlot ActionPlot { get; }
 
 		public GridPlot QueueCommandsContainer { get; }
 
