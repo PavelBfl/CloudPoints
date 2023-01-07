@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace StepFlow.Core
+﻿namespace StepFlow.Core
 {
 	public class HexNode : Particle
 	{
@@ -17,8 +15,7 @@ namespace StepFlow.Core
 
 		public int Row { get; }
 
-		// TODO Реализовать закрытую коллекцию
-		public ICollection<Piece> Occupiers { get; } = new HashSet<Piece>();
+		public OccupiersCollection Occupiers { get; } = new OccupiersCollection();
 
 		public override string ToString() => string.Format(VIEW_FORMAT, Col, Row);
 	}

@@ -64,7 +64,16 @@ namespace StepFlow.ViewModel
 
 		public CommandsQueueVm CommandQueue { get; }
 
-		public void Add(ICommandVm command) => CommandQueue.Add(command);
+		public void Add(ICommandVm command)
+		{
+			if (command is null)
+			{
+				throw new ArgumentNullException(nameof(command));
+			}
+
+			command.IsMark = IsMark;
+			CommandQueue.Registry(command);
+		}
 
 		public void MoveTo(HexNodeVm node)
 		{
@@ -73,10 +82,7 @@ namespace StepFlow.ViewModel
 				throw new ArgumentNullException(nameof(node));
 			}
 
-			CommandQueue.Registry(new MoveCommand(this, node)
-			{
-				IsMark = IsMark,
-			});
+			Add(new MoveCommand(this, node));
 		}
 	}
 }
