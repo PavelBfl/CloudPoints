@@ -72,7 +72,7 @@ namespace StepFlow.ViewModel
 			}
 
 			command.IsMark = IsMark;
-			CommandQueue.Registry(command);
+			CommandQueue.Add(command);
 		}
 
 		public void MoveTo(HexNodeVm node)

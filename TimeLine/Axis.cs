@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace StepFlow.TimeLine
 {
@@ -8,7 +9,13 @@ namespace StepFlow.TimeLine
 	{
 		public long Current { get; private set; } = 0;
 
-		private SortedDictionary<long, ICollection<T>> Commands { get; } = new SortedDictionary<long, ICollection<T>>();
+		private SortedDictionary<long, HashSet<T>> TimeToCommand { get; } = new SortedDictionary<long, HashSet<T>>();
+
+		private Dictionary<T, long> CommandToTime { get; } = new Dictionary<T, long>();
+
+		public long GetTime(T command) => CommandToTime[command];
+
+		public bool TryGetTime(T command, out long result) => CommandToTime.TryGetValue(command, out result);
 
 		public void Registry(long time, T command)
 		{
@@ -22,13 +29,33 @@ namespace StepFlow.TimeLine
 				throw new ArgumentNullException(nameof(command));
 			}
 
-			if (!Commands.TryGetValue(time, out var commands))
+			if (!TimeToCommand.TryGetValue(time, out var commands))
 			{
 				commands = new HashSet<T>();
-				Commands.Add(time, commands);
+				TimeToCommand.Add(time, commands);
 			}
 
 			commands.Add(command);
+			CommandToTime.Add(command, time);
+		}
+
+		public bool Remove(T command)
+		{
+			if (CommandToTime.Remove(command, out var time))
+			{
+				var localCommands = TimeToCommand[time];
+				localCommands.Remove(command);
+				if (!localCommands.Any())
+				{
+					TimeToCommand.Remove(time);
+				}
+
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		public bool MoveNext()
@@ -36,7 +63,7 @@ namespace StepFlow.TimeLine
 			var nextStep = Current + 1;
 
 			var commandsPrepare = true;
-			if (Commands.Remove(nextStep, out var commands))
+			if (TimeToCommand.Remove(nextStep, out var commands))
 			{
 				foreach (var command in commands)
 				{

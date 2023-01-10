@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Linq;
 using StepFlow.TimeLine;
 
 namespace StepFlow.ViewModel
@@ -30,16 +31,49 @@ namespace StepFlow.ViewModel
 			}
 		}
 
-		// TODO Возможно стоит избавится от метода в пользу перегрузки методов InsertItem и SetItem
-		public ICommandVm Registry(ICommandVm command)
+		private void RefreshOrder()
 		{
-			var result = WrapItem(command);
+			if (this.Any())
+			{
+				var startTime = Source.Owner.TimeAxis.Current + 1;
 
-			Source.Owner.TimeAxis.Registry(Count + 1, result);
+				for (var i = 0; i < Count; i++)
+				{
+					var command = this[i];
+					var newTime = startTime + i;
 
-			Add(result);
+					if (Source.Owner.TimeAxis.TryGetTime(command, out var time))
+					{
+						if (newTime != time)
+						{
+							Source.Owner.TimeAxis.Remove(command);
+							Source.Owner.TimeAxis.Registry(newTime, command);
+						}
+					}
+					else
+					{
+						Source.Owner.TimeAxis.Registry(newTime, command);
+					}
+				}
+			}
+		}
 
-			return result;
+		protected override void InsertItem(int index, ICommandVm item)
+		{
+			var result = WrapItem(item);
+
+			base.InsertItem(index, result);
+
+			RefreshOrder();
+		}
+
+		protected override void SetItem(int index, ICommandVm item)
+		{
+			var result = WrapItem(item);
+
+			base.SetItem(index, result);
+
+			RefreshOrder();
 		}
 
 		private IPieceVm Source { get; }
@@ -65,6 +99,37 @@ namespace StepFlow.ViewModel
 			return new LocalCommand(this, item);
 		}
 
+		protected override void RemoveItem(int index) => RemoveItem(index, true);
+
+		private void RemoveItem(int index, bool removeAxis)
+		{
+			if (removeAxis)
+			{
+				Source.Owner.TimeAxis.Remove(this[index]);
+			}
+
+			base.RemoveItem(index);
+
+			RefreshOrder();
+		}
+
+		protected override void ClearItems()
+		{
+			foreach (var item in this)
+			{
+				Source.Owner.TimeAxis.Remove(item);
+			}
+
+			base.ClearItems();
+		}
+
+		protected override void MoveItem(int oldIndex, int newIndex)
+		{
+			base.MoveItem(oldIndex, newIndex);
+
+			RefreshOrder();
+		}
+
 		private class LocalCommand : CommandWrapper<ICommandVm>, ICommandVm
 		{
 			public LocalCommand(CommandsQueueVm owner, ICommandVm source) : base(source)
@@ -80,7 +145,7 @@ namespace StepFlow.ViewModel
 
 			public override void Dispose()
 			{
-				Owner.Remove(this);
+				Owner.RemoveItem(Owner.IndexOf(this), false);
 
 				base.Dispose();
 			}
