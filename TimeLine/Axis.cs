@@ -9,6 +9,11 @@ namespace StepFlow.TimeLine
 	{
 		public long Current { get; private set; } = 0;
 
+		// TODO Magic literals
+		public long NearestAllow => IsProcessing ? Current + 2 : Current + 1;
+
+		public bool IsProcessing { get; private set; } = false;
+
 		private SortedDictionary<long, HashSet<T>> TimeToCommand { get; } = new SortedDictionary<long, HashSet<T>>();
 
 		private Dictionary<T, long> CommandToTime { get; } = new Dictionary<T, long>();
@@ -19,7 +24,7 @@ namespace StepFlow.TimeLine
 
 		public void Registry(long time, T command)
 		{
-			if (time <= Current)
+			if (time < NearestAllow)
 			{
 				throw new ArgumentOutOfRangeException(nameof(time));
 			}
@@ -60,6 +65,8 @@ namespace StepFlow.TimeLine
 
 		public bool MoveNext()
 		{
+			IsProcessing = true;
+
 			var nextStep = Current + 1;
 
 			var commandsPrepare = true;
@@ -88,6 +95,8 @@ namespace StepFlow.TimeLine
 			{
 				Current = nextStep;
 			}
+
+			IsProcessing = false;
 
 			return commandsPrepare;
 		}

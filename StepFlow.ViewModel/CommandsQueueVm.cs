@@ -35,7 +35,7 @@ namespace StepFlow.ViewModel
 		{
 			if (this.Any())
 			{
-				var startTime = Source.Owner.TimeAxis.Current + 1;
+				var startTime = Source.Owner.TimeAxis.NearestAllow;
 
 				for (var i = 0; i < Count; i++)
 				{
