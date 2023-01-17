@@ -3,10 +3,11 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using StepFlow.TimeLine;
+using StepFlow.ViewModel.Exceptions;
 
 namespace StepFlow.ViewModel
 {
-	public class CommandsQueueVm : ObservableCollection<ICommandVm>, INotifyCollectionChanged, IMarkered
+    public class CommandsQueueVm : ObservableCollection<ICommandVm>, INotifyCollectionChanged, IMarkered
 	{
 		public CommandsQueueVm(IPieceVm source)
 		{
@@ -87,8 +88,7 @@ namespace StepFlow.ViewModel
 
 			if (Source != item.Current)
 			{
-				// TODO Переделать на константу
-				throw new InvalidOperationException("Failed sync command with piece");
+				throw InvalidViewModelException.CreateInvalidSync();
 			}
 		}
 

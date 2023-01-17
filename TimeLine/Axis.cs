@@ -7,10 +7,12 @@ namespace StepFlow.TimeLine
 	public class Axis<T>
 		where T : notnull, ICommand
 	{
+		private const int OFFSET_NEXT = 1;
+		private const int OFFSET_NEXT_PROCESSING = OFFSET_NEXT + 1;
+
 		public long Current { get; private set; } = 0;
 
-		// TODO Magic literals
-		public long NearestAllow => IsProcessing ? Current + 2 : Current + 1;
+		public long NearestAllow => IsProcessing ? Current + OFFSET_NEXT_PROCESSING : Current + OFFSET_NEXT;
 
 		public bool IsProcessing { get; private set; } = false;
 

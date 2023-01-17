@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Linq;
 using StepFlow.Core;
+using StepFlow.ViewModel.Marking;
 
 namespace StepFlow.ViewModel
 {
@@ -10,6 +11,13 @@ namespace StepFlow.ViewModel
 		public HexNodeVm(WorldVm owner, HexNode source) : base(source, true)
 		{
 			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
+			// TODO Реализовать отписку или другой способ оповещения
+			State.OnMarkChanged += StateOnMarkChanged;
+		}
+
+		private void StateOnMarkChanged(object sender, MarkChanged<NodeState> e)
+		{
+			OnPropertyChanged(nameof(State));
 		}
 
 		public WorldVm Owner { get; }
@@ -18,12 +26,7 @@ namespace StepFlow.ViewModel
 
 		public bool IsOccupied => Source.Occupiers.Any();
 
-		private NodeState state = NodeState.Node;
-		public NodeState State
-		{
-			get => state;
-			set => SetValue(ref state, value);
-		}
+		public MarkerCounter<NodeState> State { get; } = new MarkerCounter<NodeState>();
 
 		public PieceVm<Piece> CreateSimple() => new PieceVm<Piece>(
 			Owner,
@@ -37,13 +40,5 @@ namespace StepFlow.ViewModel
 		};
 
 		public override string ToString() => Source.ToString();
-	}
-
-	[Flags]
-	public enum NodeState
-	{
-		Node = 0x0,
-		Current = 0x1,
-		Planned = 0x2,
 	}
 }

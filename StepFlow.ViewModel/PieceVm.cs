@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using StepFlow.Core;
 using StepFlow.ViewModel.Commands;
 
@@ -32,7 +31,7 @@ namespace StepFlow.ViewModel
 
 					if (Current is { })
 					{
-						Current.State = IsMark ? NodeState.Current : NodeState.Node;
+						Current.IsMark = IsMark;
 					}
 				}
 			}
@@ -48,7 +47,7 @@ namespace StepFlow.ViewModel
 				{
 					if (Current is { })
 					{
-						Current.State = NodeState.Node;
+						Current.State = NodeState.None;
 					}
 
 					current = value;
