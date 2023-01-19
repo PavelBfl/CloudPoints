@@ -6,7 +6,7 @@ using StepFlow.ViewModel.Marking;
 
 namespace StepFlow.ViewModel
 {
-	public class HexNodeVm : WrapperVm<HexNode>
+	public class HexNodeVm : WrapperVm<HexNode>, IMarkered
 	{
 		public HexNodeVm(WorldVm owner, HexNode source) : base(source, true)
 		{
@@ -27,6 +27,13 @@ namespace StepFlow.ViewModel
 		public bool IsOccupied => Source.Occupiers.Any();
 
 		public MarkerCounter<NodeState> State { get; } = new MarkerCounter<NodeState>();
+
+		private bool isMark;
+		public bool IsMark
+		{
+			get => isMark;
+			set => SetValue(ref isMark, value);
+		}
 
 		public PieceVm<Piece> CreateSimple() => new PieceVm<Piece>(
 			Owner,

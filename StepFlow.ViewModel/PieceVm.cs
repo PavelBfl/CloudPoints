@@ -37,6 +37,8 @@ namespace StepFlow.ViewModel
 			}
 		}
 
+		private IDisposable? stateToken;
+
 		private HexNodeVm? current;
 		public HexNodeVm? Current
 		{
@@ -45,18 +47,12 @@ namespace StepFlow.ViewModel
 			{
 				if (Current != value)
 				{
-					if (Current is { })
-					{
-						Current.State = NodeState.None;
-					}
+					stateToken?.Dispose();
 
 					current = value;
 					Source.Current = Current?.Source;
 
-					if (Current is { })
-					{
-						Current.State = NodeState.Current;
-					}
+					stateToken = Current?.State.Registry(NodeState.Current);
 				}
 			}
 		}

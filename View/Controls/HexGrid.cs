@@ -143,23 +143,6 @@ namespace StepFlow.View.Controls
 			{
 				Source.TimeAxis.MoveNext();
 			}
-			// TODO Temporary solution
-			#region Temporary solution
-			int? selectIndex = game.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.D1) ? 0 :
-					game.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.D2) ? 1 :
-					game.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.D3) ? 2 :
-					game.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.D4) ? 3 :
-					game.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.D5) ? 4 :
-					game.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.D6) ? 5 :
-					game.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.D7) ? 6 :
-					game.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.D8) ? 7 :
-					game.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.D9) ? 8 :
-					null;
-			if (selectIndex is not null)
-			{
-				Source.Current = Source.Pieces.ElementAtOrDefault(selectIndex.Value);
-			}
-			#endregion
 
 			base.Update(gameTime);
 		}

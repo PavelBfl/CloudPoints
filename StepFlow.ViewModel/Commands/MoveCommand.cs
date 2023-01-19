@@ -9,6 +9,8 @@ namespace StepFlow.ViewModel.Commands
 		{
 			Current = current ?? throw new ArgumentNullException(nameof(current));
 			Node = node ?? throw new ArgumentNullException(nameof(node));
+
+			stateToken = Node.State.Registry(NodeState.Planned);
 		}
 
 		public IPieceVm Current { get; }
@@ -17,25 +19,22 @@ namespace StepFlow.ViewModel.Commands
 
 		public bool IsMark
 		{
-			get => Current.IsMark;
-			set
-			{
-				Current.IsMark = value;
-
-				if (value)
-				{
-					Node.State = Node.State | NodeState.Planned;
-				}
-				else
-				{
-					Node.State = Node.State & ~NodeState.Planned;
-				}
-			}
+			get => Node.IsMark;
+			set => Node.IsMark = value;
 		}
+
+		private IDisposable? stateToken;
 
 		public override void Execute()
 		{
 			Current.Current = Node;
+		}
+
+		public override void Dispose()
+		{
+			stateToken?.Dispose();
+			stateToken = null;
+			base.Dispose();
 		}
 	}
 }

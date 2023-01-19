@@ -16,6 +16,8 @@ namespace StepFlow.View.Controls
 		private const int FLAT_SPACING = 2;
 		private const float FLAT_ANGLE_OFFSET = 0;
 		private const float POINTY_ANGLE_OFFSET = MathF.Tau / (HEX_VERTICES_COUNT * 2);
+		private const int MARKED_THICKNESS = 5;
+		private const int UNMARKED_THICKNESS = 1;
 
 		public HexChild(Game game, HexGrid owner, HexNodeVm source) : base(game)
 		{
@@ -44,6 +46,7 @@ namespace StepFlow.View.Controls
 					Game.Components.Add(innerControl);
 
 					UpdateState();
+					UpdateIsMark();
 				}
 
 				return innerControl;
@@ -57,16 +60,21 @@ namespace StepFlow.View.Controls
 				case nameof(HexNodeVm.State):
 					UpdateState();
 					break;
+				case nameof(HexNodeVm.IsMark):
+					UpdateIsMark();
+					break;
 			}
 		}
 
+		private void UpdateIsMark() => InnerControl.Thickness = Source.IsMark ? MARKED_THICKNESS : UNMARKED_THICKNESS;
+
 		private void UpdateState()
 		{
-			if (Source.State.HasFlag(NodeState.Current))
+			if (Source.State.ContainsKey(NodeState.Current))
 			{
 				InnerControl.Color = Color.Yellow;
 			}
-			else if (Source.State.HasFlag(NodeState.Planned))
+			else if (Source.State.ContainsKey(NodeState.Planned))
 			{
 				InnerControl.Color = Color.Green;
 			}
@@ -167,7 +175,10 @@ namespace StepFlow.View.Controls
 						piece.MoveTo(Source);
 					}
 				}
-				// TODO Реализовать выбор текущей фигуры
+				else
+				{
+					Source.Owner.Current = Source.Owner.Pieces.FirstOrDefault(x => x.Current == Source);
+				}
 			}
 
 			base.Update(gameTime);

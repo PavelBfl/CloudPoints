@@ -58,6 +58,7 @@ namespace StepFlow.ViewModel.Layout
 			{
 				case nameof(WorldVm.Current):
 					NotifyPropertyExtentions.TryUnsubscrible(World.Current?.CommandQueue, CommandQueueCollectionChanged);
+					RefreshQueue(Array.Empty<ICommandVm>());
 					break;
 			}
 		}
@@ -74,9 +75,12 @@ namespace StepFlow.ViewModel.Layout
 
 		private void CommandQueueCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			var commandQueue = World.Current.CommandQueue;
+			RefreshQueue(World.Current.CommandQueue);
+		}
 
-			while (commandQueue.Count > QueueCommandInner.Count)
+		private void RefreshQueue(IReadOnlyList<ICommandVm> commandsQueue)
+		{
+			while (commandsQueue.Count > QueueCommandInner.Count)
 			{
 				QueueCommandsContainer.Columns.Add(new CellSize(QueueCommandsContainer.Bounds.Height, UnitMeasure.Pixels));
 
@@ -89,16 +93,16 @@ namespace StepFlow.ViewModel.Layout
 				QueueCommandInner.Add(newCommand);
 			}
 
-			while (commandQueue.Count < QueueCommandInner.Count)
+			while (commandsQueue.Count < QueueCommandInner.Count)
 			{
 				QueueCommandsContainer.Childs.Remove(QueueCommandInner[QueueCommandInner.Count - 1]);
 				QueueCommandInner.RemoveAt(QueueCommandInner.Count - 1);
 				QueueCommandsContainer.Columns.RemoveAt(QueueCommandsContainer.Columns.Count - 1);
 			}
 
-			for (var i = 0; i < commandQueue.Count; i++)
+			for (var i = 0; i < commandsQueue.Count; i++)
 			{
-				QueueCommandInner[i].Command = commandQueue[i];
+				QueueCommandInner[i].Command = commandsQueue[i];
 			}
 		}
 
