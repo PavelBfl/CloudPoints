@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\StepFlow.Common\StepFlow.Common.csproj" />
+    <ProjectReference Include="..\StepFlow.Core\StepFlow.Core.csproj" />
+    <ProjectReference Include="..\StepFlow.TimeLine\StepFlow.TimeLine.csproj" />
+  </ItemGroup>
+
+</Project>

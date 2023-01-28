@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\StepFlow.Common\StepFlow.Common.csproj" />
     <ProjectReference Include="..\StepFlow.Layout\StepFlow.Layout.csproj" />
     <ProjectReference Include="..\StepFlow.ViewModel\StepFlow.ViewModel.csproj" />
   </ItemGroup>
