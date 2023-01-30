@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Linq;
 using StepFlow.Core;
+using StepFlow.Entities;
 using StepFlow.ViewModel.Marking;
 
 namespace StepFlow.ViewModel
@@ -47,5 +48,26 @@ namespace StepFlow.ViewModel
 		};
 
 		public override string ToString() => Source.ToString();
+
+		public void Save(FlowContext context)
+		{
+			if (context is null)
+			{
+				throw new ArgumentNullException(nameof(context));
+			}
+
+			context.Particles.Add(new ParticleEntity()
+			{
+				Id = context.GetId(),
+				Owner = 
+			});
+
+			context.HexNodes.Add(new HexNodeEntity()
+			{
+				Id = context.GetId(),
+				Col = Source.Col,
+				Row = Source.Row,
+			});
+		}
 	}
 }

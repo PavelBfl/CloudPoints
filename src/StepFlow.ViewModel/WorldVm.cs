@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using StepFlow.Core;
+using StepFlow.Entities;
 
 namespace StepFlow.ViewModel
 {
@@ -58,6 +59,17 @@ namespace StepFlow.ViewModel
 					OnPropertyChanged();
 				}
 			}
+		}
+
+		public void Save()
+		{
+			using var context = new FlowContext();
+			context.InitCurrentId();
+
+			context.Worlds.Add(new WorldEntity()
+			{
+				Id = context.GetId(),
+			});
 		}
 	}
 }

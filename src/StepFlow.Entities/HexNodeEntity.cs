@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace StepFlow.Entities
 {
@@ -8,6 +9,7 @@ namespace StepFlow.Entities
 
 		public int Row { get; set; }
 
+		[AllowNull]
 		public ICollection<PieceEntity> Occupiers { get; set; }
 	}
 }
