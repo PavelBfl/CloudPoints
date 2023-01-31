@@ -143,6 +143,10 @@ namespace StepFlow.View.Controls
 			{
 				Source.TimeAxis.MoveNext();
 			}
+			else if (game.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.F5))
+			{
+				Source.Save();
+			}
 
 			base.Update(gameTime);
 		}

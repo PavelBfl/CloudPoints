@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using StepFlow.Core;
 using StepFlow.Entities;
 
@@ -66,10 +67,17 @@ namespace StepFlow.ViewModel
 			using var context = new FlowContext();
 			context.InitCurrentId();
 
-			context.Worlds.Add(new WorldEntity()
+			var worldEntity = context.Worlds.Add(new WorldEntity()
 			{
 				Id = context.GetId(),
-			});
+			}).Entity;
+
+			foreach (var hexNode in Table.Cast<HexNodeVm>())
+			{
+				hexNode.Save(context, worldEntity);
+			}
+
+			context.SaveChanges();
 		}
 	}
 }

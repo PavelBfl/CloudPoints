@@ -49,24 +49,30 @@ namespace StepFlow.ViewModel
 
 		public override string ToString() => Source.ToString();
 
-		public void Save(FlowContext context)
+		public void Save(FlowContext context, WorldEntity owner)
 		{
 			if (context is null)
 			{
 				throw new ArgumentNullException(nameof(context));
 			}
 
-			context.Particles.Add(new ParticleEntity()
+			if (owner is null)
+			{
+				throw new ArgumentNullException(nameof(owner));
+			}
+
+			var particleEntity = context.Particles.Add(new ParticleEntity()
 			{
 				Id = context.GetId(),
-				Owner = 
-			});
+				Owner = owner,
+			}).Entity;
 
 			context.HexNodes.Add(new HexNodeEntity()
 			{
 				Id = context.GetId(),
 				Col = Source.Col,
 				Row = Source.Row,
+				Particle = particleEntity,
 			});
 		}
 	}

@@ -6,7 +6,7 @@ namespace StepFlow.Entities
 {
 	public class FlowContext : DbContext
 	{
-		private const string FILE_NAME = "Mobile.db";
+		private const string FILE_NAME = "Save.db";
 		private const string CONNECTION_STRING = "Filename=" + FILE_NAME;
 
 		public FlowContext()
