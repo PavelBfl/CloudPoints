@@ -79,5 +79,60 @@ namespace StepFlow.ViewModel
 
 			context.SaveChanges();
 		}
+
+		private void SaveRaw()
+		{
+			using var context = new FlowContext();
+			context.InitCurrentId();
+
+			var worldEntity = context.Worlds.Add(new WorldEntity()
+			{
+				Id = context.GetId(),
+			}).Entity;
+
+			var nodesIds = new Dictionary<HexNode, int>();
+			foreach (var particle in Source.Particles)
+			{
+				var particleEntity = context.Particles.Add(new ParticleEntity()
+				{
+					Id = context.GetId(),
+					Owner = worldEntity,
+				}).Entity;
+
+				switch (particle)
+				{
+					case HexNode hexNode:
+						var newId = context.GetId();
+						var hexNodeEntity = context.HexNodes.Add(new HexNodeEntity()
+						{
+							Id = newId,
+							Col = hexNode.Col,
+							Row = hexNode.Row,
+							Particle = particleEntity,
+						}).Entity;
+						nodesIds.Add(hexNode, newId);
+						break;
+					case Piece piece:
+						context.Pieces.Add(new PieceEntity()
+						{
+							Id = context.GetId(),
+							Particle = particleEntity,
+						});
+						break;
+					default:
+						break;
+				}
+			}
+
+			foreach (var piece in Source.Particles.OfType<Piece>())
+			{
+				if (piece.Current is { })
+				{
+					// TODO Прокинуть идентификатор на текущую ноду
+				}
+			}
+
+			context.SaveChanges();
+		}
 	}
 }

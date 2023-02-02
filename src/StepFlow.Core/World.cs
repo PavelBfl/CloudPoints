@@ -31,6 +31,7 @@ namespace StepFlow.Core
 				throw new ArgumentOutOfRangeException(nameof(rowsCount));
 			}
 
+			Particles = new ParticlesCollection(this);
 			Table = new HexNode[colsCount, rowsCount];
 
 			for (var iCol = 0; iCol < colsCount; iCol++)
@@ -88,6 +89,8 @@ namespace StepFlow.Core
 				Inverse(Table);
 			}
 		}
+
+		public ParticlesCollection Particles { get; }
 
 		public int ColsCount => Table.GetLength(0);
 
