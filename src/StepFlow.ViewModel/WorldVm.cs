@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Xml.Linq;
+using Microsoft.EntityFrameworkCore;
 using StepFlow.Core;
 using StepFlow.Entities;
 
@@ -113,6 +114,22 @@ namespace StepFlow.ViewModel
 			}
 
 			context.SaveChanges();
+		}
+
+		public static World Load(int worldId)
+		{
+			using var context = new FlowContext();
+
+			var result = new World(0, 0, HexOrientation.Flat, false);
+			foreach (var hexNodeEntity in context.HexNodes.Where(x => x.Particle.OwnerId == worldId))
+			{
+				result.Place.Add(new HexNode(null, new Point(
+					x: hexNodeEntity.Col,
+					y: hexNodeEntity.Row
+				)));
+			}
+
+			return result;
 		}
 	}
 }
