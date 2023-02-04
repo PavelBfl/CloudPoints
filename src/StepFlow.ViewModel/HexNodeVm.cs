@@ -23,7 +23,7 @@ namespace StepFlow.ViewModel
 
 		public WorldVm Owner { get; }
 
-		public Point Position => new Point(Source.Col, Source.Row);
+		public Point Position => Source.Position;
 
 		public bool IsOccupied => Source.Occupiers.Any();
 

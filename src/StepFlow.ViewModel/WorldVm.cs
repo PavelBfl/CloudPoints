@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Xml.Linq;
 using StepFlow.Core;
@@ -11,26 +12,17 @@ namespace StepFlow.ViewModel
 	{
 		public WorldVm(World source) : base(source, true)
 		{
-			Table = new HexNodeVm[ColsCount, RowsCount];
-
-			for (var iCol = 0; iCol < ColsCount; iCol++)
+			foreach (var node in Source.Place.Values)
 			{
-				for (var iRow = 0; iRow < RowsCount; iRow++)
-				{
-					Table[iCol, iRow] = new HexNodeVm(this, Source[iCol, iRow]);
-				}
+				nodes.Add(node.Position, new HexNodeVm(this, node));
 			}
 
 			TimeAxis = new AxisVm();
 		}
 
-		public int ColsCount => Source.ColsCount;
+		private Dictionary<Point, HexNodeVm> nodes = new Dictionary<Point, HexNodeVm>();
 
-		public int RowsCount => Source.RowsCount;
-
-		public HexNodeVm this[int col, int row] => Table[col, row];
-
-		private HexNodeVm[,] Table { get; }
+		public IReadOnlyDictionary<Point, HexNodeVm> Nodes => nodes;
 
 		public AxisVm TimeAxis { get; }
 
@@ -90,8 +82,8 @@ namespace StepFlow.ViewModel
 						var hexNodeEntity = context.HexNodes.Add(new HexNodeEntity()
 						{
 							Id = context.GetId(),
-							Col = hexNode.Col,
-							Row = hexNode.Row,
+							Col = hexNode.Position.X,
+							Row = hexNode.Position.Y,
 							Particle = particleEntity,
 						}).Entity;
 						links.Add((hexNode, typeof(HexNode)), hexNodeEntity);

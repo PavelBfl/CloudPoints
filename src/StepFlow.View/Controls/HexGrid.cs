@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Microsoft.Xna.Framework;
@@ -26,15 +27,11 @@ namespace StepFlow.View.Controls
 			Plot = plot ?? throw new ArgumentNullException(nameof(plot));
 			Plot.PropertyChanged += PlotPropertyChanged;
 
-			Childs = new HexChild[Source.ColsCount, Source.RowsCount];
-			for (var iCol = 0; iCol < Source.ColsCount; iCol++)
+			foreach (var node in Source.Nodes.Values)
 			{
-				for (var iRow = 0; iRow < Source.RowsCount; iRow++)
-				{
-					var child = new HexChild(Game, this, Source[iCol, iRow]);
-					Childs[iCol, iRow] = child;
-					Game.Components.Add(child);
-				}
+				var child = new HexChild(Game, this, node);
+				Childs.Add(node.Position, child);
+				Game.Components.Add(child);
 			}
 
 			Refresh();
@@ -42,7 +39,7 @@ namespace StepFlow.View.Controls
 
 		public WorldVm Source { get; }
 
-		private HexChild[,] Childs { get; }
+		private Dictionary<System.Drawing.Point, HexChild> Childs { get; } = new Dictionary<System.Drawing.Point, HexChild>();
 
 		private RectPlot Plot { get; }
 
@@ -58,7 +55,7 @@ namespace StepFlow.View.Controls
 
 		private void ChildsClear()
 		{
-			foreach (var child in Childs.Cast<HexChild>())
+			foreach (var child in Childs.Values)
 			{
 				child.Clear();
 			}
@@ -156,7 +153,7 @@ namespace StepFlow.View.Controls
 			if (disposing)
 			{
 				Plot.PropertyChanged -= PlotPropertyChanged;
-				foreach (var child in Childs.Cast<HexChild>())
+				foreach (var child in Childs.Values)
 				{
 					child.Dispose();
 				}

@@ -20,7 +20,7 @@ namespace StepFlow.Core
 				throw new ArgumentNullException(nameof(item));
 			}
 
-			if (ReferenceEquals(Owner, item))
+			if (ReferenceEquals(Owner, item.Owner))
 			{
 				throw InvalidCoreException.CreateAddAlreadyExistsParticle();
 			}
