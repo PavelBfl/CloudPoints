@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 using StepFlow.Core;
 using StepFlow.Entities;
 
@@ -72,25 +74,7 @@ namespace StepFlow.ViewModel
 				Id = context.GetId(),
 			}).Entity;
 
-			foreach (var hexNode in Table.Cast<HexNodeVm>())
-			{
-				hexNode.Save(context, worldEntity);
-			}
-
-			context.SaveChanges();
-		}
-
-		private void SaveRaw()
-		{
-			using var context = new FlowContext();
-			context.InitCurrentId();
-
-			var worldEntity = context.Worlds.Add(new WorldEntity()
-			{
-				Id = context.GetId(),
-			}).Entity;
-
-			var nodesIds = new Dictionary<HexNode, int>();
+			var links = new Dictionary<(object obj, Type type), EntityBase>();
 			foreach (var particle in Source.Particles)
 			{
 				var particleEntity = context.Particles.Add(new ParticleEntity()
@@ -98,26 +82,27 @@ namespace StepFlow.ViewModel
 					Id = context.GetId(),
 					Owner = worldEntity,
 				}).Entity;
+				links.Add((particle, typeof(Particle)), particleEntity);
 
 				switch (particle)
 				{
 					case HexNode hexNode:
-						var newId = context.GetId();
 						var hexNodeEntity = context.HexNodes.Add(new HexNodeEntity()
 						{
-							Id = newId,
+							Id = context.GetId(),
 							Col = hexNode.Col,
 							Row = hexNode.Row,
 							Particle = particleEntity,
 						}).Entity;
-						nodesIds.Add(hexNode, newId);
+						links.Add((hexNode, typeof(HexNode)), hexNodeEntity);
 						break;
 					case Piece piece:
-						context.Pieces.Add(new PieceEntity()
+						var pieceEntity = context.Pieces.Add(new PieceEntity()
 						{
 							Id = context.GetId(),
 							Particle = particleEntity,
-						});
+						}).Entity;
+						links.Add((piece, typeof(Piece)), pieceEntity);
 						break;
 					default:
 						break;
@@ -126,9 +111,12 @@ namespace StepFlow.ViewModel
 
 			foreach (var piece in Source.Particles.OfType<Piece>())
 			{
-				if (piece.Current is { })
+				if (piece.Current is { } current)
 				{
-					// TODO Прокинуть идентификатор на текущую ноду
+					var pieceEntity = (PieceEntity)links[(piece, typeof(Piece))];
+					var hexNodeEntity = (HexNodeEntity)links[(current, typeof(HexNode))];
+
+					pieceEntity.Current = hexNodeEntity;
 				}
 			}
 

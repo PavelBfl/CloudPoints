@@ -80,20 +80,5 @@ namespace StepFlow.ViewModel
 
 			Add(new MoveCommand(this, node));
 		}
-
-		public void Save(FlowContext context, WorldEntity owner)
-		{
-			var particleEntity = context.Particles.Add(new ParticleEntity()
-			{
-				Id = context.GetId(),
-				Owner = owner,
-			}).Entity;
-
-			context.Pieces.Add(new PieceEntity()
-			{
-				Id = context.GetId(),
-				Particle = particleEntity,
-			});
-		}
 	}
 }

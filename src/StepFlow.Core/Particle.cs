@@ -1,5 +1,4 @@
-﻿using System;
-using StepFlow.Core.Exceptions;
+﻿using StepFlow.Core.Exceptions;
 
 namespace StepFlow.Core
 {
@@ -7,11 +6,7 @@ namespace StepFlow.Core
 	{
 		public Particle(World? owner)
 		{
-			Owner = owner;
-			if (Owner is { })
-			{
-				Owner.Particles.Add(this);
-			}
+			owner?.Particles.Add(this);
 		}
 
 		public World? Owner { get; internal set; }
