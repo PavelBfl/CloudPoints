@@ -54,5 +54,13 @@ namespace StepFlow.Entities
 		{
 			optionsBuilder.UseSqlite(CONNECTION_STRING);
 		}
+
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			modelBuilder.Entity<WorldEntity>().ToTable(nameof(Worlds));
+			modelBuilder.Entity<ParticleEntity>().ToTable(nameof(Particles));
+			modelBuilder.Entity<HexNodeEntity>().ToTable(nameof(HexNodes));
+			modelBuilder.Entity<PieceEntity>().ToTable(nameof(Pieces));
+		}
 	}
 }

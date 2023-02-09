@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace StepFlow.Entities
 {
-	public class HexNodeEntity : InheritorParticle
+	public class HexNodeEntity : ParticleEntity
 	{
 		public int Col { get; set; }
 

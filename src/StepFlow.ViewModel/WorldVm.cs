@@ -67,16 +67,9 @@ namespace StepFlow.ViewModel
 				Id = context.GetId(),
 			}).Entity;
 
-			var links = new Dictionary<(object obj, Type type), EntityBase>();
+			var links = new Dictionary<object, EntityBase>();
 			foreach (var particle in Source.Particles)
 			{
-				var particleEntity = context.Particles.Add(new ParticleEntity()
-				{
-					Id = context.GetId(),
-					Owner = worldEntity,
-				}).Entity;
-				links.Add((particle, typeof(Particle)), particleEntity);
-
 				switch (particle)
 				{
 					case HexNode hexNode:
@@ -85,17 +78,17 @@ namespace StepFlow.ViewModel
 							Id = context.GetId(),
 							Col = hexNode.Position.X,
 							Row = hexNode.Position.Y,
-							Particle = particleEntity,
+							Owner = worldEntity,
 						}).Entity;
-						links.Add((hexNode, typeof(HexNode)), hexNodeEntity);
+						links.Add(hexNode, hexNodeEntity);
 						break;
 					case Piece piece:
 						var pieceEntity = context.Pieces.Add(new PieceEntity()
 						{
 							Id = context.GetId(),
-							Particle = particleEntity,
+							Owner = worldEntity,
 						}).Entity;
-						links.Add((piece, typeof(Piece)), pieceEntity);
+						links.Add(piece, pieceEntity);
 						break;
 					default:
 						break;
@@ -106,8 +99,8 @@ namespace StepFlow.ViewModel
 			{
 				if (piece.Current is { } current)
 				{
-					var pieceEntity = (PieceEntity)links[(piece, typeof(Piece))];
-					var hexNodeEntity = (HexNodeEntity)links[(current, typeof(HexNode))];
+					var pieceEntity = (PieceEntity)links[piece];
+					var hexNodeEntity = (HexNodeEntity)links[current];
 
 					pieceEntity.Current = hexNodeEntity;
 				}
@@ -121,7 +114,7 @@ namespace StepFlow.ViewModel
 			using var context = new FlowContext();
 
 			var result = new World(0, 0, HexOrientation.Flat, false);
-			foreach (var hexNodeEntity in context.HexNodes.Where(x => x.Particle.OwnerId == worldId))
+			foreach (var hexNodeEntity in context.HexNodes.Where(x => x.OwnerId == worldId))
 			{
 				result.Place.Add(new HexNode(null, new Point(
 					x: hexNodeEntity.Col,

@@ -2,11 +2,11 @@
 
 namespace StepFlow.Entities
 {
-	public class PieceEntity : InheritorParticle
+	public class PieceEntity : ParticleEntity
 	{
-		public int CurrentId { get; set; }
+		public int? CurrentId { get; set; }
 
 		[AllowNull]
-		public HexNodeEntity Current { get; set; }
+		public HexNodeEntity? Current { get; set; }
 	}
 }
