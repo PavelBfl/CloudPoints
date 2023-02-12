@@ -57,6 +57,8 @@ namespace StepFlow.ViewModel
 			}
 		}
 
+		public void TakeStep() => Source.TakeStep();
+
 		public void Save()
 		{
 			using var context = new FlowContext();

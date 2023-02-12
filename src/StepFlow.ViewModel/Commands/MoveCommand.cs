@@ -27,7 +27,7 @@ namespace StepFlow.ViewModel.Commands
 
 		public override void Execute()
 		{
-			Current.Current = Node;
+			Current.Next = Node;
 		}
 
 		public override void Dispose()

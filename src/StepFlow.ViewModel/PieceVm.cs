@@ -58,6 +58,20 @@ namespace StepFlow.ViewModel
 			}
 		}
 
+		private HexNodeVm? next;
+		public HexNodeVm? Next
+		{
+			get => next;
+			set
+			{
+				if (Next != value)
+				{
+					next = value;
+					Source.Next = Next?.Source;
+				}
+			}
+		}
+
 		public CommandsQueueVm CommandQueue { get; }
 
 		public void Add(ICommandVm command)

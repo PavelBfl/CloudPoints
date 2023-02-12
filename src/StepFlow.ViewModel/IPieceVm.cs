@@ -7,6 +7,7 @@ namespace StepFlow.ViewModel
 		WorldVm Owner { get; }
 		CommandsQueueVm CommandQueue { get; }
 		HexNodeVm? Current { get; set; }
+		HexNodeVm? Next { get; set; }
 
 		void Add(ICommandVm command);
 

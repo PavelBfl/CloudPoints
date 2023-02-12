@@ -23,5 +23,13 @@
 				}
 			}
 		}
+
+		public HexNode? Next { get; set; }
+
+		internal override void TakeStep()
+		{
+			Current = Next;
+			Next = null;
+		}
 	}
 }

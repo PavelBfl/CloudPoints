@@ -12,5 +12,9 @@ namespace StepFlow.Core
 		public World? Owner { get; internal set; }
 
 		public World OwnerSafe => Owner ?? throw InvalidCoreException.CreateInvalidAccessOwner();
+
+		internal virtual void TakeStep()
+		{
+		}
 	}
 }

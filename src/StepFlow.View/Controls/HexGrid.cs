@@ -139,6 +139,7 @@ namespace StepFlow.View.Controls
 			if (game.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.Space))
 			{
 				Source.TimeAxis.MoveNext();
+				Source.TakeStep();
 			}
 			else if (game.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.F5))
 			{
