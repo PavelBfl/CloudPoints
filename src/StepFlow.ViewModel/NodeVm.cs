@@ -33,7 +33,7 @@ namespace StepFlow.ViewModel
 			set => SetValue(ref isMark, value);
 		}
 
-		public PieceVm<Piece> CreateSimple() => new PieceVm<Piece>(
+		public PieceVm CreateSimple() => new PieceVm(
 			Owner,
 			new Piece(Owner.Source)
 			{

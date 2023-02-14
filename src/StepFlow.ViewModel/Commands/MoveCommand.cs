@@ -5,7 +5,7 @@ namespace StepFlow.ViewModel.Commands
 {
 	public class MoveCommand : CommandBase, ICommandVm
 	{
-		public MoveCommand(IPieceVm current, NodeVm node)
+		public MoveCommand(PieceVm current, NodeVm node)
 		{
 			Current = current ?? throw new ArgumentNullException(nameof(current));
 			Node = node ?? throw new ArgumentNullException(nameof(node));
@@ -13,7 +13,7 @@ namespace StepFlow.ViewModel.Commands
 			stateToken = Node.State.Registry(NodeState.Planned);
 		}
 
-		public IPieceVm Current { get; }
+		public PieceVm Current { get; }
 
 		public NodeVm Node { get; }
 

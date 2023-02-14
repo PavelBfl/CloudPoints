@@ -5,10 +5,9 @@ using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
-	public class PieceVm<T> : ParticleVm<T>, IPieceVm
-		where T : Piece
+	public class PieceVm : ParticleVm<Piece>, IParticleVm, IMarkered
 	{
-		public PieceVm(WorldVm world, T source) : base(world, source)
+		public PieceVm(WorldVm world, Piece source) : base(world, source)
 		{
 			CommandQueue = new CommandsQueueVm(this);
 

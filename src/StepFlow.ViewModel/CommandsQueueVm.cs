@@ -9,7 +9,7 @@ namespace StepFlow.ViewModel
 {
     public class CommandsQueueVm : ObservableCollection<ICommandVm>, INotifyCollectionChanged, IMarkered
 	{
-		public CommandsQueueVm(IPieceVm source)
+		public CommandsQueueVm(PieceVm source)
 		{
 			Source = source ?? throw new ArgumentNullException(nameof(source));
 		}
@@ -77,7 +77,7 @@ namespace StepFlow.ViewModel
 			RefreshOrder();
 		}
 
-		private IPieceVm Source { get; }
+		private PieceVm Source { get; }
 
 		private void ValidateItem(ICommandVm item)
 		{
@@ -139,7 +139,7 @@ namespace StepFlow.ViewModel
 
 			public CommandsQueueVm Owner { get; }
 
-			public IPieceVm? Current => Source.Current;
+			public PieceVm? Current => Source.Current;
 
 			public bool IsMark { get => Source.IsMark; set => Source.IsMark = value; }
 

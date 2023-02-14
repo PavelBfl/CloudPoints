@@ -29,11 +29,11 @@ namespace StepFlow.ViewModel
 
 		public AxisVm TimeAxis { get; }
 
-		public ICollection<IPieceVm> Pieces { get; } = new HashSet<IPieceVm>();
+		public ICollection<PieceVm> Pieces { get; } = new HashSet<PieceVm>();
 
-		private IPieceVm? current = null;
+		private PieceVm? current = null;
 
-		public IPieceVm? Current
+		public PieceVm? Current
 		{
 			get => current;
 			set
@@ -62,7 +62,7 @@ namespace StepFlow.ViewModel
 		public void TakeStep()
 		{
 			Source.TakeStep();
-			foreach (var piece in Particles.Values.OfType<IPieceVm>())
+			foreach (var piece in Particles.Values.OfType<PieceVm>())
 			{
 				piece.TakeStep();
 			}
