@@ -5,7 +5,7 @@ namespace StepFlow.ViewModel.Commands
 {
 	public class MoveCommand : CommandBase, ICommandVm
 	{
-		public MoveCommand(IPieceVm current, HexNodeVm node)
+		public MoveCommand(IPieceVm current, NodeVm node)
 		{
 			Current = current ?? throw new ArgumentNullException(nameof(current));
 			Node = node ?? throw new ArgumentNullException(nameof(node));
@@ -15,7 +15,7 @@ namespace StepFlow.ViewModel.Commands
 
 		public IPieceVm Current { get; }
 
-		public HexNodeVm Node { get; }
+		public NodeVm Node { get; }
 
 		public bool IsMark
 		{

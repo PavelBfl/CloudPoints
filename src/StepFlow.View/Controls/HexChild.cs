@@ -19,7 +19,7 @@ namespace StepFlow.View.Controls
 		private const int MARKED_THICKNESS = 5;
 		private const int UNMARKED_THICKNESS = 1;
 
-		public HexChild(Game game, HexGrid owner, HexNodeVm source) : base(game)
+		public HexChild(Game game, HexGrid owner, NodeVm source) : base(game)
 		{
 			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
 			Source = source ?? throw new ArgumentNullException(nameof(source));
@@ -29,7 +29,7 @@ namespace StepFlow.View.Controls
 
 		public HexGrid Owner { get; }
 
-		public HexNodeVm Source { get; }
+		public NodeVm Source { get; }
 
 		private Polygon? innerControl;
 		private Polygon InnerControl
@@ -57,10 +57,10 @@ namespace StepFlow.View.Controls
 		{
 			switch (e.PropertyName)
 			{
-				case nameof(HexNodeVm.State):
+				case nameof(NodeVm.State):
 					UpdateState();
 					break;
-				case nameof(HexNodeVm.IsMark):
+				case nameof(NodeVm.IsMark):
 					UpdateIsMark();
 					break;
 			}

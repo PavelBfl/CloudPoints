@@ -30,7 +30,7 @@ namespace StepFlow.Core
 				for (var iRow = 0; iRow < rowsCount; iRow++)
 				{
 					var position = new System.Drawing.Point(iCol, iRow);
-					Place.Add(new HexNode(null, position));
+					Place.Add(new Node(null, position));
 				}
 			}
 		}
@@ -63,7 +63,7 @@ namespace StepFlow.Core
 				}
 			}
 
-			var disputedNodes = new Dictionary<HexNode, List<Piece>>();
+			var disputedNodes = new Dictionary<Node, List<Piece>>();
 			foreach (var piece in pieces)
 			{
 				if (piece.Next is { })

@@ -2,15 +2,15 @@
 
 namespace StepFlow.ViewModel
 {
-	public interface IPieceVm : IMarkered
+	public interface IPieceVm : IParticleVm, IMarkered
 	{
-		WorldVm Owner { get; }
 		CommandsQueueVm CommandQueue { get; }
-		HexNodeVm? Current { get; set; }
-		HexNodeVm? Next { get; set; }
+		NodeVm? Current { get; set; }
+		NodeVm? Next { get; set; }
 
 		void Add(ICommandVm command);
 
-		void MoveTo(HexNodeVm node);
+		void MoveTo(NodeVm node);
+		void TakeStep();
 	}
 }

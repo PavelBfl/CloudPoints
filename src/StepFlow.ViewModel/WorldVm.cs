@@ -15,15 +15,17 @@ namespace StepFlow.ViewModel
 		{
 			foreach (var node in Source.Place.Values)
 			{
-				nodes.Add(node.Position, new HexNodeVm(this, node));
+				nodes.Add(node.Position, new NodeVm(this, node));
 			}
 
 			TimeAxis = new AxisVm();
 		}
 
-		private Dictionary<Point, HexNodeVm> nodes = new Dictionary<Point, HexNodeVm>();
+		internal Dictionary<Particle, IParticleVm> Particles { get; } = new Dictionary<Particle, IParticleVm>();
 
-		public IReadOnlyDictionary<Point, HexNodeVm> Nodes => nodes;
+		private Dictionary<Point, NodeVm> nodes = new Dictionary<Point, NodeVm>();
+
+		public IReadOnlyDictionary<Point, NodeVm> Nodes => nodes;
 
 		public AxisVm TimeAxis { get; }
 
@@ -57,7 +59,14 @@ namespace StepFlow.ViewModel
 			}
 		}
 
-		public void TakeStep() => Source.TakeStep();
+		public void TakeStep()
+		{
+			Source.TakeStep();
+			foreach (var piece in Particles.Values.OfType<IPieceVm>())
+			{
+				piece.TakeStep();
+			}
+		}
 
 		public void Save()
 		{
@@ -74,7 +83,7 @@ namespace StepFlow.ViewModel
 			{
 				switch (particle)
 				{
-					case HexNode hexNode:
+					case Node hexNode:
 						var hexNodeEntity = context.HexNodes.Add(new HexNodeEntity()
 						{
 							Id = context.GetId(),
@@ -118,7 +127,7 @@ namespace StepFlow.ViewModel
 			var result = new World(0, 0, HexOrientation.Flat, false);
 			foreach (var hexNodeEntity in context.HexNodes.Where(x => x.OwnerId == worldId))
 			{
-				result.Place.Add(new HexNode(null, new Point(
+				result.Place.Add(new Node(null, new Point(
 					x: hexNodeEntity.Col,
 					y: hexNodeEntity.Row
 				)));

@@ -7,8 +7,8 @@
 		{
 		}
 
-		private HexNode? current;
-		public HexNode? Current
+		private Node? current;
+		public Node? Current
 		{
 			get => current;
 			set
@@ -24,7 +24,7 @@
 			}
 		}
 
-		public HexNode? Next { get; set; }
+		public Node? Next { get; set; }
 
 		internal override void TakeStep()
 		{

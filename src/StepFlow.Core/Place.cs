@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace StepFlow.Core
 {
-	public class Place : IReadOnlyDictionary<Point, HexNode>
+	public class Place : IReadOnlyDictionary<Point, Node>
 	{
 		public Place(World owner)
 		{
@@ -45,25 +45,25 @@ namespace StepFlow.Core
 
 		public bool ContainsKey(Point key) => Nodes.ContainsKey(key);
 
-		public bool TryGetValue(Point key, out HexNode value) => Nodes.TryGetValue(key, out value);
+		public bool TryGetValue(Point key, out Node value) => Nodes.TryGetValue(key, out value);
 
-		public IEnumerator<KeyValuePair<Point, HexNode>> GetEnumerator() => Nodes.GetEnumerator();
+		public IEnumerator<KeyValuePair<Point, Node>> GetEnumerator() => Nodes.GetEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
 		private World Owner { get; }
 
-		private Dictionary<Point, HexNode> Nodes { get; } = new Dictionary<Point, HexNode>();
+		private Dictionary<Point, Node> Nodes { get; } = new Dictionary<Point, Node>();
 
 		public IEnumerable<Point> Keys => Nodes.Keys;
 
-		public IEnumerable<HexNode> Values => Nodes.Values;
+		public IEnumerable<Node> Values => Nodes.Values;
 
 		public int Count => Nodes.Count;
 
-		public HexNode this[Point key] => Nodes[key];
+		public Node this[Point key] => Nodes[key];
 
-		public void Add(HexNode node)
+		public void Add(Node node)
 		{
 			if (node is null)
 			{

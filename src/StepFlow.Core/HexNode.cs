@@ -2,14 +2,14 @@
 
 namespace StepFlow.Core
 {
-	public class HexNode : Particle
+	public class Node : Particle
 	{
 		private const string VIEW_FORMAT = "{0}:{1}";
 
-		public HexNode(World? owner, Point posititon)
+		public Node(World? owner, Point position)
 			: base(owner)
 		{
-			Position = posititon;
+			Position = position;
 		}
 
 		public Point Position { get; }

@@ -7,11 +7,10 @@ using StepFlow.ViewModel.Marking;
 
 namespace StepFlow.ViewModel
 {
-	public class HexNodeVm : WrapperVm<HexNode>, IMarkered
+	public class NodeVm : ParticleVm<Node>, IMarkered, IParticleVm
 	{
-		public HexNodeVm(WorldVm owner, HexNode source) : base(source, true)
+		public NodeVm(WorldVm owner, Node source) : base(owner, source)
 		{
-			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
 			// TODO Реализовать отписку или другой способ оповещения
 			State.OnMarkChanged += StateOnMarkChanged;
 		}
@@ -20,8 +19,6 @@ namespace StepFlow.ViewModel
 		{
 			OnPropertyChanged(nameof(State));
 		}
-
-		public WorldVm Owner { get; }
 
 		public Point Position => Source.Position;
 

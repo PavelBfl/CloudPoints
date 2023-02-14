@@ -5,18 +5,15 @@ using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
-	public class PieceVm<T> : WrapperVm<T>, IPieceVm
+	public class PieceVm<T> : ParticleVm<T>, IPieceVm
 		where T : Piece
 	{
-		public PieceVm(WorldVm world, T source) : base(source, true)
+		public PieceVm(WorldVm world, T source) : base(world, source)
 		{
-			Owner = world ?? throw new ArgumentNullException(nameof(world));
 			CommandQueue = new CommandsQueueVm(this);
 
 			Owner.Pieces.Add(this);
 		}
-
-		public WorldVm Owner { get; }
 
 		private bool isMark = false;
 		public bool IsMark
@@ -40,8 +37,8 @@ namespace StepFlow.ViewModel
 
 		private IDisposable? stateToken;
 
-		private HexNodeVm? current;
-		public HexNodeVm? Current
+		private NodeVm? current;
+		public NodeVm? Current
 		{
 			get => current;
 			set
@@ -58,8 +55,8 @@ namespace StepFlow.ViewModel
 			}
 		}
 
-		private HexNodeVm? next;
-		public HexNodeVm? Next
+		private NodeVm? next;
+		public NodeVm? Next
 		{
 			get => next;
 			set
@@ -70,6 +67,14 @@ namespace StepFlow.ViewModel
 					Source.Next = Next?.Source;
 				}
 			}
+		}
+
+		public void TakeStep()
+		{
+			var newCurrent = Source.Current is { } ? (NodeVm)Owner.Particles[Source.Current] : null;
+			Current = newCurrent;
+
+			Next = null;
 		}
 
 		public CommandsQueueVm CommandQueue { get; }
@@ -85,7 +90,7 @@ namespace StepFlow.ViewModel
 			CommandQueue.Add(command);
 		}
 
-		public void MoveTo(HexNodeVm node)
+		public void MoveTo(NodeVm node)
 		{
 			if (node is null)
 			{
