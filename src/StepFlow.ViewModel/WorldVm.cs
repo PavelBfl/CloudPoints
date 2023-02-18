@@ -62,6 +62,22 @@ namespace StepFlow.ViewModel
 		public void TakeStep()
 		{
 			Source.TakeStep();
+
+			var keys = Source.Particles.OfType<Piece>().Union(Particles.Keys.OfType<Piece>()).ToArray();
+			foreach (var piece in keys)
+			{
+				var pieceContainsVm = Particles.ContainsKey(piece);
+				var pieceContainsM = Source.Particles.Contains(piece);
+				if (pieceContainsVm && !pieceContainsM)
+				{
+					Particles.Remove(piece);
+				}
+				else if (!pieceContainsVm && pieceContainsM)
+				{
+					Particles.Add(piece, new PieceVm(this, piece));
+				}
+			}
+
 			foreach (var piece in Particles.Values.OfType<PieceVm>())
 			{
 				piece.TakeStep();

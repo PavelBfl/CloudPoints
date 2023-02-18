@@ -100,6 +100,14 @@ namespace StepFlow.Core
 				DisputedCollision(competitors);
 			}
 
+			foreach (var piece in pieces)
+			{
+				if (Math.Abs(piece.Strength) < 0.000001)
+				{
+					Particles.Remove(piece);
+				}
+			}
+
 			foreach (var particle in Particles)
 			{
 				particle.TakeStep();
@@ -111,14 +119,27 @@ namespace StepFlow.Core
 
 		protected virtual void CrashCollision(Piece stationary, Piece moved)
 		{
+			DefineDamage(new[] { stationary, moved });
 		}
 
 		protected virtual void SwapCollision(Piece first, Piece second)
 		{
+			DefineDamage(new[] { first, second });
 		}
 
 		protected virtual void DisputedCollision(IReadOnlyList<Piece> competitors)
 		{
+			DefineDamage(competitors);
+		}
+
+		private void DefineDamage(IReadOnlyList<Piece> pieces)
+		{
+			var allDamage = pieces.Sum(x => x.CollisionDamage);
+
+			foreach (var piece in pieces)
+			{
+				piece.Strength -= allDamage - piece.CollisionDamage;
+			}
 		}
 	}
 }
