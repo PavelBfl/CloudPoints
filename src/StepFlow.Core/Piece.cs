@@ -28,8 +28,11 @@
 
 		internal override void TakeStep()
 		{
-			Current = Next;
-			Next = null;
+			if (Next is { })
+			{
+				Current = Next;
+				Next = null;
+			}
 		}
 	}
 }

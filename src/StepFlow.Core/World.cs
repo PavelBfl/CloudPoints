@@ -63,6 +63,23 @@ namespace StepFlow.Core
 				}
 			}
 
+			for (var iFirst = 0; iFirst < pieces.Length; iFirst++)
+			{
+				for (var iSecond = 0; iSecond < iFirst; iSecond++)
+				{
+					var firstPiece = pieces[iFirst];
+					var secondPiece = pieces[iSecond];
+					if (CheckCrash(firstPiece, secondPiece))
+					{
+						CrashCollision(firstPiece, secondPiece);
+					}
+					else if (CheckCrash(secondPiece, firstPiece))
+					{
+						CrashCollision(secondPiece, firstPiece);
+					}
+				}
+			}
+
 			var disputedNodes = new Dictionary<Node, List<Piece>>();
 			foreach (var piece in pieces)
 			{
@@ -89,11 +106,18 @@ namespace StepFlow.Core
 			}
 		}
 
-		protected void SwapCollision(Piece first, Piece second)
+		private bool CheckCrash(Piece stationary, Piece moved)
+			=> stationary.Current is { } && stationary.Next is null && moved.Next == stationary.Current;
+
+		protected virtual void CrashCollision(Piece stationary, Piece moved)
 		{
 		}
 
-		protected void DisputedCollision(IReadOnlyList<Piece> competitors)
+		protected virtual void SwapCollision(Piece first, Piece second)
+		{
+		}
+
+		protected virtual void DisputedCollision(IReadOnlyList<Piece> competitors)
 		{
 		}
 	}

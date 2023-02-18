@@ -7,7 +7,7 @@ using StepFlow.ViewModel.Exceptions;
 
 namespace StepFlow.ViewModel
 {
-    public class CommandsQueueVm : ObservableCollection<ICommandVm>, INotifyCollectionChanged, IMarkered
+	public class CommandsQueueVm : ObservableCollection<ICommandVm>, INotifyCollectionChanged, IMarkered
 	{
 		public CommandsQueueVm(PieceVm source)
 		{
