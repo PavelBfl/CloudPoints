@@ -70,7 +70,14 @@ namespace StepFlow.ViewModel
 				var pieceContainsM = Source.Particles.Contains(piece);
 				if (pieceContainsVm && !pieceContainsM)
 				{
-					Particles.Remove(piece);
+					if (Particles.Remove(piece, out var particleVm))
+					{
+						var pieceVm = (PieceVm)particleVm;
+						pieceVm.IsMark = false;
+						pieceVm.Current = null;
+						pieceVm.Next = null;
+						Pieces.Remove(pieceVm);
+					}
 				}
 				else if (!pieceContainsVm && pieceContainsM)
 				{
