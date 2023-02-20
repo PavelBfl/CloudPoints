@@ -9,6 +9,93 @@ using StepFlow.Entities;
 
 namespace StepFlow.ViewModel
 {
+	public class ParticlesCollectionVm
+	{
+		public IParticleVm this[Particle key]
+		{
+			get
+			{
+				if (key is null)
+				{
+					throw new ArgumentNullException(nameof(key));
+				}
+
+				return ByModel[key];
+			}
+		}
+
+		public Particle this[IParticleVm key]
+		{
+			get
+			{
+				if (key is null)
+				{
+					throw new ArgumentNullException(nameof(key));
+				}
+
+				return ByViewModel[key];
+			}
+		}
+
+		private Dictionary<Particle, IParticleVm> ByModel { get; } = new Dictionary<Particle, IParticleVm>();
+
+		private Dictionary<IParticleVm, Particle> ByViewModel { get; } = new Dictionary<IParticleVm, Particle>();
+
+		public int Count => ByModel.Count;
+
+		public void Add(Particle particle, IParticleVm particleVm)
+		{
+			if (particle is null)
+			{
+				throw new ArgumentNullException(nameof(particle));
+			}
+
+			if (particleVm is null)
+			{
+				throw new ArgumentNullException(nameof(particleVm));
+			}
+
+			ByModel.Add(particle, particleVm);
+			ByViewModel.Add(particleVm, particle);
+		}
+
+		public bool Remove(Particle particle)
+		{
+			if (particle is null)
+			{
+				throw new ArgumentNullException(nameof(particle));
+			}
+
+			if (ByModel.Remove(particle, out var particleVm))
+			{
+				ByViewModel.Remove(particleVm);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		public bool Remove(IParticleVm particleVm)
+		{
+			if (particleVm is null)
+			{
+				throw new ArgumentNullException(nameof(particleVm));
+			}
+
+			if (ByViewModel.Remove(particleVm, out var particle))
+			{
+				ByModel.Remove(particle);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+
 	public class WorldVm : WrapperVm<World>
 	{
 		public WorldVm(World source) : base(source, true)

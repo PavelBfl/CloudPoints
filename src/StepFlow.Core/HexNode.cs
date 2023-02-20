@@ -12,6 +12,28 @@ namespace StepFlow.Core
 			Position = position;
 		}
 
+		public override World? Owner
+		{
+			get => base.Owner;
+			set
+			{
+				if (Owner != value)
+				{
+					if (Owner is { })
+					{
+						Owner.Place.Remove(Position);
+					}
+
+					base.Owner = value;
+
+					if (Owner is { })
+					{
+						Owner.Place.Add(this);
+					}
+				}
+			}
+		}
+
 		public Point Position { get; }
 
 		public OccupiersCollection Occupiers { get; } = new OccupiersCollection();

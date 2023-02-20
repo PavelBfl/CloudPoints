@@ -94,12 +94,10 @@ namespace StepFlow.Core
 
 		public void Clear()
 		{
-			foreach (var node in Nodes.Values)
+			foreach (var node in Nodes.Values.ToArray())
 			{
-				Owner.Particles.Remove(node);
+				node.Owner = null;
 			}
-
-			Nodes.Clear();
 
 			OnChangeCollection();
 		}

@@ -12,7 +12,29 @@ namespace StepFlow.Core
 			owner?.Particles.Add(this);
 		}
 
-		public World? Owner { get; internal set; }
+		private World? owner;
+
+		public virtual World? Owner
+		{
+			get => owner;
+			set
+			{
+				if (Owner != value)
+				{
+					if (Owner is { })
+					{
+						Owner.Particles.RemoveForce(this);
+					}
+
+					owner = value;
+
+					if (Owner is { })
+					{
+						Owner.Particles.AddForce(this);
+					}
+				}
+			}
+		}
 
 		public World OwnerSafe => Owner ?? throw InvalidCoreException.CreateInvalidAccessOwner();
 
