@@ -11,15 +11,15 @@ namespace StepFlow.ViewModel.Layout
 {
 	public class RootVm : IDisposable
 	{
-		public RootVm(int colsCount, int rowsCount, HexOrientation orientation, bool offsetOdd)
-			: this(new WorldVm(new World(colsCount, rowsCount, orientation, offsetOdd)))
+		public RootVm(IServiceProvider serviceProvider, int colsCount, int rowsCount, HexOrientation orientation, bool offsetOdd)
+			: this(new WorldVm(serviceProvider))
 		{
 		}
 
 		public RootVm(WorldVm world)
 		{
 			World = world ?? throw new ArgumentNullException(nameof(world));
-			NotifyPropertyExtentions.TrySubscrible(World, WorldPropertyChanging, WorldPropertyChanged);
+			NotifyPropertyExtensions.TrySubscrible(World, WorldPropertyChanging, WorldPropertyChanged);
 
 			Root = new GridPlot()
 			{
@@ -57,7 +57,7 @@ namespace StepFlow.ViewModel.Layout
 			switch (e.PropertyName)
 			{
 				case nameof(WorldVm.Current):
-					NotifyPropertyExtentions.TryUnsubscrible(World.Current?.CommandQueue, CommandQueueCollectionChanged);
+					NotifyPropertyExtensions.TryUnsubscrible(World.Current?.CommandQueue, CommandQueueCollectionChanged);
 					RefreshQueue(Array.Empty<ICommandVm>());
 					break;
 			}
@@ -68,7 +68,7 @@ namespace StepFlow.ViewModel.Layout
 			switch (e.PropertyName)
 			{
 				case nameof(WorldVm.Current):
-					NotifyPropertyExtentions.TrySubscrible(World.Current?.CommandQueue, CommandQueueCollectionChanged);
+					NotifyPropertyExtensions.TrySubscrible(World.Current?.CommandQueue, CommandQueueCollectionChanged);
 					break;
 			}
 		}
@@ -120,8 +120,8 @@ namespace StepFlow.ViewModel.Layout
 
 		public void Dispose()
 		{
-			NotifyPropertyExtentions.TryUnsubscrible(World, WorldPropertyChanging, WorldPropertyChanged);
-			NotifyPropertyExtentions.TryUnsubscrible(World.Current?.CommandQueue, CommandQueueCollectionChanged);
+			NotifyPropertyExtensions.TryUnsubscrible(World, WorldPropertyChanging, WorldPropertyChanged);
+			NotifyPropertyExtensions.TryUnsubscrible(World.Current?.CommandQueue, CommandQueueCollectionChanged);
 		}
 	}
 }

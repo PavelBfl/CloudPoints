@@ -13,7 +13,7 @@ namespace StepFlow.View.Controls
 			: base(game)
 		{
 			Plot = plot ?? throw new ArgumentNullException(nameof(plot));
-			NotifyPropertyExtentions.TrySubscrible(Plot, PlotPropertyChanged);
+			NotifyPropertyExtensions.TrySubscrible(Plot, PlotPropertyChanged);
 		}
 
 		public RectPlot Plot { get; }
@@ -49,7 +49,7 @@ namespace StepFlow.View.Controls
 		{
 			if (disposing)
 			{
-				NotifyPropertyExtentions.TryUnsubscrible(Plot, PlotPropertyChanged);
+				NotifyPropertyExtensions.TryUnsubscrible(Plot, PlotPropertyChanged);
 				Game.Components.Remove(this);
 			}
 

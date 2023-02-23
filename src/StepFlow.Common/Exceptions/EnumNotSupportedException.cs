@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace StepFlow.Common
+namespace StepFlow.Common.Exceptions
 {
 	public class EnumNotSupportedException : NotSupportedException
 	{
-		private const string DEFAULT_MESSAGE = "Значение перечисления не потдерживается.";
+		private const string DEFAULT_MESSAGE = "Значение перечисления не поддерживается.";
 
 		public static EnumNotSupportedException Create<T>(T value)
 			where T : struct, Enum

@@ -1,20 +1,17 @@
 ﻿using System;
-using StepFlow.Common;
+using System.Diagnostics.CodeAnalysis;
 
 namespace StepFlow.ViewModel
 {
-	public class WrapperVm<T> : BaseNotifyer
+	public class WrapperVm<T> : BaseVm
 	{
-		public WrapperVm(T source, bool checkSourceNull = false)
+		public WrapperVm(IServiceProvider serviceProvider)
+			: base(serviceProvider)
 		{
-			if (checkSourceNull && source is null)
-			{
-				throw new ArgumentNullException(nameof(source));
-			}
-
-			Source = source;
 		}
 
-		internal T Source { get; }
+		[AllowNull]
+		[MaybeNull]
+		internal virtual T Source { get; set; }
 	}
 }

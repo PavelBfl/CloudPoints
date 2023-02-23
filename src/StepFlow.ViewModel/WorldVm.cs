@@ -2,113 +2,23 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Xml.Linq;
-using Microsoft.EntityFrameworkCore;
+using StepFlow.Common;
 using StepFlow.Core;
 using StepFlow.Entities;
 
 namespace StepFlow.ViewModel
 {
-	public class ParticlesCollectionVm
-	{
-		public IParticleVm this[Particle key]
-		{
-			get
-			{
-				if (key is null)
-				{
-					throw new ArgumentNullException(nameof(key));
-				}
-
-				return ByModel[key];
-			}
-		}
-
-		public Particle this[IParticleVm key]
-		{
-			get
-			{
-				if (key is null)
-				{
-					throw new ArgumentNullException(nameof(key));
-				}
-
-				return ByViewModel[key];
-			}
-		}
-
-		private Dictionary<Particle, IParticleVm> ByModel { get; } = new Dictionary<Particle, IParticleVm>();
-
-		private Dictionary<IParticleVm, Particle> ByViewModel { get; } = new Dictionary<IParticleVm, Particle>();
-
-		public int Count => ByModel.Count;
-
-		public void Add(Particle particle, IParticleVm particleVm)
-		{
-			if (particle is null)
-			{
-				throw new ArgumentNullException(nameof(particle));
-			}
-
-			if (particleVm is null)
-			{
-				throw new ArgumentNullException(nameof(particleVm));
-			}
-
-			ByModel.Add(particle, particleVm);
-			ByViewModel.Add(particleVm, particle);
-		}
-
-		public bool Remove(Particle particle)
-		{
-			if (particle is null)
-			{
-				throw new ArgumentNullException(nameof(particle));
-			}
-
-			if (ByModel.Remove(particle, out var particleVm))
-			{
-				ByViewModel.Remove(particleVm);
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-
-		public bool Remove(IParticleVm particleVm)
-		{
-			if (particleVm is null)
-			{
-				throw new ArgumentNullException(nameof(particleVm));
-			}
-
-			if (ByViewModel.Remove(particleVm, out var particle))
-			{
-				ByModel.Remove(particle);
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-	}
-
 	public class WorldVm : WrapperVm<World>
 	{
-		public WorldVm(World source) : base(source, true)
+		public WorldVm(IServiceProvider serviceProvider)
+			: base(serviceProvider)
 		{
-			foreach (var node in Source.Place.Values)
-			{
-				nodes.Add(node.Position, new NodeVm(this, node));
-			}
+			Particles = new ParticlesCollectionVm(this);
 
 			TimeAxis = new AxisVm();
 		}
 
-		internal Dictionary<Particle, IParticleVm> Particles { get; } = new Dictionary<Particle, IParticleVm>();
+		public ParticlesCollectionVm Particles { get; }
 
 		private Dictionary<Point, NodeVm> nodes = new Dictionary<Point, NodeVm>();
 
@@ -148,34 +58,7 @@ namespace StepFlow.ViewModel
 
 		public void TakeStep()
 		{
-			Source.TakeStep();
-
-			var keys = Source.Particles.OfType<Piece>().Union(Particles.Keys.OfType<Piece>()).ToArray();
-			foreach (var piece in keys)
-			{
-				var pieceContainsVm = Particles.ContainsKey(piece);
-				var pieceContainsM = Source.Particles.Contains(piece);
-				if (pieceContainsVm && !pieceContainsM)
-				{
-					if (Particles.Remove(piece, out var particleVm))
-					{
-						var pieceVm = (PieceVm)particleVm;
-						pieceVm.IsMark = false;
-						pieceVm.Current = null;
-						pieceVm.Next = null;
-						Pieces.Remove(pieceVm);
-					}
-				}
-				else if (!pieceContainsVm && pieceContainsM)
-				{
-					Particles.Add(piece, new PieceVm(this, piece));
-				}
-			}
-
-			foreach (var piece in Particles.Values.OfType<PieceVm>())
-			{
-				piece.TakeStep();
-			}
+			Source.PropertyRequired(nameof(Source)).TakeStep();
 		}
 
 		public void Save()

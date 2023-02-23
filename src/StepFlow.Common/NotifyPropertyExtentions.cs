@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace StepFlow.Common
 {
-	public static class NotifyPropertyExtentions
+	public static class NotifyPropertyExtensions
 	{
 		public static void SetValue<T>(
 			this INotifyPropertyChanged notifyer,

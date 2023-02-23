@@ -1,9 +1,11 @@
 ﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StepFlow.Core;
 using StepFlow.View.Controls;
+using StepFlow.ViewModel;
 using StepFlow.ViewModel.Layout;
 
 namespace StepFlow.View
@@ -17,6 +19,14 @@ namespace StepFlow.View
 		public SpriteBatch SpriteBatch => spriteBatch ?? throw new InvalidOperationException();
 
 		private RootVm Root { get; }
+
+		private static IServiceProvider CreateServiceProvider()
+		{
+			var services = new ServiceCollection();
+			services.AddSingleton<IWorldProvider, WorldProvider>();
+
+			return services.BuildServiceProvider();
+		}
 
 		public Game1()
 		{

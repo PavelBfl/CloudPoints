@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using StepFlow.Common;
+using StepFlow.Common.Exceptions;
 using StepFlow.Core;
 using StepFlow.Layout;
 using StepFlow.ViewModel;
 
 namespace StepFlow.View.Controls
 {
-	public class HexGrid : Control
+    public class HexGrid : Control
 	{
 		private static float BigRadiusToFlatRatio { get; } = MathF.Sqrt(3);
 		private static (float Pointy, float Flat, float CellPointy, float CellFlat) GetSize(float bigRadius)

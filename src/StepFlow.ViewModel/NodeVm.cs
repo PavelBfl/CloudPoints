@@ -2,14 +2,13 @@
 using System.Drawing;
 using System.Linq;
 using StepFlow.Core;
-using StepFlow.Entities;
 using StepFlow.ViewModel.Marking;
 
 namespace StepFlow.ViewModel
 {
 	public class NodeVm : ParticleVm<Node>, IMarkered, IParticleVm
 	{
-		public NodeVm(WorldVm owner, Node source) : base(owner, source)
+		public NodeVm(IServiceProvider serviceProvider) : base(serviceProvider)
 		{
 			// TODO Реализовать отписку или другой способ оповещения
 			State.OnMarkChanged += StateOnMarkChanged;
@@ -33,13 +32,7 @@ namespace StepFlow.ViewModel
 			set => SetValue(ref isMark, value);
 		}
 
-		public PieceVm CreateSimple() => new PieceVm(
-			Owner,
-			new Piece(Owner.Source)
-			{
-				Current = Source,
-			}
-		)
+		public PieceVm CreateSimple() => new PieceVm(ServiceProvider)
 		{
 			Current = this,
 		};

@@ -1,0 +1,16 @@
+﻿using System.Diagnostics.CodeAnalysis;
+using StepFlow.Common.Exceptions;
+
+namespace StepFlow.Common
+{
+	public static class NullValidateExtensions
+	{
+		public static T PropertyRequired<T>([NotNull] this T? propertyValue, string propertyName)
+			where T : class
+			=> propertyValue is { } ? propertyValue : throw new PropertyNullException(propertyName);
+
+		public static T PropertyRequired<T>([NotNull] this T? propertyValue, string propertyName)
+			where T : struct
+			=> propertyValue is { } ? propertyValue.Value : throw new PropertyNullException(propertyName);
+	}
+}

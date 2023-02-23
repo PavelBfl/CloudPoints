@@ -1,19 +1,49 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.DependencyInjection;
 using StepFlow.Core;
 
 namespace StepFlow.ViewModel
 {
 	public class ParticleVm<T> : WrapperVm<T>, IParticleVm
-		where T : Particle
+		where T : Particle?
 	{
-		public ParticleVm(WorldVm owner, T source)
-			: base(source, true)
+		public ParticleVm(IServiceProvider serviceProvider)
+			: base(serviceProvider)
 		{
-			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
-
-			Owner.Particles.Add(Source, this);
+			WorldProvider = ServiceProvider.GetRequiredService<IWorldProvider>();
 		}
 
-		public WorldVm Owner { get; }
+		private IWorldProvider WorldProvider { get; }
+
+		public WorldVm? Owner { get; private set; }
+
+		Particle? IParticleVm.Source => Source;
+
+		[AllowNull]
+		[MaybeNull]
+		internal override T Source
+		{
+			get => base.Source;
+			set
+			{
+				if (Source != value)
+				{
+					if (Source is { })
+					{
+						Owner.Particles.RemoveForce(this);
+						Owner = null;
+					}
+
+					base.Source = value;
+
+					if (Source is { })
+					{
+						Owner = WorldProvider.GetWorld(Source.OwnerSafe);
+						Owner.Particles.AddForce(Source, this);
+					}
+				}
+			}
+		}
 	}
 }

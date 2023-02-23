@@ -14,6 +14,12 @@ namespace StepFlow.ViewModel.Exceptions
 		internal static InvalidViewModelException CreateUnregistryMark()
 			=> new InvalidViewModelException(INVALID_UNREGICSTRY_MESSAGE);
 
+		internal static InvalidViewModelException CreateInvalidMatchPairs()
+			=> new InvalidViewModelException("Ivalid match pairs model and view model.");
+
+		internal static InvalidViewModelException CreateInvalidAccessToSource()
+			=> new InvalidViewModelException("Ivalid access to source. Source element is null.");
+
 		public InvalidViewModelException()
 		{
 		}
