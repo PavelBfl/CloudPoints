@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace StepFlow.ViewModel.Exceptions
 {
@@ -35,5 +36,22 @@ namespace StepFlow.ViewModel.Exceptions
 		protected InvalidViewModelException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
+	}
+
+	public class InvalidAccessToMember : InvalidViewModelException
+	{
+		internal static InvalidAccessToMember CreateInvalidAccessToProperty(string? propertyName)
+			=> new InvalidAccessToMember(propertyName, "Invalid access to property.");
+
+		internal static InvalidAccessToMember CreateInvalidInvokeMethod(string? methodName)
+			=> new InvalidAccessToMember(methodName, "Invalid invoke method.");
+
+		public InvalidAccessToMember(string? memberName, string message)
+			: base(message)
+		{
+			MemberName = memberName;
+		}
+
+		public string? MemberName { get; }
 	}
 }

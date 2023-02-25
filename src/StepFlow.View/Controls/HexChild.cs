@@ -9,7 +9,7 @@ using StepFlow.ViewModel;
 
 namespace StepFlow.View.Controls
 {
-    public class HexChild : PolygonBase
+	public class HexChild : PolygonBase
 	{
 		private const int HEX_VERTICES_COUNT = 6;
 		private const int POINTY_SPACING = 3;

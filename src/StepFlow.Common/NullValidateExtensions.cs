@@ -5,8 +5,8 @@ namespace StepFlow.Common
 {
 	public static class NullValidateExtensions
 	{
-		public static T PropertyRequired<T>([NotNull] this T? propertyValue, string propertyName)
-			where T : class
+		[return: NotNull]
+		public static T PropertyRequired<T>([NotNull] this T propertyValue, string propertyName)
 			=> propertyValue is { } ? propertyValue : throw new PropertyNullException(propertyName);
 
 		public static T PropertyRequired<T>([NotNull] this T? propertyValue, string propertyName)

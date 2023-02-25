@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
+using StepFlow.Common;
 using StepFlow.Core;
+using StepFlow.ViewModel.Exceptions;
 
 namespace StepFlow.ViewModel
 {
@@ -31,7 +34,7 @@ namespace StepFlow.ViewModel
 				{
 					if (Source is { })
 					{
-						Owner.Particles.RemoveForce(this);
+						Owner.PropertyRequired(nameof(Owner)).Particles.RemoveForce(this);
 						Owner = null;
 					}
 

@@ -19,9 +19,9 @@ namespace StepFlow.ViewModel
 			OnPropertyChanged(nameof(State));
 		}
 
-		public Point Position => Source.Position;
+		public Point Position => SourceRequired.Position;
 
-		public bool IsOccupied => Source.Occupiers.Any();
+		public bool IsOccupied => SourceRequired.Occupiers.Any();
 
 		public MarkerCounter<NodeState> State { get; } = new MarkerCounter<NodeState>();
 
@@ -37,6 +37,6 @@ namespace StepFlow.ViewModel
 			Current = this,
 		};
 
-		public override string ToString() => Source.ToString();
+		public override string? ToString() => Source?.ToString();
 	}
 }

@@ -75,7 +75,8 @@ namespace StepFlow.ViewModel.Layout
 
 		private void CommandQueueCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			RefreshQueue(World.Current.CommandQueue);
+			var current = World.Current.PropertyRequired(nameof(World.Current));
+			RefreshQueue(current.CommandQueue);
 		}
 
 		private void RefreshQueue(IReadOnlyList<ICommandVm> commandsQueue)

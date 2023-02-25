@@ -27,7 +27,7 @@ namespace StepFlow.View.Controls
 			Plot = plot ?? throw new ArgumentNullException(nameof(plot));
 			Plot.PropertyChanged += PlotPropertyChanged;
 
-			foreach (var node in Source.Nodes.Values)
+			foreach (var node in Source.Particles.ViewsModels.OfType<NodeVm>())
 			{
 				var child = new HexChild(Game, this, node);
 				Childs.Add(node.Position, child);

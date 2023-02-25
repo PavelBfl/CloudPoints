@@ -20,13 +20,11 @@ namespace StepFlow.ViewModel
 
 		public ParticlesCollectionVm Particles { get; }
 
-		private Dictionary<Point, NodeVm> nodes = new Dictionary<Point, NodeVm>();
+		public IEnumerable<PieceVm> Pieces => Particles.ViewsModels.OfType<PieceVm>();
 
-		public IReadOnlyDictionary<Point, NodeVm> Nodes => nodes;
+		public IEnumerable<NodeVm> Nodes => Particles.ViewsModels.OfType<NodeVm>();
 
 		public AxisVm TimeAxis { get; }
-
-		public ICollection<PieceVm> Pieces { get; } = new HashSet<PieceVm>();
 
 		private PieceVm? current = null;
 
@@ -63,6 +61,8 @@ namespace StepFlow.ViewModel
 
 		public void Save()
 		{
+			var source = UseMethodSourceRequired();
+
 			using var context = new FlowContext();
 			context.InitCurrentId();
 
@@ -72,7 +72,7 @@ namespace StepFlow.ViewModel
 			}).Entity;
 
 			var links = new Dictionary<object, EntityBase>();
-			foreach (var particle in Source.Particles)
+			foreach (var particle in source.Particles)
 			{
 				switch (particle)
 				{
@@ -99,7 +99,7 @@ namespace StepFlow.ViewModel
 				}
 			}
 
-			foreach (var piece in Source.Particles.OfType<Piece>())
+			foreach (var piece in source.Particles.OfType<Piece>())
 			{
 				if (piece.Current is { } current)
 				{
