@@ -70,10 +70,12 @@ namespace StepFlow.Core
 				throw new ArgumentNullException(nameof(node));
 			}
 
-			Owner.Particles.Add(node);
+			node.Owner = Owner;
+		}
 
+		internal void AddForce(Node node)
+		{
 			Nodes.Add(node.Position, node);
-
 			OnChangeCollection();
 		}
 
@@ -81,8 +83,19 @@ namespace StepFlow.Core
 		{
 			if (TryGetValue(position, out var node))
 			{
-				Nodes.Remove(position);
-				Owner.Particles.Remove(node);
+				node.Owner = null;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		public bool RemoveForce(Point position)
+		{
+			if (Nodes.Remove(position))
+			{
 				OnChangeCollection();
 				return true;
 			}

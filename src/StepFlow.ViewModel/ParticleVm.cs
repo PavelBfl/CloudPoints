@@ -42,7 +42,7 @@ namespace StepFlow.ViewModel
 
 					if (Source is { })
 					{
-						Owner = WorldProvider.GetWorld(Source.OwnerSafe);
+						Owner = WorldProvider[Source.OwnerRequired];
 						Owner.Particles.AddForce(Source, this);
 					}
 				}

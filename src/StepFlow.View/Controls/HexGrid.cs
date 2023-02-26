@@ -10,7 +10,7 @@ using StepFlow.ViewModel;
 
 namespace StepFlow.View.Controls
 {
-    public class HexGrid : Control
+	public class HexGrid : Control
 	{
 		private static float BigRadiusToFlatRatio { get; } = MathF.Sqrt(3);
 		private static (float Pointy, float Flat, float CellPointy, float CellFlat) GetSize(float bigRadius)
@@ -27,7 +27,7 @@ namespace StepFlow.View.Controls
 			Plot = plot ?? throw new ArgumentNullException(nameof(plot));
 			Plot.PropertyChanged += PlotPropertyChanged;
 
-			foreach (var node in Source.Particles.ViewsModels.OfType<NodeVm>())
+			foreach (var node in Source.Nodes)
 			{
 				var child = new HexChild(Game, this, node);
 				Childs.Add(node.Position, child);

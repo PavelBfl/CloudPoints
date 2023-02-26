@@ -21,14 +21,14 @@ namespace StepFlow.Core
 				{
 					if (Owner is { })
 					{
-						Owner.Place.Remove(Position);
+						Owner.Place.RemoveForce(Position);
 					}
 
 					base.Owner = value;
 
 					if (Owner is { })
 					{
-						Owner.Place.Add(this);
+						Owner.Place.AddForce(this);
 					}
 				}
 			}

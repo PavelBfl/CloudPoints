@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using StepFlow.Common;
 using StepFlow.Core;
 using StepFlow.Entities;
@@ -10,10 +11,22 @@ namespace StepFlow.ViewModel
 {
 	public class WorldVm : WrapperVm<World>
 	{
-		public WorldVm(IServiceProvider serviceProvider)
+		public WorldVm(IServiceProvider serviceProvider, int colsCount, int rowsCount, HexOrientation orientation, bool offsetOdd)
 			: base(serviceProvider)
 		{
+			Source = new World(colsCount, rowsCount, orientation, offsetOdd);
+
+			serviceProvider.GetRequiredService<IWorldProvider>().Add(Source, this);
+
 			Particles = new ParticlesCollectionVm(this);
+
+			foreach (var node in Source.Place.Values)
+			{
+				new NodeVm(serviceProvider)
+				{
+					Source = node,
+				};
+			}
 
 			TimeAxis = new AxisVm();
 		}

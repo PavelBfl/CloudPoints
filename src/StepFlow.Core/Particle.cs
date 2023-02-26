@@ -4,7 +4,6 @@ using StepFlow.Core.Exceptions;
 
 namespace StepFlow.Core
 {
-
 	public class Particle
 	{
 		public Particle(World? owner)
@@ -36,7 +35,7 @@ namespace StepFlow.Core
 			}
 		}
 
-		public World OwnerSafe => Owner ?? throw InvalidCoreException.CreateInvalidAccessOwner();
+		public World OwnerRequired => Owner ?? throw InvalidCoreException.CreateInvalidAccessOwner();
 
 		internal virtual void TakeStep()
 		{

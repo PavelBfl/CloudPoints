@@ -1,9 +1,9 @@
-﻿using StepFlow.Core;
+﻿using System.Collections.Generic;
+using StepFlow.Core;
 
 namespace StepFlow.ViewModel
 {
-	public interface IWorldProvider
+	public interface IWorldProvider : IDictionary<World, WorldVm>
 	{
-		WorldVm GetWorld(World world);
 	}
 }
