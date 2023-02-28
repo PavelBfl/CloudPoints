@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using StepFlow.Common;
 using StepFlow.Common.Exceptions;
 using StepFlow.Core;
 using StepFlow.ViewModel;
@@ -19,17 +20,35 @@ namespace StepFlow.View.Controls
 		private const int MARKED_THICKNESS = 5;
 		private const int UNMARKED_THICKNESS = 1;
 
-		public HexChild(Game game, HexGrid owner, NodeVm source) : base(game)
+		public HexChild(Game game, HexGrid owner, NodeVm? source = null) : base(game)
 		{
 			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
-			Source = source ?? throw new ArgumentNullException(nameof(source));
+			Source = source;
 
-			Source.PropertyChanged += SourcePropertyChanged;
+			SourceChanged();
 		}
 
 		public HexGrid Owner { get; }
 
-		public NodeVm Source { get; }
+		private NodeVm? source;
+
+		public NodeVm? Source
+		{
+			get => source;
+			set
+			{
+				if (Source != value)
+				{
+					NotifyPropertyExtensions.TryUnsubscrible(Source, SourcePropertyChanged);
+
+					Source = value;
+
+					NotifyPropertyExtensions.TrySubscrible(Source, SourcePropertyChanged);
+
+					SourceChanged();
+				}
+			}
+		}
 
 		private Polygon? innerControl;
 		private Polygon InnerControl
@@ -53,6 +72,16 @@ namespace StepFlow.View.Controls
 			}
 		}
 
+		private void SourceChanged()
+		{
+			UpdateState();
+			UpdateIsMark();
+
+			var visible = Source is { };
+			Visible = visible;
+			InnerControl.Visible = visible;
+		}
+
 		private void SourcePropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
 			switch (e.PropertyName)
@@ -66,17 +95,34 @@ namespace StepFlow.View.Controls
 			}
 		}
 
-		private void UpdateIsMark() => InnerControl.Thickness = Source.IsMark ? MARKED_THICKNESS : UNMARKED_THICKNESS;
+		private void UpdateIsMark()
+		{
+			if (Source is { })
+			{
+				InnerControl.Thickness = Source.IsMark ? MARKED_THICKNESS : UNMARKED_THICKNESS;
+			}
+			else
+			{
+				InnerControl.Thickness = 0;
+			}
+		}
 
 		private void UpdateState()
 		{
-			if (Source.State.ContainsKey(NodeState.Current))
+			if (Source is { })
 			{
-				InnerControl.Color = Color.Yellow;
-			}
-			else if (Source.State.ContainsKey(NodeState.Planned))
-			{
-				InnerControl.Color = Color.Green;
+				if (Source.State.ContainsKey(NodeState.Current))
+				{
+					InnerControl.Color = Color.Yellow;
+				}
+				else if (Source.State.ContainsKey(NodeState.Planned))
+				{
+					InnerControl.Color = Color.Green;
+				}
+				else
+				{
+					InnerControl.Color = default;
+				}
 			}
 			else
 			{
@@ -124,7 +170,8 @@ namespace StepFlow.View.Controls
 				_ => throw EnumNotSupportedException.Create(Owner.Orientation),
 			};
 
-			var position = Source.Position;
+			// TODO Переделать проверку на null
+			var position = Source?.Position ?? System.Drawing.Point.Empty;
 			var cellPosition = Owner.Orientation switch
 			{
 				HexOrientation.Flat => new Point(
@@ -137,7 +184,6 @@ namespace StepFlow.View.Controls
 				),
 				_ => throw EnumNotSupportedException.Create(Owner.Orientation),
 			};
-
 
 			var cellOffset = Owner.GetPosition(cellPosition);
 
@@ -155,6 +201,11 @@ namespace StepFlow.View.Controls
 
 		public override void Update(GameTime gameTime)
 		{
+			if (Source is null || Source.Owner is null)
+			{
+				return;
+			}
+
 			var game = ((Game1)Game);
 
 			var mouseContains = Contains(game.MousePosition().ToVector2());
@@ -191,7 +242,7 @@ namespace StepFlow.View.Controls
 			if (disposing)
 			{
 				InnerControl.Dispose();
-				Source.PropertyChanged -= SourcePropertyChanged;
+				Source = null;
 			}
 
 			base.Dispose(disposing);

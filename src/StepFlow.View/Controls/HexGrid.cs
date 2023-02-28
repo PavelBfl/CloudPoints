@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using StepFlow.Common;
 using StepFlow.Common.Exceptions;
 using StepFlow.Core;
 using StepFlow.Layout;
@@ -37,7 +39,28 @@ namespace StepFlow.View.Controls
 			Refresh();
 		}
 
-		public WorldVm Source { get; }
+		private WorldVm? source;
+
+		public WorldVm? Source
+		{
+			get => source;
+			set
+			{
+				if (Source != value)
+				{
+					NotifyPropertyExtensions.TryUnsubscrible(Source?.Particles, ParticlesCollectionChanged);
+
+					Source = value;
+
+					NotifyPropertyExtensions.TrySubscrible(Source?.Particles, ParticlesCollectionChanged);
+				}
+			}
+		}
+
+		private void ParticlesCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+		{
+			
+		}
 
 		private Dictionary<System.Drawing.Point, HexChild> Childs { get; } = new Dictionary<System.Drawing.Point, HexChild>();
 

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using StepFlow.Core;
 using StepFlow.ViewModel.Exceptions;
 
 namespace StepFlow.ViewModel
 {
-	public class ParticlesCollectionVm
+	public class ParticlesCollectionVm : INotifyCollectionChanged
 	{
 		public ParticlesCollectionVm(WorldVm owner)
 		{
@@ -49,10 +50,14 @@ namespace StepFlow.ViewModel
 
 		public int Count => ByModel.Count;
 
+		public event NotifyCollectionChangedEventHandler? CollectionChanged;
+
 		internal void AddForce(Particle particle, IParticleVm particleVm)
 		{
 			ByModel.Add(particle, particleVm);
 			ByViewModel.Add(particleVm, particle);
+
+			CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 		}
 
 		internal void RemoveForce(IParticleVm particleVm)
@@ -63,6 +68,8 @@ namespace StepFlow.ViewModel
 				{
 					throw InvalidViewModelException.CreateInvalidMatchPairs();
 				}
+
+				CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 			}
 		}
 	}
