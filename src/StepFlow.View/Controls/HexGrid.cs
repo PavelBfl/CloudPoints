@@ -24,17 +24,10 @@ namespace StepFlow.View.Controls
 
 		public HexGrid(Game game, WorldVm source, RectPlot plot) : base(game)
 		{
-			Source = source ?? throw new ArgumentNullException(nameof(source));
-
 			Plot = plot ?? throw new ArgumentNullException(nameof(plot));
 			Plot.PropertyChanged += PlotPropertyChanged;
 
-			foreach (var node in Source.Nodes)
-			{
-				var child = new HexChild(Game, this, node);
-				Childs.Add(node.Position, child);
-				Game.Components.Add(child);
-			}
+			Source = source ?? throw new ArgumentNullException(nameof(source));
 
 			Refresh();
 		}
@@ -50,7 +43,7 @@ namespace StepFlow.View.Controls
 				{
 					NotifyPropertyExtensions.TryUnsubscrible(Source?.Particles, ParticlesCollectionChanged);
 
-					Source = value;
+					source = value;
 
 					NotifyPropertyExtensions.TrySubscrible(Source?.Particles, ParticlesCollectionChanged);
 				}
@@ -59,10 +52,42 @@ namespace StepFlow.View.Controls
 
 		private void ParticlesCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
 		{
-			
+			var nodesVm = Source?.Nodes.ToArray();
+
+			if (nodesVm is null || !nodesVm.Any())
+			{
+				foreach (var child in Childs)
+				{
+					Game.Components.Remove(child);
+					child.Dispose();
+				}
+				Childs.Clear();
+				return;
+			}
+
+			while (Childs.Count < nodesVm.Length)
+			{
+				var nodeV = new HexChild(Game, this);
+				Childs.Add(nodeV);
+				Game.Components.Add(nodeV);
+			}
+
+			while (Childs.Count > nodesVm.Length)
+			{
+				var lastIndex = Childs.Count - 1;
+				var lastNodeV = Childs[lastIndex];
+				Childs.RemoveAt(lastIndex);
+				Game.Components.Remove(lastNodeV);
+				lastNodeV.Dispose();
+			}
+
+			for (var i = 0; i < Childs.Count; i++)
+			{
+				Childs[i].Source = nodesVm[i];
+			}
 		}
 
-		private Dictionary<System.Drawing.Point, HexChild> Childs { get; } = new Dictionary<System.Drawing.Point, HexChild>();
+		private List<HexChild> Childs { get; } = new List<HexChild>();
 
 		private RectPlot Plot { get; }
 
@@ -78,7 +103,7 @@ namespace StepFlow.View.Controls
 
 		private void ChildsClear()
 		{
-			foreach (var child in Childs.Values)
+			foreach (var child in Childs)
 			{
 				child.Clear();
 			}
@@ -177,7 +202,7 @@ namespace StepFlow.View.Controls
 			if (disposing)
 			{
 				Plot.PropertyChanged -= PlotPropertyChanged;
-				foreach (var child in Childs.Values)
+				foreach (var child in Childs)
 				{
 					child.Dispose();
 				}

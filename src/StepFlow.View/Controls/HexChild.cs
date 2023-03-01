@@ -41,7 +41,7 @@ namespace StepFlow.View.Controls
 				{
 					NotifyPropertyExtensions.TryUnsubscrible(Source, SourcePropertyChanged);
 
-					Source = value;
+					source = value;
 
 					NotifyPropertyExtensions.TrySubscrible(Source, SourcePropertyChanged);
 
