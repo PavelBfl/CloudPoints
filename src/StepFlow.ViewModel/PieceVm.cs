@@ -8,7 +8,8 @@ namespace StepFlow.ViewModel
 {
 	public class PieceVm : ParticleVm<Piece>, IParticleVm, IMarkered
 	{
-		public PieceVm(IServiceProvider serviceProvider) : base(serviceProvider)
+		public PieceVm(IServiceProvider serviceProvider, WorldVm owner, Piece source)
+			: base(serviceProvider, owner, source)
 		{
 			CommandQueue = new CommandsQueueVm(this);
 		}
@@ -41,13 +42,12 @@ namespace StepFlow.ViewModel
 			get => current;
 			set
 			{
-				var source = UsePropertySourceRequired();
 				if (Current != value)
 				{
 					stateToken?.Dispose();
 
 					current = value;
-					source.Current = Current?.Source;
+					Source.Current = Current?.Source;
 
 					stateToken = Current?.State.Registry(NodeState.Current);
 				}
@@ -60,22 +60,17 @@ namespace StepFlow.ViewModel
 			get => next;
 			set
 			{
-				var source = UsePropertySourceRequired();
-
 				if (Next != value)
 				{
 					next = value;
-					source.Next = Next?.Source;
+					Source.Next = Next?.Source;
 				}
 			}
 		}
 
 		public void TakeStep()
 		{
-			var source = UseMethodSourceRequired();
-			var owner = Owner.PropertyRequired(nameof(Owner));
-
-			var newCurrent = source.Current is { } ? (NodeVm)owner.Particles[source.Current] : null;
+			var newCurrent = Source.Current is { } ? (NodeVm)Owner.Particles[Source.Current] : null;
 			Current = newCurrent;
 
 			Next = null;

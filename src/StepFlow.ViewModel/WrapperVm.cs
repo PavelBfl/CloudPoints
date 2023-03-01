@@ -8,21 +8,12 @@ namespace StepFlow.ViewModel
 {
 	public class WrapperVm<T> : BaseVm
 	{
-		public WrapperVm(IServiceProvider serviceProvider)
+		public WrapperVm(IServiceProvider serviceProvider, T source)
 			: base(serviceProvider)
 		{
+			Source = source ?? throw new ArgumentNullException(nameof(source));
 		}
 
-		[AllowNull]
-		[MaybeNull]
-		internal virtual T Source { get; set; }
-
-		internal T SourceRequired => Source.PropertyRequired(nameof(Source));
-
-		protected T UsePropertySourceRequired([CallerMemberName] string? propertyName = null)
-			=> Source is { } ? Source : throw InvalidAccessToMember.CreateInvalidAccessToProperty(propertyName);
-
-		protected T UseMethodSourceRequired([CallerMemberName] string? methodName = null)
-			=> Source is { } ? Source : throw InvalidAccessToMember.CreateInvalidInvokeMethod(methodName);
+		internal T Source { get; }
 	}
 }

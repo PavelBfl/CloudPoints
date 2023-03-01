@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace StepFlow.ViewModel.Exceptions
 {

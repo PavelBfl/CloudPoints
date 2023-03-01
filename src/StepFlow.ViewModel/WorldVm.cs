@@ -12,20 +12,15 @@ namespace StepFlow.ViewModel
 	public class WorldVm : WrapperVm<World>
 	{
 		public WorldVm(IServiceProvider serviceProvider, int colsCount, int rowsCount, HexOrientation orientation, bool offsetOdd)
-			: base(serviceProvider)
+			: base(serviceProvider, new World(colsCount, rowsCount, orientation, offsetOdd))
 		{
-			Source = new World(colsCount, rowsCount, orientation, offsetOdd);
-
 			serviceProvider.GetRequiredService<IWorldProvider>().Add(Source, this);
 
 			Particles = new ParticlesCollectionVm(this);
 
 			foreach (var node in Source.Place.Values)
 			{
-				new NodeVm(serviceProvider)
-				{
-					Source = node,
-				};
+				new NodeVm(serviceProvider, this, node);
 			}
 
 			TimeAxis = new AxisVm();
@@ -69,13 +64,41 @@ namespace StepFlow.ViewModel
 
 		public void TakeStep()
 		{
-			Source.PropertyRequired(nameof(Source)).TakeStep();
+			Source.TakeStep();
+
+			foreach (var particle in Particles.Models.Union(Source.Particles))
+			{
+				var containsVm = Particles.Contains(particle);
+				var containsM = Source.Particles.Contains(particle);
+
+				if (containsVm && !containsM)
+				{
+					Particles[particle].Dispose();
+				}
+				else if (!containsVm && containsM)
+				{
+					switch (particle)
+					{
+						case Piece piece:
+							new PieceVm(ServiceProvider, this, piece);
+							break;
+						case Node node:
+							new NodeVm(ServiceProvider, this, node);
+							break;
+					}
+				}
+				else if (containsVm && containsM)
+				{
+					if (Particles[particle] is PieceVm pieceVm)
+					{
+						pieceVm.TakeStep();
+					}
+				}
+			}
 		}
 
 		public void Save()
 		{
-			var source = UseMethodSourceRequired();
-
 			using var context = new FlowContext();
 			context.InitCurrentId();
 
@@ -85,7 +108,7 @@ namespace StepFlow.ViewModel
 			}).Entity;
 
 			var links = new Dictionary<object, EntityBase>();
-			foreach (var particle in source.Particles)
+			foreach (var particle in Source.Particles)
 			{
 				switch (particle)
 				{
@@ -112,7 +135,7 @@ namespace StepFlow.ViewModel
 				}
 			}
 
-			foreach (var piece in source.Particles.OfType<Piece>())
+			foreach (var piece in Source.Particles.OfType<Piece>())
 			{
 				if (piece.Current is { } current)
 				{

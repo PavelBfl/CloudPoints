@@ -8,7 +8,8 @@ namespace StepFlow.ViewModel
 {
 	public class NodeVm : ParticleVm<Node>, IMarkered, IParticleVm
 	{
-		public NodeVm(IServiceProvider serviceProvider) : base(serviceProvider)
+		public NodeVm(IServiceProvider serviceProvider, WorldVm owner, Node source)
+			: base(serviceProvider, owner, source)
 		{
 			// TODO Реализовать отписку или другой способ оповещения
 			State.OnMarkChanged += StateOnMarkChanged;
@@ -19,9 +20,9 @@ namespace StepFlow.ViewModel
 			OnPropertyChanged(nameof(State));
 		}
 
-		public Point Position => SourceRequired.Position;
+		public Point Position => Source.Position;
 
-		public bool IsOccupied => SourceRequired.Occupiers.Any();
+		public bool IsOccupied => Source.Occupiers.Any();
 
 		public MarkerCounter<NodeState> State { get; } = new MarkerCounter<NodeState>();
 
@@ -32,7 +33,7 @@ namespace StepFlow.ViewModel
 			set => SetValue(ref isMark, value);
 		}
 
-		public PieceVm CreateSimple() => new PieceVm(ServiceProvider)
+		public PieceVm CreateSimple() => new PieceVm(ServiceProvider, Owner, new Piece(Owner.Source))
 		{
 			Current = this,
 		};

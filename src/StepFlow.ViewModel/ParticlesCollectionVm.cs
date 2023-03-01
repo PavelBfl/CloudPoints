@@ -52,10 +52,12 @@ namespace StepFlow.ViewModel
 
 		public event NotifyCollectionChangedEventHandler? CollectionChanged;
 
-		internal void AddForce(Particle particle, IParticleVm particleVm)
+		public bool Contains(Particle particle) => ByModel.ContainsKey(particle);
+
+		internal void AddForce(IParticleVm particleVm)
 		{
-			ByModel.Add(particle, particleVm);
-			ByViewModel.Add(particleVm, particle);
+			ByModel.Add(particleVm.Source, particleVm);
+			ByViewModel.Add(particleVm, particleVm.Source);
 
 			CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 		}

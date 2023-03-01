@@ -1,11 +1,12 @@
-﻿using StepFlow.Core;
+﻿using System;
+using StepFlow.Core;
 
 namespace StepFlow.ViewModel
 {
-	public interface IParticleVm
+	public interface IParticleVm : IDisposable
 	{
-		WorldVm? Owner { get; }
+		WorldVm Owner { get; }
 
-		internal Particle? Source { get; }
+		internal Particle Source { get; }
 	}
 }
