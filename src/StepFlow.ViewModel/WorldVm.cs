@@ -11,11 +11,9 @@ namespace StepFlow.ViewModel
 {
 	public class WorldVm : WrapperVm<World>
 	{
-		public WorldVm(IServiceProvider serviceProvider, int colsCount, int rowsCount, HexOrientation orientation, bool offsetOdd)
-			: base(serviceProvider, new World(colsCount, rowsCount, orientation, offsetOdd))
+		public WorldVm(IServiceProvider serviceProvider, int colsCount, int rowsCount)
+			: base(serviceProvider, new World(colsCount, rowsCount))
 		{
-			serviceProvider.GetRequiredService<IWorldProvider>().Add(Source, this);
-
 			Particles = new ParticlesCollectionVm(this);
 
 			foreach (var node in Source.Place.Values)
@@ -89,10 +87,7 @@ namespace StepFlow.ViewModel
 				}
 				else if (containsVm && containsM)
 				{
-					if (Particles[particle] is PieceVm pieceVm)
-					{
-						pieceVm.TakeStep();
-					}
+					Particles[particle].TakeStep();
 				}
 			}
 		}
@@ -153,7 +148,7 @@ namespace StepFlow.ViewModel
 		{
 			using var context = new FlowContext();
 
-			var result = new World(0, 0, HexOrientation.Flat, false);
+			var result = new World(0, 0);
 			foreach (var hexNodeEntity in context.HexNodes.Where(x => x.OwnerId == worldId))
 			{
 				result.Place.Add(new Node(null, new Point(

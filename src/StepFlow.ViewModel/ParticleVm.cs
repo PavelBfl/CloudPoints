@@ -4,7 +4,7 @@ using StepFlow.ViewModel.Exceptions;
 
 namespace StepFlow.ViewModel
 {
-	public class ParticleVm<T> : WrapperVm<T>, IParticleVm, IDisposable
+	public class ParticleVm<T> : WrapperVm<T>, IParticleVm
 		where T : Particle
 	{
 		public ParticleVm(IServiceProvider serviceProvider, WorldVm owner, T source)
@@ -21,10 +21,15 @@ namespace StepFlow.ViewModel
 
 		Particle IParticleVm.Source => Source;
 
-		public void Dispose()
+		public virtual void Dispose()
 		{
 			Owner.Particles.RemoveForce(this);
 			owner = null;
+		}
+
+		public virtual void TakeStep()
+		{
+			// Реализации нет т.к. для класса NodeVm пока нет реализации скорее всего в будущем метод будет абстрактным
 		}
 	}
 }

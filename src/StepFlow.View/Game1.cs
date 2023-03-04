@@ -20,21 +20,13 @@ namespace StepFlow.View
 
 		private RootVm Root { get; }
 
-		private static IServiceProvider CreateServiceProvider()
-		{
-			var services = new ServiceCollection();
-			services.AddSingleton<IWorldProvider, WorldProvider>();
-
-			return services.BuildServiceProvider();
-		}
-
 		public Game1()
 		{
 			Graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "Content";
 			IsMouseVisible = true;
 
-			Root = new RootVm(CreateServiceProvider(), 10, 10, HexOrientation.Flat, false);
+			Root = new RootVm(new ServiceCollection().BuildServiceProvider(), 10, 10);
 			Root.Root.OwnerBounds = new System.Drawing.RectangleF(0, 0, Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight);
 			Root.Root.Margin = new Layout.Margin(1);
 

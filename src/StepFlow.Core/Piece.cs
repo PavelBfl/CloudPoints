@@ -7,7 +7,7 @@
 		{
 			StrengthMax = 10;
 			Strength = 10;
-			CollisionDamage = 10;
+			CollisionDamage = 5;
 		}
 
 		private Node? current;

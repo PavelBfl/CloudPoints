@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using StepFlow.Core.Exceptions;
+using StepFlow.Core.Collision;
 
 namespace StepFlow.Core
 {
 	public class World
 	{
-		public World(int colsCount, int rowsCount, HexOrientation orientation, bool offsetOdd)
+		public World(int colsCount, int rowsCount)
 		{
 			if (colsCount < 0)
 			{
@@ -19,8 +19,6 @@ namespace StepFlow.Core
 				throw new ArgumentOutOfRangeException(nameof(rowsCount));
 			}
 
-			Orientation = orientation;
-			OffsetOdd = offsetOdd;
 			Particles = new ParticlesCollection(this);
 			Place = new Place(this);
 
@@ -34,18 +32,12 @@ namespace StepFlow.Core
 			}
 		}
 
-		public HexOrientation Orientation { get; }
-
-		public bool OffsetOdd { get; }
-
 		public ParticlesCollection Particles { get; }
 
 		public Place Place { get; }
 
-		public void TakeStep()
+		private static IEnumerable<PairCollision> GetSwaps(Piece[] pieces)
 		{
-			var pieces = Particles.OfType<Piece>().ToArray();
-
 			for (var iFirst = 0; iFirst < pieces.Length; iFirst++)
 			{
 				for (var iSecond = 0; iSecond < iFirst; iSecond++)
@@ -57,11 +49,14 @@ namespace StepFlow.Core
 						firstPiece.Current == secondPiece.Next && secondPiece.Current == firstPiece.Next
 					)
 					{
-						SwapCollision(firstPiece, secondPiece);
+						yield return new PairCollision(firstPiece, secondPiece);
 					}
 				}
 			}
+		}
 
+		private static IEnumerable<CrashCollision> GetCrashes(Piece[] pieces)
+		{
 			for (var iFirst = 0; iFirst < pieces.Length; iFirst++)
 			{
 				for (var iSecond = 0; iSecond < iFirst; iSecond++)
@@ -70,15 +65,18 @@ namespace StepFlow.Core
 					var secondPiece = pieces[iSecond];
 					if (CheckCrash(firstPiece, secondPiece))
 					{
-						CrashCollision(firstPiece, secondPiece);
+						yield return new CrashCollision(firstPiece, secondPiece);
 					}
 					else if (CheckCrash(secondPiece, firstPiece))
 					{
-						CrashCollision(secondPiece, firstPiece);
+						yield return new CrashCollision(secondPiece, firstPiece);
 					}
 				}
 			}
+		}
 
+		private static IEnumerable<IReadOnlyList<Piece>> GetCompetitors(Piece[] pieces)
+		{
 			var disputedNodes = new Dictionary<Node, List<Piece>>();
 			foreach (var piece in pieces)
 			{
@@ -96,7 +94,23 @@ namespace StepFlow.Core
 
 			foreach (var competitors in disputedNodes.Values.Where(x => x.Count > 1))
 			{
-				DisputedCollision(competitors);
+				yield return competitors;
+			}
+		}
+
+		public CollisionResult TakeStep()
+		{
+			var pieces = Particles.OfType<Piece>().ToArray();
+
+			var result = new CollisionResult(
+				GetCrashes(pieces),
+				GetSwaps(pieces),
+				GetCompetitors(pieces)
+			);
+
+			foreach (var collisionData in result)
+			{
+				DefineDamage(collisionData);
 			}
 
 			foreach (var piece in pieces)
@@ -111,25 +125,12 @@ namespace StepFlow.Core
 			{
 				particle.TakeStep();
 			}
+
+			return result;
 		}
 
-		private bool CheckCrash(Piece stationary, Piece moved)
+		private static bool CheckCrash(Piece stationary, Piece moved)
 			=> stationary.Current is { } && stationary.Next is null && moved.Next == stationary.Current;
-
-		protected virtual void CrashCollision(Piece stationary, Piece moved)
-		{
-			DefineDamage(new[] { stationary, moved });
-		}
-
-		protected virtual void SwapCollision(Piece first, Piece second)
-		{
-			DefineDamage(new[] { first, second });
-		}
-
-		protected virtual void DisputedCollision(IReadOnlyList<Piece> competitors)
-		{
-			DefineDamage(competitors);
-		}
 
 		private void DefineDamage(IReadOnlyList<Piece> pieces)
 		{
@@ -138,6 +139,7 @@ namespace StepFlow.Core
 			foreach (var piece in pieces)
 			{
 				piece.Strength -= allDamage - piece.CollisionDamage;
+				piece.Next = null;
 			}
 		}
 	}

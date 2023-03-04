@@ -11,8 +11,8 @@ namespace StepFlow.ViewModel.Layout
 {
 	public class RootVm : IDisposable
 	{
-		public RootVm(IServiceProvider serviceProvider, int colsCount, int rowsCount, HexOrientation orientation, bool offsetOdd)
-			: this(new WorldVm(serviceProvider, colsCount, rowsCount, orientation, offsetOdd))
+		public RootVm(IServiceProvider serviceProvider, int colsCount, int rowsCount)
+			: this(new WorldVm(serviceProvider, colsCount, rowsCount))
 		{
 		}
 

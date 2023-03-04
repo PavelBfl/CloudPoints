@@ -115,12 +115,11 @@ namespace StepFlow.ViewModel
 
 		protected override void ClearItems()
 		{
-			foreach (var item in this)
+			foreach (var item in this.ToArray())
 			{
+				item.Dispose();
 				Source.Owner.TimeAxis.Remove(item);
 			}
-
-			base.ClearItems();
 		}
 
 		protected override void MoveItem(int oldIndex, int newIndex)

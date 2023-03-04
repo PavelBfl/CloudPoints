@@ -7,6 +7,8 @@ namespace StepFlow.ViewModel
 	{
 		WorldVm Owner { get; }
 
+		void TakeStep();
+
 		internal Particle Source { get; }
 	}
 }

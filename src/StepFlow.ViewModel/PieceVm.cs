@@ -68,12 +68,27 @@ namespace StepFlow.ViewModel
 			}
 		}
 
-		public void TakeStep()
-		{
-			var newCurrent = Source.Current is { } ? (NodeVm)Owner.Particles[Source.Current] : null;
-			Current = newCurrent;
+		private NodeVm? GetNode(Node? node) => node is { } ? (NodeVm)Owner.Particles[node] : null;
 
+		public override void TakeStep()
+		{
+			if (Source.Current != Next?.Source)
+			{
+				CommandQueue.Clear();
+			}
+
+			Current = GetNode(Source.Current);
+			Next = GetNode(Source.Next);
+		}
+
+		public override void Dispose()
+		{
+			CommandQueue.Clear();
+			IsMark = false;
 			Next = null;
+			Current = null;
+
+			base.Dispose();
 		}
 
 		public CommandsQueueVm CommandQueue { get; }
