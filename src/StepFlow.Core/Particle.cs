@@ -35,7 +35,7 @@ namespace StepFlow.Core
 			}
 		}
 
-		public World OwnerRequired => Owner ?? throw InvalidCoreException.CreateInvalidAccessOwner();
+		public World OwnerRequired => Owner ?? throw ExceptionBuilder.CreateInvalidAccessOwner();
 
 		internal virtual void TakeStep()
 		{

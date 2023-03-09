@@ -113,5 +113,19 @@ namespace StepFlow.ViewModel
 
 			Add(new MoveCommand(this, node));
 		}
+
+		public void CreateTo(NodeVm node)
+		{
+			if (node is null)
+			{
+				throw new ArgumentNullException(nameof(node));
+			}
+
+			Add(new CreateCommand(
+				this,
+				new PieceVm(ServiceProvider, Owner, new Piece(Owner.Source)),
+				node
+			));
+		}
 	}
 }

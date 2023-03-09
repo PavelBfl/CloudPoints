@@ -20,7 +20,7 @@ namespace StepFlow.Core
 
 			if (!Items.Add(piece))
 			{
-				throw InvalidCoreException.CreateAddExistsElement();
+				throw ExceptionBuilder.CreateAddExistsElement();
 			}
 		}
 
@@ -33,7 +33,7 @@ namespace StepFlow.Core
 
 			if (!Items.Remove(piece))
 			{
-				throw InvalidCoreException.CreateNotExistsElement();
+				throw ExceptionBuilder.CreateNotExistsElement();
 			}
 		}
 

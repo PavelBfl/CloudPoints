@@ -30,12 +30,12 @@ namespace StepFlow.Core
 
 			if (ReferenceEquals(Owner, item.Owner))
 			{
-				throw InvalidCoreException.CreateAddAlreadyExistsParticle();
+				throw ExceptionBuilder.CreateAddAlreadyExistsParticle();
 			}
 
 			if (item.Owner is { })
 			{
-				throw InvalidCoreException.CreateAddParticleBelongOtherOwner();
+				throw ExceptionBuilder.CreateAddParticleBelongOtherOwner();
 			}
 
 			item.Owner = Owner;
@@ -66,12 +66,12 @@ namespace StepFlow.Core
 
 			if (item.Owner is null)
 			{
-				throw InvalidCoreException.CreateParticleWithoutOwner();
+				throw ExceptionBuilder.CreateParticleWithoutOwner();
 			}
 
 			if (!ReferenceEquals(Owner, item.Owner))
 			{
-				throw InvalidCoreException.CreateAddAlreadyExistsParticle();
+				throw ExceptionBuilder.CreateAddAlreadyExistsParticle();
 			}
 
 			item.Owner = null;
