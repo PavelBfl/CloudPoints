@@ -2,26 +2,25 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
-using StepFlow.Common;
 using StepFlow.Core;
 using StepFlow.Entities;
+using StepFlow.GamePlay;
 
 namespace StepFlow.ViewModel
 {
-	public class WorldVm : WrapperVm<World>
+	public class ContextVm : WrapperVm<Context>
 	{
-		public WorldVm(IServiceProvider serviceProvider, int colsCount, int rowsCount)
-			: base(serviceProvider, new World(colsCount, rowsCount))
+		public ContextVm(IServiceProvider serviceProvider, int colsCount, int rowsCount)
+			: base(serviceProvider, new Context(colsCount, rowsCount))
 		{
 			Particles = new ParticlesCollectionVm(this);
 
-			foreach (var node in Source.Place.Values)
+			foreach (var node in Source.World.Place.Values)
 			{
 				new NodeVm(serviceProvider, this, node);
 			}
 
-			TimeAxis = new AxisVm();
+			TimeAxis = new AxisVm(ServiceProvider, Source.AxisTime);
 		}
 
 		public ParticlesCollectionVm Particles { get; }
@@ -62,12 +61,12 @@ namespace StepFlow.ViewModel
 
 		public void TakeStep()
 		{
-			Source.TakeStep();
+			Source.World.TakeStep();
 
-			foreach (var particle in Particles.Models.Union(Source.Particles))
+			foreach (var particle in Particles.Models.Union(Source.World.Particles))
 			{
 				var containsVm = Particles.Contains(particle);
-				var containsM = Source.Particles.Contains(particle);
+				var containsM = Source.World.Particles.Contains(particle);
 
 				if (containsVm && !containsM)
 				{
@@ -103,7 +102,7 @@ namespace StepFlow.ViewModel
 			}).Entity;
 
 			var links = new Dictionary<object, EntityBase>();
-			foreach (var particle in Source.Particles)
+			foreach (var particle in Source.World.Particles)
 			{
 				switch (particle)
 				{
@@ -130,7 +129,7 @@ namespace StepFlow.ViewModel
 				}
 			}
 
-			foreach (var piece in Source.Particles.OfType<Piece>())
+			foreach (var piece in Source.World.Particles.OfType<Piece>())
 			{
 				if (piece.Current is { } current)
 				{

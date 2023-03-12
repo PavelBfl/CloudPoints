@@ -5,7 +5,7 @@ namespace StepFlow.ViewModel
 {
 	public interface IParticleVm : IDisposable
 	{
-		WorldVm Owner { get; }
+		ContextVm Owner { get; }
 
 		void TakeStep();
 

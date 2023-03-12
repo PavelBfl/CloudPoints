@@ -7,7 +7,7 @@ namespace StepFlow.ViewModel
 	public class ParticleVm<T> : WrapperVm<T>, IParticleVm
 		where T : Particle
 	{
-		public ParticleVm(IServiceProvider serviceProvider, WorldVm owner, T source)
+		public ParticleVm(IServiceProvider serviceProvider, ContextVm owner, T source)
 			: base(serviceProvider, source)
 		{
 			this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
@@ -15,9 +15,9 @@ namespace StepFlow.ViewModel
 			Owner.Particles.AddForce(this);
 		}
 
-		private WorldVm? owner;
+		private ContextVm? owner;
 
-		public WorldVm Owner => owner ?? throw new InvalidViewModelException();
+		public ContextVm Owner => owner ?? throw new InvalidViewModelException();
 
 		Particle IParticleVm.Source => Source;
 

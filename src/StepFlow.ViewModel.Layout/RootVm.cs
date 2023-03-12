@@ -12,11 +12,11 @@ namespace StepFlow.ViewModel.Layout
 	public class RootVm : IDisposable
 	{
 		public RootVm(IServiceProvider serviceProvider, int colsCount, int rowsCount)
-			: this(new WorldVm(serviceProvider, colsCount, rowsCount))
+			: this(new ContextVm(serviceProvider, colsCount, rowsCount))
 		{
 		}
 
-		public RootVm(WorldVm world)
+		public RootVm(ContextVm world)
 		{
 			World = world ?? throw new ArgumentNullException(nameof(world));
 			NotifyPropertyExtensions.TrySubscrible(World, WorldPropertyChanging, WorldPropertyChanged);
@@ -56,7 +56,7 @@ namespace StepFlow.ViewModel.Layout
 		{
 			switch (e.PropertyName)
 			{
-				case nameof(WorldVm.Current):
+				case nameof(ContextVm.Current):
 					NotifyPropertyExtensions.TryUnsubscrible(World.Current?.CommandQueue, CommandQueueCollectionChanged);
 					RefreshQueue(Array.Empty<ICommandVm>());
 					break;
@@ -67,7 +67,7 @@ namespace StepFlow.ViewModel.Layout
 		{
 			switch (e.PropertyName)
 			{
-				case nameof(WorldVm.Current):
+				case nameof(ContextVm.Current):
 					NotifyPropertyExtensions.TrySubscrible(World.Current?.CommandQueue, CommandQueueCollectionChanged);
 					break;
 			}
@@ -107,7 +107,7 @@ namespace StepFlow.ViewModel.Layout
 			}
 		}
 
-		public WorldVm World { get; }
+		public ContextVm World { get; }
 
 		public GridPlot Root { get; }
 

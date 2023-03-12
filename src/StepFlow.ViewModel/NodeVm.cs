@@ -8,7 +8,7 @@ namespace StepFlow.ViewModel
 {
 	public class NodeVm : ParticleVm<Node>, IMarkered, IParticleVm
 	{
-		public NodeVm(IServiceProvider serviceProvider, WorldVm owner, Node source)
+		public NodeVm(IServiceProvider serviceProvider, ContextVm owner, Node source)
 			: base(serviceProvider, owner, source)
 		{
 			// TODO Реализовать отписку или другой способ оповещения

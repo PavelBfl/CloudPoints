@@ -22,7 +22,7 @@ namespace StepFlow.View.Controls
 			return (pointy, flat, pointy / 4, flat / 2);
 		}
 
-		public HexGrid(Game game, WorldVm source, RectPlot plot) : base(game)
+		public HexGrid(Game game, ContextVm source, RectPlot plot) : base(game)
 		{
 			Plot = plot ?? throw new ArgumentNullException(nameof(plot));
 			Plot.PropertyChanged += PlotPropertyChanged;
@@ -32,9 +32,9 @@ namespace StepFlow.View.Controls
 			Refresh();
 		}
 
-		private WorldVm? source;
+		private ContextVm? source;
 
-		public WorldVm? Source
+		public ContextVm? Source
 		{
 			get => source;
 			set

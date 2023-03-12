@@ -8,12 +8,12 @@ namespace StepFlow.ViewModel
 {
 	public class ParticlesCollectionVm : INotifyCollectionChanged
 	{
-		public ParticlesCollectionVm(WorldVm owner)
+		public ParticlesCollectionVm(ContextVm owner)
 		{
 			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
 		}
 
-		public WorldVm Owner { get; }
+		public ContextVm Owner { get; }
 
 		public IParticleVm this[Particle key]
 		{

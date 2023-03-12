@@ -8,7 +8,7 @@ namespace StepFlow.ViewModel
 {
 	public class PieceVm : ParticleVm<Piece>, IParticleVm, IMarkered
 	{
-		public PieceVm(IServiceProvider serviceProvider, WorldVm owner, Piece source)
+		public PieceVm(IServiceProvider serviceProvider, ContextVm owner, Piece source)
 			: base(serviceProvider, owner, source)
 		{
 			CommandQueue = new CommandsQueueVm(this);
