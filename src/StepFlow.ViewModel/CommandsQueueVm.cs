@@ -3,11 +3,12 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using StepFlow.TimeLine;
+using StepFlow.ViewModel.Commands;
 using StepFlow.ViewModel.Exceptions;
 
 namespace StepFlow.ViewModel
 {
-	public class CommandsQueueVm : ObservableCollection<ICommandVm>, INotifyCollectionChanged, IMarkered
+    public class CommandsQueueVm : ObservableCollection<CommandVm>, INotifyCollectionChanged, IMarkered
 	{
 		public CommandsQueueVm(PieceVm source)
 		{
@@ -59,7 +60,7 @@ namespace StepFlow.ViewModel
 			}
 		}
 
-		protected override void InsertItem(int index, ICommandVm item)
+		protected override void InsertItem(int index, CommandVm item)
 		{
 			var result = WrapItem(item);
 
@@ -68,7 +69,7 @@ namespace StepFlow.ViewModel
 			RefreshOrder();
 		}
 
-		protected override void SetItem(int index, ICommandVm item)
+		protected override void SetItem(int index, CommandVm item)
 		{
 			var result = WrapItem(item);
 
@@ -79,7 +80,7 @@ namespace StepFlow.ViewModel
 
 		private PieceVm Source { get; }
 
-		private void ValidateItem(ICommandVm item)
+		private void ValidateItem(CommandVm item)
 		{
 			if (item is null)
 			{
@@ -92,7 +93,7 @@ namespace StepFlow.ViewModel
 			}
 		}
 
-		private ICommandVm WrapItem(ICommandVm item)
+		private CommandVm WrapItem(CommandVm item)
 		{
 			ValidateItem(item);
 
@@ -129,7 +130,7 @@ namespace StepFlow.ViewModel
 			RefreshOrder();
 		}
 
-		private class LocalCommand : CommandWrapper<ICommandVm>, ICommandVm
+		private class LocalCommand : CommandWrapper<CommandVm>
 		{
 			public LocalCommand(CommandsQueueVm owner, ICommandVm source) : base(source)
 			{

@@ -6,7 +6,7 @@ using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
-	public class PieceVm : ParticleVm<Piece>, IParticleVm, IMarkered
+    public class PieceVm : ParticleVm<Piece>, IParticleVm, IMarkered
 	{
 		public PieceVm(IServiceProvider serviceProvider, ContextVm owner, Piece source)
 			: base(serviceProvider, owner, source)
@@ -93,7 +93,7 @@ namespace StepFlow.ViewModel
 
 		public CommandsQueueVm CommandQueue { get; }
 
-		public void Add(ICommandVm command)
+		public void Add(CommandVm command)
 		{
 			if (command is null)
 			{
@@ -123,7 +123,7 @@ namespace StepFlow.ViewModel
 
 			Add(new CreateCommand(
 				this,
-				new PieceVm(ServiceProvider, Owner, new Piece(Owner.Source)),
+				new PieceVm(ServiceProvider, Owner, new Piece(Owner.Source.World)),
 				node
 			));
 		}

@@ -1,40 +1,26 @@
 ﻿using System;
-using StepFlow.TimeLine;
 
 namespace StepFlow.ViewModel.Commands
 {
-	public class MoveCommand : CommandBase, ICommandVm
+	public class MoveCommand : CommandVm
 	{
-		public MoveCommand(PieceVm current, NodeVm node)
+		public MoveCommand(IServiceProvider serviceProvider, ContextVm owner, PieceVm target, NodeVm node)
+			: base(serviceProvider, new GamePlay.MoveCommand(owner.Source, target.Source, node.Source))
 		{
-			Current = current ?? throw new ArgumentNullException(nameof(current));
-			Node = node ?? throw new ArgumentNullException(nameof(node));
-
-			stateToken = Node.State.Registry(NodeState.Planned);
+			Next = node;
 		}
 
-		public PieceVm Current { get; }
+		public NodeVm Next { get; }
 
-		public NodeVm Node { get; }
-
-		public bool IsMark
+		public override bool IsMark
 		{
-			get => Node.IsMark;
-			set => Node.IsMark = value;
+			get => Next.IsMark;
+			set => Next.IsMark = value;
 		}
-
-		private IDisposable? stateToken;
 
 		public override void Execute()
 		{
-			Current.Next = Node;
-		}
-
-		public override void Dispose()
-		{
-			stateToken?.Dispose();
-			stateToken = null;
-			base.Dispose();
+			((PieceVm)Target).Next = Next;
 		}
 	}
 }
