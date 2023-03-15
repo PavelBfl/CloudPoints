@@ -1,11 +1,10 @@
 ﻿using System;
-using StepFlow.Core;
 using StepFlow.ViewModel.Exceptions;
 
 namespace StepFlow.ViewModel
 {
 	public class ParticleVm<T> : WrapperVm<T>, IParticleVm
-		where T : Particle
+		where T : GamePlay.IParticle
 	{
 		public ParticleVm(IServiceProvider serviceProvider, ContextVm owner, T source)
 			: base(serviceProvider, source)
@@ -19,7 +18,7 @@ namespace StepFlow.ViewModel
 
 		public ContextVm Owner => owner ?? throw new InvalidViewModelException();
 
-		Particle IParticleVm.Source => Source;
+		GamePlay.IParticle IParticleVm.Source => Source;
 
 		public virtual void Dispose()
 		{

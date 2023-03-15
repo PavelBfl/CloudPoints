@@ -1,21 +1,30 @@
 ﻿using System;
-using System.Collections.ObjectModel;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
-using StepFlow.TimeLine;
+using Microsoft.Extensions.DependencyInjection;
 using StepFlow.ViewModel.Commands;
 using StepFlow.ViewModel.Exceptions;
+using StepFlow.ViewModel.Services;
 
 namespace StepFlow.ViewModel
 {
-    public class CommandsQueueVm : ObservableCollection<CommandVm>, INotifyCollectionChanged, IMarkered
+	public class CommandsQueueVm : IList<CommandVm>, INotifyCollectionChanged, IMarkered
 	{
-		public CommandsQueueVm(PieceVm source)
+		public CommandsQueueVm(PieceVm owner)
 		{
-			Source = source ?? throw new ArgumentNullException(nameof(source));
+			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
+			WrapperProvider = Owner.ServiceProvider.GetRequiredService<IWrapperProvider>();
 		}
 
+		private IWrapperProvider WrapperProvider { get; }
+
+		public PieceVm Owner { get; }
+
 		private bool isMark;
+
+		public event NotifyCollectionChangedEventHandler? CollectionChanged;
+
 		public bool IsMark
 		{
 			get => isMark;
@@ -33,122 +42,113 @@ namespace StepFlow.ViewModel
 			}
 		}
 
-		private void RefreshOrder()
+		private List<CommandVm> commands = new List<CommandVm>();
+		private List<CommandVm> Commands
 		{
-			if (this.Any())
+			get
 			{
-				var startTime = Source.Owner.TimeAxis.NearestAllow;
-
-				for (var i = 0; i < Count; i++)
+				if (SourceChange)
 				{
-					var command = this[i];
-					var newTime = startTime + i;
-
-					if (Source.Owner.TimeAxis.TryGetTime(command, out var time))
+					var index = 0;
+					foreach (var command in Owner.Source.Commands)
 					{
-						if (newTime != time)
+						if (index < commands.Count)
 						{
-							Source.Owner.TimeAxis.Remove(command);
-							Source.Owner.TimeAxis.Registry(newTime, command);
+							if (commands[index].Source != command)
+							{
+								commands[index] = CreateCommandVm(command);
+							}
 						}
+						else if (index == commands.Count)
+						{
+							commands.Add(CreateCommandVm(command));
+						}
+						index++;
 					}
-					else
+
+					while (index < commands.Count)
 					{
-						Source.Owner.TimeAxis.Registry(newTime, command);
+						var removedIndex = commands.Count - 1;
+						commands[removedIndex].Dispose();
+						commands.RemoveAt(removedIndex);
 					}
+					SourceChange = false;
 				}
+
+				return commands;
 			}
 		}
 
-		protected override void InsertItem(int index, CommandVm item)
+		private CommandVm CreateCommandVm(GamePlay.Command modelCommand)
 		{
-			var result = WrapItem(item);
-
-			base.InsertItem(index, result);
-
-			RefreshOrder();
-		}
-
-		protected override void SetItem(int index, CommandVm item)
-		{
-			var result = WrapItem(item);
-
-			base.SetItem(index, result);
-
-			RefreshOrder();
-		}
-
-		private PieceVm Source { get; }
-
-		private void ValidateItem(CommandVm item)
-		{
-			if (item is null)
+			return modelCommand switch
 			{
-				throw new ArgumentNullException(nameof(item));
-			}
-
-			if (Source != item.Current)
-			{
-				throw InvalidViewModelException.CreateInvalidSync();
-			}
+				GamePlay.MoveCommand moveCommand => new MoveCommand(
+					Owner.ServiceProvider,
+					(PieceVm)WrapperProvider.GetViewModel(moveCommand.Target),
+					(NodeVm)WrapperProvider.GetViewModel(moveCommand.Next)
+				),
+				_ => throw new InvalidViewModelException(),
+			};
 		}
 
-		private CommandVm WrapItem(CommandVm item)
+		private bool SourceChange { get; set; }
+
+		private void Refresh()
 		{
-			ValidateItem(item);
-
-			return new LocalCommand(this, item);
+			SourceChange = true;
+			CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 		}
 
-		protected override void RemoveItem(int index) => RemoveItem(index, true);
+		public int Count => Commands.Count;
 
-		private void RemoveItem(int index, bool removeAxis)
+		public bool IsReadOnly => false;
+
+		public CommandVm this[int index] { get => Commands[index]; set => Commands[index] = value; }
+
+		public int IndexOf(CommandVm item) => Commands.IndexOf(item);
+
+		public void Insert(int index, CommandVm item)
 		{
-			if (removeAxis)
+			Owner.Source.Commands.Insert(index, item.Source);
+			Refresh();
+		}
+
+		public void RemoveAt(int index)
+		{
+			Owner.Source.Commands.RemoveAt(index);
+			Refresh();
+		}
+
+		public void Add(CommandVm item)
+		{
+			Owner.Source.Commands.Add(item.Source);
+			Refresh();
+		}
+
+		public void Clear()
+		{
+			Owner.Source.Commands.Clear();
+			Refresh();
+		}
+
+		public bool Contains(CommandVm item) => Commands.Contains(item);
+
+		public void CopyTo(CommandVm[] array, int arrayIndex) => Commands.CopyTo(array, arrayIndex);
+
+		public bool Remove(CommandVm item)
+		{
+			var removed = Owner.Source.Commands.Remove(item.Source);
+			if (removed)
 			{
-				Source.Owner.TimeAxis.Remove(this[index]);
+				Refresh();
 			}
 
-			base.RemoveItem(index);
-
-			RefreshOrder();
+			return removed;
 		}
 
-		protected override void ClearItems()
-		{
-			foreach (var item in this.ToArray())
-			{
-				item.Dispose();
-				Source.Owner.TimeAxis.Remove(item);
-			}
-		}
+		public IEnumerator<CommandVm> GetEnumerator() => Commands.GetEnumerator();
 
-		protected override void MoveItem(int oldIndex, int newIndex)
-		{
-			base.MoveItem(oldIndex, newIndex);
-
-			RefreshOrder();
-		}
-
-		private class LocalCommand : CommandWrapper<CommandVm>
-		{
-			public LocalCommand(CommandsQueueVm owner, ICommandVm source) : base(source)
-			{
-				Owner = owner ?? throw new ArgumentNullException(nameof(owner));
-			}
-
-			public CommandsQueueVm Owner { get; }
-
-			public PieceVm? Current => Source.Current;
-
-			public bool IsMark { get => Source.IsMark; set => Source.IsMark = value; }
-
-			public override void Dispose()
-			{
-				Owner.RemoveItem(Owner.IndexOf(this), false);
-
-				base.Dispose();
-			}
-		}
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}
 }

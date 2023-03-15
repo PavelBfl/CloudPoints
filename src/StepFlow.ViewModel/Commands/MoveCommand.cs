@@ -4,8 +4,8 @@ namespace StepFlow.ViewModel.Commands
 {
 	public class MoveCommand : CommandVm
 	{
-		public MoveCommand(IServiceProvider serviceProvider, ContextVm owner, PieceVm target, NodeVm node)
-			: base(serviceProvider, new GamePlay.MoveCommand(owner.Source, target.Source, node.Source))
+		public MoveCommand(IServiceProvider serviceProvider, PieceVm target, NodeVm node)
+			: base(serviceProvider, new GamePlay.MoveCommand(target.Source, node.Source))
 		{
 			Next = node;
 		}

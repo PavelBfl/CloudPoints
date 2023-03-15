@@ -108,19 +108,6 @@ namespace StepFlow.Core
 				GetCompetitors(pieces)
 			);
 
-			foreach (var collisionData in result)
-			{
-				DefineDamage(collisionData);
-			}
-
-			foreach (var piece in pieces)
-			{
-				if (Math.Abs(piece.Strength) < 0.000001)
-				{
-					Particles.Remove(piece);
-				}
-			}
-
 			foreach (var particle in Particles)
 			{
 				particle.TakeStep();
@@ -131,16 +118,5 @@ namespace StepFlow.Core
 
 		private static bool CheckCrash(Piece stationary, Piece moved)
 			=> stationary.Current is { } && stationary.Next is null && moved.Next == stationary.Current;
-
-		private void DefineDamage(IReadOnlyList<Piece> pieces)
-		{
-			var allDamage = pieces.Sum(x => x.CollisionDamage);
-
-			foreach (var piece in pieces)
-			{
-				piece.Strength -= allDamage - piece.CollisionDamage;
-				piece.Next = null;
-			}
-		}
 	}
 }

@@ -1,14 +1,12 @@
 ﻿using System;
-using StepFlow.Common;
 using StepFlow.Core;
-using StepFlow.Entities;
 using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
-    public class PieceVm : ParticleVm<Piece>, IParticleVm, IMarkered
+	public class PieceVm : ParticleVm<GamePlay.Piece>, IParticleVm, IMarkered
 	{
-		public PieceVm(IServiceProvider serviceProvider, ContextVm owner, Piece source)
+		public PieceVm(IServiceProvider serviceProvider, ContextVm owner, GamePlay.Piece source)
 			: base(serviceProvider, owner, source)
 		{
 			CommandQueue = new CommandsQueueVm(this);

@@ -1,5 +1,4 @@
 ﻿using System;
-using StepFlow.Core;
 
 namespace StepFlow.ViewModel
 {
@@ -9,6 +8,6 @@ namespace StepFlow.ViewModel
 
 		void TakeStep();
 
-		internal Particle Source { get; }
+		internal GamePlay.IParticle Source { get; }
 	}
 }

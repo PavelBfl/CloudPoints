@@ -15,7 +15,7 @@ namespace StepFlow.ViewModel
 		{
 			Particles = new ParticlesCollectionVm(this);
 
-			foreach (var node in Source.World.Place.Values)
+			foreach (GamePlay.Node node in Source.World.Place.Values)
 			{
 				new NodeVm(serviceProvider, this, node);
 			}
@@ -76,7 +76,7 @@ namespace StepFlow.ViewModel
 				{
 					switch (particle)
 					{
-						case Piece piece:
+						case Core.Piece piece:
 							new PieceVm(ServiceProvider, this, piece);
 							break;
 						case Node node:
@@ -91,72 +91,5 @@ namespace StepFlow.ViewModel
 			}
 		}
 
-		public void Save()
-		{
-			using var context = new FlowContext();
-			context.InitCurrentId();
-
-			var worldEntity = context.Worlds.Add(new WorldEntity()
-			{
-				Id = context.GetId(),
-			}).Entity;
-
-			var links = new Dictionary<object, EntityBase>();
-			foreach (var particle in Source.World.Particles)
-			{
-				switch (particle)
-				{
-					case Node hexNode:
-						var hexNodeEntity = context.HexNodes.Add(new HexNodeEntity()
-						{
-							Id = context.GetId(),
-							Col = hexNode.Position.X,
-							Row = hexNode.Position.Y,
-							Owner = worldEntity,
-						}).Entity;
-						links.Add(hexNode, hexNodeEntity);
-						break;
-					case Piece piece:
-						var pieceEntity = context.Pieces.Add(new PieceEntity()
-						{
-							Id = context.GetId(),
-							Owner = worldEntity,
-						}).Entity;
-						links.Add(piece, pieceEntity);
-						break;
-					default:
-						break;
-				}
-			}
-
-			foreach (var piece in Source.World.Particles.OfType<Piece>())
-			{
-				if (piece.Current is { } current)
-				{
-					var pieceEntity = (PieceEntity)links[piece];
-					var hexNodeEntity = (HexNodeEntity)links[current];
-
-					pieceEntity.Current = hexNodeEntity;
-				}
-			}
-
-			context.SaveChanges();
-		}
-
-		public static World Load(int worldId)
-		{
-			using var context = new FlowContext();
-
-			var result = new World(0, 0);
-			foreach (var hexNodeEntity in context.HexNodes.Where(x => x.OwnerId == worldId))
-			{
-				result.Place.Add(new Node(null, new Point(
-					x: hexNodeEntity.Col,
-					y: hexNodeEntity.Row
-				)));
-			}
-
-			return result;
-		}
 	}
 }

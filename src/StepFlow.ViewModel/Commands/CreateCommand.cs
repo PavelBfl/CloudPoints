@@ -3,7 +3,7 @@ using StepFlow.TimeLine;
 
 namespace StepFlow.ViewModel.Commands
 {
-	public class CreateCommand : CommandBase, ICommandVm
+	public class CreateCommand : CommandBase
 	{
 		public CreateCommand(PieceVm current, PieceVm newPiece, NodeVm startNode)
 		{

@@ -5,9 +5,6 @@
 		public Piece(World owner)
 			: base(owner)
 		{
-			StrengthMax = 10;
-			Strength = 10;
-			CollisionDamage = 5;
 		}
 
 		private Node? current;
@@ -37,7 +34,5 @@
 				Next = null;
 			}
 		}
-
-		public double CollisionDamage { get; set; }
 	}
 }

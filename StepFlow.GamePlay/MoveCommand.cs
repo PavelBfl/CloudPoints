@@ -1,12 +1,11 @@
 ﻿using System;
-using StepFlow.Core;
 
 namespace StepFlow.GamePlay
 {
 	public class MoveCommand : Command
 	{
-		public MoveCommand(Context owner, Piece target, Node next)
-			: base(owner, target ?? throw new ArgumentNullException(nameof(target)))
+		public MoveCommand(Piece target, Node next)
+			: base(target ?? throw new ArgumentNullException(nameof(target)))
 		{
 			Target = target ?? throw new ArgumentNullException(nameof(target));
 			Next = next ?? throw new ArgumentNullException(nameof(next));
