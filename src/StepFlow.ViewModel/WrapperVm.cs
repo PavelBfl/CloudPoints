@@ -20,6 +20,7 @@ namespace StepFlow.ViewModel
 
 		protected IWrapperProvider WrapperProvider { get; }
 
+
 		public virtual void Dispose() => WrapperProvider.Remove(this, Source);
 	}
 }

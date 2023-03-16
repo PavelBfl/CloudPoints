@@ -4,13 +4,16 @@ using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
-	public class PieceVm : ParticleVm<GamePlay.Piece>, IParticleVm, IMarkered
+	public class PieceVm : ParticleVm, IMarkered
 	{
-		public PieceVm(IServiceProvider serviceProvider, ContextVm owner, GamePlay.Piece source)
-			: base(serviceProvider, owner, source)
+		public PieceVm(ContextVm owner, GamePlay.Piece source)
+			: base(owner, source)
 		{
+			Source = source ?? throw new ArgumentNullException(nameof(source));
 			CommandQueue = new CommandsQueueVm(this);
 		}
+
+		public new GamePlay.Piece Source { get; }
 
 		private bool isMark = false;
 		public bool IsMark
@@ -109,21 +112,7 @@ namespace StepFlow.ViewModel
 				throw new ArgumentNullException(nameof(node));
 			}
 
-			Add(new MoveCommand(this, node));
-		}
-
-		public void CreateTo(NodeVm node)
-		{
-			if (node is null)
-			{
-				throw new ArgumentNullException(nameof(node));
-			}
-
-			Add(new CreateCommand(
-				this,
-				new PieceVm(ServiceProvider, Owner, new Piece(Owner.Source.World)),
-				node
-			));
+			Add(new MoveCommand(ServiceProvider, this, node));
 		}
 	}
 }

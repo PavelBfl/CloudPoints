@@ -1,77 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using StepFlow.Core;
+using Microsoft.Extensions.DependencyInjection;
+using StepFlow.ViewModel.Collections;
 using StepFlow.ViewModel.Exceptions;
+using StepFlow.ViewModel.Services;
 
 namespace StepFlow.ViewModel
 {
-	public class ParticlesCollectionVm : INotifyCollectionChanged
+	public class ParticlesCollectionVm : CollectionWrapperObserver<ParticleVm, GamePlay.IParticle>
 	{
 		public ParticlesCollectionVm(ContextVm owner)
+			: base()
 		{
 			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
+			WrapperProvider = Owner.ServiceProvider.GetRequiredService<IWrapperProvider>();
 		}
 
-		public ContextVm Owner { get; }
+		private ContextVm Owner { get; }
 
-		public IParticleVm this[Particle key]
+		private IWrapperProvider WrapperProvider { get; }
+
+		protected override ParticleVm CreateObserver(GamePlay.IParticle observable)
 		{
-			get
+			if (WrapperProvider.TryGetViewModel(observable, out var result))
 			{
-				if (key is null)
-				{
-					throw new ArgumentNullException(nameof(key));
-				}
-
-				return ByModel[key];
+				return (ParticleVm)result;
 			}
-		}
-
-		public Particle this[IParticleVm key]
-		{
-			get
+			else
 			{
-				if (key is null)
+				return observable switch
 				{
-					throw new ArgumentNullException(nameof(key));
-				}
-
-				return ByViewModel[key];
-			}
-		}
-
-		private Dictionary<Particle, IParticleVm> ByModel { get; } = new Dictionary<Particle, IParticleVm>();
-
-		private Dictionary<IParticleVm, Particle> ByViewModel { get; } = new Dictionary<IParticleVm, Particle>();
-
-		public IReadOnlyCollection<Particle> Models => ByModel.Keys;
-		public IReadOnlyCollection<IParticleVm> ViewsModels => ByViewModel.Keys;
-
-		public int Count => ByModel.Count;
-
-		public event NotifyCollectionChangedEventHandler? CollectionChanged;
-
-		public bool Contains(Particle particle) => ByModel.ContainsKey(particle);
-
-		internal void AddForce(IParticleVm particleVm)
-		{
-			ByModel.Add(particleVm.Source, particleVm);
-			ByViewModel.Add(particleVm, particleVm.Source);
-
-			CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-		}
-
-		internal void RemoveForce(IParticleVm particleVm)
-		{
-			if (ByViewModel.Remove(particleVm, out var particle))
-			{
-				if (!ByModel.Remove(particle))
-				{
-					throw InvalidViewModelException.CreateInvalidMatchPairs();
-				}
-
-				CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+					GamePlay.Piece piece => new PieceVm(Owner, piece),
+					GamePlay.Node node => new NodeVm(Owner, node),
+					_ => throw new InvalidViewModelException(),
+				};
 			}
 		}
 	}

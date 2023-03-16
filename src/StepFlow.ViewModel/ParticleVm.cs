@@ -1,30 +1,16 @@
 ﻿using System;
-using StepFlow.ViewModel.Exceptions;
 
 namespace StepFlow.ViewModel
 {
-	public class ParticleVm<T> : WrapperVm<T>, IParticleVm
-		where T : GamePlay.IParticle
+	public class ParticleVm : WrapperVm<GamePlay.IParticle>
 	{
-		public ParticleVm(IServiceProvider serviceProvider, ContextVm owner, T source)
-			: base(serviceProvider, source)
+		public ParticleVm(ContextVm owner, GamePlay.IParticle source)
+			: base(owner.ServiceProvider, source)
 		{
-			this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
-
-			Owner.Particles.AddForce(this);
+			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
 		}
 
-		private ContextVm? owner;
-
-		public ContextVm Owner => owner ?? throw new InvalidViewModelException();
-
-		GamePlay.IParticle IParticleVm.Source => Source;
-
-		public virtual void Dispose()
-		{
-			Owner.Particles.RemoveForce(this);
-			owner = null;
-		}
+		public ContextVm Owner { get; }
 
 		public virtual void TakeStep()
 		{

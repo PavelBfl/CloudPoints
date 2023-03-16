@@ -5,14 +5,17 @@ using StepFlow.ViewModel.Marking;
 
 namespace StepFlow.ViewModel
 {
-	public class NodeVm : ParticleVm<GamePlay.Node>, IMarkered, IParticleVm
+	public class NodeVm : ParticleVm, IMarkered
 	{
-		public NodeVm(IServiceProvider serviceProvider, ContextVm owner, GamePlay.Node source)
-			: base(serviceProvider, owner, source)
+		public NodeVm(ContextVm owner, GamePlay.Node source)
+			: base(owner, source)
 		{
+			Source = source ?? throw new ArgumentNullException(nameof(source));
 			// TODO Реализовать отписку или другой способ оповещения
 			State.OnMarkChanged += StateOnMarkChanged;
 		}
+
+		public new GamePlay.Node Source { get; }
 
 		private void StateOnMarkChanged(object sender, MarkChanged<NodeState> e)
 		{
