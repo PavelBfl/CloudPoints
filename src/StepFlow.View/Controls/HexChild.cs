@@ -226,13 +226,6 @@ namespace StepFlow.View.Controls
 						piece.MoveTo(Source);
 					}
 				}
-				else if (game.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift))
-				{
-					foreach (var piece in Source.Owner.Pieces.Where(x => x.IsMark).ToArray())
-					{
-						piece.CreateTo(Source);
-					}
-				}
 				else
 				{
 					Source.Owner.Current = Source.Owner.Pieces.FirstOrDefault(x => x.Current == Source);

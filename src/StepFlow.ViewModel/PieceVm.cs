@@ -69,7 +69,7 @@ namespace StepFlow.ViewModel
 			}
 		}
 
-		private NodeVm? GetNode(Node? node) => node is { } ? (NodeVm)Owner.Particles[node] : null;
+		private NodeVm? GetNode(Node? node) => node is { } ? (NodeVm)WrapperProvider.GetViewModel(node) : null;
 
 		public override void TakeStep()
 		{

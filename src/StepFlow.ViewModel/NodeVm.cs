@@ -35,7 +35,7 @@ namespace StepFlow.ViewModel
 			set => SetValue(ref isMark, value);
 		}
 
-		public PieceVm CreateSimple() => new PieceVm(ServiceProvider, Owner, new GamePlay.Piece(Owner.Source, 10))
+		public PieceVm CreateSimple() => new PieceVm(Owner, new GamePlay.Piece(Owner.Source, 10))
 		{
 			Current = this,
 		};

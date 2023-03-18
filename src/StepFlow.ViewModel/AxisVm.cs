@@ -25,5 +25,7 @@ namespace StepFlow.ViewModel
 
 			Source.Remove(command.Source);
 		}
+
+		public void MoveNext() => Source.MoveNext();
 	}
 }

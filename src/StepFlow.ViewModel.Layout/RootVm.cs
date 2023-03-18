@@ -6,6 +6,7 @@ using System.ComponentModel;
 using StepFlow.Common;
 using StepFlow.Core;
 using StepFlow.Layout;
+using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel.Layout
 {
@@ -58,7 +59,7 @@ namespace StepFlow.ViewModel.Layout
 			{
 				case nameof(ContextVm.Current):
 					NotifyPropertyExtensions.TryUnsubscrible(World.Current?.CommandQueue, CommandQueueCollectionChanged);
-					RefreshQueue(Array.Empty<ICommandVm>());
+					RefreshQueue(Array.Empty<CommandVm>());
 					break;
 			}
 		}
@@ -79,7 +80,7 @@ namespace StepFlow.ViewModel.Layout
 			RefreshQueue(current.CommandQueue);
 		}
 
-		private void RefreshQueue(IReadOnlyList<ICommandVm> commandsQueue)
+		private void RefreshQueue(IReadOnlyList<CommandVm> commandsQueue)
 		{
 			while (commandsQueue.Count > QueueCommandInner.Count)
 			{

@@ -191,7 +191,7 @@ namespace StepFlow.View.Controls
 			}
 			else if (game.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.F5))
 			{
-				Source.Save();
+				// TODO Restore saving
 			}
 
 			base.Update(gameTime);
