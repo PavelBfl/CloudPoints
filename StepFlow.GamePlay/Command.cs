@@ -22,11 +22,11 @@ namespace StepFlow.GamePlay
 		{
 			if (Target is null)
 			{
-				Owner.AxisTime.Registry(Owner.StaticCommands.Count, this);
+				Owner.AxisTime.Registry(Owner.StaticCommands.Count + 1, this);
 			}
 			else
 			{
-				Owner.AxisTime.Registry(Owner.StaticCommands.Count, this);
+				Owner.AxisTime.Registry(Target.Commands.Count + 1, this);
 			}
 		}
 

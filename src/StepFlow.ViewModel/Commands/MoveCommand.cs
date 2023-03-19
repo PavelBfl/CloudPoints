@@ -4,13 +4,17 @@ namespace StepFlow.ViewModel.Commands
 {
 	public class MoveCommand : CommandVm
 	{
-		public MoveCommand(IServiceProvider serviceProvider, PieceVm target, NodeVm node)
-			: base(serviceProvider, new GamePlay.MoveCommand(target.Source, node.Source))
+		public MoveCommand(IServiceProvider serviceProvider, PieceVm target, NodeVm next)
+			: base(serviceProvider, new GamePlay.MoveCommand(target.Source, next.Source))
 		{
-			Next = node;
+			Next = next ?? throw new ArgumentNullException(nameof(next));
+
+			StateToken = Next.State.Registry(NodeState.Planned);
 		}
 
 		public NodeVm Next { get; }
+
+		private IDisposable? StateToken { get; set; }
 
 		public override bool IsMark
 		{
@@ -21,6 +25,9 @@ namespace StepFlow.ViewModel.Commands
 		public override void Execute()
 		{
 			((PieceVm)Target).Next = Next;
+
+			StateToken?.Dispose();
+			StateToken = null;
 		}
 	}
 }

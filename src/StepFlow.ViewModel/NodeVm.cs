@@ -35,10 +35,15 @@ namespace StepFlow.ViewModel
 			set => SetValue(ref isMark, value);
 		}
 
-		public PieceVm CreateSimple() => new PieceVm(Owner, new GamePlay.Piece(Owner.Source, 10))
+		public PieceVm CreateSimple()
 		{
-			Current = this,
-		};
+			var result = new PieceVm(Owner, new GamePlay.Piece(Owner.Source, 10))
+			{
+				Current = this,
+			};
+			Owner.Particles.Refresh();
+			return result;
+		}
 
 		public override string? ToString() => Source?.ToString();
 	}

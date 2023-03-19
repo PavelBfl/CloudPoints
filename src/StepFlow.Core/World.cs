@@ -7,29 +7,10 @@ namespace StepFlow.Core
 {
 	public class World
 	{
-		public World(int colsCount, int rowsCount)
+		public World()
 		{
-			if (colsCount < 0)
-			{
-				throw new ArgumentOutOfRangeException(nameof(colsCount));
-			}
-
-			if (rowsCount < 0)
-			{
-				throw new ArgumentOutOfRangeException(nameof(rowsCount));
-			}
-
 			Particles = new ParticlesCollection(this);
 			Place = new Place(this);
-
-			for (var iCol = 0; iCol < colsCount; iCol++)
-			{
-				for (var iRow = 0; iRow < rowsCount; iRow++)
-				{
-					var position = new System.Drawing.Point(iCol, iRow);
-					Place.Add(new Node(null, position));
-				}
-			}
 		}
 
 		public ParticlesCollection Particles { get; }

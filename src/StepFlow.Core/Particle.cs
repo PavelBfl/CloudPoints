@@ -6,11 +6,6 @@ namespace StepFlow.Core
 {
 	public class Particle
 	{
-		public Particle(World? owner)
-		{
-			owner?.Particles.Add(this);
-		}
-
 		private World? owner;
 
 		public virtual World? Owner

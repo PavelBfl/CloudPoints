@@ -2,11 +2,6 @@
 {
 	public class Piece : Particle
 	{
-		public Piece(World owner)
-			: base(owner)
-		{
-		}
-
 		private Node? current;
 		public Node? Current
 		{
