@@ -1,9 +1,7 @@
 ﻿using System;
-using Microsoft.Extensions.DependencyInjection;
 using StepFlow.ViewModel.Collections;
 using StepFlow.ViewModel.Commands;
 using StepFlow.ViewModel.Exceptions;
-using StepFlow.ViewModel.Services;
 
 namespace StepFlow.ViewModel
 {
@@ -13,10 +11,7 @@ namespace StepFlow.ViewModel
 			: base(owner.Source.Commands)
 		{
 			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
-			WrapperProvider = Owner.ServiceProvider.GetRequiredService<IWrapperProvider>();
 		}
-
-		private IWrapperProvider WrapperProvider { get; }
 
 		public PieceVm Owner { get; }
 
@@ -41,7 +36,7 @@ namespace StepFlow.ViewModel
 
 		protected override CommandVm CreateObserver(GamePlay.Command observable)
 		{
-			if (WrapperProvider.TryGetViewModel(observable, out var result))
+			if (Owner.WrapperProvider.TryGetViewModel(observable, out var result))
 			{
 				return (CommandVm)result;
 			}
@@ -50,9 +45,9 @@ namespace StepFlow.ViewModel
 				return observable switch
 				{
 					GamePlay.MoveCommand moveCommand => new MoveCommand(
-						Owner.ServiceProvider,
-						(PieceVm)WrapperProvider.GetViewModel(moveCommand.Target),
-						(NodeVm)WrapperProvider.GetViewModel(moveCommand.Next)
+						Owner,
+						(PieceVm)Owner.WrapperProvider.GetViewModel(moveCommand.Target),
+						(NodeVm)Owner.WrapperProvider.GetViewModel(moveCommand.Next)
 					),
 					_ => throw new InvalidViewModelException(),
 				}; 

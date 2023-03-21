@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace StepFlow.ViewModel.Services
+namespace StepFlow.ViewModel
 {
-	public class WrapperProvider : IWrapperProvider
+	public class WrapperProvider
 	{
 		private Dictionary<object, object> ByViewModel { get; } = new Dictionary<object, object>();
 
@@ -44,5 +44,13 @@ namespace StepFlow.ViewModel.Services
 		public bool TryGetModel(object viewModel, out object model) => ByViewModel.TryGetValue(viewModel, out model);
 
 		public bool TryGetViewModel(object model, out object viewModel) => ByModel.TryGetValue(model, out viewModel);
+
+		public object GetModel(object viewModel) => ByModel[viewModel];
+
+		public object GetViewModel(object model) => ByViewModel[model];
+
+		public object? GetModelOrDefault(object viewModel) => ByViewModel.GetValueOrDefault(viewModel);
+
+		public object? GetViewModelOrDefault(object model) => ByModel.GetValueOrDefault(model);
 	}
 }

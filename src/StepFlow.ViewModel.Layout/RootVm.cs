@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using StepFlow.Common;
-using StepFlow.Core;
 using StepFlow.Layout;
 using StepFlow.ViewModel.Commands;
 
@@ -13,7 +12,7 @@ namespace StepFlow.ViewModel.Layout
 	public class RootVm : IDisposable
 	{
 		public RootVm(IServiceProvider serviceProvider, int colsCount, int rowsCount)
-			: this(new ContextVm(serviceProvider, colsCount, rowsCount))
+			: this(new ContextVm(new ContextElement(serviceProvider, new WrapperProvider()), colsCount, rowsCount))
 		{
 		}
 

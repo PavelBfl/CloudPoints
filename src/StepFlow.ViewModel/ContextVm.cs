@@ -7,11 +7,11 @@ namespace StepFlow.ViewModel
 {
 	public class ContextVm : WrapperVm<Context>
 	{
-		public ContextVm(IServiceProvider serviceProvider, int colsCount, int rowsCount)
-			: base(serviceProvider, new Context(colsCount, rowsCount))
+		public ContextVm(IContextElement context, int colsCount, int rowsCount)
+			: base(context, new Context(colsCount, rowsCount))
 		{
 			Particles = new ParticlesCollectionVm(this);
-			TimeAxis = new AxisVm(ServiceProvider, Source.AxisTime);
+			TimeAxis = new AxisVm(this, Source.AxisTime);
 		}
 
 		public ParticlesCollectionVm Particles { get; }

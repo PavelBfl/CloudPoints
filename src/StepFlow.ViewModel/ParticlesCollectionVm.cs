@@ -5,7 +5,6 @@ using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using StepFlow.ViewModel.Collections;
 using StepFlow.ViewModel.Exceptions;
-using StepFlow.ViewModel.Services;
 
 namespace StepFlow.ViewModel
 {
@@ -15,16 +14,13 @@ namespace StepFlow.ViewModel
 			: base(new Collection(owner.Source.World.Particles))
 		{
 			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
-			WrapperProvider = Owner.ServiceProvider.GetRequiredService<IWrapperProvider>();
 		}
 
 		private ContextVm Owner { get; }
 
-		private IWrapperProvider WrapperProvider { get; }
-
 		protected override ParticleVm CreateObserver(GamePlay.IParticle observable)
 		{
-			if (WrapperProvider.TryGetViewModel(observable, out var result))
+			if (Owner.WrapperProvider.TryGetViewModel(observable, out var result))
 			{
 				return (ParticleVm)result;
 			}

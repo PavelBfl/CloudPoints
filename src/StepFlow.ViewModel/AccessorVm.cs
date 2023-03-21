@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using StepFlow.ViewModel.Services;
 
 namespace StepFlow.ViewModel
 {
@@ -13,7 +12,7 @@ namespace StepFlow.ViewModel
 		private T Value { get; set; }
 
 		[return: MaybeNull]
-		public T GetValue(IWrapperProvider wrapperProvider, object? model)
+		public T GetValue(WrapperProvider wrapperProvider, object? model)
 		{
 			if (wrapperProvider is null)
 			{

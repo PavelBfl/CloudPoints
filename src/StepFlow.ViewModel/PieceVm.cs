@@ -112,7 +112,7 @@ namespace StepFlow.ViewModel
 				throw new ArgumentNullException(nameof(node));
 			}
 
-			Add(new MoveCommand(ServiceProvider, this, node));
+			Add(new MoveCommand(this, this, node));
 		}
 	}
 }

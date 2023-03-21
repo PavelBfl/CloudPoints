@@ -7,11 +7,10 @@ using StepFlow.Core;
 using StepFlow.View.Controls;
 using StepFlow.ViewModel;
 using StepFlow.ViewModel.Layout;
-using StepFlow.ViewModel.Services;
 
 namespace StepFlow.View
 {
-	public class Game1 : Game
+    public class Game1 : Game
 	{
 		private GraphicsDeviceManager Graphics { get; }
 
@@ -27,10 +26,7 @@ namespace StepFlow.View
 			Content.RootDirectory = "Content";
 			IsMouseVisible = true;
 
-			var services = new ServiceCollection();
-			services.AddSingleton<IWrapperProvider, WrapperProvider>();
-
-			Root = new RootVm(services.BuildServiceProvider(), 10, 10);
+			Root = new RootVm(new ServiceCollection().BuildServiceProvider(), 10, 10);
 			Root.Root.OwnerBounds = new System.Drawing.RectangleF(0, 0, Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight);
 			Root.Root.Margin = new Layout.Margin(1);
 
