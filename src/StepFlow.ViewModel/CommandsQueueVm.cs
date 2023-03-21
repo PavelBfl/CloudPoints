@@ -7,13 +7,13 @@ namespace StepFlow.ViewModel
 {
 	public class CommandsQueueVm : ListWrapperObserver<CommandVm, GamePlay.Command>, IMarkered
 	{
-		public CommandsQueueVm(PieceVm owner)
+		public CommandsQueueVm(ParticleVm owner)
 			: base(owner.Source.Commands)
 		{
 			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
 		}
 
-		public PieceVm Owner { get; }
+		public ParticleVm Owner { get; }
 
 		private bool isMark;
 

@@ -10,7 +10,6 @@ namespace StepFlow.ViewModel
 			: base(owner, source)
 		{
 			Source = source ?? throw new ArgumentNullException(nameof(source));
-			CommandQueue = new CommandsQueueVm(this);
 		}
 
 		public new GamePlay.Piece Source { get; }
@@ -71,12 +70,9 @@ namespace StepFlow.ViewModel
 
 		private NodeVm? GetNode(Node? node) => node is { } ? (NodeVm)WrapperProvider.GetViewModel(node) : null;
 
-		public override void TakeStep()
+		public override void Refresh()
 		{
-			if (Source.Current != Next?.Source)
-			{
-				CommandQueue.Clear();
-			}
+			base.Refresh();
 
 			Current = GetNode(Source.Current);
 			Next = GetNode(Source.Next);
@@ -91,8 +87,6 @@ namespace StepFlow.ViewModel
 
 			base.Dispose();
 		}
-
-		public CommandsQueueVm CommandQueue { get; }
 
 		public void Add(CommandVm command)
 		{

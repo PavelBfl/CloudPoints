@@ -45,9 +45,9 @@ namespace StepFlow.ViewModel
 
 		public bool TryGetViewModel(object model, out object viewModel) => ByModel.TryGetValue(model, out viewModel);
 
-		public object GetModel(object viewModel) => ByModel[viewModel];
+		public object GetModel(object viewModel) => ByViewModel[viewModel];
 
-		public object GetViewModel(object model) => ByViewModel[model];
+		public object GetViewModel(object model) => ByModel[model];
 
 		public object? GetModelOrDefault(object viewModel) => ByViewModel.GetValueOrDefault(viewModel);
 

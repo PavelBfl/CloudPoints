@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using StepFlow.GamePlay;
 
@@ -54,6 +53,12 @@ namespace StepFlow.ViewModel
 		{
 			Source.World.TakeStep();
 			Particles.Refresh();
+
+			foreach (var particle in Particles)
+			{
+				particle.Refresh();
+				particle.CommandQueue.Refresh();
+			}
 		}
 	}
 }

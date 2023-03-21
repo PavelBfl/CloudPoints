@@ -19,10 +19,5 @@ namespace StepFlow.ViewModel.Commands
 		public NodeVm StartNode { get; }
 
 		public bool IsMark { get; set; }
-
-		public override void Execute()
-		{
-			NewPiece.Next = StartNode;
-		}
 	}
 }

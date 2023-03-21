@@ -1,10 +1,8 @@
-﻿using System;
-using StepFlow.GamePlay;
-using StepFlow.TimeLine;
+﻿using StepFlow.GamePlay;
 
 namespace StepFlow.ViewModel.Commands
 {
-	public abstract class CommandVm : WrapperVm<Command>, ICommand, IMarkered
+	public abstract class CommandVm : WrapperVm<Command>, IMarkered
 	{
 		public CommandVm(IContextElement context, Command source)
 			: base(context, source)
@@ -26,9 +24,5 @@ namespace StepFlow.ViewModel.Commands
 			base.Dispose();
 			Source.Dispose();
 		}
-
-		public virtual void Execute() => Source.Execute();
-
-		public bool Prepare() => Source.Prepare();
 	}
 }

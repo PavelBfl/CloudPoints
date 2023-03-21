@@ -21,13 +21,5 @@ namespace StepFlow.ViewModel.Commands
 			get => Next.IsMark;
 			set => Next.IsMark = value;
 		}
-
-		public override void Execute()
-		{
-			((PieceVm)Target).Next = Next;
-
-			StateToken?.Dispose();
-			StateToken = null;
-		}
 	}
 }

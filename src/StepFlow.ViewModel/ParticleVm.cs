@@ -8,13 +8,15 @@ namespace StepFlow.ViewModel
 			: base(owner, source)
 		{
 			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
+			CommandQueue = new CommandsQueueVm(this);
 		}
 
 		public ContextVm Owner { get; }
 
-		public virtual void TakeStep()
+		public CommandsQueueVm CommandQueue { get; }
+
+		public virtual void Refresh()
 		{
-			// Реализации нет т.к. для класса NodeVm пока нет реализации скорее всего в будущем метод будет абстрактным
 		}
 	}
 }
