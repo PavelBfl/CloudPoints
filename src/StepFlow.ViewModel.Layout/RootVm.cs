@@ -57,7 +57,7 @@ namespace StepFlow.ViewModel.Layout
 			switch (e.PropertyName)
 			{
 				case nameof(ContextVm.Current):
-					NotifyPropertyExtensions.TryUnsubscrible(World.Current?.CommandQueue, CommandQueueCollectionChanged);
+					NotifyPropertyExtensions.TryUnsubscrible(World.Current?.CommandsCompleted, CommandQueueCollectionChanged);
 					RefreshQueue(Array.Empty<CommandVm>());
 					break;
 			}
@@ -68,7 +68,7 @@ namespace StepFlow.ViewModel.Layout
 			switch (e.PropertyName)
 			{
 				case nameof(ContextVm.Current):
-					NotifyPropertyExtensions.TrySubscrible(World.Current?.CommandQueue, CommandQueueCollectionChanged);
+					NotifyPropertyExtensions.TrySubscrible(World.Current?.CommandsCompleted, CommandQueueCollectionChanged);
 					break;
 			}
 		}
@@ -76,7 +76,7 @@ namespace StepFlow.ViewModel.Layout
 		private void CommandQueueCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			var current = World.Current.PropertyRequired(nameof(World.Current));
-			RefreshQueue(current.CommandQueue);
+			RefreshQueue(current.CommandsCompleted);
 		}
 
 		private void RefreshQueue(IReadOnlyList<CommandVm> commandsQueue)
@@ -122,7 +122,7 @@ namespace StepFlow.ViewModel.Layout
 		public void Dispose()
 		{
 			NotifyPropertyExtensions.TryUnsubscrible(World, WorldPropertyChanging, WorldPropertyChanged);
-			NotifyPropertyExtensions.TryUnsubscrible(World.Current?.CommandQueue, CommandQueueCollectionChanged);
+			NotifyPropertyExtensions.TryUnsubscrible(World.Current?.CommandsCompleted, CommandQueueCollectionChanged);
 		}
 	}
 }

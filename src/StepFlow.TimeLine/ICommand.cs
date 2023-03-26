@@ -2,10 +2,9 @@
 
 namespace StepFlow.TimeLine
 {
-	public interface ICommand : IDisposable
+	public interface ICommand
 	{
-		bool Prepare();
-
+		bool IsCompleted { get; }
 		void Execute();
 	}
 }

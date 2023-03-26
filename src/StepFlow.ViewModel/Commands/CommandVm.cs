@@ -17,12 +17,12 @@ namespace StepFlow.ViewModel.Commands
 
 		public ParticleVm? Target => target.GetValue(WrapperProvider, Source.Target);
 
+		public bool IsComplete => Source.IsCompleted;
+
 		public abstract bool IsMark { get; set; }
 
-		public override void Dispose()
+		public virtual void Refresh()
 		{
-			base.Dispose();
-			Source.Dispose();
 		}
 	}
 }

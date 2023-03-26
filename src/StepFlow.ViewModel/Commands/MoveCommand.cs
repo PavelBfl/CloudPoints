@@ -9,7 +9,7 @@ namespace StepFlow.ViewModel.Commands
 		{
 			Next = next ?? throw new ArgumentNullException(nameof(next));
 
-			StateToken = Next.State.Registry(NodeState.Planned);
+			Refresh();
 		}
 
 		public NodeVm Next { get; }
@@ -20,6 +20,24 @@ namespace StepFlow.ViewModel.Commands
 		{
 			get => Next.IsMark;
 			set => Next.IsMark = value;
+		}
+
+		public override void Refresh()
+		{
+			base.Refresh();
+
+			if (Source.IsCompleted)
+			{
+				StateToken?.Dispose();
+				StateToken = null;
+			}
+			else
+			{
+				if (StateToken is null)
+				{
+					StateToken = Next.State.Registry(NodeState.Planned);
+				}
+			}
 		}
 	}
 }

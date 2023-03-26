@@ -9,11 +9,7 @@ namespace StepFlow.TimeLine
 
 		public T Source { get; }
 
-		public override void Dispose() => Source.Dispose();
-
-		public override void Execute() => Source.Execute();
-
-		public override bool Prepare() => Source.Prepare();
+		protected override void ExecuteInner() => Source.Execute();
 	}
 
 	public class CommandWrapper : CommandWrapper<ICommand>

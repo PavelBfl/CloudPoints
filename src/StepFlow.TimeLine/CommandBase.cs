@@ -1,15 +1,22 @@
-﻿namespace StepFlow.TimeLine
+﻿using StepFlow.TimeLine.Exceptions;
+
+namespace StepFlow.TimeLine
 {
-	public class CommandBase : ICommand
+	public abstract class CommandBase : ICommand
 	{
-		public virtual void Dispose()
-		{
-		}
+		public bool IsCompleted { get; private set; }
 
 		public virtual void Execute()
 		{
+			if (IsCompleted)
+			{
+				throw ExceptionBuilder.CreateExecuteCompleteCommand();
+			}
+
+			ExecuteInner();
+			IsCompleted = true;
 		}
 
-		public virtual bool Prepare() => true;
+		protected abstract void ExecuteInner();
 	}
 }

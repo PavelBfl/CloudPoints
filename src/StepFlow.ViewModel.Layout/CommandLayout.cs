@@ -1,10 +1,10 @@
 ﻿using StepFlow.Layout;
-using StepFlow.TimeLine;
+using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel.Layout
 {
 	public class CommandLayout : RectPlot
 	{
-		public ICommand? Command { get; set; }
+		public CommandVm? Command { get; set; }
 	}
 }

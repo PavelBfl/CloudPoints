@@ -15,9 +15,6 @@ namespace StepFlow.GamePlay
 
 		public Node Next { get; }
 
-		public override void Execute()
-		{
-			Target.Next = Next;
-		}
+		protected override void ExecuteInner() => Target.Next = Next;
 	}
 }

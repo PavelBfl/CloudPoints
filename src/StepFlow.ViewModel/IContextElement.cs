@@ -2,7 +2,7 @@
 
 namespace StepFlow.ViewModel
 {
-    public interface IContextElement
+	public interface IContextElement
 	{
 		IServiceProvider ServiceProvider { get; }
 

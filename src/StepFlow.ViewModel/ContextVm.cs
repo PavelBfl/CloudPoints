@@ -57,7 +57,13 @@ namespace StepFlow.ViewModel
 			foreach (var particle in Particles)
 			{
 				particle.Refresh();
-				particle.CommandQueue.Refresh();
+				particle.Commands.Refresh();
+				particle.CommandsCompleted.Refresh();
+
+				foreach (var command in particle.Commands)
+				{
+					command.Refresh();
+				}
 			}
 		}
 	}

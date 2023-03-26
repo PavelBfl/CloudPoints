@@ -3,7 +3,7 @@ using StepFlow.TimeLine;
 
 namespace StepFlow.GamePlay
 {
-	public class Command : CommandBase
+	public abstract class Command : CommandBase
 	{
 		public Command(IParticle target)
 		{

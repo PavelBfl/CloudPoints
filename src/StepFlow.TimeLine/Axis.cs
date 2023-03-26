@@ -65,42 +65,23 @@ namespace StepFlow.TimeLine
 			}
 		}
 
-		public bool MoveNext()
+		public void MoveNext()
 		{
 			IsProcessing = true;
 
 			var nextStep = Current + 1;
 
-			var commandsPrepare = true;
 			if (TimeToCommand.Remove(nextStep, out var commands))
 			{
 				foreach (var command in commands)
 				{
-					commandsPrepare &= command.Prepare();
-				}
-
-				if (commandsPrepare)
-				{
-					foreach (var command in commands)
-					{
-						command.Execute();
-					}
-
-					foreach (var command in commands)
-					{
-						command.Dispose();
-					}
+					command.Execute();
 				}
 			}
 
-			if (commandsPrepare)
-			{
-				Current = nextStep;
-			}
+			Current = nextStep;
 
 			IsProcessing = false;
-
-			return commandsPrepare;
 		}
 	}
 }

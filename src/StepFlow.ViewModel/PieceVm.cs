@@ -24,7 +24,7 @@ namespace StepFlow.ViewModel
 				{
 					isMark = value;
 
-					CommandQueue.IsMark = IsMark;
+					Commands.IsMark = IsMark;
 
 					if (Current is { })
 					{
@@ -80,7 +80,9 @@ namespace StepFlow.ViewModel
 
 		public override void Dispose()
 		{
-			CommandQueue.Clear();
+			Commands.Clear();
+			CommandsCompleted.Refresh();
+
 			IsMark = false;
 			Next = null;
 			Current = null;
@@ -96,7 +98,8 @@ namespace StepFlow.ViewModel
 			}
 
 			command.IsMark = IsMark;
-			CommandQueue.Add(command);
+			Commands.Add(command);
+			CommandsCompleted.Refresh();
 		}
 
 		public void MoveTo(NodeVm node)

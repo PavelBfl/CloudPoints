@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using StepFlow.ViewModel.Commands;
+using StepFlow.ViewModel.Exceptions;
 
 namespace StepFlow.ViewModel
 {
@@ -52,5 +54,25 @@ namespace StepFlow.ViewModel
 		public object? GetModelOrDefault(object viewModel) => ByViewModel.GetValueOrDefault(viewModel);
 
 		public object? GetViewModelOrDefault(object model) => ByModel.GetValueOrDefault(model);
+
+		internal CommandVm GetOrCreateCommand(GamePlay.Command command)
+		{
+			if (TryGetViewModel(command, out var result))
+			{
+				return (CommandVm)result;
+			}
+			else
+			{
+				return command switch
+				{
+					GamePlay.MoveCommand moveCommand => new MoveCommand(
+						(ParticleVm)GetViewModel(command.Target),
+						(PieceVm)GetViewModel(moveCommand.Target),
+						(NodeVm)GetViewModel(moveCommand.Next)
+					),
+					_ => throw new InvalidViewModelException(),
+				};
+			}
+		}
 	}
 }
