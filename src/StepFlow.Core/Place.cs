@@ -6,9 +6,10 @@ using System.Linq;
 
 namespace StepFlow.Core
 {
-	public class Place : IReadOnlyDictionary<Point, Node>
+	public sealed class Place<TNode> : IReadOnlyDictionary<Point, TNode>
+		where TNode : Node
 	{
-		public Place(World owner)
+		public Place(IWorld owner)
 		{
 			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
 		}
@@ -45,25 +46,25 @@ namespace StepFlow.Core
 
 		public bool ContainsKey(Point key) => Nodes.ContainsKey(key);
 
-		public bool TryGetValue(Point key, out Node value) => Nodes.TryGetValue(key, out value);
+		public bool TryGetValue(Point key, out TNode value) => Nodes.TryGetValue(key, out value);
 
-		public IEnumerator<KeyValuePair<Point, Node>> GetEnumerator() => Nodes.GetEnumerator();
+		public IEnumerator<KeyValuePair<Point, TNode>> GetEnumerator() => Nodes.GetEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-		private World Owner { get; }
+		private IWorld Owner { get; }
 
-		private Dictionary<Point, Node> Nodes { get; } = new Dictionary<Point, Node>();
+		private Dictionary<Point, TNode> Nodes { get; } = new Dictionary<Point, TNode>();
 
 		public IEnumerable<Point> Keys => Nodes.Keys;
 
-		public IEnumerable<Node> Values => Nodes.Values;
+		public IEnumerable<TNode> Values => Nodes.Values;
 
 		public int Count => Nodes.Count;
 
-		public Node this[Point key] => Nodes[key];
+		public TNode this[Point key] => Nodes[key];
 
-		public void Add(Node node)
+		public void Add(TNode node)
 		{
 			if (node is null)
 			{
@@ -71,12 +72,8 @@ namespace StepFlow.Core
 			}
 
 			node.Owner = Owner;
-		}
 
-		internal void AddForce(Node node)
-		{
 			Nodes.Add(node.Position, node);
-			OnChangeCollection();
 		}
 
 		public bool Remove(Point position)
@@ -84,19 +81,6 @@ namespace StepFlow.Core
 			if (TryGetValue(position, out var node))
 			{
 				node.Owner = null;
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-
-		public bool RemoveForce(Point position)
-		{
-			if (Nodes.Remove(position))
-			{
-				OnChangeCollection();
 				return true;
 			}
 			else

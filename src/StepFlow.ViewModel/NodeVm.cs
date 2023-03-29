@@ -5,7 +5,7 @@ using StepFlow.ViewModel.Marking;
 
 namespace StepFlow.ViewModel
 {
-	public class NodeVm : ParticleVm, IMarkered
+	public class NodeVm : ParticleVm<GamePlay.Node>, IMarkered
 	{
 		public NodeVm(ContextVm owner, GamePlay.Node source)
 			: base(owner, source)
@@ -37,11 +37,14 @@ namespace StepFlow.ViewModel
 
 		public PieceVm CreateSimple()
 		{
-			var result = new PieceVm(Owner, new GamePlay.Piece(Owner.Source, 10))
+			var piece = new GamePlay.Piece(10);
+			Owner.Source.World.Pieces.Add(piece);
+
+			var result = new PieceVm(Owner, piece)
 			{
 				Current = this,
 			};
-			Owner.Particles.Refresh();
+			Owner.Pieces.Refresh();
 			return result;
 		}
 

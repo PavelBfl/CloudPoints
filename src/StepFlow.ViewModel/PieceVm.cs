@@ -4,15 +4,12 @@ using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
-	public class PieceVm : ParticleVm, IMarkered
+	public class PieceVm : ParticleVm<GamePlay.Piece>, IMarkered
 	{
 		public PieceVm(ContextVm owner, GamePlay.Piece source)
 			: base(owner, source)
 		{
-			Source = source ?? throw new ArgumentNullException(nameof(source));
 		}
-
-		public new GamePlay.Piece Source { get; }
 
 		private bool isMark = false;
 		public bool IsMark

@@ -13,9 +13,9 @@ namespace StepFlow.ViewModel.Commands
 
 		public ContextVm Owner => owner ??= (ContextVm)WrapperProvider.GetViewModel(Source.Owner);
 
-		private AccessorVm<ParticleVm> target;
+		private AccessorVm<IParticleVm> target;
 
-		public ParticleVm? Target => target.GetValue(WrapperProvider, Source.Target);
+		public IParticleVm? Target => target.GetValue(WrapperProvider, Source.Target);
 
 		public bool IsComplete => Source.IsCompleted;
 

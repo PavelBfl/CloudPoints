@@ -8,7 +8,7 @@ namespace StepFlow.GamePlay
 		public Command(IParticle target)
 		{
 			Target = target ?? throw new ArgumentNullException(nameof(target));
-			Owner = target.Owner;
+			Owner = target.Owner.Owner;
 			SetAxis();
 		}
 

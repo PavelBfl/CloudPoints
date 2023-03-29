@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using StepFlow.ViewModel.Collections;
 using StepFlow.ViewModel.Commands;
 
@@ -6,13 +7,13 @@ namespace StepFlow.ViewModel
 {
 	public class CommandsCollectionVm : ListWrapperObserver<CommandVm, GamePlay.Command>, IMarkered
 	{
-		public CommandsCollectionVm(ParticleVm owner)
-			: base(owner.Source.Commands)
+		public CommandsCollectionVm(WrapperProvider wrapperProvider, IList<GamePlay.Command> commands)
+			: base(commands)
 		{
-			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
+			WrapperProvider = wrapperProvider ?? throw new ArgumentNullException(nameof(wrapperProvider));
 		}
 
-		public ParticleVm Owner { get; }
+		private WrapperProvider WrapperProvider { get; }
 
 		private bool isMark;
 
@@ -34,6 +35,6 @@ namespace StepFlow.ViewModel
 		}
 
 		protected override CommandVm CreateObserver(GamePlay.Command observable)
-			=> Owner.WrapperProvider.GetOrCreateCommand(observable);
+			=> WrapperProvider.GetOrCreateCommand(observable);
 	}
 }

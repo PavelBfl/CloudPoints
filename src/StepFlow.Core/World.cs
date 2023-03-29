@@ -4,17 +4,19 @@ using StepFlow.Core.Collision;
 
 namespace StepFlow.Core
 {
-	public class World
+	public class World<TNode, TPiece> : IWorld
+		where TNode : Node
+		where TPiece : Piece
 	{
 		public World()
 		{
-			Particles = new ParticlesCollection(this);
-			Place = new Place(this);
+			Pieces = new PiecesCollection<TPiece>(this);
+			Place = new Place<TNode>(this);
 		}
 
-		public ParticlesCollection Particles { get; }
+		public PiecesCollection<TPiece> Pieces { get; }
 
-		public Place Place { get; }
+		public Place<TNode> Place { get; }
 
 		private static IEnumerable<PairCollision> GetSwaps(Piece[] pieces)
 		{
@@ -80,7 +82,7 @@ namespace StepFlow.Core
 
 		public CollisionResult TakeStep()
 		{
-			var pieces = Particles.OfType<Piece>().ToArray();
+			var pieces = Pieces.ToArray();
 
 			var result = new CollisionResult(
 				GetCrashes(pieces),
@@ -88,7 +90,7 @@ namespace StepFlow.Core
 				GetCompetitors(pieces)
 			);
 
-			foreach (var particle in Particles)
+			foreach (var particle in Pieces.AsEnumerable<Particle>().Concat(Place.Values))
 			{
 				particle.TakeStep();
 			}

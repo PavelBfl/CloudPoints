@@ -6,13 +6,19 @@ using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
-	public class ParticleVm : WrapperVm<GamePlay.IParticle>
+	public interface IParticleVm
 	{
-		public ParticleVm(ContextVm owner, GamePlay.IParticle source)
+		
+	}
+
+	public class ParticleVm<T> : WrapperVm<T>, IParticleVm
+		where T : GamePlay.IParticle
+	{
+		public ParticleVm(ContextVm owner, T source)
 			: base(owner, source)
 		{
 			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
-			Commands = new CommandsCollectionVm(this);
+			Commands = new CommandsCollectionVm(WrapperProvider, Source.Commands);
 			CommandsCompleted = new CommandsCompletedCollection(this, Source.Commands.Where(x => !x.IsCompleted));
 		}
 

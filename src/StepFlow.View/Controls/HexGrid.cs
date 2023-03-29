@@ -41,18 +41,18 @@ namespace StepFlow.View.Controls
 			{
 				if (Source != value)
 				{
-					NotifyPropertyExtensions.TryUnsubscrible(Source?.Particles, ParticlesCollectionChanged);
+					NotifyPropertyExtensions.TryUnsubscrible(Source?.Place, ParticlesCollectionChanged);
 
 					source = value;
 
-					NotifyPropertyExtensions.TrySubscrible(Source?.Particles, ParticlesCollectionChanged);
+					NotifyPropertyExtensions.TrySubscrible(Source?.Place, ParticlesCollectionChanged);
 				}
 			}
 		}
 
 		private void ParticlesCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
 		{
-			var nodesVm = Source?.Nodes.ToArray();
+			var nodesVm = Source?.Place.ToArray();
 
 			if (nodesVm is null || !nodesVm.Any())
 			{

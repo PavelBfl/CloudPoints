@@ -66,7 +66,7 @@ namespace StepFlow.ViewModel
 				return command switch
 				{
 					GamePlay.MoveCommand moveCommand => new MoveCommand(
-						(ParticleVm)GetViewModel(command.Target),
+						(IContextElement)GetViewModel(command.Target),
 						(PieceVm)GetViewModel(moveCommand.Target),
 						(NodeVm)GetViewModel(moveCommand.Next)
 					),

@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using StepFlow.GamePlay;
+using StepFlow.ViewModel.Collections;
 
 namespace StepFlow.ViewModel
 {
@@ -9,15 +11,14 @@ namespace StepFlow.ViewModel
 		public ContextVm(IContextElement context, int colsCount, int rowsCount)
 			: base(context, new Context(colsCount, rowsCount))
 		{
-			Particles = new ParticlesCollectionVm(this);
+			Pieces = new PiecesCollectionVm(this, Source.World.Pieces);
+			Place = new PlaceVm(this, Source.World.Place.Values);
 			TimeAxis = new AxisVm(this, Source.AxisTime);
 		}
 
-		public ParticlesCollectionVm Particles { get; }
+		public PiecesCollectionVm Pieces { get; }
 
-		public IEnumerable<PieceVm> Pieces => Particles.OfType<PieceVm>();
-
-		public IEnumerable<NodeVm> Nodes => Particles.OfType<NodeVm>();
+		public PlaceVm Place { get; }
 
 		public AxisVm TimeAxis { get; }
 
@@ -52,9 +53,10 @@ namespace StepFlow.ViewModel
 		public void TakeStep()
 		{
 			Source.World.TakeStep();
-			Particles.Refresh();
+			Pieces.Refresh();
+			Place.Refresh();
 
-			foreach (var particle in Particles)
+			foreach (var particle in Pieces)
 			{
 				particle.Refresh();
 				particle.Commands.Refresh();
@@ -64,6 +66,65 @@ namespace StepFlow.ViewModel
 				{
 					command.Refresh();
 				}
+			}
+
+			// TODO Реализовать общую реализацию через интерфейс
+			foreach (var node in Place)
+			{
+				node.Refresh();
+				node.Commands.Refresh();
+				node.CommandsCompleted.Refresh();
+
+				foreach (var command in node.Commands)
+				{
+					command.Refresh();
+				}
+			}
+		}
+	}
+
+	public sealed class PiecesCollectionVm : CollectionWrapperObserver<PieceVm, Piece>
+	{
+		public PiecesCollectionVm(ContextVm owner, ICollection<Piece> items)
+			: base(items)
+		{
+			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
+		}
+
+		private ContextVm Owner { get; }
+
+		protected override PieceVm CreateObserver(Piece observable)
+		{
+			if (Owner.WrapperProvider.TryGetViewModel(observable, out object result))
+			{
+				return (PieceVm)result;
+			}
+			else
+			{
+				return new PieceVm(Owner, observable);
+			}
+		}
+	}
+
+	public sealed class PlaceVm : WrapperObserver<NodeVm, Node>
+	{
+		public PlaceVm(ContextVm owner, IEnumerable<Node> items)
+			: base(items)
+		{
+			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
+		}
+
+		private ContextVm Owner { get; }
+
+		protected override NodeVm CreateObserver(Node observable)
+		{
+			if (Owner.WrapperProvider.TryGetViewModel(observable, out object result))
+			{
+				return (NodeVm)result;
+			}
+			else
+			{
+				return new NodeVm(Owner, observable);
 			}
 		}
 	}

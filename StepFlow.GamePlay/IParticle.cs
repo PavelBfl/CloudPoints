@@ -4,7 +4,7 @@ namespace StepFlow.GamePlay
 {
 	public interface IParticle
 	{
-		Context Owner { get; }
+		World Owner { get; }
 		Strength Strength { get; }
 		IList<Command> Commands { get; }
 	}
