@@ -6,11 +6,6 @@ using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
-	public interface IParticleVm
-	{
-		
-	}
-
 	public class ParticleVm<T> : WrapperVm<T>, IParticleVm
 		where T : GamePlay.IParticle
 	{
@@ -30,6 +25,13 @@ namespace StepFlow.ViewModel
 
 		public virtual void Refresh()
 		{
+			Commands.Refresh();
+			CommandsCompleted.Refresh();
+
+			foreach (var command in Commands)
+			{
+				command.Refresh();
+			}
 		}
 
 		public sealed class CommandsCompletedCollection : WrapperObserver<CommandVm, GamePlay.Command>

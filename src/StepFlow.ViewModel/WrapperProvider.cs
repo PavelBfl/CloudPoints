@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using StepFlow.Common.Exceptions;
 using StepFlow.ViewModel.Commands;
 using StepFlow.ViewModel.Exceptions;
 
@@ -66,7 +67,7 @@ namespace StepFlow.ViewModel
 				return command switch
 				{
 					GamePlay.MoveCommand moveCommand => new MoveCommand(
-						(IContextElement)GetViewModel(command.Target),
+						(IContextElement)GetViewModel(command.Target ?? throw new PropertyNullException(nameof(GamePlay.Command.Target))),
 						(PieceVm)GetViewModel(moveCommand.Target),
 						(NodeVm)GetViewModel(moveCommand.Next)
 					),

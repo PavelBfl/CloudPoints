@@ -186,12 +186,13 @@ namespace StepFlow.View.Controls
 
 			if (game.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.Space))
 			{
+				if (Source is null)
+				{
+					throw new PropertyNullException(nameof(Source));
+				}
+
 				Source.TimeAxis.MoveNext();
 				Source.TakeStep();
-			}
-			else if (game.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.F5))
-			{
-				// TODO Restore saving
 			}
 
 			base.Update(gameTime);

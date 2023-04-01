@@ -11,7 +11,6 @@ namespace StepFlow.ViewModel
 			: base(owner, source)
 		{
 			Source = source ?? throw new ArgumentNullException(nameof(source));
-			// TODO Реализовать отписку или другой способ оповещения
 			State.OnMarkChanged += StateOnMarkChanged;
 		}
 
@@ -49,5 +48,12 @@ namespace StepFlow.ViewModel
 		}
 
 		public override string? ToString() => Source?.ToString();
+
+		public override void Dispose()
+		{
+			base.Dispose();
+
+			State.OnMarkChanged -= StateOnMarkChanged;
+		}
 	}
 }

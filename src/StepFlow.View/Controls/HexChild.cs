@@ -170,7 +170,6 @@ namespace StepFlow.View.Controls
 				_ => throw EnumNotSupportedException.Create(Owner.Orientation),
 			};
 
-			// TODO Переделать проверку на null
 			var position = Source?.Position ?? System.Drawing.Point.Empty;
 			var cellPosition = Owner.Orientation switch
 			{

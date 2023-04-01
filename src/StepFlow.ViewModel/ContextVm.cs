@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using StepFlow.GamePlay;
-using StepFlow.ViewModel.Collections;
 
 namespace StepFlow.ViewModel
 {
@@ -19,6 +17,8 @@ namespace StepFlow.ViewModel
 		public PiecesCollectionVm Pieces { get; }
 
 		public PlaceVm Place { get; }
+
+		public IEnumerable<IParticleVm> Particles => Pieces.AsEnumerable<IParticleVm>().Concat(Place);
 
 		public AxisVm TimeAxis { get; }
 
@@ -56,75 +56,9 @@ namespace StepFlow.ViewModel
 			Pieces.Refresh();
 			Place.Refresh();
 
-			foreach (var particle in Pieces)
+			foreach (var particle in Particles)
 			{
 				particle.Refresh();
-				particle.Commands.Refresh();
-				particle.CommandsCompleted.Refresh();
-
-				foreach (var command in particle.Commands)
-				{
-					command.Refresh();
-				}
-			}
-
-			// TODO Реализовать общую реализацию через интерфейс
-			foreach (var node in Place)
-			{
-				node.Refresh();
-				node.Commands.Refresh();
-				node.CommandsCompleted.Refresh();
-
-				foreach (var command in node.Commands)
-				{
-					command.Refresh();
-				}
-			}
-		}
-	}
-
-	public sealed class PiecesCollectionVm : CollectionWrapperObserver<PieceVm, Piece>
-	{
-		public PiecesCollectionVm(ContextVm owner, ICollection<Piece> items)
-			: base(items)
-		{
-			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
-		}
-
-		private ContextVm Owner { get; }
-
-		protected override PieceVm CreateObserver(Piece observable)
-		{
-			if (Owner.WrapperProvider.TryGetViewModel(observable, out object result))
-			{
-				return (PieceVm)result;
-			}
-			else
-			{
-				return new PieceVm(Owner, observable);
-			}
-		}
-	}
-
-	public sealed class PlaceVm : WrapperObserver<NodeVm, Node>
-	{
-		public PlaceVm(ContextVm owner, IEnumerable<Node> items)
-			: base(items)
-		{
-			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
-		}
-
-		private ContextVm Owner { get; }
-
-		protected override NodeVm CreateObserver(Node observable)
-		{
-			if (Owner.WrapperProvider.TryGetViewModel(observable, out object result))
-			{
-				return (NodeVm)result;
-			}
-			else
-			{
-				return new NodeVm(Owner, observable);
 			}
 		}
 	}
