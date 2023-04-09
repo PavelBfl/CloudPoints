@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using StepFlow.GamePlay.Commands;
 using StepFlow.ViewModel.Collections;
 using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
-	public class ParticleVm<T> : WrapperVm<T>, IParticleVm
+    public class ParticleVm<T> : WrapperVm<T>, IParticleVm
 		where T : GamePlay.IParticle
 	{
 		public ParticleVm(ContextVm owner, T source)
@@ -34,16 +35,16 @@ namespace StepFlow.ViewModel
 			}
 		}
 
-		public sealed class CommandsCompletedCollection : WrapperObserver<CommandVm, GamePlay.Command>
+		public sealed class CommandsCompletedCollection : WrapperObserver<CommandVm, Command>
 		{
-			public CommandsCompletedCollection(IContextElement context, IEnumerable<GamePlay.Command> items) : base(items)
+			public CommandsCompletedCollection(IContextElement context, IEnumerable<Command> items) : base(items)
 			{
 				Context = context ?? throw new ArgumentNullException(nameof(context));
 			}
 
 			private IContextElement Context { get; }
 
-			protected override CommandVm CreateObserver(GamePlay.Command observable)
+			protected override CommandVm CreateObserver(Command observable)
 				=> Context.WrapperProvider.GetOrCreateCommand(observable);
 		}
 	}

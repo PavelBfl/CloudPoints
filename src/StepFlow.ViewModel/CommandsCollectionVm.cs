@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using StepFlow.GamePlay.Commands;
 using StepFlow.ViewModel.Collections;
 using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
-	public class CommandsCollectionVm : ListWrapperObserver<CommandVm, GamePlay.Command>, IMarkered
+    public class CommandsCollectionVm : ListWrapperObserver<CommandVm, Command>, IMarkered
 	{
-		public CommandsCollectionVm(WrapperProvider wrapperProvider, IList<GamePlay.Command> commands)
+		public CommandsCollectionVm(WrapperProvider wrapperProvider, IList<Command> commands)
 			: base(commands)
 		{
 			WrapperProvider = wrapperProvider ?? throw new ArgumentNullException(nameof(wrapperProvider));
@@ -34,7 +35,7 @@ namespace StepFlow.ViewModel
 			}
 		}
 
-		protected override CommandVm CreateObserver(GamePlay.Command observable)
+		protected override CommandVm CreateObserver(Command observable)
 			=> WrapperProvider.GetOrCreateCommand(observable);
 	}
 }

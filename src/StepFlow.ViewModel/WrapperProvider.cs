@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using StepFlow.Common.Exceptions;
+using StepFlow.GamePlay.Commands;
 using StepFlow.ViewModel.Commands;
 using StepFlow.ViewModel.Exceptions;
 
 namespace StepFlow.ViewModel
 {
-	public class WrapperProvider
+    public class WrapperProvider
 	{
 		private Dictionary<object, object> ByViewModel { get; } = new Dictionary<object, object>();
 
@@ -56,7 +57,7 @@ namespace StepFlow.ViewModel
 
 		public object? GetViewModelOrDefault(object model) => ByModel.GetValueOrDefault(model);
 
-		internal CommandVm GetOrCreateCommand(GamePlay.Command command)
+		internal CommandVm GetOrCreateCommand(Command command)
 		{
 			if (TryGetViewModel(command, out var result))
 			{
@@ -66,8 +67,8 @@ namespace StepFlow.ViewModel
 			{
 				return command switch
 				{
-					GamePlay.MoveCommand moveCommand => new MoveCommand(
-						(IContextElement)GetViewModel(command.Target ?? throw new PropertyNullException(nameof(GamePlay.Command.Target))),
+					GamePlay.Commands.MoveCommand moveCommand => new MoveCommand(
+						(IContextElement)GetViewModel(command.Target ?? throw new PropertyNullException(nameof(Command.Target))),
 						(PieceVm)GetViewModel(moveCommand.Target),
 						(NodeVm)GetViewModel(moveCommand.Next)
 					),

@@ -2,7 +2,7 @@
 
 namespace StepFlow.GamePlay
 {
-	public class Strength
+	public class Strength : ICloneable
 	{
 		public Strength(float max)
 			: this(max, max)
@@ -13,6 +13,14 @@ namespace StepFlow.GamePlay
 		{
 			this.value = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
 			this.max = max >= 0 ? max : throw new ArgumentOutOfRangeException(nameof(max));
+		}
+
+		public Strength(Strength original)
+			: this(
+				(original ?? throw new ArgumentNullException(nameof(original))).Value,
+				(original ?? throw new ArgumentNullException(nameof(original))).Max
+			)
+		{
 		}
 
 		private float value;
@@ -47,5 +55,9 @@ namespace StepFlow.GamePlay
 				Value = MathF.Min(Value, Max);
 			}
 		}
+
+		public Strength Clone() => new Strength(this);
+
+		object ICloneable.Clone() => Clone();
 	}
 }

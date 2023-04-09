@@ -1,8 +1,8 @@
-﻿using StepFlow.GamePlay;
+﻿using StepFlow.GamePlay.Commands;
 
 namespace StepFlow.ViewModel.Commands
 {
-	public abstract class CommandVm : WrapperVm<Command>, IMarkered
+    public abstract class CommandVm : WrapperVm<Command>, IMarkered
 	{
 		public CommandVm(IContextElement context, Command source)
 			: base(context, source)

@@ -1,11 +1,11 @@
 ﻿using System;
-using StepFlow.GamePlay;
+using StepFlow.GamePlay.Commands;
 using StepFlow.TimeLine;
 using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
-	public class AxisVm : WrapperVm<Axis<Command>>
+    public class AxisVm : WrapperVm<Axis<Command>>
 	{
 		public AxisVm(IContextElement context, Axis<Command> source)
 			: base(context, source)

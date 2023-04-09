@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace StepFlow.GamePlay
+namespace StepFlow.GamePlay.Commands
 {
 	public class MoveCommand : Command
 	{

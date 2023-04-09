@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Drawing;
 using StepFlow.Core;
+using StepFlow.GamePlay.Commands;
 using StepFlow.TimeLine;
 
 namespace StepFlow.GamePlay
 {
-	public class Context
+    public class Context
 	{
 		public Context()
 		{

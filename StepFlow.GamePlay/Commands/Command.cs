@@ -1,7 +1,7 @@
 ﻿using System;
 using StepFlow.TimeLine;
 
-namespace StepFlow.GamePlay
+namespace StepFlow.GamePlay.Commands
 {
 	public abstract class Command : CommandBase
 	{
