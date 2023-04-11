@@ -18,7 +18,7 @@ namespace StepFlow.Core
 
 		public Place<TNode> Place { get; }
 
-		private static IEnumerable<PairCollision> GetSwaps(Piece[] pieces)
+		private static IEnumerable<PairCollision<TPiece>> GetSwaps(TPiece[] pieces)
 		{
 			for (var iFirst = 0; iFirst < pieces.Length; iFirst++)
 			{
@@ -31,13 +31,13 @@ namespace StepFlow.Core
 						firstPiece.Current == secondPiece.Next && secondPiece.Current == firstPiece.Next
 					)
 					{
-						yield return new PairCollision(firstPiece, secondPiece);
+						yield return new PairCollision<TPiece>(firstPiece, secondPiece);
 					}
 				}
 			}
 		}
 
-		private static IEnumerable<CrashCollision> GetCrashes(Piece[] pieces)
+		private static IEnumerable<CrashCollision<TPiece>> GetCrashes(TPiece[] pieces)
 		{
 			for (var iFirst = 0; iFirst < pieces.Length; iFirst++)
 			{
@@ -47,26 +47,26 @@ namespace StepFlow.Core
 					var secondPiece = pieces[iSecond];
 					if (CheckCrash(firstPiece, secondPiece))
 					{
-						yield return new CrashCollision(firstPiece, secondPiece);
+						yield return new CrashCollision<TPiece>(firstPiece, secondPiece);
 					}
 					else if (CheckCrash(secondPiece, firstPiece))
 					{
-						yield return new CrashCollision(secondPiece, firstPiece);
+						yield return new CrashCollision<TPiece>(secondPiece, firstPiece);
 					}
 				}
 			}
 		}
 
-		private static IEnumerable<IReadOnlyList<Piece>> GetCompetitors(Piece[] pieces)
+		private static IEnumerable<IReadOnlyList<TPiece>> GetCompetitors(TPiece[] pieces)
 		{
-			var disputedNodes = new Dictionary<Node, List<Piece>>();
+			var disputedNodes = new Dictionary<Node, List<TPiece>>();
 			foreach (var piece in pieces)
 			{
 				if (piece.Next is { })
 				{
 					if (!disputedNodes.TryGetValue(piece.Next, out var competitors))
 					{
-						competitors = new List<Piece>();
+						competitors = new List<TPiece>();
 						disputedNodes[piece.Next] = competitors;
 					}
 
@@ -80,20 +80,15 @@ namespace StepFlow.Core
 			}
 		}
 
-		public CollisionResult TakeStep()
+		public CollisionResult<TPiece> TakeStep()
 		{
 			var pieces = Pieces.ToArray();
 
-			var result = new CollisionResult(
+			var result = new CollisionResult<TPiece>(
 				GetCrashes(pieces),
 				GetSwaps(pieces),
 				GetCompetitors(pieces)
 			);
-
-			foreach (var particle in Pieces.AsEnumerable<Particle>().Concat(Place.Values))
-			{
-				particle.TakeStep();
-			}
 
 			return result;
 		}

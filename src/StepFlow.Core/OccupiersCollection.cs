@@ -37,6 +37,8 @@ namespace StepFlow.Core
 			}
 		}
 
+		internal void Clear() => Items.Clear();
+
 		public IEnumerator<Piece> GetEnumerator() => Items.GetEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

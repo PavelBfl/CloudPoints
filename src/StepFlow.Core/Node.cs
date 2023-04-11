@@ -15,6 +15,13 @@ namespace StepFlow.Core
 
 		public OccupiersCollection Occupiers { get; } = new OccupiersCollection();
 
+		protected override void OnOwnerChange()
+		{
+			base.OnOwnerChange();
+
+			Occupiers.Clear();
+		}
+
 		public override string ToString() => string.Format(VIEW_FORMAT, Position.X, Position.Y);
 	}
 }

@@ -56,6 +56,27 @@ namespace StepFlow.GamePlay
 			}
 		}
 
+		public StrengthState Add(float value)
+		{
+			var newValue = Value + value;
+
+			if (newValue <= 0)
+			{
+				Value = 0;
+				return StrengthState.Min;
+			}
+			else if (newValue > Max)
+			{
+				Value = Max;
+				return StrengthState.Max;
+			}
+			else
+			{
+				Value = newValue;
+				return StrengthState.Node;
+			}
+		}
+
 		public Strength Clone() => new Strength(this);
 
 		object ICloneable.Clone() => Clone();

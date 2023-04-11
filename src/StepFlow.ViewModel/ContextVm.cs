@@ -53,6 +53,7 @@ namespace StepFlow.ViewModel
 		public void TakeStep()
 		{
 			Source.World.TakeStep();
+
 			Pieces.Refresh();
 			Place.Refresh();
 

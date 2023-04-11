@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace StepFlow.GamePlay
 {
@@ -10,5 +11,33 @@ namespace StepFlow.GamePlay
 		}
 
 		public Context Owner { get; }
+
+		public void TakeStep()
+		{
+			var collision = base.TakeStep();
+
+			foreach (var collisionUnit in collision)
+			{
+				var fullDamage = collisionUnit.Sum(x => x.CollisionDamage);
+
+				foreach (var piece in collisionUnit)
+				{
+					var addResult = piece.Strength.Add(-(fullDamage - piece.CollisionDamage));
+					if (addResult == StrengthState.Min)
+					{
+						Pieces.Remove(piece);
+					}
+					else
+					{
+						piece.Clear();
+					}
+				}
+			}
+
+			foreach (var piece in Pieces)
+			{
+				piece.TakeStep();
+			}
+		}
 	}
 }

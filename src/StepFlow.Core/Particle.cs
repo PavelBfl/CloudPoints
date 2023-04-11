@@ -4,12 +4,25 @@ namespace StepFlow.Core
 {
 	public class Particle
 	{
-		public IWorld? Owner { get; internal set; }
+		private IWorld? owner;
 
-		public IWorld OwnerRequired => Owner ?? throw ExceptionBuilder.CreateInvalidAccessOwner();
+		public IWorld? Owner
+		{
+			get => owner;
+			internal set
+			{
+				if (Owner != value)
+				{
+					owner = value;
+					OnOwnerChange();
+				}
+			}
+		}
 
-		internal virtual void TakeStep()
+		protected virtual void OnOwnerChange()
 		{
 		}
+
+		public IWorld OwnerRequired => Owner ?? throw ExceptionBuilder.CreateInvalidAccessOwner();
 	}
 }

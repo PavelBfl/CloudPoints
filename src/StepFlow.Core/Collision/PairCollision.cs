@@ -4,15 +4,16 @@ using System.Collections.Generic;
 
 namespace StepFlow.Core.Collision
 {
-	public class PairCollision : IReadOnlyList<Piece>
+	public class PairCollision<TPiece> : IReadOnlyList<TPiece>
+		where TPiece : Piece
 	{
-		public PairCollision(Piece first, Piece second)
+		public PairCollision(TPiece first, TPiece second)
 		{
 			First = first ?? throw new ArgumentNullException(nameof(first));
 			Second = second ?? throw new ArgumentNullException(nameof(second));
 		}
 
-		public Piece this[int index] => index switch
+		public TPiece this[int index] => index switch
 		{
 			0 => First,
 			1 => Second,
@@ -21,10 +22,10 @@ namespace StepFlow.Core.Collision
 
 		public int Count => 2;
 
-		public Piece First { get; }
-		public Piece Second { get; }
+		public TPiece First { get; }
+		public TPiece Second { get; }
 
-		public IEnumerator<Piece> GetEnumerator()
+		public IEnumerator<TPiece> GetEnumerator()
 		{
 			yield return First;
 			yield return Second;

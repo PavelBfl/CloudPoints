@@ -2,8 +2,9 @@
 
 namespace StepFlow.Core.Collision
 {
-	public interface IPiecesCollision : IReadOnlyCollection<Piece>
+	public interface IPiecesCollision<TPiece> : IReadOnlyCollection<TPiece>
+		where TPiece : Piece
 	{
-		bool Contains(Piece piece);
+		bool Contains(TPiece piece);
 	}
 }

@@ -36,7 +36,10 @@ namespace StepFlow.ViewModel
 
 		public PieceVm CreateSimple()
 		{
-			var piece = new GamePlay.Piece(10);
+			var piece = new GamePlay.Piece(10)
+			{
+				CollisionDamage = 2,
+			};
 			Owner.Source.World.Pieces.Add(piece);
 
 			var result = new PieceVm(Owner, piece)

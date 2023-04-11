@@ -4,14 +4,14 @@ namespace StepFlow.ViewModel.Commands
 {
 	public sealed class CreateCommand : CommandVm
 	{
-		public CreateCommand(IContextElement context, GamePlay.Context gamePlayContext, NodeVm? next)
-			: base(context, new GamePlay.Commands.CreateCommand(gamePlayContext, new GamePlay.Strength(10), next?.Source))
+		public CreateCommand(IContextElement context, GamePlay.Context gamePlayContext, NodeVm? begin)
+			: base(context, new GamePlay.Commands.CreateCommand(gamePlayContext, new GamePlay.Strength(10), begin?.Source))
 		{
-			Next = next ?? throw new ArgumentNullException(nameof(next));
+			Begin = begin ?? throw new ArgumentNullException(nameof(begin));
 		}
 
-		public NodeVm Next { get; }
+		public NodeVm Begin { get; }
 
-		public override bool IsMark { get => Next.IsMark; set => Next.IsMark = value; }
+		public override bool IsMark { get => Begin.IsMark; set => Begin.IsMark = value; }
 	}
 }

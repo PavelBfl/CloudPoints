@@ -19,15 +19,47 @@
 			}
 		}
 
-		public Node? Next { get; set; }
+		private Node? next;
 
-		internal override void TakeStep()
+		public Node? Next
 		{
-			if (Next is { })
+			get => next;
+			set => SetNext(value, true);
+		}
+
+		private void SetNext(Node? value, bool scheduled)
+		{
+			next = value;
+
+			if (scheduled)
+			{
+				IsScheduledStep = true;
+			}
+		}
+
+		public bool IsScheduledStep { get; set; }
+
+		public void TakeStep()
+		{
+			if (IsScheduledStep)
 			{
 				Current = Next;
-				Next = null;
+				Clear();
 			}
+		}
+
+		public void Clear()
+		{
+			SetNext(null, false);
+			IsScheduledStep = false;
+		}
+
+		protected override void OnOwnerChange()
+		{
+			base.OnOwnerChange();
+
+			Current = null;
+			Clear();
 		}
 	}
 }

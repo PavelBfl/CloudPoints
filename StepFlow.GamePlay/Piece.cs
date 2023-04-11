@@ -14,7 +14,7 @@ namespace StepFlow.GamePlay
 
 		public IList<Command> Commands { get; } = new List<Command>();
 
-		public double CollisionDamage { get; set; }
+		public float CollisionDamage { get; set; }
 
 		World IParticle.Owner => (World)OwnerRequired;
 	}
