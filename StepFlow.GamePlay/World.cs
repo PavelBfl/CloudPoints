@@ -14,7 +14,7 @@ namespace StepFlow.GamePlay
 
 		public void TakeStep()
 		{
-			var collision = base.TakeStep();
+			var collision = base.GetCollision();
 
 			foreach (var collisionUnit in collision)
 			{

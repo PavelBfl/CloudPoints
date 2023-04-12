@@ -20,5 +20,9 @@
 		internal static CoreException CreateInvalidAccessOwner() => new CoreException(INVALID_ACCESS_OWNER_MESSAGE);
 
 		internal static CoreException CreateParticleWithoutOwner() => new CoreException(PARTICLE_WITHOUT_OWNER_MESSAGE);
+
+		internal static CoreException CreateParticleCanNotInteraction() => new CoreException("Particle can not for interaction.");
+
+		internal static CoreException CreatePairParticlesCanNotInteraction() => new CoreException("Pair particles can not for interaction.");
 	}
 }

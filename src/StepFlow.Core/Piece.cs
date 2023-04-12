@@ -8,6 +8,8 @@
 			get => current;
 			set
 			{
+				CheckInteraction(value);
+
 				if (Current != value)
 				{
 					Current?.Occupiers.Remove(this);
@@ -29,6 +31,8 @@
 
 		private void SetNext(Node? value, bool scheduled)
 		{
+			CheckInteraction(value);
+
 			next = value;
 
 			if (scheduled)

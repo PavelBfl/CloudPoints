@@ -80,7 +80,7 @@ namespace StepFlow.Core
 			}
 		}
 
-		public CollisionResult<TPiece> TakeStep()
+		public CollisionResult<TPiece> GetCollision()
 		{
 			var pieces = Pieces.ToArray();
 

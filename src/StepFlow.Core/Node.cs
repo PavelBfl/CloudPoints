@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Linq;
 
 namespace StepFlow.Core
 {
@@ -19,7 +20,10 @@ namespace StepFlow.Core
 		{
 			base.OnOwnerChange();
 
-			Occupiers.Clear();
+			foreach (var occupier in Occupiers.ToArray())
+			{
+				occupier.Current = null;
+			}
 		}
 
 		public override string ToString() => string.Format(VIEW_FORMAT, Position.X, Position.Y);
