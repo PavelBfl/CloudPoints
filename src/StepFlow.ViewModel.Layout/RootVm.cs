@@ -19,7 +19,7 @@ namespace StepFlow.ViewModel.Layout
 		public RootVm(ContextVm world)
 		{
 			World = world ?? throw new ArgumentNullException(nameof(world));
-			NotifyPropertyExtensions.TrySubscrible(World, WorldPropertyChanging, WorldPropertyChanged);
+			NotifyPropertyExtensions.TrySubscribe(World, WorldPropertyChanging, WorldPropertyChanged);
 
 			Root = new GridPlot()
 			{
@@ -57,7 +57,7 @@ namespace StepFlow.ViewModel.Layout
 			switch (e.PropertyName)
 			{
 				case nameof(ContextVm.Current):
-					NotifyPropertyExtensions.TryUnsubscrible(World.Current?.CommandsCompleted, CommandQueueCollectionChanged);
+					NotifyPropertyExtensions.TryUnsubscribe(World.Current?.CommandsCompleted, CommandQueueCollectionChanged);
 					RefreshQueue(Array.Empty<CommandVm>());
 					break;
 			}
@@ -68,7 +68,7 @@ namespace StepFlow.ViewModel.Layout
 			switch (e.PropertyName)
 			{
 				case nameof(ContextVm.Current):
-					NotifyPropertyExtensions.TrySubscrible(World.Current?.CommandsCompleted, CommandQueueCollectionChanged);
+					NotifyPropertyExtensions.TrySubscribe(World.Current?.CommandsCompleted, CommandQueueCollectionChanged);
 					break;
 			}
 		}
@@ -121,8 +121,8 @@ namespace StepFlow.ViewModel.Layout
 
 		public void Dispose()
 		{
-			NotifyPropertyExtensions.TryUnsubscrible(World, WorldPropertyChanging, WorldPropertyChanged);
-			NotifyPropertyExtensions.TryUnsubscrible(World.Current?.CommandsCompleted, CommandQueueCollectionChanged);
+			NotifyPropertyExtensions.TryUnsubscribe(World, WorldPropertyChanging, WorldPropertyChanged);
+			NotifyPropertyExtensions.TryUnsubscribe(World.Current?.CommandsCompleted, CommandQueueCollectionChanged);
 		}
 	}
 }

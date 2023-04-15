@@ -1,4 +1,5 @@
 ﻿using System;
+using StepFlow.Common;
 using StepFlow.TimeLine;
 
 namespace StepFlow.GamePlay.Commands
@@ -33,5 +34,7 @@ namespace StepFlow.GamePlay.Commands
 		public Context Owner { get; }
 
 		public IParticle? Target { get; }
+
+		public IParticle TargetRequired => Target.PropertyRequired(nameof(Target));
 	}
 }

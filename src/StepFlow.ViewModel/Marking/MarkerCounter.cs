@@ -21,7 +21,7 @@ namespace StepFlow.ViewModel.Marking
 
 		public IEnumerator<KeyValuePair<T, int>> GetEnumerator() => Markers.GetEnumerator();
 
-		public IDisposable Registry(T mark)
+		public IDisposable Add(T mark)
 		{
 			if (Markers.TryGetValue(mark, out var count))
 			{
@@ -38,7 +38,7 @@ namespace StepFlow.ViewModel.Marking
 
 		public bool TryGetValue(T key, out int value) => Markers.TryGetValue(key, out value);
 
-		private void Unregistry(T mark)
+		private void Remove(T mark)
 		{
 			var count = Markers[mark];
 
@@ -49,7 +49,7 @@ namespace StepFlow.ViewModel.Marking
 			}
 			else if (count == 0)
 			{
-				throw InvalidViewModelException.CreateUnregistryMark();
+				throw Exceptions.Builder.CreateRemoveMark();
 			}
 			else
 			{
@@ -72,7 +72,7 @@ namespace StepFlow.ViewModel.Marking
 			private MarkerCounter<T> Owner { get; }
 			private T Key { get; }
 
-			public void Dispose() => Owner.Unregistry(Key);
+			public void Dispose() => Owner.Remove(Key);
 		}
 	}
 }

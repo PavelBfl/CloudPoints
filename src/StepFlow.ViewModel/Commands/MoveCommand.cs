@@ -4,15 +4,19 @@ namespace StepFlow.ViewModel.Commands
 {
 	public class MoveCommand : CommandVm
 	{
-		public MoveCommand(IContextElement context, PieceVm target, NodeVm next)
-			: base(context, new GamePlay.Commands.MoveCommand(target.Source, next.Source))
+		public MoveCommand(IContextElement context, GamePlay.Commands.MoveCommand source)
+			: base(context, source)
 		{
-			Next = next ?? throw new ArgumentNullException(nameof(next));
+			Source = source;
 
 			Refresh();
 		}
 
-		public NodeVm Next { get; }
+		private new GamePlay.Commands.MoveCommand Source { get; }
+
+		private NodeVm? next;
+
+		public NodeVm Next { get => next ??= (NodeVm)WrapperProvider.GetViewModel(Source.Next); }
 
 		private IDisposable? StateToken { get; set; }
 
@@ -29,10 +33,7 @@ namespace StepFlow.ViewModel.Commands
 			}
 			else
 			{
-				if (StateToken is null)
-				{
-					StateToken = Next.State.Registry(NodeState.Planned);
-				}
+				StateToken ??= Next.State.Add(NodeState.Planned);
 			}
 		}
 	}

@@ -24,7 +24,7 @@ namespace StepFlow.Common
 			}
 		}
 
-		public static bool TrySubscrible(INotifyPropertyChanged? obj, PropertyChangedEventHandler handler)
+		public static bool TrySubscribe(INotifyPropertyChanged? obj, PropertyChangedEventHandler handler)
 		{
 			if (obj is { })
 			{
@@ -37,7 +37,7 @@ namespace StepFlow.Common
 			}
 		}
 
-		public static bool TryUnsubscrible(INotifyPropertyChanged? obj, PropertyChangedEventHandler handler)
+		public static bool TryUnsubscribe(INotifyPropertyChanged? obj, PropertyChangedEventHandler handler)
 		{
 			if (obj is { })
 			{
@@ -50,7 +50,7 @@ namespace StepFlow.Common
 			}
 		}
 
-		public static bool TrySubscrible(INotifyPropertyChanging? obj, PropertyChangingEventHandler handler)
+		public static bool TrySubscribe(INotifyPropertyChanging? obj, PropertyChangingEventHandler handler)
 		{
 			if (obj is { })
 			{
@@ -63,7 +63,7 @@ namespace StepFlow.Common
 			}
 		}
 
-		public static bool TryUnsubscrible(INotifyPropertyChanging? obj, PropertyChangingEventHandler handler)
+		public static bool TryUnsubscribe(INotifyPropertyChanging? obj, PropertyChangingEventHandler handler)
 		{
 			if (obj is { })
 			{
@@ -76,7 +76,7 @@ namespace StepFlow.Common
 			}
 		}
 
-		public static bool TrySubscrible<T>(T obj, PropertyChangingEventHandler changingHandler, PropertyChangedEventHandler changedHandler)
+		public static bool TrySubscribe<T>(T obj, PropertyChangingEventHandler changingHandler, PropertyChangedEventHandler changedHandler)
 			where T : INotifyPropertyChanging, INotifyPropertyChanged
 		{
 			if (obj is { })
@@ -91,7 +91,7 @@ namespace StepFlow.Common
 			}
 		}
 
-		public static bool TryUnsubscrible<T>(T obj, PropertyChangingEventHandler changingHandler, PropertyChangedEventHandler changedHandler)
+		public static bool TryUnsubscribe<T>(T obj, PropertyChangingEventHandler changingHandler, PropertyChangedEventHandler changedHandler)
 			where T : INotifyPropertyChanging, INotifyPropertyChanged
 		{
 			if (obj is { })
@@ -106,7 +106,7 @@ namespace StepFlow.Common
 			}
 		}
 
-		public static bool TrySubscrible(INotifyCollectionChanged? obj, NotifyCollectionChangedEventHandler handler)
+		public static bool TrySubscribe(INotifyCollectionChanged? obj, NotifyCollectionChangedEventHandler handler)
 		{
 			if (obj is { })
 			{
@@ -120,7 +120,7 @@ namespace StepFlow.Common
 			}
 		}
 
-		public static bool TryUnsubscrible(INotifyCollectionChanged? obj, NotifyCollectionChangedEventHandler handler)
+		public static bool TryUnsubscribe(INotifyCollectionChanged? obj, NotifyCollectionChangedEventHandler handler)
 		{
 			if (obj is { })
 			{

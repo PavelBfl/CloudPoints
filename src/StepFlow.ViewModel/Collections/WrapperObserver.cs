@@ -13,8 +13,5 @@ namespace StepFlow.ViewModel.Collections
 
 		protected override bool ItemEquals(TWrapper observer, TSource observable)
 			=> EqualityComparer<TSource>.Default.Equals(observer.Source, observable);
-
-		protected override void RemoverObserver(TWrapper observer)
-			=> observer.Dispose();
 	}
 }

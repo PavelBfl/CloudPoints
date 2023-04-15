@@ -102,6 +102,8 @@ namespace StepFlow.ViewModel.Collections
 
 		protected abstract TObserver CreateObserver(TObservable observable);
 
-		protected abstract void RemoverObserver(TObserver observer);
+		protected virtual void RemoverObserver(TObserver observer)
+		{
+		}
 	}
 }

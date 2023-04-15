@@ -10,7 +10,6 @@ using StepFlow.ViewModel;
 
 namespace StepFlow.View.Controls
 {
-
 	public class HexChild : PolygonBase
 	{
 		private const int HEX_VERTICES_COUNT = 6;
@@ -40,11 +39,11 @@ namespace StepFlow.View.Controls
 			{
 				if (Source != value)
 				{
-					NotifyPropertyExtensions.TryUnsubscrible(Source, SourcePropertyChanged);
+					NotifyPropertyExtensions.TryUnsubscribe(Source, SourcePropertyChanged);
 
 					source = value;
 
-					NotifyPropertyExtensions.TrySubscrible(Source, SourcePropertyChanged);
+					NotifyPropertyExtensions.TrySubscribe(Source, SourcePropertyChanged);
 
 					SourceChanged();
 				}

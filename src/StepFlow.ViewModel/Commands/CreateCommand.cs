@@ -1,16 +1,18 @@
-﻿using System;
-
-namespace StepFlow.ViewModel.Commands
+﻿namespace StepFlow.ViewModel.Commands
 {
 	public sealed class CreateCommand : CommandVm
 	{
-		public CreateCommand(IContextElement context, GamePlay.Context gamePlayContext, NodeVm? begin)
-			: base(context, new GamePlay.Commands.CreateCommand(gamePlayContext, new GamePlay.Strength(10), begin?.Source))
+		public CreateCommand(IContextElement context, GamePlay.Commands.CreateCommand source)
+			: base(context, source)
 		{
-			Begin = begin ?? throw new ArgumentNullException(nameof(begin));
+			Source = source;
 		}
 
-		public NodeVm Begin { get; }
+		private new GamePlay.Commands.CreateCommand Source { get; }
+
+		private NodeVm? begin;
+
+		public NodeVm Begin => begin ??= (NodeVm)WrapperProvider.GetViewModel(Source);
 
 		public override bool IsMark { get => Begin.IsMark; set => Begin.IsMark = value; }
 	}

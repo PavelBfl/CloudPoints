@@ -41,11 +41,11 @@ namespace StepFlow.View.Controls
 			{
 				if (Source != value)
 				{
-					NotifyPropertyExtensions.TryUnsubscrible(Source?.Place, ParticlesCollectionChanged);
+					NotifyPropertyExtensions.TryUnsubscribe(Source?.Place, ParticlesCollectionChanged);
 
 					source = value;
 
-					NotifyPropertyExtensions.TrySubscrible(Source?.Place, ParticlesCollectionChanged);
+					NotifyPropertyExtensions.TrySubscribe(Source?.Place, ParticlesCollectionChanged);
 				}
 			}
 		}

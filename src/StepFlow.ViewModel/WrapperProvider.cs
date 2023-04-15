@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using StepFlow.Common.Exceptions;
 using StepFlow.ViewModel.Commands;
-using StepFlow.ViewModel.Exceptions;
 
 namespace StepFlow.ViewModel
 {
@@ -67,11 +65,14 @@ namespace StepFlow.ViewModel
 				return command switch
 				{
 					GamePlay.Commands.MoveCommand moveCommand => new MoveCommand(
-						(IContextElement)GetViewModel(command.Target ?? throw new PropertyNullException(nameof(GamePlay.Commands.Command.Target))),
-						(PieceVm)GetViewModel(moveCommand.Target),
-						(NodeVm)GetViewModel(moveCommand.Next)
+						(IContextElement)GetViewModel(command.TargetRequired),
+						moveCommand
 					),
-					_ => throw new InvalidViewModelException(),
+					GamePlay.Commands.CreateCommand createCommand => new CreateCommand(
+						(IContextElement)GetViewModel(command.TargetRequired),
+						createCommand
+					),
+					_ => throw Exceptions.Builder.CreateUnknownCommand(),
 				};
 			}
 		}

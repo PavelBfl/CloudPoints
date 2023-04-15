@@ -46,7 +46,7 @@ namespace StepFlow.ViewModel
 					current = value;
 					Source.Current = Current?.Source;
 
-					stateToken = Current?.State.Registry(NodeState.Current);
+					stateToken = Current?.State.Add(NodeState.Current);
 				}
 			}
 		}
@@ -106,7 +106,7 @@ namespace StepFlow.ViewModel
 				throw new ArgumentNullException(nameof(node));
 			}
 
-			Add(new MoveCommand(this, this, node));
+			Add(new MoveCommand(this, new GamePlay.Commands.MoveCommand(Source, node.Source)));
 		}
 	}
 }
