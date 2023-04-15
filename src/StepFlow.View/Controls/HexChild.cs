@@ -186,7 +186,7 @@ namespace StepFlow.View.Controls
 
 			var cellOffset = Owner.GetPosition(cellPosition);
 
-			return Utils.GetRegularPoligon(size, HEX_VERTICES_COUNT, offsetAngle)
+			return Utils.GetRegularPolygon(size, HEX_VERTICES_COUNT, offsetAngle)
 				.Select(x => x + cellOffset);
 		}
 

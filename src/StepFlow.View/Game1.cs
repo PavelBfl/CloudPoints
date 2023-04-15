@@ -3,14 +3,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using StepFlow.Core;
 using StepFlow.View.Controls;
-using StepFlow.ViewModel;
 using StepFlow.ViewModel.Layout;
 
 namespace StepFlow.View
 {
-    public class Game1 : Game
+	public class Game1 : Game
 	{
 		private GraphicsDeviceManager Graphics { get; }
 
@@ -19,6 +17,8 @@ namespace StepFlow.View
 		public SpriteBatch SpriteBatch => spriteBatch ?? throw new InvalidOperationException();
 
 		private RootVm Root { get; }
+
+		private SpriteFont Font { get; set; }
 
 		public Game1()
 		{
@@ -47,6 +47,8 @@ namespace StepFlow.View
 		protected override void LoadContent()
 		{
 			spriteBatch = new SpriteBatch(GraphicsDevice);
+
+			Font = Content.Load<SpriteFont>("DefaultFont");
 		}
 
 		private KeyboardState prevKeyboardState;
@@ -81,6 +83,8 @@ namespace StepFlow.View
 			SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
 
 			base.Draw(gameTime);
+
+			SpriteBatch.DrawString(Font, "Hello World", Vector2.Zero, Color.Red);
 
 			SpriteBatch.End();
 		}

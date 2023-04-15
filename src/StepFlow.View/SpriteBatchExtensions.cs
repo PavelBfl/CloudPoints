@@ -81,7 +81,7 @@ namespace StepFlow.View
 	{
 		public static float ToAngle(Vector2 vector) => MathF.Atan2(vector.Y, vector.X);
 
-		public static IEnumerable<Vector2> GetRegularPoligon(float radius, int verticesCount, float offset)
+		public static IEnumerable<Vector2> GetRegularPolygon(float radius, int verticesCount, float offset)
 		{
 			if (verticesCount < 3)
 			{
