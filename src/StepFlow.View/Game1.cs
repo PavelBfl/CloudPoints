@@ -49,6 +49,22 @@ namespace StepFlow.View
 			spriteBatch = new SpriteBatch(GraphicsDevice);
 
 			Font = Content.Load<SpriteFont>("DefaultFont");
+
+			var text = new Text(
+				this,
+				new Layout.RectPlot()
+				{
+					OwnerBounds = new(0, 0, 100, 100),
+				}
+			)
+			{
+				Content = "Hello World!",
+				Font = Font,
+				Color = Color.White,
+				HorizontalAlign = HorizontalAlign.Left,
+				VerticalAlign = VerticalAlign.Top,
+			};
+			Components.Add(text);
 		}
 
 		private KeyboardState prevKeyboardState;
@@ -83,8 +99,6 @@ namespace StepFlow.View
 			SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
 
 			base.Draw(gameTime);
-
-			SpriteBatch.DrawString(Font, "Hello World", Vector2.Zero, Color.Red);
 
 			SpriteBatch.End();
 		}
