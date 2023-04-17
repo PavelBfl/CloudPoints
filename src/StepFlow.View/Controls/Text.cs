@@ -6,20 +6,6 @@ using StepFlow.Layout;
 
 namespace StepFlow.View.Controls
 {
-	public enum HorizontalAlign
-	{
-		Left,
-		Center,
-		Right,
-	}
-
-	public enum VerticalAlign
-	{
-		Top,
-		Center,
-		Bottom,
-	}
-
 	public class Text : Control
 	{
 		public Text(Game game, RectPlot plot) : base(game)
@@ -106,16 +92,16 @@ namespace StepFlow.View.Controls
 					var x = HorizontalAlign switch
 					{
 						HorizontalAlign.Left => Plot.Bounds.Left,
-						HorizontalAlign.Center => Plot.Bounds.Left + Plot.Bounds.Width / 2,
-						HorizontalAlign.Right => Plot.Bounds.Right,
+						HorizontalAlign.Center => Plot.Bounds.Left + (Plot.Bounds.Width - ContentSize.X) / 2,
+						HorizontalAlign.Right => Plot.Bounds.Right - ContentSize.X,
 						_ => throw EnumNotSupportedException.Create(HorizontalAlign),
 					};
 
 					var y = VerticalAlign switch
 					{
 						VerticalAlign.Top => Plot.Bounds.Top,
-						VerticalAlign.Center => Plot.Bounds.Top + Plot.Bounds.Height / 2,
-						VerticalAlign.Bottom => Plot.Bounds.Bottom,
+						VerticalAlign.Center => Plot.Bounds.Top + (Plot.Bounds.Height - ContentSize.Y) / 2,
+						VerticalAlign.Bottom => Plot.Bounds.Bottom - ContentSize.Y,
 						_ => throw EnumNotSupportedException.Create(VerticalAlign),
 					};
 

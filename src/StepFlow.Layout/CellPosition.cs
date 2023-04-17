@@ -25,12 +25,12 @@ namespace StepFlow.Layout
 
 		public int RowSpan { get; set; }
 
-		public bool Equals(CellPosition other)
+		public readonly bool Equals(CellPosition other)
 			=> Column == other.Column && Row == other.Row && ColumnSpan == other.ColumnSpan && RowSpan == other.RowSpan;
 
-		public override bool Equals(object obj) => obj is CellPosition other && Equals(other);
+		public override readonly bool Equals(object obj) => obj is CellPosition other && Equals(other);
 
-		public override int GetHashCode() => HashCode.Combine(Column, Row, ColumnSpan, RowSpan);
+		public override readonly int GetHashCode() => HashCode.Combine(Column, Row, ColumnSpan, RowSpan);
 
 		public static bool operator ==(CellPosition x, CellPosition y) => x.Equals(y);
 

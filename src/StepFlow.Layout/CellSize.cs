@@ -14,6 +14,6 @@
 
 		public UnitMeasure Measure { get; set; }
 
-		public override string ToString() => Value.ToString() + VIEW_VALUE_MESURE_SEPARATOR + Measure.ToString();
+		public override readonly string ToString() => Value.ToString() + VIEW_VALUE_MESURE_SEPARATOR + Measure.ToString();
 	}
 }
