@@ -11,7 +11,7 @@ namespace StepFlow.View.Controls
 		{
 		}
 
-		public abstract IReadOnlyList<Vector2> Vertices { get; }
+		public abstract IReadOnlyVertices Vertices { get; }
 
 		public Color Color { get; set; } = Color.Red;
 
@@ -29,6 +29,15 @@ namespace StepFlow.View.Controls
 
 				thickness = value;
 			}
+		}
+
+		public bool Contains(Vector2 point) => Vertices.Bounds.Contains(point.X, point.Y) && Utils.Contains(Vertices, point);
+
+		public override void Update(GameTime gameTime)
+		{
+			base.Update(gameTime);
+
+
 		}
 
 		public override void Draw(GameTime gameTime)

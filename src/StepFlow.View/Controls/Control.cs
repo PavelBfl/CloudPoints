@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace StepFlow.View.Controls
 {

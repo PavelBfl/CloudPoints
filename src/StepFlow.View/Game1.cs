@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StepFlow.View.Controls;
+using StepFlow.View.Services;
 using StepFlow.ViewModel.Layout;
 
 namespace StepFlow.View
@@ -20,11 +21,15 @@ namespace StepFlow.View
 
 		private SpriteFont Font { get; set; }
 
+		private MouseService MouseService { get; } = new MouseService();
+
 		public Game1()
 		{
 			Graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "Content";
 			IsMouseVisible = true;
+
+			Services.AddService<IMouseService>(MouseService);
 
 			Root = new RootVm(new ServiceCollection().BuildServiceProvider(), 3, 3);
 			Root.Root.OwnerBounds = new System.Drawing.RectangleF(0, 0, Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight);
@@ -57,12 +62,6 @@ namespace StepFlow.View
 
 		public bool IsKeyOnPress(Keys key) => Keyboard.GetState().IsKeyDown(key) && !prevKeyboardState.IsKeyDown(key);
 
-		public bool MouseButtonOnPress() => Mouse.GetState().LeftButton == ButtonState.Pressed && prevMouseState.LeftButton != ButtonState.Pressed;
-
-		public Point MousePosition() => Mouse.GetState().Position;
-
-		private MouseState prevMouseState;
-
 		protected override void Update(GameTime gameTime)
 		{
 			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -73,7 +72,7 @@ namespace StepFlow.View
 			base.Update(gameTime);
 
 			prevKeyboardState = Keyboard.GetState();
-			prevMouseState = Mouse.GetState();
+			MouseService.Update();
 		}
 
 		protected override void Draw(GameTime gameTime)

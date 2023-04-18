@@ -130,34 +130,8 @@ namespace StepFlow.View.Controls
 			}
 		}
 
-		private System.Drawing.RectangleF? bounds;
-
-		public System.Drawing.RectangleF Bounds
-		{
-			get
-			{
-				if (bounds is null)
-				{
-					var min = new Vector2(float.MaxValue);
-					var max = new Vector2(float.MinValue);
-
-					foreach (var vertice in Vertices)
-					{
-						min.X = MathF.Min(min.X, vertice.X);
-						min.Y = MathF.Min(min.Y, vertice.Y);
-						max.X = MathF.Max(max.X, vertice.X);
-						max.Y = MathF.Max(max.Y, vertice.Y);
-					}
-
-					bounds = new System.Drawing.RectangleF(min.X, min.Y, max.X - min.X, max.Y - min.Y);
-				}
-
-				return bounds.Value;
-			}
-		}
-
-		private Vector2[]? vertices;
-		public override IReadOnlyList<Vector2> Vertices => vertices ??= CreateVertices(Owner.Size).ToArray();
+		private IReadOnlyVertices? vertices;
+		public override IReadOnlyVertices Vertices => vertices ??= new VerticesCollection(CreateVertices(Owner.Size));
 
 		private static bool IsOdd(int value) => value % 2 == 1;
 
