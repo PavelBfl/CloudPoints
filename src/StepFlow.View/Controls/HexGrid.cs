@@ -8,6 +8,7 @@ using StepFlow.Common;
 using StepFlow.Common.Exceptions;
 using StepFlow.Core;
 using StepFlow.Layout;
+using StepFlow.View.Services;
 using StepFlow.ViewModel;
 
 namespace StepFlow.View.Controls
@@ -182,9 +183,9 @@ namespace StepFlow.View.Controls
 
 		public override void Update(GameTime gameTime)
 		{
-			var game = (Game1)Game;
+			var keyboardService = Game.Services.GetService<IKeyboardService>();
 
-			if (game.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.Space))
+			if (keyboardService.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.Space))
 			{
 				if (Source is null)
 				{

@@ -11,9 +11,6 @@ namespace StepFlow.View.Services
 
 		public bool LeftButtonOnPress => Mouse.GetState().LeftButton == ButtonState.Pressed && PrevMouseState.LeftButton != ButtonState.Pressed;
 
-		public void Update()
-		{
-			PrevMouseState = Mouse.GetState();
-		}
+		public void Update() => PrevMouseState = Mouse.GetState();
 	}
 }

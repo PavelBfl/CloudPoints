@@ -23,6 +23,8 @@ namespace StepFlow.View
 
 		private MouseService MouseService { get; } = new MouseService();
 
+		private KeyboardService KeyboardService { get; } = new KeyboardService();
+
 		public Game1()
 		{
 			Graphics = new GraphicsDeviceManager(this);
@@ -30,6 +32,7 @@ namespace StepFlow.View
 			IsMouseVisible = true;
 
 			Services.AddService<IMouseService>(MouseService);
+			Services.AddService<IKeyboardService>(KeyboardService);
 
 			Root = new RootVm(new ServiceCollection().BuildServiceProvider(), 3, 3);
 			Root.Root.OwnerBounds = new System.Drawing.RectangleF(0, 0, Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight);
@@ -56,12 +59,6 @@ namespace StepFlow.View
 			Font = Content.Load<SpriteFont>("DefaultFont");
 		}
 
-		private KeyboardState prevKeyboardState;
-
-		public bool IsKeyDown(Keys key) => Keyboard.GetState().IsKeyDown(key);
-
-		public bool IsKeyOnPress(Keys key) => Keyboard.GetState().IsKeyDown(key) && !prevKeyboardState.IsKeyDown(key);
-
 		protected override void Update(GameTime gameTime)
 		{
 			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -71,7 +68,7 @@ namespace StepFlow.View
 
 			base.Update(gameTime);
 
-			prevKeyboardState = Keyboard.GetState();
+			KeyboardService.Update();
 			MouseService.Update();
 		}
 

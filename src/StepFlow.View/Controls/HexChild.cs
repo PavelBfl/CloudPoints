@@ -6,11 +6,12 @@ using Microsoft.Xna.Framework;
 using StepFlow.Common;
 using StepFlow.Common.Exceptions;
 using StepFlow.Core;
+using StepFlow.View.Services;
 using StepFlow.ViewModel;
 
 namespace StepFlow.View.Controls
 {
-	public class HexChild : PolygonBase
+	public class HexChild : ComponentContainer
 	{
 		private const int HEX_VERTICES_COUNT = 6;
 		private const int POINTY_SPACING = 3;
@@ -24,6 +25,10 @@ namespace StepFlow.View.Controls
 		{
 			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
 			Source = source;
+
+			Polygon = Add(new Polygon(Game));
+			MouseHandler = Add(new MouseHandler(Game));
+			InnerControl = Add(new Polygon(Game));
 
 			SourceChanged();
 		}
@@ -50,27 +55,11 @@ namespace StepFlow.View.Controls
 			}
 		}
 
-		private Polygon? innerControl;
-		private Polygon InnerControl
-		{
-			get
-			{
-				if (innerControl is null)
-				{
-					innerControl = new Polygon(Game)
-					{
-						CustomVertices = CreateVertices(Owner.Size * 0.9f).ToList(),
-					};
+		private Polygon Polygon { get; }
 
-					Game.Components.Add(innerControl);
+		private MouseHandler MouseHandler { get; }
 
-					UpdateState();
-					UpdateIsMark();
-				}
-
-				return innerControl;
-			}
-		}
+		private Polygon InnerControl { get; }
 
 		private void SourceChanged()
 		{
@@ -78,7 +67,7 @@ namespace StepFlow.View.Controls
 			UpdateIsMark();
 
 			var visible = Source is { };
-			Visible = visible;
+			Polygon.Visible = visible;
 			InnerControl.Visible = visible;
 		}
 
@@ -131,7 +120,21 @@ namespace StepFlow.View.Controls
 		}
 
 		private IReadOnlyVertices? vertices;
-		public override IReadOnlyVertices Vertices => vertices ??= new VerticesCollection(CreateVertices(Owner.Size));
+		public IReadOnlyVertices Vertices
+		{
+			get
+			{
+				if (vertices is null)
+				{
+					vertices = new VerticesCollection(CreateVertices(Owner.Size));
+
+					Polygon.Vertices = vertices;
+					MouseHandler.Vertices = vertices;
+				}
+
+				return vertices;
+			}
+		}
 
 		private static bool IsOdd(int value) => value % 2 == 1;
 
@@ -166,10 +169,11 @@ namespace StepFlow.View.Controls
 
 		public void Clear()
 		{
-			bounds = null;
+			Polygon.Vertices = null;
+			MouseHandler.Vertices = null;
 			vertices = null;
 
-			InnerControl.CustomVertices = CreateVertices(Owner.Size * 0.9f).ToList();
+			InnerControl.Vertices = new VerticesCollection(CreateVertices(Owner.Size * 0.9f));
 		}
 
 		public override void Update(GameTime gameTime)
@@ -179,20 +183,21 @@ namespace StepFlow.View.Controls
 				return;
 			}
 
-			var game = ((Game1)Game);
+			var mouseService = Game.Services.GetService<IMouseService>();
 
-			var mouseContains = Contains(game.MousePosition().ToVector2());
+			var mouseContains = Vertices.FillContains(mouseService.Position);
 
-			Color = mouseContains ? Color.Blue : Color.Red;
+			Polygon.Color = mouseContains ? Color.Blue : Color.Red;
 
-			if (mouseContains && game.MouseButtonOnPress())
+			if (mouseContains && mouseService.LeftButtonOnPress)
 			{
-				if (game.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
+				var keyboard = Game.Services.GetService<IKeyboardService>();
+				if (keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
 				{
 					var last = Source.CreateSimple();
 					Source.Owner.Current = last;
 				}
-				else if (game.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift))
+				else if (keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift))
 				{
 					foreach (var piece in Source.Owner.Pieces.Where(x => x.IsMark))
 					{
@@ -207,8 +212,6 @@ namespace StepFlow.View.Controls
 
 			base.Update(gameTime);
 		}
-
-		public bool Contains(Vector2 point) => Bounds.Contains(point.X, point.Y) && Utils.Contains(Vertices, point);
 
 		protected override void Dispose(bool disposing)
 		{

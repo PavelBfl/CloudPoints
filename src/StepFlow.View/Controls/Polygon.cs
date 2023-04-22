@@ -1,18 +1,42 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 
 namespace StepFlow.View.Controls
 {
-	public class Polygon : PolygonBase
+	public class Polygon : DrawableGameComponent
 	{
-		public Polygon(Game game) : base(game)
+		public Polygon(Game game)
+			: base(game)
 		{
 		}
 
-		public List<Vector2>? CustomVertices { get; set; }
+		public IReadOnlyVertices? Vertices { get; set; }
 
-		public override IReadOnlyList<Vector2> Vertices => (IReadOnlyList<Vector2>?)CustomVertices ?? Array.Empty<Vector2>();
+		public Color Color { get; set; } = Color.Red;
+
+		public float thickness = 1;
+
+		public float Thickness
+		{
+			get => thickness;
+			set
+			{
+				if (value < 0)
+				{
+					throw new ArgumentOutOfRangeException(nameof(value));
+				}
+
+				thickness = value;
+			}
+		}
+
+		public override void Draw(GameTime gameTime)
+		{
+			if (Vertices?.Any() ?? false)
+			{
+				((Game1)Game).SpriteBatch.DrawPolygon(Vertices, Color, Thickness);
+			}
+		}
 	}
 }

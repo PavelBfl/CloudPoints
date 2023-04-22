@@ -108,5 +108,7 @@ namespace StepFlow.View.Controls
 		}
 
 		IEnumerator IEnumerable.GetEnumerator() => Items.GetEnumerator();
+
+		public bool FillContains(Point point) => Bounds.Contains(point.X, point.Y) && Utils.Contains(this, point.ToVector2());
 	}
 }
