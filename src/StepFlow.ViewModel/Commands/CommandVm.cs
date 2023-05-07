@@ -4,8 +4,8 @@ namespace StepFlow.ViewModel.Commands
 {
     public abstract class CommandVm : WrapperVm<Command>, IMarkered
 	{
-		public CommandVm(IContextElement context, Command source)
-			: base(context, source)
+		public CommandVm(WrapperProvider wrapperProvider, Command source)
+			: base(wrapperProvider, source)
 		{
 		}
 

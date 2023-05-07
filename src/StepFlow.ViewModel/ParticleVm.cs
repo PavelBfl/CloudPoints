@@ -7,18 +7,19 @@ using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
-    public class ParticleVm<T> : WrapperVm<T>, IParticleVm
+	public class ParticleVm<T> : WrapperVm<T>, IParticleVm
 		where T : GamePlay.IParticle
 	{
-		public ParticleVm(ContextVm owner, T source)
-			: base(owner, source)
+		public ParticleVm(WrapperProvider wrapperProvider, T source)
+			: base(wrapperProvider, source)
 		{
-			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
 			Commands = new CommandsCollectionVm(WrapperProvider, Source.Commands);
-			CommandsCompleted = new CommandsCompletedCollection(this, Source.Commands.Where(x => !x.IsCompleted));
+			CommandsCompleted = new CommandsCompletedCollection(WrapperProvider, Source.Commands.Where(x => !x.IsCompleted));
 		}
 
-		public ContextVm Owner { get; }
+		private ContextVm? owner;
+
+		public ContextVm Owner => owner ??= WrapperProvider.GetOrCreate<ContextVm>(Source.Owner.Owner);
 
 		public CommandsCollectionVm Commands { get; }
 
@@ -37,15 +38,15 @@ namespace StepFlow.ViewModel
 
 		public sealed class CommandsCompletedCollection : WrapperObserver<CommandVm, Command>
 		{
-			public CommandsCompletedCollection(IContextElement context, IEnumerable<Command> items) : base(items)
+			public CommandsCompletedCollection(WrapperProvider wrapperProvider, IEnumerable<Command> items) : base(items)
 			{
-				Context = context ?? throw new ArgumentNullException(nameof(context));
+				WrapperProvider = wrapperProvider ?? throw new ArgumentNullException(nameof(wrapperProvider));
 			}
 
-			private IContextElement Context { get; }
+			private WrapperProvider WrapperProvider { get; }
 
 			protected override CommandVm CreateObserver(Command observable)
-				=> Context.WrapperProvider.GetOrCreateCommand(observable);
+				=> WrapperProvider.GetOrCreate<CommandVm>(observable);
 		}
 	}
 }

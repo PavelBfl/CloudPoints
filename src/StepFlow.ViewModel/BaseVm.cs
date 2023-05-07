@@ -3,15 +3,12 @@ using StepFlow.Common;
 
 namespace StepFlow.ViewModel
 {
-    public class BaseVm : BaseNotifyer, IContextElement
+	public class BaseVm : BaseNotifyer
 	{
-		public BaseVm(IContextElement context)
+		public BaseVm(WrapperProvider wrapperProvider)
 		{
-			ServiceProvider = context.ServiceProvider;
-			WrapperProvider = context.WrapperProvider;
+			WrapperProvider = wrapperProvider ?? throw new ArgumentNullException(nameof(wrapperProvider));
 		}
-
-		public IServiceProvider ServiceProvider { get; }
 
 		public WrapperProvider WrapperProvider { get; }
 	}

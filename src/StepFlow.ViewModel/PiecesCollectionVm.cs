@@ -7,24 +7,14 @@ namespace StepFlow.ViewModel
 {
 	public sealed class PiecesCollectionVm : CollectionWrapperObserver<PieceVm, Piece>
 	{
-		public PiecesCollectionVm(ContextVm owner, ICollection<Piece> items)
+		public PiecesCollectionVm(WrapperProvider wrapperProvider, ICollection<Piece> items)
 			: base(items)
 		{
-			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
+			WrapperProvider = wrapperProvider ?? throw new ArgumentNullException(nameof(wrapperProvider));
 		}
 
-		private ContextVm Owner { get; }
+		private WrapperProvider WrapperProvider { get; }
 
-		protected override PieceVm CreateObserver(Piece observable)
-		{
-			if (Owner.WrapperProvider.TryGetViewModel(observable, out object result))
-			{
-				return (PieceVm)result;
-			}
-			else
-			{
-				return new PieceVm(Owner, observable);
-			}
-		}
+		protected override PieceVm CreateObserver(Piece observable) => WrapperProvider.GetOrCreate<PieceVm>(observable);
 	}
 }

@@ -18,5 +18,8 @@ namespace StepFlow.ViewModel.Exceptions
 
 		public static InvalidCastException CreateUnknownCommand()
 			=> new InvalidCastException("Unknown command model.");
+
+		public static InvalidOperationException CreateUnknownModel()
+			=> new InvalidOperationException("Unknown model.");
 	}
 }

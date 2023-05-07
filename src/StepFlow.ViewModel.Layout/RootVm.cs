@@ -12,7 +12,7 @@ namespace StepFlow.ViewModel.Layout
 	public class RootVm : IDisposable
 	{
 		public RootVm(IServiceProvider serviceProvider, int colsCount, int rowsCount)
-			: this(new ContextVm(new ContextElement(serviceProvider, new WrapperProvider()), colsCount, rowsCount))
+			: this(new ContextVm(new WrapperProvider(serviceProvider), colsCount, rowsCount))
 		{
 		}
 

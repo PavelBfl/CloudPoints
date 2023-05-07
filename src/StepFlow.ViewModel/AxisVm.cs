@@ -7,8 +7,8 @@ namespace StepFlow.ViewModel
 {
     public class AxisVm : WrapperVm<Axis<Command>>
 	{
-		public AxisVm(IContextElement context, Axis<Command> source)
-			: base(context, source)
+		public AxisVm(WrapperProvider wrapperProvider, Axis<Command> source)
+			: base(wrapperProvider, source)
 		{
 		}
 

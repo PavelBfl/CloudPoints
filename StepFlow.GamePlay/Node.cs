@@ -4,7 +4,7 @@ using StepFlow.GamePlay.Commands;
 
 namespace StepFlow.GamePlay
 {
-    public class Node : Core.Node, IParticle
+	public class Node : Core.Node, IParticle
 	{
 		public Node(Point position, float strengthDefault = 0)
 			: base(position)

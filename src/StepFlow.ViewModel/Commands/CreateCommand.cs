@@ -2,8 +2,8 @@
 {
 	public sealed class CreateCommand : CommandVm
 	{
-		public CreateCommand(IContextElement context, GamePlay.Commands.CreateCommand source)
-			: base(context, source)
+		public CreateCommand(WrapperProvider wrapperProvider, GamePlay.Commands.CreateCommand source)
+			: base(wrapperProvider, source)
 		{
 			Source = source;
 		}

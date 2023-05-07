@@ -6,8 +6,8 @@ namespace StepFlow.ViewModel
 {
 	public class PieceVm : ParticleVm<GamePlay.Piece>, IMarkered
 	{
-		public PieceVm(ContextVm owner, GamePlay.Piece source)
-			: base(owner, source)
+		public PieceVm(WrapperProvider wrapperProvider, GamePlay.Piece source)
+			: base(wrapperProvider, source)
 		{
 		}
 
@@ -106,7 +106,8 @@ namespace StepFlow.ViewModel
 				throw new ArgumentNullException(nameof(node));
 			}
 
-			Add(new MoveCommand(this, new GamePlay.Commands.MoveCommand(Source, node.Source)));
+			var command = WrapperProvider.GetOrCreate<MoveCommand>(new GamePlay.Commands.MoveCommand(Source, node.Source));
+			Add(command);
 		}
 	}
 }

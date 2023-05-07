@@ -5,15 +5,15 @@ namespace StepFlow.ViewModel
 	public class WrapperVm<T> : BaseVm, IDisposable
 		where T : notnull
 	{
-		public WrapperVm(IContextElement context, T source)
-			: base(context)
+		public WrapperVm(WrapperProvider wrapperProvider, T source)
+			: base(wrapperProvider)
 		{
 			Source = source ?? throw new ArgumentNullException(nameof(source));
-			WrapperProvider.Add(this, Source);
+			WrapperProvider.Add(Source, this);
 		}
 
 		internal T Source { get; }
 
-		public virtual void Dispose() => WrapperProvider.Remove(this, Source);
+		public virtual void Dispose() => WrapperProvider.Remove(Source);
 	}
 }

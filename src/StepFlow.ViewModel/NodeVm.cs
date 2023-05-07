@@ -7,8 +7,8 @@ namespace StepFlow.ViewModel
 {
 	public class NodeVm : ParticleVm<GamePlay.Node>, IMarkered
 	{
-		public NodeVm(ContextVm owner, GamePlay.Node source)
-			: base(owner, source)
+		public NodeVm(WrapperProvider wrapperProvider, GamePlay.Node source)
+			: base(wrapperProvider, source)
 		{
 			Source = source ?? throw new ArgumentNullException(nameof(source));
 			State.OnMarkChanged += StateOnMarkChanged;
@@ -42,7 +42,7 @@ namespace StepFlow.ViewModel
 			};
 			Owner.Source.World.Pieces.Add(piece);
 
-			var result = new PieceVm(Owner, piece)
+			var result = new PieceVm(WrapperProvider, piece)
 			{
 				Current = this,
 			};

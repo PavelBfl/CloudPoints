@@ -6,11 +6,16 @@ namespace StepFlow.ViewModel
 {
 	public class WrapperProvider
 	{
-		private Dictionary<object, object> ByViewModel { get; } = new Dictionary<object, object>();
+		public WrapperProvider(IServiceProvider serviceProvider)
+		{
+			ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+		}
+
+		public IServiceProvider ServiceProvider { get; }
 
 		private Dictionary<object, object> ByModel { get; } = new Dictionary<object, object>();
 
-		public void Add(object viewModel, object model)
+		public void Add(object model, object viewModel)
 		{
 			if (viewModel is null)
 			{
@@ -22,59 +27,47 @@ namespace StepFlow.ViewModel
 				throw new ArgumentNullException(nameof(model));
 			}
 
-			ByViewModel.Add(viewModel, model);
 			ByModel.Add(model, viewModel);
 		}
 
-		public void Remove(object viewModel, object model)
+		public bool Remove(object model)
 		{
-			if (viewModel is null)
-			{
-				throw new ArgumentNullException(nameof(viewModel));
-			}
-
 			if (model is null)
 			{
 				throw new ArgumentNullException(nameof(model));
 			}
 
-			ByViewModel.Remove(viewModel);
-			ByModel.Remove(model);
+			return ByModel.Remove(model);
 		}
-
-		public bool TryGetModel(object viewModel, out object model) => ByViewModel.TryGetValue(viewModel, out model);
 
 		public bool TryGetViewModel(object model, out object viewModel) => ByModel.TryGetValue(model, out viewModel);
 
-		public object GetModel(object viewModel) => ByViewModel[viewModel];
-
 		public object GetViewModel(object model) => ByModel[model];
-
-		public object? GetModelOrDefault(object viewModel) => ByViewModel.GetValueOrDefault(viewModel);
 
 		public object? GetViewModelOrDefault(object model) => ByModel.GetValueOrDefault(model);
 
-		internal CommandVm GetOrCreateCommand(GamePlay.Commands.Command command)
+		internal object GetOrCreate(object model)
 		{
-			if (TryGetViewModel(command, out var result))
+			if (model is null)
 			{
-				return (CommandVm)result;
+				throw new ArgumentNullException(nameof(model));
 			}
-			else
+
+			if (!TryGetViewModel(model, out var result))
 			{
-				return command switch
+				result = model switch
 				{
-					GamePlay.Commands.MoveCommand moveCommand => new MoveCommand(
-						(IContextElement)GetViewModel(command.TargetRequired),
-						moveCommand
-					),
-					GamePlay.Commands.CreateCommand createCommand => new CreateCommand(
-						(IContextElement)GetViewModel(command.TargetRequired),
-						createCommand
-					),
-					_ => throw Exceptions.Builder.CreateUnknownCommand(),
+					GamePlay.Commands.MoveCommand moveCommand => new MoveCommand(this, moveCommand),
+					GamePlay.Commands.CreateCommand createCommand => new CreateCommand(this, createCommand),
+					GamePlay.Node node => new NodeVm(this, node),
+					GamePlay.Piece piece => new PieceVm(this, piece),
+					_ => throw Exceptions.Builder.CreateUnknownModel(),
 				};
 			}
+
+			return result;
 		}
+
+		internal T GetOrCreate<T>(object model) => (T)GetOrCreate(model);
 	}
 }

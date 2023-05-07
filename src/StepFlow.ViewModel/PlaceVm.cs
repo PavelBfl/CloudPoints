@@ -7,24 +7,14 @@ namespace StepFlow.ViewModel
 {
 	public sealed class PlaceVm : WrapperObserver<NodeVm, Node>
 	{
-		public PlaceVm(ContextVm owner, IEnumerable<Node> items)
+		public PlaceVm(WrapperProvider wrapperProvider, IEnumerable<Node> items)
 			: base(items)
 		{
-			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
+			WrapperProvider = wrapperProvider ?? throw new ArgumentNullException(nameof(wrapperProvider));
 		}
 
-		private ContextVm Owner { get; }
+		private WrapperProvider WrapperProvider { get; }
 
-		protected override NodeVm CreateObserver(Node observable)
-		{
-			if (Owner.WrapperProvider.TryGetViewModel(observable, out object result))
-			{
-				return (NodeVm)result;
-			}
-			else
-			{
-				return new NodeVm(Owner, observable);
-			}
-		}
+		protected override NodeVm CreateObserver(Node observable) => WrapperProvider.GetOrCreate<NodeVm>(observable);
 	}
 }

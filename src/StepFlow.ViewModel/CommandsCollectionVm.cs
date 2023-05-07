@@ -36,6 +36,6 @@ namespace StepFlow.ViewModel
 		}
 
 		protected override CommandVm CreateObserver(Command observable)
-			=> WrapperProvider.GetOrCreateCommand(observable);
+			=> WrapperProvider.GetOrCreate<CommandVm>(observable);
 	}
 }

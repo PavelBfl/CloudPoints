@@ -4,8 +4,8 @@ namespace StepFlow.ViewModel.Commands
 {
 	public class MoveCommand : CommandVm
 	{
-		public MoveCommand(IContextElement context, GamePlay.Commands.MoveCommand source)
-			: base(context, source)
+		public MoveCommand(WrapperProvider wrapperProvider, GamePlay.Commands.MoveCommand source)
+			: base(wrapperProvider, source)
 		{
 			Source = source;
 
