@@ -14,6 +14,13 @@ namespace StepFlow.GamePlay
 
 		public void TakeStep()
 		{
+			foreach (var piece in Pieces)
+			{
+				var command = piece.Commands[0];
+				piece.Commands.RemoveAt(0);
+				Owner.AxisTime.Add(command);
+			}
+
 			var collision = GetCollision();
 
 			foreach (var collisionUnit in collision)

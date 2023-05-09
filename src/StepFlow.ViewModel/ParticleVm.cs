@@ -14,7 +14,6 @@ namespace StepFlow.ViewModel
 			: base(wrapperProvider, source)
 		{
 			Commands = new CommandsCollectionVm(WrapperProvider, Source.Commands);
-			CommandsCompleted = new CommandsCompletedCollection(WrapperProvider, Source.Commands.Where(x => !x.IsCompleted));
 		}
 
 		private ContextVm? owner;
@@ -23,12 +22,9 @@ namespace StepFlow.ViewModel
 
 		public CommandsCollectionVm Commands { get; }
 
-		public CommandsCompletedCollection CommandsCompleted { get; }
-
 		public virtual void Refresh()
 		{
 			Commands.Refresh();
-			CommandsCompleted.Refresh();
 
 			foreach (var command in Commands)
 			{

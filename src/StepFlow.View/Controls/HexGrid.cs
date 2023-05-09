@@ -192,7 +192,6 @@ namespace StepFlow.View.Controls
 					throw new PropertyNullException(nameof(Source));
 				}
 
-				Source.TimeAxis.MoveNext();
 				Source.TakeStep();
 			}
 

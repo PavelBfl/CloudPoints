@@ -78,7 +78,6 @@ namespace StepFlow.ViewModel
 		public override void Dispose()
 		{
 			Commands.Clear();
-			CommandsCompleted.Refresh();
 
 			IsMark = false;
 			Next = null;
@@ -96,7 +95,6 @@ namespace StepFlow.ViewModel
 
 			command.IsMark = IsMark;
 			Commands.Add(command);
-			CommandsCompleted.Refresh();
 		}
 
 		public void MoveTo(NodeVm node)

@@ -1,10 +1,9 @@
-﻿using System;
-
-namespace StepFlow.TimeLine
+﻿namespace StepFlow.TimeLine
 {
 	public interface ICommand
 	{
-		bool IsCompleted { get; }
 		void Execute();
+
+		void Revert();
 	}
 }

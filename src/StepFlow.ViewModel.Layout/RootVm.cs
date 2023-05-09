@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
 using StepFlow.Common;
 using StepFlow.Layout;
 using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel.Layout
 {
-	public class RootVm : IDisposable
+	public class RootVm
 	{
 		public RootVm(IServiceProvider serviceProvider, int colsCount, int rowsCount)
 			: this(new ContextVm(new WrapperProvider(serviceProvider), colsCount, rowsCount))
@@ -19,7 +17,6 @@ namespace StepFlow.ViewModel.Layout
 		public RootVm(ContextVm world)
 		{
 			World = world ?? throw new ArgumentNullException(nameof(world));
-			NotifyPropertyExtensions.TrySubscribe(World, WorldPropertyChanging, WorldPropertyChanged);
 
 			Root = new GridPlot()
 			{
@@ -50,33 +47,6 @@ namespace StepFlow.ViewModel.Layout
 
 			Root.Childs.Add(ActionPlot, new CellPosition(0, 0));
 			Root.Childs.Add(QueueCommandsContainer, new CellPosition(0, 1));
-		}
-
-		private void WorldPropertyChanging(object sender, PropertyChangingEventArgs e)
-		{
-			switch (e.PropertyName)
-			{
-				case nameof(ContextVm.Current):
-					NotifyPropertyExtensions.TryUnsubscribe(World.Current?.CommandsCompleted, CommandQueueCollectionChanged);
-					RefreshQueue(Array.Empty<CommandVm>());
-					break;
-			}
-		}
-
-		private void WorldPropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			switch (e.PropertyName)
-			{
-				case nameof(ContextVm.Current):
-					NotifyPropertyExtensions.TrySubscribe(World.Current?.CommandsCompleted, CommandQueueCollectionChanged);
-					break;
-			}
-		}
-
-		private void CommandQueueCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			var current = World.Current.PropertyRequired(nameof(World.Current));
-			RefreshQueue(current.CommandsCompleted);
 		}
 
 		private void RefreshQueue(IReadOnlyList<CommandVm> commandsQueue)
@@ -118,11 +88,5 @@ namespace StepFlow.ViewModel.Layout
 		private ObservableCollection<CommandLayout> QueueCommandInner { get; } = new ObservableCollection<CommandLayout>();
 
 		public IReadOnlyList<CommandLayout> QueueCommands => QueueCommandInner;
-
-		public void Dispose()
-		{
-			NotifyPropertyExtensions.TryUnsubscribe(World, WorldPropertyChanging, WorldPropertyChanged);
-			NotifyPropertyExtensions.TryUnsubscribe(World.Current?.CommandsCompleted, CommandQueueCollectionChanged);
-		}
 	}
 }

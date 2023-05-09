@@ -26,7 +26,7 @@ namespace StepFlow.ViewModel.Commands
 		{
 			base.Refresh();
 
-			if (Source.IsCompleted)
+			if (Owner.TimeAxis.IsCompleted(this) ?? false)
 			{
 				StateToken?.Dispose();
 				StateToken = null;

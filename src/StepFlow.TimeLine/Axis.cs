@@ -1,87 +1,102 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace StepFlow.TimeLine
 {
-	public class Axis<T>
+	public class Axis<T> : IReadOnlyList<T>
 		where T : notnull, ICommand
 	{
-		private const int OFFSET_NEXT = 1;
-		private const int OFFSET_NEXT_PROCESSING = OFFSET_NEXT + 1;
+		public int Current { get; private set; } = -1;
 
-		public long Current { get; private set; } = 0;
+		private List<T> Commands { get; } = new List<T>();
 
-		public long NearestAllow => IsProcessing ? Current + OFFSET_NEXT_PROCESSING : Current + OFFSET_NEXT;
-
-		public bool IsProcessing { get; private set; } = false;
-
-		private SortedDictionary<long, HashSet<T>> TimeToCommand { get; } = new SortedDictionary<long, HashSet<T>>();
-
-		private Dictionary<T, long> CommandToTime { get; } = new Dictionary<T, long>();
-
-		public long GetTime(T command) => CommandToTime[command];
-
-		public bool TryGetTime(T command, out long result) => CommandToTime.TryGetValue(command, out result);
-
-		public void Registry(long time, T command)
+		public bool? IsCompleted(T command)
 		{
-			if (time < NearestAllow)
-			{
-				throw new ArgumentOutOfRangeException(nameof(time));
-			}
-
 			if (command is null)
 			{
 				throw new ArgumentNullException(nameof(command));
 			}
 
-			if (!TimeToCommand.TryGetValue(time, out var commands))
+			var index = Commands.IndexOf(command);
+			if (index >= 0)
 			{
-				commands = new HashSet<T>();
-				TimeToCommand.Add(time, commands);
-			}
-
-			commands.Add(command);
-			CommandToTime.Add(command, time);
-		}
-
-		public bool Remove(T command)
-		{
-			if (CommandToTime.Remove(command, out var time))
-			{
-				var localCommands = TimeToCommand[time];
-				localCommands.Remove(command);
-				if (!localCommands.Any())
-				{
-					TimeToCommand.Remove(time);
-				}
-
-				return true;
+				return index <= Current;
 			}
 			else
 			{
-				return false;
+				return null;
 			}
 		}
 
-		public void MoveNext()
+		public void Add(T command, bool isCompleted = false)
 		{
-			IsProcessing = true;
-
-			var nextStep = Current + 1;
-
-			if (TimeToCommand.Remove(nextStep, out var commands))
+			if (command is null)
 			{
-				foreach (var command in commands)
-				{
-					command.Execute();
-				}
+				throw new ArgumentNullException(nameof(command));
 			}
 
-			Current = nextStep;
+			Trim();
 
-			IsProcessing = false;
+			Commands.Add(command);
+
+			if (isCompleted)
+			{
+				Current++;
+			}
+			else
+			{
+				Execute(); 
+			}
 		}
+
+		public bool Execute()
+		{
+			var firstPlanedIndex = Current + 1;
+			var canExecute = firstPlanedIndex < Commands.Count;
+			
+			if (canExecute)
+			{
+				Commands[firstPlanedIndex].Execute();
+				Current++;
+			}
+
+			return canExecute;
+		}
+
+		public bool Revert()
+		{
+			var reverting = Current >= 0;
+
+			if (reverting)
+			{
+				Commands[Current].Revert();
+				Current--;
+			}
+
+			return reverting;
+		}
+
+		public bool Trim()
+		{
+			var firstPlanedIndex = Current + 1;
+			var canTrim = firstPlanedIndex < Commands.Count;
+
+			if (canTrim)
+			{
+				Commands.RemoveRange(firstPlanedIndex, Commands.Count - firstPlanedIndex);
+			}
+
+			return canTrim;
+		}
+
+		public int Count => Commands.Count;
+
+		public T this[int index] => Commands[index];
+
+		public IEnumerator<T> GetEnumerator() => Commands.GetEnumerator();
+
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}
 }

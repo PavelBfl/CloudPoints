@@ -2,7 +2,7 @@
 
 namespace StepFlow.ViewModel.Commands
 {
-    public abstract class CommandVm : WrapperVm<Command>, IMarkered
+	public abstract class CommandVm : WrapperVm<Command>, IMarkered
 	{
 		public CommandVm(WrapperProvider wrapperProvider, Command source)
 			: base(wrapperProvider, source)
@@ -16,8 +16,6 @@ namespace StepFlow.ViewModel.Commands
 		private AccessorVm<IParticleVm> target;
 
 		public IParticleVm? Target => target.GetValue(WrapperProvider, Source.Target);
-
-		public bool IsComplete => Source.IsCompleted;
 
 		public abstract bool IsMark { get; set; }
 

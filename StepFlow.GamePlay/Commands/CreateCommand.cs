@@ -15,11 +15,21 @@ namespace StepFlow.GamePlay.Commands
 
 		public Node? Begin { get; }
 
-		protected override void ExecuteInner()
+		private Piece? Piece { get; set; }
+
+		public override void Execute()
 		{
-			var piece = new Piece(Strength.Max);
-			Owner.World.Pieces.Add(piece);
-			piece.Next = Begin;
+			Piece ??= new Piece(Strength.Max);
+			Owner.World.Pieces.Add(Piece);
+			Piece.Next = Begin;
+		}
+
+		public override void Revert()
+		{
+			if (Piece is { })
+			{
+				Owner.World.Pieces.Remove(Piece);
+			}
 		}
 	}
 }

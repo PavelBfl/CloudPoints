@@ -11,10 +11,10 @@ namespace StepFlow.ViewModel.Exceptions
 			=> new InvalidOperationException("Registry counter is zero.");
 
 		public static InvalidOperationException CreateInvalidMatchPairs()
-			=> new InvalidOperationException("Ivalid match pairs model and view model.");
+			=> new InvalidOperationException("Invalid match pairs model and view model.");
 
 		public static InvalidOperationException CreateInvalidAccessToSource()
-			=> new InvalidOperationException("Ivalid access to source. Source element is null.");
+			=> new InvalidOperationException("Invalid access to source. Source element is null.");
 
 		public static InvalidCastException CreateUnknownCommand()
 			=> new InvalidCastException("Unknown command model.");
