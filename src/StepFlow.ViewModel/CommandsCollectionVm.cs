@@ -6,7 +6,7 @@ using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
-    public class CommandsCollectionVm : ListWrapperObserver<CommandVm, Command>, IMarkered
+	public class CommandsCollectionVm : ListWrapperObserver<CommandVm, Command>, IMarkered
 	{
 		public CommandsCollectionVm(WrapperProvider wrapperProvider, IList<Command> commands)
 			: base(commands)

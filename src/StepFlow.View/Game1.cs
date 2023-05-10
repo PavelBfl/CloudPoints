@@ -40,7 +40,7 @@ namespace StepFlow.View
 
 			Components.Add(new GridControl(this, Root.Root));
 
-			var hexGrid = new HexGrid(this, Root.World, Root.ActionPlot)
+			var hexGrid = new HexGrid(this, Root.Context, Root.ActionPlot)
 			{
 				Size = 20,
 			};

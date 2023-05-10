@@ -2,7 +2,7 @@
 
 namespace StepFlow.ViewModel.Collections
 {
-	public interface ICollectionObservable<T> : IReadOnlyListObservable<T>, ICollection<T>
+	public interface ICollectionObservable<T> : IReadOnlyListObservable<T>, ICollection<T>, IReadOnlyCollection<T>
 	{
 	}
 }

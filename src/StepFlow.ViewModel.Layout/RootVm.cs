@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using StepFlow.Common;
 using StepFlow.Layout;
 using StepFlow.ViewModel.Commands;
@@ -14,9 +16,10 @@ namespace StepFlow.ViewModel.Layout
 		{
 		}
 
-		public RootVm(ContextVm world)
+		public RootVm(ContextVm context)
 		{
-			World = world ?? throw new ArgumentNullException(nameof(world));
+			Context = context ?? throw new ArgumentNullException(nameof(context));
+			NotifyPropertyExtensions.TrySubscribe(Context, ContextPropertyChanging, ContextPropertyChanged);
 
 			Root = new GridPlot()
 			{
@@ -47,6 +50,33 @@ namespace StepFlow.ViewModel.Layout
 
 			Root.Childs.Add(ActionPlot, new CellPosition(0, 0));
 			Root.Childs.Add(QueueCommandsContainer, new CellPosition(0, 1));
+
+			RefreshQueue(Array.Empty<CommandVm>());
+		}
+
+		private void ContextPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			switch (e.PropertyName)
+			{
+				case nameof(ContextVm.Current):
+					NotifyPropertyExtensions.TrySubscribe(Context.Current?.Commands, CommandsCollectionChanged);
+					break;
+			}
+		}
+
+		private void ContextPropertyChanging(object sender, PropertyChangingEventArgs e)
+		{
+			switch (e.PropertyName)
+			{
+				case nameof(ContextVm.Current):
+					NotifyPropertyExtensions.TryUnsubscribe(Context.Current?.Commands, CommandsCollectionChanged);
+					break;
+			}
+		}
+
+		private void CommandsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			RefreshQueue((IReadOnlyList<CommandVm>?)Context.Current?.Commands ?? Array.Empty<CommandVm>());
 		}
 
 		private void RefreshQueue(IReadOnlyList<CommandVm> commandsQueue)
@@ -77,7 +107,7 @@ namespace StepFlow.ViewModel.Layout
 			}
 		}
 
-		public ContextVm World { get; }
+		public ContextVm Context { get; }
 
 		public GridPlot Root { get; }
 
