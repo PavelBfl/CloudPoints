@@ -32,28 +32,26 @@ namespace StepFlow.View.Controls
 			while (Grid.Childs.Count < Childs.Count)
 			{
 				var lastIndex = Childs.Count - 1;
-				Childs[lastIndex].Dispose();
+				Childs[lastIndex].Free();
 				Childs.RemoveAt(lastIndex);
 			}
 
 			for (var i = 0; i < Childs.Count; i++)
 			{
-				if (!EqualityComparer<RectPlot>.Default.Equals(Grid.Childs[i].Child, Childs[i].Plot))
+				if (!EqualityComparer<RectPlot>.Default.Equals(Grid.Childs[i].Child, ((PlotControl)Childs[i]).Plot))
 				{
-					Childs[i].Dispose();
+					Childs[i].Free();
 					Childs[i] = CreateControl(Grid.Childs[i].Child);
 				}
 			}
 		}
 
+		// TODO В будущем этот метод будет заменён на общий хеш
 		private PlotControl CreateControl(RectPlot plot)
 		{
 			var result = plot is GridPlot gridPlot ? new GridControl(Game, gridPlot) : new PlotControl(Game, plot);
-			Game.Components.Add(result);
 			return result;
 		}
-
-		private List<PlotControl> Childs { get; } = new List<PlotControl>();
 
 		public GridPlot Grid { get; }
 

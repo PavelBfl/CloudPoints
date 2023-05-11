@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 
 namespace StepFlow.View.Controls
 {
-	public class Polygon : DrawableGameComponent
+	public class Polygon : Node
 	{
 		public Polygon(Game game)
 			: base(game)

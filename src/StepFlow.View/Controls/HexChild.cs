@@ -11,7 +11,7 @@ using StepFlow.ViewModel;
 
 namespace StepFlow.View.Controls
 {
-	public class HexChild : ComponentContainer
+	public class HexChild : Node
 	{
 		private const int HEX_VERTICES_COUNT = 6;
 		private const int POINTY_SPACING = 3;
@@ -26,9 +26,13 @@ namespace StepFlow.View.Controls
 			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
 			Source = source;
 
-			Polygon = Add(new Polygon(Game));
-			MouseHandler = Add(new MouseHandler(Game));
-			InnerControl = Add(new Polygon(Game));
+			Polygon = new Polygon(Game);
+			MouseHandler = new MouseHandler(Game);
+			InnerControl = new Polygon(Game);
+
+			Childs.Add(Polygon);
+			Childs.Add(MouseHandler);
+			Childs.Add(InnerControl);
 
 			SourceChanged();
 		}

@@ -1,40 +1,110 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using Microsoft.Xna.Framework;
 
 namespace StepFlow.View.Controls
 {
-	public class ComponentContainer : GameComponent
+	public class Node : DrawableGameComponent
 	{
-		public ComponentContainer(Game game) : base(game)
+		public Node(Game game) : base(game)
 		{
+			Childs = new ChildsCollection(this);
 		}
 
-		private GameComponentCollection Childs { get; } = new GameComponentCollection();
+		private Node? owner;
 
-		protected T Add<T>(T component)
-			where T : class, IGameComponent
+		public Node? Owner
 		{
-			if (component is null)
+			get => owner;
+			internal set
 			{
-				throw new ArgumentNullException(nameof(component));
+				if (Owner != value)
+				{
+					owner = value;
+
+					if (Owner is null)
+					{
+						Game.Components.Remove(this);
+					}
+					else
+					{
+						Game.Components.Add(this);
+					}
+				}
 			}
-
-			Game.Components.Add(component);
-
-			return component;
 		}
 
+		public ChildsCollection Childs { get; }
 
-		protected override void Dispose(bool disposing)
+		public void Free()
 		{
-			foreach (var child in Childs)
-			{
-				Game.Components.Remove(child);
-			}
-
 			Game.Components.Remove(this);
 
-			base.Dispose(disposing);
+			foreach (var child in Childs)
+			{
+				child.Free();
+			}
+		}
+	}
+
+	public class ChildsCollection : Collection<Node>
+	{
+		public ChildsCollection(Node owner)
+		{
+			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
+		}
+
+		private Node Owner { get; }
+
+		protected override void ClearItems()
+		{
+			foreach (var child in this)
+			{
+				child.Owner = null;
+			}
+
+			base.ClearItems();
+		}
+
+		protected override void InsertItem(int index, Node item)
+		{
+			if (item is null)
+			{
+				throw new ArgumentNullException(nameof(item));
+			}
+
+			if (item.Owner is not null)
+			{
+				throw new InvalidOperationException();
+			}
+
+			item.Owner = Owner;
+
+			base.InsertItem(index, item);
+		}
+
+		protected override void RemoveItem(int index)
+		{
+			this[index].Owner = null;
+			base.RemoveItem(index);
+		}
+
+		protected override void SetItem(int index, Node item)
+		{
+			if (item is null)
+			{
+				throw new ArgumentNullException(nameof(item));
+			}
+
+			if (item.Owner is not null)
+			{
+				throw new InvalidOperationException();
+			}
+
+			this[index].Owner = null;
+			item.Owner = Owner;
+
+			base.SetItem(index, item);
 		}
 	}
 }

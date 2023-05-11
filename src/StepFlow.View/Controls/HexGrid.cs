@@ -13,7 +13,7 @@ using StepFlow.ViewModel;
 
 namespace StepFlow.View.Controls
 {
-	public class HexGrid : Control
+	public class HexGrid : Node
 	{
 		private static float BigRadiusToFlatRatio { get; } = MathF.Sqrt(3);
 		private static (float Pointy, float Flat, float CellPointy, float CellFlat) GetSize(float bigRadius)
@@ -59,8 +59,7 @@ namespace StepFlow.View.Controls
 			{
 				foreach (var child in Childs)
 				{
-					Game.Components.Remove(child);
-					child.Dispose();
+					child.Free();
 				}
 				Childs.Clear();
 				return;
@@ -70,7 +69,6 @@ namespace StepFlow.View.Controls
 			{
 				var nodeV = new HexChild(Game, this);
 				Childs.Add(nodeV);
-				Game.Components.Add(nodeV);
 			}
 
 			while (Childs.Count > nodesVm.Length)
@@ -78,8 +76,7 @@ namespace StepFlow.View.Controls
 				var lastIndex = Childs.Count - 1;
 				var lastNodeV = Childs[lastIndex];
 				Childs.RemoveAt(lastIndex);
-				Game.Components.Remove(lastNodeV);
-				lastNodeV.Dispose();
+				lastNodeV.Free();
 			}
 
 			for (var i = 0; i < Childs.Count; i++)

@@ -5,7 +5,7 @@ using StepFlow.View.Services;
 
 namespace StepFlow.View.Controls
 {
-	public class MouseHandler : GameComponent
+	public class MouseHandler : Node
 	{
 		public MouseHandler(Game game) : base(game)
 		{

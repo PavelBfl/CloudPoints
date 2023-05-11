@@ -6,7 +6,7 @@ using StepFlow.Layout;
 
 namespace StepFlow.View.Controls
 {
-	public class PlotControl : ComponentContainer
+	public class PlotControl : Node
 	{
 		public PlotControl(Game game, RectPlot plot)
 			: base(game)
@@ -14,7 +14,7 @@ namespace StepFlow.View.Controls
 			Plot = plot ?? throw new ArgumentNullException(nameof(plot));
 			NotifyPropertyExtensions.TrySubscribe(Plot, PlotPropertyChanged);
 
-			Add(new Polygon(Game)
+			Childs.Add(new Polygon(Game)
 			{
 				Vertices = Vertices,
 			});

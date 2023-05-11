@@ -6,7 +6,7 @@ using StepFlow.Layout;
 
 namespace StepFlow.View.Controls
 {
-	public class Text : Control
+	public class Text : Node
 	{
 		public Text(Game game, RectPlot plot) : base(game)
 		{
