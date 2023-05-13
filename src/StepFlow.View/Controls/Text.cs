@@ -3,10 +3,11 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StepFlow.Common.Exceptions;
 using StepFlow.Layout;
+using StepFlow.View.Sketch;
 
 namespace StepFlow.View.Controls
 {
-	public class Text : Node
+	public class Text : Primitive
 	{
 		public Text(Game game, RectPlot plot) : base(game)
 		{

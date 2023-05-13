@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StepFlow.View.Controls;
 using StepFlow.View.Services;
+using StepFlow.View.Sketch;
 using StepFlow.ViewModel.Layout;
 
 namespace StepFlow.View
@@ -17,7 +18,7 @@ namespace StepFlow.View
 
 		public SpriteBatch SpriteBatch => spriteBatch ?? throw new InvalidOperationException();
 
-		private RootVm Root { get; }
+		private RootVm Root { get; set; }
 
 		private SpriteFont Font { get; set; }
 
@@ -25,31 +26,15 @@ namespace StepFlow.View
 
 		private KeyboardService KeyboardService { get; } = new KeyboardService();
 
+		private Drawer Drawer { get; set; }
+
+		private Sketch.Primitive Base { get; set; }
+
 		public Game1()
 		{
 			Graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "Content";
 			IsMouseVisible = true;
-
-			Services.AddService<IMouseService>(MouseService);
-			Services.AddService<IKeyboardService>(KeyboardService);
-
-			Root = new RootVm(new ServiceCollection().BuildServiceProvider(), 3, 3);
-			Root.Root.OwnerBounds = new System.Drawing.RectangleF(0, 0, Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight);
-			Root.Root.Margin = new Layout.Margin(1);
-
-			Components.Add(new GridControl(this, Root.Root));
-
-			var hexGrid = new HexGrid(this, Root.Context, Root.ActionPlot)
-			{
-				Size = 20,
-			};
-			Components.Add(hexGrid);
-		}
-
-		protected override void Initialize()
-		{
-			base.Initialize();
 		}
 
 		protected override void LoadContent()
@@ -57,6 +42,27 @@ namespace StepFlow.View
 			spriteBatch = new SpriteBatch(GraphicsDevice);
 
 			Font = Content.Load<SpriteFont>("DefaultFont");
+
+			Drawer = new Drawer(spriteBatch, GraphicsDevice);
+
+			Services.AddService<IMouseService>(MouseService);
+			Services.AddService<IKeyboardService>(KeyboardService);
+			Services.AddService<IDrawer>(Drawer);
+
+			Root = new RootVm(new ServiceCollection().BuildServiceProvider(), 3, 3);
+			Root.Root.OwnerBounds = new System.Drawing.RectangleF(0, 0, Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight);
+			Root.Root.Margin = new Layout.Margin(1);
+
+			Base = new Sketch.Primitive(this);
+			Base.Childs.Add(new GridControl(this, Root.Root));
+
+			var hexGrid = new HexGrid(this, Root.Context, Root.ActionPlot)
+			{
+				Size = 20,
+			};
+			Base.Childs.Add(hexGrid);
+
+			base.LoadContent();
 		}
 
 		protected override void Update(GameTime gameTime)
@@ -78,9 +84,23 @@ namespace StepFlow.View
 
 			SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
 
+			Draw(Base, gameTime);
 			base.Draw(gameTime);
 
 			SpriteBatch.End();
+		}
+
+		private void Draw(Primitive hatch, GameTime gameTime)
+		{
+			if (hatch.Visible)
+			{
+				hatch.Draw(gameTime);
+
+				foreach (var child in hatch.Childs)
+				{
+					Draw(child, gameTime);
+				}
+			}
 		}
 	}
 }

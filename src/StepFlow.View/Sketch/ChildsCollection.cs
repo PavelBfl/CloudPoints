@@ -1,60 +1,16 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using Microsoft.Xna.Framework;
 
-namespace StepFlow.View.Controls
+namespace StepFlow.View.Sketch
 {
-	public class Node : DrawableGameComponent
+	public class ChildsCollection : Collection<Primitive>
 	{
-		public Node(Game game) : base(game)
-		{
-			Childs = new ChildsCollection(this);
-		}
-
-		private Node? owner;
-
-		public Node? Owner
-		{
-			get => owner;
-			internal set
-			{
-				if (Owner != value)
-				{
-					owner = value;
-
-					if (Owner is null)
-					{
-						Game.Components.Remove(this);
-					}
-					else
-					{
-						Game.Components.Add(this);
-					}
-				}
-			}
-		}
-
-		public ChildsCollection Childs { get; }
-
-		public void Free()
-		{
-			Game.Components.Remove(this);
-
-			foreach (var child in Childs)
-			{
-				child.Free();
-			}
-		}
-	}
-
-	public class ChildsCollection : Collection<Node>
-	{
-		public ChildsCollection(Node owner)
+		public ChildsCollection(Primitive owner)
 		{
 			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
 		}
 
-		private Node Owner { get; }
+		private Primitive Owner { get; }
 
 		protected override void ClearItems()
 		{
@@ -66,7 +22,7 @@ namespace StepFlow.View.Controls
 			base.ClearItems();
 		}
 
-		protected override void InsertItem(int index, Node item)
+		protected override void InsertItem(int index, Primitive item)
 		{
 			if (item is null)
 			{
@@ -89,7 +45,7 @@ namespace StepFlow.View.Controls
 			base.RemoveItem(index);
 		}
 
-		protected override void SetItem(int index, Node item)
+		protected override void SetItem(int index, Primitive item)
 		{
 			if (item is null)
 			{

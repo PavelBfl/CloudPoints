@@ -6,14 +6,14 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using StepFlow.Common;
 using StepFlow.Common.Exceptions;
-using StepFlow.Core;
 using StepFlow.Layout;
 using StepFlow.View.Services;
+using StepFlow.View.Sketch;
 using StepFlow.ViewModel;
 
 namespace StepFlow.View.Controls
 {
-	public class HexGrid : Node
+	public class HexGrid : Primitive
 	{
 		private static float BigRadiusToFlatRatio { get; } = MathF.Sqrt(3);
 		private static (float Pointy, float Flat, float CellPointy, float CellFlat) GetSize(float bigRadius)
@@ -81,11 +81,9 @@ namespace StepFlow.View.Controls
 
 			for (var i = 0; i < Childs.Count; i++)
 			{
-				Childs[i].Source = nodesVm[i];
+				((HexChild)Childs[i]).Source = nodesVm[i];
 			}
 		}
-
-		private List<HexChild> Childs { get; } = new List<HexChild>();
 
 		private RectPlot Plot { get; }
 
@@ -101,7 +99,7 @@ namespace StepFlow.View.Controls
 
 		private void ChildsClear()
 		{
-			foreach (var child in Childs)
+			foreach (var child in Childs.Cast<HexChild>())
 			{
 				child.Clear();
 			}
@@ -195,18 +193,10 @@ namespace StepFlow.View.Controls
 			base.Update(gameTime);
 		}
 
-		protected override void Dispose(bool disposing)
+		public override void Free()
 		{
-			if (disposing)
-			{
-				Plot.PropertyChanged -= PlotPropertyChanged;
-				foreach (var child in Childs)
-				{
-					child.Dispose();
-				}
-			}
-
-			base.Dispose(disposing);
+			Plot.PropertyChanged -= PlotPropertyChanged;
+			base.Free();
 		}
 	}
 }

@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace StepFlow.View
 {
+	[Obsolete]
 	public static class SpriteBatchExtensions
 	{
 		private static Texture2D? Pixel { get; set; }

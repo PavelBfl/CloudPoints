@@ -7,11 +7,12 @@ using StepFlow.Common;
 using StepFlow.Common.Exceptions;
 using StepFlow.Core;
 using StepFlow.View.Services;
+using StepFlow.View.Sketch;
 using StepFlow.ViewModel;
 
 namespace StepFlow.View.Controls
 {
-	public class HexChild : Node
+	public class HexChild : Primitive
 	{
 		private const int HEX_VERTICES_COUNT = 6;
 		private const int POINTY_SPACING = 3;
@@ -217,15 +218,10 @@ namespace StepFlow.View.Controls
 			base.Update(gameTime);
 		}
 
-		protected override void Dispose(bool disposing)
+		public override void Free()
 		{
-			if (disposing)
-			{
-				InnerControl.Dispose();
-				Source = null;
-			}
-
-			base.Dispose(disposing);
+			Source = null;
+			base.Free();
 		}
 	}
 }

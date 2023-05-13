@@ -1,15 +1,21 @@
 ﻿using System;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework;
+using StepFlow.View.Services;
+using StepFlow.View.Sketch;
 
 namespace StepFlow.View.Controls
 {
-	public class Polygon : Node
+	public class Polygon : Primitive
 	{
 		public Polygon(Game game)
 			: base(game)
 		{
+			Drawer = Game.Services.GetRequiredService<IDrawer>();
 		}
+
+		private IDrawer Drawer { get; }
 
 		public IReadOnlyVertices? Vertices { get; set; }
 
@@ -35,7 +41,7 @@ namespace StepFlow.View.Controls
 		{
 			if (Vertices?.Any() ?? false)
 			{
-				((Game1)Game).SpriteBatch.DrawPolygon(Vertices, Color, Thickness);
+				Drawer.Polygon(Vertices, Color, Thickness);
 			}
 		}
 	}

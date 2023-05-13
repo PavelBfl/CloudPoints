@@ -55,14 +55,10 @@ namespace StepFlow.View.Controls
 
 		public GridPlot Grid { get; }
 
-		protected override void Dispose(bool disposing)
+		public override void Free()
 		{
-			if (disposing)
-			{
-				Grid.Childs.CollectionChanged -= GridChildsCollectionChanged;
-			}
-
-			base.Dispose(disposing);
+			Grid.Childs.CollectionChanged -= GridChildsCollectionChanged;
+			base.Free();
 		}
 	}
 }

@@ -3,10 +3,11 @@ using System.ComponentModel;
 using Microsoft.Xna.Framework;
 using StepFlow.Common;
 using StepFlow.Layout;
+using StepFlow.View.Sketch;
 
 namespace StepFlow.View.Controls
 {
-	public class PlotControl : Node
+	public class PlotControl : Primitive
 	{
 		public PlotControl(Game game, RectPlot plot)
 			: base(game)
@@ -38,14 +39,10 @@ namespace StepFlow.View.Controls
 
 		public IReadOnlyVertices Vertices => vertices;
 
-		protected override void Dispose(bool disposing)
+		public override void Free()
 		{
-			if (disposing)
-			{
-				NotifyPropertyExtensions.TryUnsubscribe(Plot, PlotPropertyChanged);
-			}
-
-			base.Dispose(disposing);
+			NotifyPropertyExtensions.TryUnsubscribe(Plot, PlotPropertyChanged);
+			base.Free();
 		}
 	}
 }

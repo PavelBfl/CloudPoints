@@ -2,10 +2,11 @@
 using System.Linq;
 using Microsoft.Xna.Framework;
 using StepFlow.View.Services;
+using StepFlow.View.Sketch;
 
 namespace StepFlow.View.Controls
 {
-	public class MouseHandler : Node
+	public class MouseHandler : Primitive
 	{
 		public MouseHandler(Game game) : base(game)
 		{
