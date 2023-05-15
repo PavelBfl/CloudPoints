@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using StepFlow.Common;
 using StepFlow.Common.Exceptions;
-using StepFlow.Core;
 using StepFlow.View.Services;
 using StepFlow.View.Sketch;
 using StepFlow.ViewModel;
@@ -14,31 +11,24 @@ namespace StepFlow.View.Controls
 {
 	public class HexChild : Primitive
 	{
-		private const int HEX_VERTICES_COUNT = 6;
 		private const int POINTY_SPACING = 3;
 		private const int FLAT_SPACING = 2;
-		private const float FLAT_ANGLE_OFFSET = 0;
-		private const float POINTY_ANGLE_OFFSET = MathF.Tau / (HEX_VERTICES_COUNT * 2);
 		private const int MARKED_THICKNESS = 5;
 		private const int UNMARKED_THICKNESS = 1;
 
-		public HexChild(Game game, HexGrid owner, NodeVm? source = null) : base(game)
+		public HexChild(Game game) : base(game)
 		{
-			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
-			Source = source;
-
-			Polygon = new Polygon(Game);
+			Background = new Hex(Game);
+			Selector = new Hex(Game)
+			{
+				Visible = false,
+			};
 			MouseHandler = new MouseHandler(Game);
-			InnerControl = new Polygon(Game);
 
-			Childs.Add(Polygon);
+			Childs.Add(Background);
+			Childs.Add(Selector);
 			Childs.Add(MouseHandler);
-			Childs.Add(InnerControl);
-
-			SourceChanged();
 		}
-
-		public HexGrid Owner { get; }
 
 		private NodeVm? source;
 
@@ -55,130 +45,83 @@ namespace StepFlow.View.Controls
 
 					NotifyPropertyExtensions.TrySubscribe(Source, SourcePropertyChanged);
 
-					SourceChanged();
+					Refresh();
 				}
 			}
 		}
 
-		private Polygon Polygon { get; }
+		private Hex Background { get; }
+
+		private Hex Selector { get; }
 
 		private MouseHandler MouseHandler { get; }
 
-		private Polygon InnerControl { get; }
-
-		private void SourceChanged()
+		protected override void OnOwnerChange()
 		{
-			UpdateState();
-			UpdateIsMark();
-
-			var visible = Source is { };
-			Polygon.Visible = visible;
-			InnerControl.Visible = visible;
-		}
-
-		private void SourcePropertyChanged(object? sender, PropertyChangedEventArgs e)
-		{
-			switch (e.PropertyName)
-			{
-				case nameof(NodeVm.State):
-					UpdateState();
-					break;
-				case nameof(NodeVm.IsMark):
-					UpdateIsMark();
-					break;
-			}
-		}
-
-		private void UpdateIsMark()
-		{
-			if (Source is { })
-			{
-				InnerControl.Thickness = Source.IsMark ? MARKED_THICKNESS : UNMARKED_THICKNESS;
-			}
-			else
-			{
-				InnerControl.Thickness = 0;
-			}
-		}
-
-		private void UpdateState()
-		{
-			if (Source is { })
-			{
-				if (Source.State.ContainsKey(NodeState.Current))
-				{
-					InnerControl.Color = Color.Yellow;
-				}
-				else if (Source.State.ContainsKey(NodeState.Planned))
-				{
-					InnerControl.Color = Color.Green;
-				}
-				else
-				{
-					InnerControl.Color = default;
-				}
-			}
-			else
-			{
-				InnerControl.Color = default;
-			}
-		}
-
-		private IReadOnlyVertices? vertices;
-		public IReadOnlyVertices Vertices
-		{
-			get
-			{
-				if (vertices is null)
-				{
-					vertices = new VerticesCollection(CreateVertices(Owner.Size));
-
-					Polygon.Vertices = vertices;
-					MouseHandler.Vertices = vertices;
-				}
-
-				return vertices;
-			}
+			base.OnOwnerChange();
+			Refresh();
 		}
 
 		private static bool IsOdd(int value) => value % 2 == 1;
 
-		private IEnumerable<Vector2> CreateVertices(float size)
+		private void Refresh()
 		{
-			var offsetAngle = Owner.Orientation switch
+			if (Owner is HexGrid hexGrid && Source is { })
 			{
-				HexOrientation.Flat => FLAT_ANGLE_OFFSET,
-				HexOrientation.Pointy => POINTY_ANGLE_OFFSET,
-				_ => throw EnumNotSupportedException.Create(Owner.Orientation),
-			};
+				Visible = true;
 
-			var position = Source?.Position ?? System.Drawing.Point.Empty;
-			var cellPosition = Owner.Orientation switch
+				var position = Source.Position;
+				var cellPosition = hexGrid.Orientation switch
+				{
+					HexOrientation.Flat => new Point(
+						position.X * POINTY_SPACING,
+						position.Y * FLAT_SPACING + (IsOdd(position.X) == hexGrid.OffsetOdd ? 1 : 0)
+					),
+					HexOrientation.Pointy => new Point(
+						position.X * FLAT_SPACING + (IsOdd(position.Y) == hexGrid.OffsetOdd ? 1 : 0),
+						position.Y * POINTY_SPACING
+					),
+					_ => throw EnumNotSupportedException.Create(hexGrid.Orientation),
+				};
+
+				var center = hexGrid.GetPosition(cellPosition);
+
+				Background.Orientation = hexGrid.Orientation;
+				Background.Size = hexGrid.Size;
+				Background.Position = center;
+
+				Selector.Orientation = hexGrid.Orientation;
+				Selector.Size = hexGrid.Size * 0.9f;
+				Selector.Thickness = Source.IsMark ? MARKED_THICKNESS : UNMARKED_THICKNESS;
+				Selector.Position = center;
+				if (Source.State.ContainsKey(NodeState.Current))
+				{
+					Selector.Color = Color.Yellow;
+					Selector.Visible = true;
+				}
+				else if (Source.State.ContainsKey(NodeState.Planned))
+				{
+					Selector.Color = Color.Green;
+					Selector.Visible = true;
+				}
+				else
+				{
+					Selector.Color = default;
+					Selector.Visible = false;
+				}
+			}
+			else
 			{
-				HexOrientation.Flat => new Point(
-					position.X * POINTY_SPACING,
-					position.Y * FLAT_SPACING + (IsOdd(position.X) == Owner.OffsetOdd ? 1 : 0)
-				),
-				HexOrientation.Pointy => new Point(
-					position.X * FLAT_SPACING + (IsOdd(position.Y) == Owner.OffsetOdd ? 1 : 0),
-					position.Y * POINTY_SPACING
-				),
-				_ => throw EnumNotSupportedException.Create(Owner.Orientation),
-			};
-
-			var cellOffset = Owner.GetPosition(cellPosition);
-
-			return Utils.GetRegularPolygon(size, HEX_VERTICES_COUNT, offsetAngle)
-				.Select(x => x + cellOffset);
+				Visible = false;
+			}
 		}
 
-		public void Clear()
+		private void SourcePropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
-			Polygon.Vertices = null;
-			MouseHandler.Vertices = null;
-			vertices = null;
-
-			InnerControl.Vertices = new VerticesCollection(CreateVertices(Owner.Size * 0.9f));
+			if (e.PropertyName is nameof(NodeVm.State) or nameof(NodeVm.IsMark))
+			{
+				Refresh();
+			}
 		}
 
 		public override void Update(GameTime gameTime)
@@ -190,9 +133,10 @@ namespace StepFlow.View.Controls
 
 			var mouseService = Game.Services.GetService<IMouseService>();
 
-			var mouseContains = Vertices.FillContains(mouseService.Position);
+			var vertices = Background.GetVertices() ?? IReadOnlyVertices.Empty;
+			var mouseContains = vertices.FillContains(mouseService.Position);
 
-			Polygon.Color = mouseContains ? Color.Blue : Color.Red;
+			Background.Color = mouseContains ? Color.Blue : Color.Red;
 
 			if (mouseContains && mouseService.LeftButtonOnPress)
 			{

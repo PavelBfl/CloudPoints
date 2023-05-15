@@ -23,8 +23,14 @@ namespace StepFlow.View.Sketch
 				if (Owner != value)
 				{
 					owner = value;
+
+					OnOwnerChange();
 				}
 			}
+		}
+
+		protected virtual void OnOwnerChange()
+		{
 		}
 
 		public ChildsCollection Childs { get; }

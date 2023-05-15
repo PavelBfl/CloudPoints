@@ -26,7 +26,6 @@ namespace StepFlow.View.Controls
 		public HexGrid(Game game, ContextVm source, RectPlot plot) : base(game)
 		{
 			Plot = plot ?? throw new ArgumentNullException(nameof(plot));
-			Plot.PropertyChanged += PlotPropertyChanged;
 
 			Source = source ?? throw new ArgumentNullException(nameof(source));
 
@@ -67,8 +66,7 @@ namespace StepFlow.View.Controls
 
 			while (Childs.Count < nodesVm.Length)
 			{
-				var nodeV = new HexChild(Game, this);
-				Childs.Add(nodeV);
+				Childs.Add(new HexChild(Game));
 			}
 
 			while (Childs.Count > nodesVm.Length)
@@ -86,24 +84,6 @@ namespace StepFlow.View.Controls
 		}
 
 		private RectPlot Plot { get; }
-
-		private void PlotPropertyChanged(object? sender, PropertyChangedEventArgs e)
-		{
-			switch (e.PropertyName)
-			{
-				case nameof(RectPlot.Bounds):
-					ChildsClear();
-					break;
-			}
-		}
-
-		private void ChildsClear()
-		{
-			foreach (var child in Childs.Cast<HexChild>())
-			{
-				child.Clear();
-			}
-		}
 
 		private HexOrientation orientation = HexOrientation.Flat;
 
@@ -162,8 +142,6 @@ namespace StepFlow.View.Controls
 					break;
 				default: throw EnumNotSupportedException.Create(Orientation);
 			}
-
-			ChildsClear();
 		}
 
 		public float Width { get; private set; }
@@ -191,12 +169,6 @@ namespace StepFlow.View.Controls
 			}
 
 			base.Update(gameTime);
-		}
-
-		public override void Free()
-		{
-			Plot.PropertyChanged -= PlotPropertyChanged;
-			base.Free();
 		}
 	}
 }
