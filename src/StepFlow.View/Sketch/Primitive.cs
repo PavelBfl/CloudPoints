@@ -41,6 +41,8 @@ namespace StepFlow.View.Sketch
 		{
 		}
 
+		public bool Enable { get; set; } = true;
+
 		public virtual void Update(GameTime gameTime)
 		{
 		}

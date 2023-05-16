@@ -64,7 +64,7 @@ namespace StepFlow.View.Controls
 
 		private static bool IsOdd(int value) => value % 2 == 1;
 
-		private void Refresh()
+		public void Refresh()
 		{
 			if (Owner is HexGrid hexGrid && Source is { })
 			{

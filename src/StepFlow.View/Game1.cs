@@ -72,10 +72,24 @@ namespace StepFlow.View
 				Exit();
 			}
 
+			Update(Base, gameTime);
 			base.Update(gameTime);
 
 			KeyboardService.Update();
 			MouseService.Update();
+		}
+
+		private void Update(Primitive primitive, GameTime gameTime)
+		{
+			if (primitive.Enable)
+			{
+				primitive.Update(gameTime);
+
+				foreach (var child in primitive.Childs)
+				{
+					Update(child, gameTime);
+				}
+			}
 		}
 
 		protected override void Draw(GameTime gameTime)
@@ -90,13 +104,13 @@ namespace StepFlow.View
 			SpriteBatch.End();
 		}
 
-		private void Draw(Primitive hatch, GameTime gameTime)
+		private void Draw(Primitive primitive, GameTime gameTime)
 		{
-			if (hatch.Visible)
+			if (primitive.Visible)
 			{
-				hatch.Draw(gameTime);
+				primitive.Draw(gameTime);
 
-				foreach (var child in hatch.Childs)
+				foreach (var child in primitive.Childs)
 				{
 					Draw(child, gameTime);
 				}

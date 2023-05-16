@@ -142,6 +142,11 @@ namespace StepFlow.View.Controls
 					break;
 				default: throw EnumNotSupportedException.Create(Orientation);
 			}
+
+			foreach (var child in Childs.OfType<HexChild>())
+			{
+				child.Refresh();
+			}
 		}
 
 		public float Width { get; private set; }

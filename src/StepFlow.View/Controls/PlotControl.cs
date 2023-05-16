@@ -15,13 +15,15 @@ namespace StepFlow.View.Controls
 			Plot = plot ?? throw new ArgumentNullException(nameof(plot));
 			NotifyPropertyExtensions.TrySubscribe(Plot, PlotPropertyChanged);
 
-			Childs.Add(new Polygon(Game)
+			Bounds = new Polygon(Game)
 			{
 				Vertices = Vertices,
-			});
+			};
 
 			BoundsRefresh();
 		}
+
+		private Polygon Bounds { get; }
 
 		public RectPlot Plot { get; }
 
@@ -38,6 +40,12 @@ namespace StepFlow.View.Controls
 		private BoundsVertices vertices = new BoundsVertices();
 
 		public IReadOnlyVertices Vertices => vertices;
+
+		public override void Draw(GameTime gameTime)
+		{
+			Bounds.Draw(gameTime);
+			base.Draw(gameTime);
+		}
 
 		public override void Free()
 		{
