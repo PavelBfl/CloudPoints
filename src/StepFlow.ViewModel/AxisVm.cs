@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using StepFlow.GamePlay.Commands;
 using StepFlow.TimeLine;
 using StepFlow.ViewModel.Commands;
@@ -20,6 +21,17 @@ namespace StepFlow.ViewModel
 			}
 
 			return Source.IsCompleted(command.Source);
+		}
+
+		public void Refresh()
+		{
+			foreach (var command in Source)
+			{
+				if (WrapperProvider.TryGetViewModel(command, out var viewModel))
+				{
+					((CommandVm)viewModel).Refresh();
+				}
+			}
 		}
 	}
 }

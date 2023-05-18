@@ -14,7 +14,7 @@ namespace StepFlow.GamePlay
 
 		public void TakeStep()
 		{
-			foreach (var piece in Pieces)
+			foreach (var piece in Pieces.Where(x => x.Commands.Any()))
 			{
 				var command = piece.Commands[0];
 				piece.Commands.RemoveAt(0);

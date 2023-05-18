@@ -56,6 +56,7 @@ namespace StepFlow.ViewModel
 
 			Pieces.Refresh();
 			Place.Refresh();
+			TimeAxis.Refresh();
 
 			foreach (var particle in Particles)
 			{

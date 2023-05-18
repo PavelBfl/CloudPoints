@@ -49,7 +49,7 @@ namespace StepFlow.View
 			Services.AddService<IKeyboardService>(KeyboardService);
 			Services.AddService<IDrawer>(Drawer);
 
-			Root = new RootVm(new ServiceCollection().BuildServiceProvider(), 3, 3);
+			Root = new RootVm(new ServiceCollection().BuildServiceProvider(), 2, 2);
 			Root.Root.OwnerBounds = new System.Drawing.RectangleF(0, 0, Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight);
 			Root.Root.Margin = new Layout.Margin(1);
 
