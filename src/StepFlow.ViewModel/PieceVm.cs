@@ -104,7 +104,7 @@ namespace StepFlow.ViewModel
 				throw new ArgumentNullException(nameof(node));
 			}
 
-			var command = WrapperProvider.GetOrCreate<MoveCommand>(new GamePlay.Commands.MoveCommand(Source, node.Source));
+			var command = WrapperProvider.GetOrCreate<MoveCommandVm>(new GamePlay.Commands.MoveCommand(Source, node.Source));
 			Add(command);
 		}
 	}

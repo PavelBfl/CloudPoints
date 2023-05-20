@@ -1,21 +1,54 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
 	public class WrapperProvider
 	{
-		public WrapperProvider(IServiceProvider serviceProvider)
+		private Dictionary<object, IWrapperBaseVm> ByModel { get; } = new Dictionary<object, IWrapperBaseVm>();
+
+		public void Refresh(IEnumerable<IWrapperBaseVm> roots)
 		{
-			ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+			if (roots is null)
+			{
+				throw new ArgumentNullException(nameof(roots));
+			}
+
+			foreach (var wrapper in ByModel.Values)
+			{
+				wrapper.IsUse = false;
+			}
+
+			foreach (var root in roots)
+			{
+				SetUse(root);
+			}
+
+			foreach (var (key, value) in ByModel.ToArray())
+			{
+				if (!value.IsUse)
+				{
+					ByModel.Remove(key);
+				}
+			}
 		}
 
-		public IServiceProvider ServiceProvider { get; }
+		public void SetUse(IWrapperBaseVm wrapper)
+		{
+			wrapper.IsUse = true;
 
-		private Dictionary<object, object> ByModel { get; } = new Dictionary<object, object>();
+			foreach (var item in wrapper.GetContent())
+			{
+				if (!item.IsUse)
+				{
+					SetUse(item);
+				}
+			}
+		}
 
-		public void Add(object model, object viewModel)
+		public void Add(object model, IWrapperBaseVm viewModel)
 		{
 			if (viewModel is null)
 			{
@@ -30,23 +63,13 @@ namespace StepFlow.ViewModel
 			ByModel.Add(model, viewModel);
 		}
 
-		public bool Remove(object model)
-		{
-			if (model is null)
-			{
-				throw new ArgumentNullException(nameof(model));
-			}
+		public bool TryGetViewModel(object model, out IWrapperBaseVm viewModel) => ByModel.TryGetValue(model, out viewModel);
 
-			return ByModel.Remove(model);
-		}
+		public IWrapperBaseVm GetViewModel(object model) => ByModel[model];
 
-		public bool TryGetViewModel(object model, out object viewModel) => ByModel.TryGetValue(model, out viewModel);
+		public IWrapperBaseVm? GetViewModelOrDefault(object model) => ByModel.GetValueOrDefault(model);
 
-		public object GetViewModel(object model) => ByModel[model];
-
-		public object? GetViewModelOrDefault(object model) => ByModel.GetValueOrDefault(model);
-
-		internal object GetOrCreate(object model)
+		internal IWrapperBaseVm GetOrCreate(object model)
 		{
 			if (model is null)
 			{
@@ -57,7 +80,7 @@ namespace StepFlow.ViewModel
 			{
 				result = model switch
 				{
-					GamePlay.Commands.MoveCommand moveCommand => new MoveCommand(this, moveCommand),
+					GamePlay.Commands.MoveCommand moveCommand => new MoveCommandVm(this, moveCommand),
 					GamePlay.Commands.CreateCommand createCommand => new CreateCommand(this, createCommand),
 					GamePlay.Node node => new NodeVm(this, node),
 					GamePlay.Piece piece => new PieceVm(this, piece),
@@ -68,6 +91,8 @@ namespace StepFlow.ViewModel
 			return result;
 		}
 
-		internal T GetOrCreate<T>(object model) => (T)GetOrCreate(model);
+		internal T GetOrCreate<T>(object model)
+			where T : notnull, IWrapperBaseVm
+			=> (T)GetOrCreate(model);
 	}
 }

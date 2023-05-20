@@ -1,4 +1,5 @@
-﻿using StepFlow.GamePlay.Commands;
+﻿using System.Collections.Generic;
+using StepFlow.GamePlay.Commands;
 
 namespace StepFlow.ViewModel.Commands
 {
@@ -18,9 +19,5 @@ namespace StepFlow.ViewModel.Commands
 		public IParticleVm? Target => target.GetValue(WrapperProvider, Source.Target);
 
 		public abstract bool IsMark { get; set; }
-
-		public virtual void Refresh()
-		{
-		}
 	}
 }
