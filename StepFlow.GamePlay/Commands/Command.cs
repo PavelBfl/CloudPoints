@@ -4,7 +4,7 @@ using StepFlow.TimeLine;
 
 namespace StepFlow.GamePlay.Commands
 {
-	public abstract class Command : ICommand
+	public abstract class Command : ICommand, IDataContainer
 	{
 		public Command(IParticle target)
 		{
@@ -26,5 +26,7 @@ namespace StepFlow.GamePlay.Commands
 		public IParticle? Target { get; }
 
 		public IParticle TargetRequired => Target.PropertyRequired(nameof(Target));
+
+		public object? Data { get; set; }
 	}
 }

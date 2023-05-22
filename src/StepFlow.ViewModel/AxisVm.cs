@@ -8,8 +8,8 @@ namespace StepFlow.ViewModel
 {
 	public class AxisVm : WrapperVm<Axis<Command>>
 	{
-		public AxisVm(WrapperProvider wrapperProvider, Axis<Command> source)
-			: base(wrapperProvider, source)
+		public AxisVm(Axis<Command> source)
+			: base(source)
 		{
 		}
 
@@ -27,10 +27,7 @@ namespace StepFlow.ViewModel
 		{
 			foreach (var command in Source)
 			{
-				if (WrapperProvider.TryGetViewModel(command, out var viewModel))
-				{
-					((CommandVm)viewModel).Refresh();
-				}
+				command.GetOrCreate<CommandVm>().Refresh();
 			}
 		}
 	}

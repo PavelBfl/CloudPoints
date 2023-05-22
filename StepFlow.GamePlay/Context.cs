@@ -7,7 +7,12 @@ using StepFlow.TimeLine;
 
 namespace StepFlow.GamePlay
 {
-	public class Context
+	public interface IDataContainer
+	{
+		object? Data { get; set; }
+	}
+
+	public class Context : IDataContainer
 	{
 		public Context()
 		{
@@ -41,5 +46,7 @@ namespace StepFlow.GamePlay
 		public Axis<Command> AxisTime { get; } = new Axis<Command>();
 
 		public IList<Command> StaticCommands { get; } = new List<Command>();
+
+		public object? Data { get; set; }
 	}
 }

@@ -11,8 +11,8 @@ namespace StepFlow.ViewModel.Layout
 {
 	public class RootVm
 	{
-		public RootVm(IServiceProvider serviceProvider, int colsCount, int rowsCount)
-			: this(new ContextVm(new WrapperProvider(serviceProvider), colsCount, rowsCount))
+		public RootVm(int colsCount, int rowsCount)
+			: this(new ContextVm(colsCount, rowsCount))
 		{
 		}
 

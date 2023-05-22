@@ -4,8 +4,8 @@ namespace StepFlow.ViewModel.Commands
 {
 	public class MoveCommandVm : CommandVm
 	{
-		public MoveCommandVm(WrapperProvider wrapperProvider, GamePlay.Commands.MoveCommand source)
-			: base(wrapperProvider, source)
+		public MoveCommandVm(GamePlay.Commands.MoveCommand source)
+			: base(source)
 		{
 			Source = source;
 
@@ -16,7 +16,7 @@ namespace StepFlow.ViewModel.Commands
 
 		private NodeVm? next;
 
-		public NodeVm Next { get => next ??= (NodeVm)WrapperProvider.GetViewModel(Source.Next); }
+		public NodeVm Next => next ??= Source.Next.GetOrCreate<NodeVm>();
 
 		private IDisposable? StateToken { get; set; }
 

@@ -6,8 +6,8 @@ namespace StepFlow.ViewModel
 {
 	public class PieceVm : ParticleVm<GamePlay.Piece>, IMarkered
 	{
-		public PieceVm(WrapperProvider wrapperProvider, GamePlay.Piece source)
-			: base(wrapperProvider, source)
+		public PieceVm(GamePlay.Piece source)
+			: base(source)
 		{
 		}
 
@@ -65,14 +65,12 @@ namespace StepFlow.ViewModel
 			}
 		}
 
-		private NodeVm? GetNode(Node? node) => node is { } ? (NodeVm)WrapperProvider.GetViewModel(node) : null;
-
 		public override void Refresh()
 		{
 			base.Refresh();
 
-			Current = GetNode(Source.Current);
-			Next = GetNode(Source.Next);
+			Current = Source.Current?.GetOrCreate<NodeVm>();
+			Next = Source.Next?.GetOrCreate<NodeVm>();
 		}
 
 		public override void Dispose()

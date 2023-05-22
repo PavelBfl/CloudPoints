@@ -10,10 +10,10 @@ namespace StepFlow.ViewModel
 	public class ParticleVm<T> : WrapperVm<T>, IParticleVm
 		where T : GamePlay.IParticle
 	{
-		public ParticleVm(WrapperProvider wrapperProvider, T source)
-			: base(wrapperProvider, source)
+		public ParticleVm(T source)
+			: base(source)
 		{
-			Commands = new CommandsCollectionVm(WrapperProvider, Source.Commands);
+			Commands = new CommandsCollectionVm(Source.Commands);
 		}
 
 		private ContextVm? owner;
@@ -34,12 +34,9 @@ namespace StepFlow.ViewModel
 
 		public sealed class CommandsCompletedCollection : WrapperObserver<CommandVm, Command>
 		{
-			public CommandsCompletedCollection(WrapperProvider wrapperProvider, IEnumerable<Command> items) : base(items)
+			public CommandsCompletedCollection(IEnumerable<Command> items) : base(items)
 			{
-				WrapperProvider = wrapperProvider ?? throw new ArgumentNullException(nameof(wrapperProvider));
 			}
-
-			private WrapperProvider WrapperProvider { get; }
 
 			protected override CommandVm CreateObserver(Command observable)
 				=> WrapperProvider.GetOrCreate<CommandVm>(observable);

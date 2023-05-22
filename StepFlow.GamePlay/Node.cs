@@ -17,5 +17,7 @@ namespace StepFlow.GamePlay
 		public IList<Command> Commands { get; } = new List<Command>();
 
 		World IParticle.Owner => (World)OwnerRequired;
+
+		public object? Data { get; set; }
 	}
 }

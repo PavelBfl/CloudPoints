@@ -1,98 +1,61 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
-	public class WrapperProvider
+	public static class WrapperProvider
 	{
-		private Dictionary<object, IWrapperBaseVm> ByModel { get; } = new Dictionary<object, IWrapperBaseVm>();
-
-		public void Refresh(IEnumerable<IWrapperBaseVm> roots)
+		public static IContainer GetContainer(this GamePlay.IDataContainer dataContainer)
 		{
-			if (roots is null)
+			if (dataContainer is null)
 			{
-				throw new ArgumentNullException(nameof(roots));
+				throw new ArgumentNullException(nameof(dataContainer));
 			}
 
-			foreach (var wrapper in ByModel.Values)
+			if (dataContainer.Data is null)
 			{
-				wrapper.IsUse = false;
+				var container = new Container();
+				dataContainer.Data = container;
+				return container;
 			}
-
-			foreach (var root in roots)
+			else
 			{
-				SetUse(root);
-			}
-
-			foreach (var (key, value) in ByModel.ToArray())
-			{
-				if (!value.IsUse)
-				{
-					ByModel.Remove(key);
-				}
+				return (IContainer)dataContainer.Data;
 			}
 		}
 
-		public void SetUse(IWrapperBaseVm wrapper)
-		{
-			wrapper.IsUse = true;
-
-			foreach (var item in wrapper.GetContent())
-			{
-				if (!item.IsUse)
-				{
-					SetUse(item);
-				}
-			}
-		}
-
-		public void Add(object model, IWrapperBaseVm viewModel)
-		{
-			if (viewModel is null)
-			{
-				throw new ArgumentNullException(nameof(viewModel));
-			}
-
-			if (model is null)
-			{
-				throw new ArgumentNullException(nameof(model));
-			}
-
-			ByModel.Add(model, viewModel);
-		}
-
-		public bool TryGetViewModel(object model, out IWrapperBaseVm viewModel) => ByModel.TryGetValue(model, out viewModel);
-
-		public IWrapperBaseVm GetViewModel(object model) => ByModel[model];
-
-		public IWrapperBaseVm? GetViewModelOrDefault(object model) => ByModel.GetValueOrDefault(model);
-
-		internal IWrapperBaseVm GetOrCreate(object model)
+		public static IComponent GetOrCreate(this object model)
 		{
 			if (model is null)
 			{
 				throw new ArgumentNullException(nameof(model));
 			}
 
-			if (!TryGetViewModel(model, out var result))
+			var container = ((GamePlay.IDataContainer)model).GetContainer();
+
+			var component = container.Components["ViewModel"];
+
+			if (component is null)
 			{
-				result = model switch
+				component = model switch
 				{
-					GamePlay.Commands.MoveCommand moveCommand => new MoveCommandVm(this, moveCommand),
-					GamePlay.Commands.CreateCommand createCommand => new CreateCommand(this, createCommand),
-					GamePlay.Node node => new NodeVm(this, node),
-					GamePlay.Piece piece => new PieceVm(this, piece),
+					GamePlay.Commands.MoveCommand moveCommand => new MoveCommandVm(moveCommand),
+					GamePlay.Commands.CreateCommand createCommand => new CreateCommand(createCommand),
+					GamePlay.Node node => new NodeVm(node),
+					GamePlay.Piece piece => new PieceVm(piece),
 					_ => throw Exceptions.Builder.CreateUnknownModel(),
 				};
+				container.Add(component, "ViewModel");
 			}
 
-			return result;
+			return component;
 		}
 
-		internal T GetOrCreate<T>(object model)
-			where T : notnull, IWrapperBaseVm
+		public static T GetOrCreate<T>(this object model)
+			where T : notnull, IComponent
 			=> (T)GetOrCreate(model);
 	}
 }

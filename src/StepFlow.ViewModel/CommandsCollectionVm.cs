@@ -8,13 +8,10 @@ namespace StepFlow.ViewModel
 {
 	public class CommandsCollectionVm : ListWrapperObserver<CommandVm, Command>, IMarkered
 	{
-		public CommandsCollectionVm(WrapperProvider wrapperProvider, IList<Command> commands)
+		public CommandsCollectionVm(IList<Command> commands)
 			: base(commands)
 		{
-			WrapperProvider = wrapperProvider ?? throw new ArgumentNullException(nameof(wrapperProvider));
 		}
-
-		private WrapperProvider WrapperProvider { get; }
 
 		private bool isMark;
 

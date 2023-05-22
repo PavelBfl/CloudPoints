@@ -5,18 +5,18 @@ namespace StepFlow.ViewModel.Commands
 {
 	public abstract class CommandVm : WrapperVm<Command>, IMarkered
 	{
-		public CommandVm(WrapperProvider wrapperProvider, Command source)
-			: base(wrapperProvider, source)
+		public CommandVm(Command source)
+			: base(source)
 		{
 		}
 
 		private ContextVm? owner;
 
-		public ContextVm Owner => owner ??= (ContextVm)WrapperProvider.GetViewModel(Source.Owner);
+		public ContextVm Owner => owner ??= Source.Owner.GetOrCreate<ContextVm>();
 
-		private AccessorVm<IParticleVm> target;
+		private IParticleVm? target;
 
-		public IParticleVm? Target => target.GetValue(WrapperProvider, Source.Target);
+		public IParticleVm? Target => Source.Target?.GetOrCreate<IParticleVm>();
 
 		public abstract bool IsMark { get; set; }
 	}

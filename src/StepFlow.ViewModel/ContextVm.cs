@@ -6,12 +6,12 @@ namespace StepFlow.ViewModel
 {
 	public class ContextVm : WrapperVm<Context>
 	{
-		public ContextVm(WrapperProvider wrapperProvider, int colsCount, int rowsCount)
-			: base(wrapperProvider, new Context(colsCount, rowsCount))
+		public ContextVm(int colsCount, int rowsCount)
+			: base(new Context(colsCount, rowsCount))
 		{
-			Pieces = new PiecesCollectionVm(WrapperProvider, Source.World.Pieces);
-			Place = new PlaceVm(WrapperProvider, Source.World.Place.Values);
-			TimeAxis = new AxisVm(WrapperProvider, Source.AxisTime);
+			Pieces = new PiecesCollectionVm(Source.World.Pieces);
+			Place = new PlaceVm(Source.World.Place.Values);
+			TimeAxis = new AxisVm(Source.AxisTime);
 		}
 
 		public PiecesCollectionVm Pieces { get; }
