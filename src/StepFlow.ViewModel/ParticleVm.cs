@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using StepFlow.GamePlay.Commands;
 using StepFlow.ViewModel.Collections;
 using StepFlow.ViewModel.Commands;
@@ -10,8 +8,8 @@ namespace StepFlow.ViewModel
 	public class ParticleVm<T> : WrapperVm<T>, IParticleVm
 		where T : GamePlay.IParticle
 	{
-		public ParticleVm(T source)
-			: base(source)
+		public ParticleVm(WrapperProvider wrapperProvider, T source)
+			: base(wrapperProvider, source)
 		{
 			Commands = new CommandsCollectionVm(Source.Commands);
 		}
@@ -22,7 +20,7 @@ namespace StepFlow.ViewModel
 
 		public CommandsCollectionVm Commands { get; }
 
-		public virtual void Refresh()
+		public override void Refresh()
 		{
 			Commands.Refresh();
 

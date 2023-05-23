@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Input;
 using StepFlow.View.Controls;
 using StepFlow.View.Services;
 using StepFlow.View.Sketch;
+using StepFlow.ViewModel;
 using StepFlow.ViewModel.Layout;
 
 namespace StepFlow.View
@@ -49,7 +50,8 @@ namespace StepFlow.View
 			Services.AddService<IKeyboardService>(KeyboardService);
 			Services.AddService<IDrawer>(Drawer);
 
-			Root = new RootVm(2, 2);
+			Root = new RootVm(ContextVm.Create());
+			Root.Context.Place.
 			Root.Root.OwnerBounds = new System.Drawing.RectangleF(0, 0, Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight);
 			Root.Root.Margin = new Layout.Margin(1);
 

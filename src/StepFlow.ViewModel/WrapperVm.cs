@@ -4,10 +4,11 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace StepFlow.ViewModel
 {
-	public abstract class WrapperVm<T> : BaseVm, IDisposable
+	public abstract class WrapperVm<T> : BaseVm
 		where T : notnull
 	{
-		public WrapperVm(T source)
+		public WrapperVm(WrapperProvider wrapperProvider, T source)
+			: base(wrapperProvider)
 		{
 			Source = source ?? throw new ArgumentNullException(nameof(source));
 		}

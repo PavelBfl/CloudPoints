@@ -1,61 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
+using StepFlow.TimeLine;
 using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
-	public static class WrapperProvider
+	public class WrapperProvider
 	{
-		public static IContainer GetContainer(this GamePlay.IDataContainer dataContainer)
-		{
-			if (dataContainer is null)
-			{
-				throw new ArgumentNullException(nameof(dataContainer));
-			}
+		private Dictionary<object, object> ViewModels { get; } = new Dictionary<object, object>();
 
-			if (dataContainer.Data is null)
+		public bool TryGetValue(object model, out object result) => ViewModels.TryGetValue(model, out result);
+
+		public bool TryGetValue<T>(object model, [MaybeNullWhen(false)] out T result)
+		{
+			if (TryGetValue(model, out object viewModel))
 			{
-				var container = new Container();
-				dataContainer.Data = container;
-				return container;
+				result = (T)viewModel;
+				return true;
 			}
 			else
 			{
-				return (IContainer)dataContainer.Data;
+				result = default;
+				return false;
 			}
 		}
 
-		public static IComponent GetOrCreate(this object model)
+		public object GetOrCreate(object model)
 		{
 			if (model is null)
 			{
 				throw new ArgumentNullException(nameof(model));
 			}
 
-			var container = ((GamePlay.IDataContainer)model).GetContainer();
-
-			var component = container.Components["ViewModel"];
-
-			if (component is null)
+			if (!ViewModels.TryGetValue(model, out var result))
 			{
-				component = model switch
+				result = model switch
 				{
 					GamePlay.Commands.MoveCommand moveCommand => new MoveCommandVm(moveCommand),
 					GamePlay.Commands.CreateCommand createCommand => new CreateCommand(createCommand),
 					GamePlay.Node node => new NodeVm(node),
 					GamePlay.Piece piece => new PieceVm(piece),
+					Axis<GamePlay.Commands.Command> axis => new AxisVm(axis),
+					GamePlay.Context context => new ContextVm(context),
 					_ => throw Exceptions.Builder.CreateUnknownModel(),
 				};
-				container.Add(component, "ViewModel");
+
+				ViewModels.Add(model, result);
 			}
 
-			return component;
+			return result;
 		}
 
-		public static T GetOrCreate<T>(this object model)
-			where T : notnull, IComponent
+		public T GetOrCreate<T>(object model)
+			where T : notnull
 			=> (T)GetOrCreate(model);
 	}
 }

@@ -2,7 +2,7 @@
 
 namespace StepFlow.ViewModel
 {
-	public interface IParticleVm : IComponent
+	public interface IParticleVm
 	{
 		void Refresh();
 	}

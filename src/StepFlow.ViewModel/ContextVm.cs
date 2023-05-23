@@ -6,8 +6,10 @@ namespace StepFlow.ViewModel
 {
 	public class ContextVm : WrapperVm<Context>
 	{
-		public ContextVm(int colsCount, int rowsCount)
-			: base(new Context(colsCount, rowsCount))
+		public static ContextVm Create() => WrapperProvider.GetOrCreate<ContextVm>(new Context());
+
+		internal ContextVm(Context source)
+			: base(source)
 		{
 			Pieces = new PiecesCollectionVm(Source.World.Pieces);
 			Place = new PlaceVm(Source.World.Place.Values);

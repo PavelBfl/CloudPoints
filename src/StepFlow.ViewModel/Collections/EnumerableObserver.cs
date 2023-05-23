@@ -7,6 +7,73 @@ using StepFlow.Common.Exceptions;
 
 namespace StepFlow.ViewModel.Collections
 {
+	public class WrapperEnumerable<TWrapper, TCollection, TModelItem> : WrapperVm<TCollection>, IEnumerable<TWrapper>, INotifyCollectionChanged
+		where TCollection : IEnumerable<TModelItem>
+	{
+		public WrapperEnumerable(WrapperProvider wrapperProvider, TCollection source) : base(wrapperProvider, source)
+		{
+		}
+
+		public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+		protected void OnCollectionChanged(NotifyCollectionChangedEventArgs args) => CollectionChanged.Invoke(this, args);
+
+		public IEnumerator<TWrapper> GetEnumerator()
+		{
+			foreach (var model in Source)
+			{
+				yield return WrapperProvider.GetOrCreate<TWrapper>(model);
+			}
+		}
+
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+		public override void Refresh()
+		{
+			base.Refresh();
+
+			OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+		}
+	}
+
+	public class WrapperCollection<TWrapper, TCollection, TModelItem> : WrapperEnumerable<TWrapper, TCollection, TModelItem>, ICollection<TWrapper>
+		where TCollection : ICollection<TModelItem>
+		where TWrapper : WrapperVm<TModelItem>
+	{
+		public int Count => Source.Count;
+
+		public bool IsReadOnly => false;
+
+		public void Add(TWrapper item)
+		{
+			Source.Add(item.Source);
+
+			OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
+		}
+
+		public void Clear()
+		{
+			Source.Clear();
+
+			OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+		}
+
+		public bool Contains(TWrapper item) => Source.Contains(item.Source);
+
+		public void CopyTo(TWrapper[] array, int arrayIndex) => this.ToArray().CopyTo(array, arrayIndex);
+
+		public bool Remove(TWrapper item)
+		{
+			var result = Source.Remove(item.Source);
+			if (result)
+			{
+				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));
+			}
+
+			return result;
+		}
+	}
+
 	public abstract class EnumerableObserver<TObserver, TObservable> : IReadOnlyListObservable<TObserver>
 	{
 		public EnumerableObserver(IEnumerable<TObservable> items)

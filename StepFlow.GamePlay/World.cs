@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace StepFlow.GamePlay
 {
-	public sealed class World : Core.World<Node, Piece>, IDataContainer
+	public sealed class World : Core.World<Node, Piece>
 	{
 		public World(Context owner)
 		{
@@ -11,8 +11,6 @@ namespace StepFlow.GamePlay
 		}
 
 		public Context Owner { get; }
-
-		public object? Data { get; set; }
 
 		public void TakeStep()
 		{

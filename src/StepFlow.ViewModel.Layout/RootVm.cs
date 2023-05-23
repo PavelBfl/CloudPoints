@@ -11,11 +11,6 @@ namespace StepFlow.ViewModel.Layout
 {
 	public class RootVm
 	{
-		public RootVm(int colsCount, int rowsCount)
-			: this(new ContextVm(colsCount, rowsCount))
-		{
-		}
-
 		public RootVm(ContextVm context)
 		{
 			Context = context ?? throw new ArgumentNullException(nameof(context));

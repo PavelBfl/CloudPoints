@@ -1,27 +1,15 @@
 ﻿using System;
-using System.ComponentModel;
 using StepFlow.Common;
 
 namespace StepFlow.ViewModel
 {
-	public class BaseVm : BaseNotifyer, IComponent
+	public class BaseVm : BaseNotifyer
 	{
-		public ISite Site { get => Component.Site; set => Component.Site = value; }
-		private IComponent Component { get; } = new Component();
-
-		public event EventHandler Disposed
+		public BaseVm(WrapperProvider wrapperProvider)
 		{
-			add
-			{
-				Component.Disposed += value;
-			}
-
-			remove
-			{
-				Component.Disposed -= value;
-			}
+			WrapperProvider = wrapperProvider ?? throw new ArgumentNullException(nameof(wrapperProvider));
 		}
 
-		public virtual void Dispose() => Component.Dispose();
+		public WrapperProvider WrapperProvider { get; }
 	}
 }

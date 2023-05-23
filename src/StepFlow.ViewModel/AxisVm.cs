@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using StepFlow.GamePlay.Commands;
 using StepFlow.TimeLine;
 using StepFlow.ViewModel.Commands;
@@ -8,8 +7,8 @@ namespace StepFlow.ViewModel
 {
 	public class AxisVm : WrapperVm<Axis<Command>>
 	{
-		public AxisVm(Axis<Command> source)
-			: base(source)
+		public AxisVm(WrapperProvider wrapperProvider, Axis<Command> source)
+			: base(wrapperProvider, source)
 		{
 		}
 
@@ -23,11 +22,14 @@ namespace StepFlow.ViewModel
 			return Source.IsCompleted(command.Source);
 		}
 
-		public void Refresh()
+		public override void Refresh()
 		{
 			foreach (var command in Source)
 			{
-				command.GetOrCreate<CommandVm>().Refresh();
+				if (WrapperProvider.TryGetValue<CommandVm>(command, out var commandVm))
+				{
+					commandVm.Refresh();
+				}
 			}
 		}
 	}

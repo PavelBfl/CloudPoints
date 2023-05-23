@@ -3,7 +3,7 @@ using StepFlow.GamePlay.Commands;
 
 namespace StepFlow.GamePlay
 {
-	public interface IParticle : IDataContainer
+	public interface IParticle
 	{
 		World Owner { get; }
 		Strength Strength { get; }
