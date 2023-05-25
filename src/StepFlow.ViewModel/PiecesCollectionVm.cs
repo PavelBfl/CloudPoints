@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using StepFlow.GamePlay;
 using StepFlow.ViewModel.Collections;
 
 namespace StepFlow.ViewModel
 {
-	public sealed class PiecesCollectionVm : CollectionWrapperObserver<PieceVm, Piece>
+	public sealed class PiecesCollectionVm : WrapperCollection<PieceVm, ICollection<Piece>, Piece>
 	{
-		public PiecesCollectionVm(ICollection<Piece> items)
-			: base(items)
+		public PiecesCollectionVm(WrapperProvider wrapperProvider, ICollection<Piece> items) : base(wrapperProvider, items)
 		{
 		}
-
-		protected override PieceVm CreateObserver(Piece observable) => WrapperProvider.GetOrCreate<PieceVm>(observable);
 	}
 }

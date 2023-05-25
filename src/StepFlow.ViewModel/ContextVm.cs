@@ -1,28 +1,28 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using StepFlow.GamePlay;
+using StepFlow.ViewModel.Collections;
+using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
-	public class ContextVm : WrapperVm<Context>
+	public class ContextVm : WrapperVm<GamePlay.Context>
 	{
-		public static ContextVm Create() => WrapperProvider.GetOrCreate<ContextVm>(new Context());
+		public static ContextVm Create() => WrapperProvider.GetOrCreate<ContextVm>(new GamePlay.Context());
 
-		internal ContextVm(Context source)
-			: base(source)
+		internal ContextVm(WrapperProvider wrapperProvider, GamePlay.Context source) : base(wrapperProvider, source)
 		{
-			Pieces = new PiecesCollectionVm(Source.World.Pieces);
-			Place = new PlaceVm(Source.World.Place.Values);
-			TimeAxis = new AxisVm(Source.AxisTime);
 		}
 
-		public PiecesCollectionVm Pieces { get; }
+		private WorldVm? world;
 
-		public PlaceVm Place { get; }
+		public WorldVm World => world ??= WrapperProvider.GetOrCreate<WorldVm>(Source.World);
 
-		public IEnumerable<IParticleVm> Particles => Pieces.AsEnumerable<IParticleVm>().Concat(Place);
+		private AxisVm? timeAxis;
 
-		public AxisVm TimeAxis { get; }
+		public AxisVm TimeAxis => timeAxis ??= WrapperProvider.GetOrCreate<AxisVm>(Source.AxisTime);
+
+		private CommandsCollection? staticCommands;
+
+		public CommandsCollection StaticCommands => staticCommands ??= WrapperProvider.GetOrCreate<CommandsCollection>(Source.StaticCommands);
 
 		private PieceVm? current = null;
 
@@ -51,19 +51,33 @@ namespace StepFlow.ViewModel
 				}
 			}
 		}
+	}
 
-		public void TakeStep()
+	public class CommandsCollection : WrapperList<CommandVm, IList<GamePlay.Commands.Command>, GamePlay.Commands.Command>
+	{
+		public CommandsCollection(WrapperProvider wrapperProvider, IList<GamePlay.Commands.Command> source) : base(wrapperProvider, source)
 		{
-			Source.World.TakeStep();
-
-			Pieces.Refresh();
-			Place.Refresh();
-			TimeAxis.Refresh();
-
-			foreach (var particle in Particles)
-			{
-				particle.Refresh();
-			}
 		}
+	}
+
+	public class WorldVm : WrapperVm<GamePlay.World>
+	{
+		internal WorldVm(WrapperProvider wrapperProvider, GamePlay.World source) : base(wrapperProvider, source)
+		{
+		}
+
+		private ContextVm? owner;
+
+		public ContextVm Owner => owner ??= WrapperProvider.GetOrCreate<ContextVm>(Source.Owner);
+
+		private PiecesCollectionVm? pieces;
+
+		public PiecesCollectionVm Pieces => pieces ??= WrapperProvider.GetOrCreate<PiecesCollectionVm>(Source.Pieces);
+
+		private PlaceVm? place;
+
+		public PlaceVm Place => place ??= WrapperProvider.GetOrCreate<PlaceVm>(Source.Place);
+
+		public void TakeStep() => Source.TakeStep();
 	}
 }

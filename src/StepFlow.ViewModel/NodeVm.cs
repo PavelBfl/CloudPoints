@@ -7,14 +7,11 @@ namespace StepFlow.ViewModel
 {
 	public class NodeVm : ParticleVm<GamePlay.Node>, IMarkered
 	{
-		public NodeVm(GamePlay.Node source)
-			: base(source)
+		public NodeVm(WrapperProvider wrapperProvider, GamePlay.Node source)
+			: base(wrapperProvider, source)
 		{
-			Source = source ?? throw new ArgumentNullException(nameof(source));
 			State.OnMarkChanged += StateOnMarkChanged;
 		}
-
-		public new GamePlay.Node Source { get; }
 
 		private void StateOnMarkChanged(object sender, MarkChanged<NodeState> e)
 		{
@@ -42,21 +39,13 @@ namespace StepFlow.ViewModel
 			};
 			Owner.Source.World.Pieces.Add(piece);
 
-			var result = new PieceVm(piece)
-			{
-				Current = this,
-			};
+			var result = WrapperProvider.GetOrCreate<PieceVm>(piece);
+			result.Current = this;
+
 			Owner.Pieces.Refresh();
 			return result;
 		}
 
 		public override string? ToString() => Source?.ToString();
-
-		public override void Dispose()
-		{
-			base.Dispose();
-
-			State.OnMarkChanged -= StateOnMarkChanged;
-		}
 	}
 }
