@@ -2,8 +2,8 @@
 {
 	public sealed class CreateCommand : CommandVm
 	{
-		public CreateCommand(GamePlay.Commands.CreateCommand source)
-			: base(source)
+		public CreateCommand(WrapperProvider wrapperProvider, GamePlay.Commands.CreateCommand source)
+			: base(wrapperProvider, source)
 		{
 			Source = source;
 		}
@@ -12,8 +12,18 @@
 
 		private NodeVm? begin;
 
-		public NodeVm? Begin => begin ??= Source.Begin?.GetOrCreate<NodeVm>();
+		public NodeVm? Begin => begin ??= WrapperProvider.Get<NodeVm?>(Source.Begin);
 
-		public override bool IsMark { get => Begin.IsMark; set => Begin.IsMark = value; }
+		public override bool IsMark
+		{
+			get => Begin?.IsMark ?? false;
+			set
+			{
+				if (Begin is { })
+				{
+					Begin.IsMark = value; 
+				}
+			}
+		}
 	}
 }

@@ -23,18 +23,16 @@ namespace StepFlow.View.Controls
 			return (pointy, flat, pointy / 4, flat / 2);
 		}
 
-		public HexGrid(Game game, ContextVm source, RectPlot plot) : base(game)
+		public HexGrid(Game game, RectPlot plot) : base(game)
 		{
 			Plot = plot ?? throw new ArgumentNullException(nameof(plot));
-
-			Source = source ?? throw new ArgumentNullException(nameof(source));
 
 			Refresh();
 		}
 
-		private ContextVm? source;
+		private WorldVm? source;
 
-		public ContextVm? Source
+		public WorldVm? Source
 		{
 			get => source;
 			set

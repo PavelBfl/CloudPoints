@@ -1,13 +1,12 @@
 ﻿using System;
-using StepFlow.Core;
 using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
 	public class PieceVm : ParticleVm<GamePlay.Piece>, IMarkered
 	{
-		public PieceVm(GamePlay.Piece source)
-			: base(source)
+		internal PieceVm(WrapperProvider wrapperProvider, GamePlay.Piece source)
+			: base(wrapperProvider, source)
 		{
 		}
 
@@ -15,20 +14,7 @@ namespace StepFlow.ViewModel
 		public bool IsMark
 		{
 			get => isMark;
-			set
-			{
-				if (IsMark != value)
-				{
-					isMark = value;
-
-					Commands.IsMark = IsMark;
-
-					if (Current is { })
-					{
-						Current.IsMark = IsMark;
-					}
-				}
-			}
+			set => SetValue(ref isMark, value);
 		}
 
 		private IDisposable? stateToken;
@@ -69,19 +55,8 @@ namespace StepFlow.ViewModel
 		{
 			base.Refresh();
 
-			Current = Source.Current?.GetOrCreate<NodeVm>();
-			Next = Source.Next?.GetOrCreate<NodeVm>();
-		}
-
-		public override void Dispose()
-		{
-			Commands.Clear();
-
-			IsMark = false;
-			Next = null;
-			Current = null;
-
-			base.Dispose();
+			Current = WrapperProvider.Get<NodeVm?>(Source.Current);
+			Next = WrapperProvider.Get<NodeVm?>(Source.Next);
 		}
 
 		public void Add(CommandVm command)

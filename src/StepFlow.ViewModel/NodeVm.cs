@@ -24,26 +24,18 @@ namespace StepFlow.ViewModel
 
 		public MarkerCounter<NodeState> State { get; } = new MarkerCounter<NodeState>();
 
-		private bool isMark;
-		public bool IsMark
-		{
-			get => isMark;
-			set => SetValue(ref isMark, value);
-		}
-
 		public PieceVm CreateSimple()
 		{
 			var piece = new GamePlay.Piece(10)
 			{
 				CollisionDamage = 2,
 			};
-			Owner.Source.World.Pieces.Add(piece);
 
-			var result = WrapperProvider.GetOrCreate<PieceVm>(piece);
-			result.Current = this;
+			var pieceVm = WrapperProvider.GetOrCreate<PieceVm>(piece);
+			Owner.Pieces.Add(pieceVm);
 
-			Owner.Pieces.Refresh();
-			return result;
+			Owner.Owner.Current = pieceVm;
+			return pieceVm;
 		}
 
 		public override string? ToString() => Source?.ToString();

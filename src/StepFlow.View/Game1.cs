@@ -50,16 +50,17 @@ namespace StepFlow.View
 			Services.AddService<IKeyboardService>(KeyboardService);
 			Services.AddService<IDrawer>(Drawer);
 
-			Root = new RootVm(ContextVm.Create());
-			Root.Context.Place.
+			var wrapperProvider = new WrapperProvider();
+			Root = new RootVm(wrapperProvider.GetOrCreate<ContextVm>(new GamePlay.Context()));
 			Root.Root.OwnerBounds = new System.Drawing.RectangleF(0, 0, Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight);
 			Root.Root.Margin = new Layout.Margin(1);
 
 			Base = new Sketch.Primitive(this);
 			Base.Childs.Add(new GridControl(this, Root.Root));
 
-			var hexGrid = new HexGrid(this, Root.Context, Root.ActionPlot)
+			var hexGrid = new HexGrid(this, Root.ActionPlot)
 			{
+				Source = Root.Context.World,
 				Size = 20,
 			};
 			Base.Childs.Add(hexGrid);

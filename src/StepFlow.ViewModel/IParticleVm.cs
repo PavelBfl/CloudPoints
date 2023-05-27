@@ -1,8 +1,6 @@
-﻿using System.ComponentModel;
-
-namespace StepFlow.ViewModel
+﻿namespace StepFlow.ViewModel
 {
-	public interface IParticleVm
+	public interface IParticleVm : IMarkered
 	{
 		void Refresh();
 	}

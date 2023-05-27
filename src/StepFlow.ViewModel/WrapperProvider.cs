@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using StepFlow.Core;
 using StepFlow.TimeLine;
 using StepFlow.ViewModel.Commands;
 
@@ -26,6 +27,13 @@ namespace StepFlow.ViewModel
 			}
 		}
 
+		[return: NotNullIfNotNull(nameof(model))]
+		public object? Get(object? model) => model is { } ? ViewModels[model] : null;
+
+		[return: NotNullIfNotNull(nameof(model))]
+		[return: MaybeNull]
+		public T Get<T>(object? model) => (T)Get(model);
+
 		public object GetOrCreate(object model)
 		{
 			if (model is null)
@@ -37,12 +45,14 @@ namespace StepFlow.ViewModel
 			{
 				result = model switch
 				{
-					GamePlay.Commands.MoveCommand moveCommand => new MoveCommandVm(moveCommand),
-					GamePlay.Commands.CreateCommand createCommand => new CreateCommand(createCommand),
-					GamePlay.Node node => new NodeVm(node),
-					GamePlay.Piece piece => new PieceVm(piece),
-					Axis<GamePlay.Commands.Command> axis => new AxisVm(axis),
-					GamePlay.Context context => new ContextVm(context),
+					GamePlay.Commands.MoveCommand moveCommand => new MoveCommandVm(this, moveCommand),
+					GamePlay.Commands.CreateCommand createCommand => new CreateCommand(this, createCommand),
+					GamePlay.Node node => new NodeVm(this, node),
+					GamePlay.Piece piece => new PieceVm(this, piece),
+					Axis<GamePlay.Commands.Command> axis => new AxisVm(this, axis),
+					GamePlay.Context context => new ContextVm(this, context),
+					GamePlay.World world => new WorldVm(this, world),
+					Place<GamePlay.Node> place => new PlaceVm(this, place),
 					_ => throw Exceptions.Builder.CreateUnknownModel(),
 				};
 

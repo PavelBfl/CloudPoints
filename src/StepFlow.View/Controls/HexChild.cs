@@ -144,7 +144,7 @@ namespace StepFlow.View.Controls
 				if (keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
 				{
 					var last = Source.CreateSimple();
-					Source.Owner.Current = last;
+					Source.Owner.Owner.Current = last;
 				}
 				else if (keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift))
 				{
@@ -155,7 +155,7 @@ namespace StepFlow.View.Controls
 				}
 				else
 				{
-					Source.Owner.Current = Source.Owner.Pieces.FirstOrDefault(x => x.Current == Source);
+					Source.Owner.Owner.Current = Source.Owner.Pieces.FirstOrDefault(x => x.Current == Source);
 				}
 			}
 
