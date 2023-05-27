@@ -39,9 +39,16 @@ namespace StepFlow.ViewModel
 
 		public bool Contains(NodeVm item) => Source.Values.Contains(item.Source);
 
-		public void CopyTo(NodeVm[] array, int arrayIndex) => this.ToArray().CopyTo(array, arrayIndex);
+		public void CopyTo(NodeVm[] array, int arrayIndex)
+		{
+			foreach (var item in this)
+			{
+				array[arrayIndex] = item;
+				arrayIndex++;
+			}
+		}
 
-		public IEnumerator<NodeVm> GetEnumerator() => Source.Select(x => WrapperProvider.GetOrCreate<NodeVm>(x)).GetEnumerator();
+		public IEnumerator<NodeVm> GetEnumerator() => Source.Values.Select(x => WrapperProvider.GetOrCreate<NodeVm>(x)).GetEnumerator();
 
 		public bool Remove(NodeVm item)
 		{

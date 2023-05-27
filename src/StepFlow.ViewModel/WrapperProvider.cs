@@ -53,6 +53,7 @@ namespace StepFlow.ViewModel
 					GamePlay.Context context => new ContextVm(this, context),
 					GamePlay.World world => new WorldVm(this, world),
 					Place<GamePlay.Node> place => new PlaceVm(this, place),
+					PiecesCollection<GamePlay.Piece> pieceCollection => new PiecesCollectionVm(this, pieceCollection),
 					_ => throw Exceptions.Builder.CreateUnknownModel(),
 				};
 

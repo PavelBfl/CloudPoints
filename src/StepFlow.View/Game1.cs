@@ -52,6 +52,11 @@ namespace StepFlow.View
 
 			var wrapperProvider = new WrapperProvider();
 			Root = new RootVm(wrapperProvider.GetOrCreate<ContextVm>(new GamePlay.Context()));
+
+			Root.Context.World.Place.Add(wrapperProvider.GetOrCreate<NodeVm>(new GamePlay.Node(new(0, 0))));
+			Root.Context.World.Place.Add(wrapperProvider.GetOrCreate<NodeVm>(new GamePlay.Node(new(1, 1))));
+			Root.Context.World.Place.Add(wrapperProvider.GetOrCreate<NodeVm>(new GamePlay.Node(new(1, 2))));
+
 			Root.Root.OwnerBounds = new System.Drawing.RectangleF(0, 0, Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight);
 			Root.Root.Margin = new Layout.Margin(1);
 

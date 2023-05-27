@@ -11,9 +11,9 @@ namespace StepFlow.ViewModel.Collections
 		{
 		}
 
-		public event NotifyCollectionChangedEventHandler CollectionChanged;
+		public event NotifyCollectionChangedEventHandler? CollectionChanged;
 
-		protected void OnCollectionChanged(NotifyCollectionChangedEventArgs args) => CollectionChanged.Invoke(this, args);
+		protected void OnCollectionChanged(NotifyCollectionChangedEventArgs args) => CollectionChanged?.Invoke(this, args);
 
 		public IEnumerator<TWrapper> GetEnumerator()
 		{
