@@ -1,8 +1,10 @@
 ﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StepFlow.Common.Exceptions;
 using StepFlow.Layout;
+using StepFlow.View.Services;
 using StepFlow.View.Sketch;
 
 namespace StepFlow.View.Controls
@@ -12,7 +14,11 @@ namespace StepFlow.View.Controls
 		public Text(Game game, RectPlot plot) : base(game)
 		{
 			Plot = plot ?? throw new ArgumentNullException(nameof(plot));
+
+			Drawer = Game.Services.GetRequiredService<IDrawer>();
 		}
+
+		private IDrawer Drawer { get; }
 
 		private RectPlot Plot { get; }
 
@@ -119,7 +125,7 @@ namespace StepFlow.View.Controls
 
 			if (!string.IsNullOrWhiteSpace(Content) && Font is { })
 			{
-				((Game1)Game).SpriteBatch.DrawString(
+				Drawer.SpriteBatch.DrawString(
 					Font,
 					Content,
 					ContentPosition,
