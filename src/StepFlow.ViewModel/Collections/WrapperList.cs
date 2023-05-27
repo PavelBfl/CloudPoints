@@ -6,6 +6,7 @@ namespace StepFlow.ViewModel.Collections
 	public class WrapperList<TWrapper, TCollection, TModelItem> : WrapperCollection<TWrapper, TCollection, TModelItem>, IList<TWrapper>, IReadOnlyList<TWrapper>
 		where TCollection : IList<TModelItem>
 		where TWrapper : WrapperVm<TModelItem>
+		where TModelItem : notnull
 	{
 		public WrapperList(WrapperProvider wrapperProvider, TCollection source) : base(wrapperProvider, source)
 		{

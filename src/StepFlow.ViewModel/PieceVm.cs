@@ -10,13 +10,6 @@ namespace StepFlow.ViewModel
 		{
 		}
 
-		private bool isMark = false;
-		public bool IsMark
-		{
-			get => isMark;
-			set => SetValue(ref isMark, value);
-		}
-
 		private IDisposable? stateToken;
 
 		private NodeVm? current;
