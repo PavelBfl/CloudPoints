@@ -12,6 +12,16 @@ namespace StepFlow.ViewModel
 		{
 		}
 
+		public void Add(CommandVm command, bool isCompleted = false)
+		{
+			if (command is null)
+			{
+				throw new ArgumentNullException(nameof(command));
+			}
+
+			Source.Add(command.Source, isCompleted);
+		}
+
 		public bool? IsCompleted(CommandVm command)
 		{
 			if (command is null)

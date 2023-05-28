@@ -21,7 +21,7 @@ namespace StepFlow.GamePlay.Commands
 		{
 			Piece ??= new Piece(Strength.Max);
 			Owner.World.Pieces.Add(Piece);
-			Piece.Next = Begin;
+			Piece.Current = Begin;
 		}
 
 		public override void Revert()

@@ -46,7 +46,7 @@ namespace StepFlow.ViewModel
 				result = model switch
 				{
 					GamePlay.Commands.MoveCommand moveCommand => new MoveCommandVm(this, moveCommand),
-					GamePlay.Commands.CreateCommand createCommand => new CreateCommand(this, createCommand),
+					GamePlay.Commands.CreateCommand createCommand => new CreateCommandVm(this, createCommand),
 					GamePlay.Node node => new NodeVm(this, node),
 					GamePlay.Piece piece => new PieceVm(this, piece),
 					Axis<GamePlay.Commands.Command> axis => new AxisVm(this, axis),

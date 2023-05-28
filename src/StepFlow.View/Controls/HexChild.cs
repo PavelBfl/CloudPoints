@@ -143,8 +143,7 @@ namespace StepFlow.View.Controls
 				var keyboard = Game.Services.GetService<IKeyboardService>();
 				if (keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
 				{
-					var last = Source.CreateSimple();
-					Source.Owner.Owner.Current = last;
+					Source.CreateSimple();
 				}
 				else if (keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift))
 				{

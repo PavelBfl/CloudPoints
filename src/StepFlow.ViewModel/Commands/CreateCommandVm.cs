@@ -1,8 +1,8 @@
 ﻿namespace StepFlow.ViewModel.Commands
 {
-	public sealed class CreateCommand : CommandVm
+	public sealed class CreateCommandVm : CommandVm
 	{
-		public CreateCommand(WrapperProvider wrapperProvider, GamePlay.Commands.CreateCommand source)
+		public CreateCommandVm(WrapperProvider wrapperProvider, GamePlay.Commands.CreateCommand source)
 			: base(wrapperProvider, source)
 		{
 			Source = source;

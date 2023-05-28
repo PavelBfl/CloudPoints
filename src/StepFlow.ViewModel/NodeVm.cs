@@ -1,6 +1,6 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Linq;
+using StepFlow.ViewModel.Commands;
 using StepFlow.ViewModel.Marking;
 
 namespace StepFlow.ViewModel
@@ -24,18 +24,24 @@ namespace StepFlow.ViewModel
 
 		public MarkerCounter<NodeState> State { get; } = new MarkerCounter<NodeState>();
 
-		public PieceVm CreateSimple()
+		public void CreateSimple()
 		{
-			var piece = new GamePlay.Piece(10)
+			var command = new CreateCommandVm(
+				WrapperProvider,
+				new GamePlay.Commands.CreateCommand(
+					Owner.Owner.Source,
+					new GamePlay.Strength(100),
+					Source
+				)
+			);
+
+			Owner.Owner.TimeAxis.Add(command);
+
+			Owner.Pieces.Refresh();
+			foreach (var piece in Owner.Pieces)
 			{
-				CollisionDamage = 2,
-			};
-
-			var pieceVm = WrapperProvider.GetOrCreate<PieceVm>(piece);
-			Owner.Pieces.Add(pieceVm);
-
-			Owner.Owner.Current = pieceVm;
-			return pieceVm;
+				piece.Refresh();
+			}
 		}
 
 		public override string? ToString() => Source?.ToString();
