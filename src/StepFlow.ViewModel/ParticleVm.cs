@@ -22,6 +22,11 @@
 		public override void Refresh()
 		{
 			Commands.Refresh();
+
+			foreach (var command in Commands)
+			{
+				command.Refresh();
+			}
 		}
 	}
 }

@@ -23,6 +23,19 @@ namespace StepFlow.ViewModel
 
 		public IEnumerable<IParticleVm> Particles => Pieces.AsEnumerable<IParticleVm>().Concat(Place);
 
-		public void TakeStep() => Source.TakeStep();
+		public void TakeStep()
+		{
+			Source.TakeStep();
+
+			Pieces.Refresh();
+			Place.Refresh();
+
+			foreach (var particle in Particles)
+			{
+				particle.Refresh();
+			}
+
+			Owner.TimeAxis.Refresh();
+		}
 	}
 }

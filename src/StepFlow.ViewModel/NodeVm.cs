@@ -37,6 +37,8 @@ namespace StepFlow.ViewModel
 
 			Owner.Owner.TimeAxis.Add(command);
 
+			Owner.Owner.Current = command.Piece;
+
 			Owner.Pieces.Refresh();
 			foreach (var piece in Owner.Pieces)
 			{

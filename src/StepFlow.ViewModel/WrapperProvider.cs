@@ -34,11 +34,12 @@ namespace StepFlow.ViewModel
 		[return: MaybeNull]
 		public T Get<T>(object? model) => (T)Get(model);
 
-		public object GetOrCreate(object model)
+		[return: NotNullIfNotNull(nameof(model))]
+		public object? GetOrCreate(object? model)
 		{
 			if (model is null)
 			{
-				throw new ArgumentNullException(nameof(model));
+				return null;
 			}
 
 			if (!ViewModels.TryGetValue(model, out var result))
@@ -63,7 +64,9 @@ namespace StepFlow.ViewModel
 			return result;
 		}
 
-		public T GetOrCreate<T>(object model)
+		[return: NotNullIfNotNull(nameof(model))]
+		[return: MaybeNull]
+		public T GetOrCreate<T>(object? model)
 			where T : notnull
 			=> (T)GetOrCreate(model);
 	}

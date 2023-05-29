@@ -14,6 +14,10 @@
 
 		public NodeVm? Begin => begin ??= WrapperProvider.Get<NodeVm?>(Source.Begin);
 
+		private PieceVm? piece;
+
+		public PieceVm? Piece => piece ??= WrapperProvider.GetOrCreate<PieceVm>(Source.Piece);
+
 		public override bool IsMark
 		{
 			get => Begin?.IsMark ?? false;

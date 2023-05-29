@@ -15,7 +15,7 @@ namespace StepFlow.GamePlay.Commands
 
 		public Node? Begin { get; }
 
-		private Piece? Piece { get; set; }
+		public Piece? Piece { get; private set; }
 
 		public override void Execute()
 		{
