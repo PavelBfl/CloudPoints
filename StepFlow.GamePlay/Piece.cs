@@ -17,7 +17,5 @@ namespace StepFlow.GamePlay
 		public float CollisionDamage { get; set; }
 
 		World IParticle.Owner => (World)OwnerRequired;
-
-		public object? Data { get; set; }
 	}
 }

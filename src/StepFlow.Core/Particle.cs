@@ -35,10 +35,9 @@ namespace StepFlow.Core
 
 		protected void CheckInteraction(Particle? other)
 		{
-			CheckInteraction();
-
 			if (other is { })
 			{
+				CheckInteraction();
 				other.CheckInteraction();
 				if (Owner != other.Owner)
 				{

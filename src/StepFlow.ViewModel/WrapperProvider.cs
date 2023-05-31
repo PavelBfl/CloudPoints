@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using StepFlow.Core;
 using StepFlow.TimeLine;
@@ -67,7 +66,6 @@ namespace StepFlow.ViewModel
 		[return: NotNullIfNotNull(nameof(model))]
 		[return: MaybeNull]
 		public T GetOrCreate<T>(object? model)
-			where T : notnull
 			=> (T)GetOrCreate(model);
 	}
 }

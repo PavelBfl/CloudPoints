@@ -4,14 +4,17 @@ namespace StepFlow.GamePlay.Commands
 {
 	public class CreateCommand : Command
 	{
-		public CreateCommand(Context owner, Strength original, Node? begin)
+		public CreateCommand(Context owner, Strength original, float collisionDamage, Node? begin)
 			: base(owner)
 		{
 			Strength = original ?? throw new ArgumentNullException(nameof(original));
+			CollisionDamage = collisionDamage;
 			Begin = begin;
 		}
 
 		public Strength Strength { get; }
+
+		public float CollisionDamage { get; }
 
 		public Node? Begin { get; }
 
@@ -19,7 +22,10 @@ namespace StepFlow.GamePlay.Commands
 
 		public override void Execute()
 		{
-			Piece ??= new Piece(Strength.Max);
+			Piece ??= new Piece(Strength.Max)
+			{
+				CollisionDamage = CollisionDamage,
+			};
 			Owner.World.Pieces.Add(Piece);
 			Piece.Current = Begin;
 		}

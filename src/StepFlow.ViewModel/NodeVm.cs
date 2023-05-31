@@ -31,6 +31,7 @@ namespace StepFlow.ViewModel
 				new GamePlay.Commands.CreateCommand(
 					Owner.Owner.Source,
 					new GamePlay.Strength(100),
+					100,
 					Source
 				)
 			);

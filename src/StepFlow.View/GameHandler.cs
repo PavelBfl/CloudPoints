@@ -25,9 +25,7 @@ namespace StepFlow.View
 			var wrapperProvider = new WrapperProvider();
 			Root = new RootVm(wrapperProvider.GetOrCreate<ContextVm>(new GamePlay.Context()));
 
-			Root.Context.World.Place.Add(wrapperProvider.GetOrCreate<NodeVm>(new GamePlay.Node(new(0, 0))));
-			Root.Context.World.Place.Add(wrapperProvider.GetOrCreate<NodeVm>(new GamePlay.Node(new(1, 1))));
-			Root.Context.World.Place.Add(wrapperProvider.GetOrCreate<NodeVm>(new GamePlay.Node(new(1, 2))));
+			FillPlace(wrapperProvider, new(5, 5));
 
 			Root.Root.OwnerBounds = bounds;
 			Root.Root.Margin = new Layout.Margin(1);
@@ -41,6 +39,17 @@ namespace StepFlow.View
 				Size = 20,
 			};
 			Base.Childs.Add(hexGrid);
+		}
+
+		private void FillPlace(WrapperProvider wrapperProvider, System.Drawing.Size size)
+		{
+			for (var iX = 0; iX < size.Width; iX++)
+			{
+				for (var iY = 0; iY < size.Height; iY++)
+				{
+					Root.Context.World.Place.Add(wrapperProvider.GetOrCreate<NodeVm>(new GamePlay.Node(new(iX, iY))));
+				}
+			}
 		}
 
 		private RootVm Root { get; }
