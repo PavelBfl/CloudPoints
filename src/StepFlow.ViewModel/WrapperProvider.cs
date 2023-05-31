@@ -35,7 +35,7 @@ namespace StepFlow.ViewModel
 		[return: NotNullIfNotNull(nameof(model))]
 		[return: MaybeNull]
 		public T Get<T>(object? model)
-			where T : IWrapper
+			where T : IWrapper?
 			=> (T)Get(model);
 
 		[return: NotNullIfNotNull(nameof(model))]
@@ -71,7 +71,7 @@ namespace StepFlow.ViewModel
 		[return: NotNullIfNotNull(nameof(model))]
 		[return: MaybeNull]
 		public T GetOrCreate<T>(object? model)
-			where T : IWrapper
+			where T : IWrapper?
 			=> (T)GetOrCreate(model);
 
 		public void Clear()

@@ -28,6 +28,12 @@ namespace StepFlow.ViewModel
 			Source.TakeStep();
 
 			Pieces.Refresh();
+
+			if (Owner.Current is { } && !Pieces.Contains(Owner.Current))
+			{
+				Owner.Current = null;
+			}
+
 			Place.Refresh();
 
 			foreach (var particle in Particles)
