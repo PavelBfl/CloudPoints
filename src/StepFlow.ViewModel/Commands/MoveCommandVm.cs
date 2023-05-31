@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace StepFlow.ViewModel.Commands
 {
@@ -36,5 +37,7 @@ namespace StepFlow.ViewModel.Commands
 				StateToken ??= Next.State.Add(NodeState.Planned);
 			}
 		}
+
+		public override IEnumerable<IWrapper> GetContent() => base.GetContent().ConcatIfNotNull(next);
 	}
 }

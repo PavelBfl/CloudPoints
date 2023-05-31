@@ -36,6 +36,10 @@ namespace StepFlow.ViewModel
 			}
 
 			Owner.TimeAxis.Refresh();
+
+			WrapperProvider.Clear();
 		}
+
+		public override IEnumerable<IWrapper> GetContent() => base.GetContent().ConcatIfNotNull(owner, pieces, place);
 	}
 }

@@ -1,4 +1,6 @@
-﻿namespace StepFlow.ViewModel.Commands
+﻿using System.Collections.Generic;
+
+namespace StepFlow.ViewModel.Commands
 {
 	public sealed class CreateCommandVm : CommandVm
 	{
@@ -29,5 +31,7 @@
 				}
 			}
 		}
+
+		public override IEnumerable<IWrapper> GetContent() => base.GetContent().ConcatIfNotNull(begin, piece);
 	}
 }

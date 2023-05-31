@@ -1,4 +1,6 @@
-﻿namespace StepFlow.ViewModel
+﻿using System.Collections.Generic;
+
+namespace StepFlow.ViewModel
 {
 	public class ParticleVm<T> : WrapperVm<T>, IParticleVm
 		where T : GamePlay.IParticle
@@ -28,5 +30,7 @@
 				command.Refresh();
 			}
 		}
+
+		public override IEnumerable<IWrapper> GetContent() => base.GetContent().ConcatIfNotNull(owner);
 	}
 }

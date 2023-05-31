@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
@@ -72,6 +73,15 @@ namespace StepFlow.ViewModel
 
 			var command = WrapperProvider.GetOrCreate<MoveCommandVm>(new GamePlay.Commands.MoveCommand(Source, node.Source));
 			Add(command);
+		}
+
+		public override IEnumerable<IWrapper> GetContent() => base.GetContent().ConcatIfNotNull(current, next);
+
+		public override void Dispose()
+		{
+			stateToken?.Dispose();
+
+			base.Dispose();
 		}
 	}
 }

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using StepFlow.Core;
 using StepFlow.TimeLine;
 using StepFlow.ViewModel.Commands;
@@ -8,13 +10,14 @@ namespace StepFlow.ViewModel
 {
 	public class WrapperProvider
 	{
-		private Dictionary<object, object> ViewModels { get; } = new Dictionary<object, object>();
+		private Dictionary<object, IWrapper> ViewModels { get; } = new Dictionary<object, IWrapper>();
 
-		public bool TryGetValue(object model, out object result) => ViewModels.TryGetValue(model, out result);
+		public bool TryGetValue(object model, out IWrapper result) => ViewModels.TryGetValue(model, out result);
 
 		public bool TryGetValue<T>(object model, [MaybeNullWhen(false)] out T result)
+			where T : IWrapper
 		{
-			if (TryGetValue(model, out object viewModel))
+			if (TryGetValue(model, out IWrapper viewModel))
 			{
 				result = (T)viewModel;
 				return true;
@@ -27,14 +30,16 @@ namespace StepFlow.ViewModel
 		}
 
 		[return: NotNullIfNotNull(nameof(model))]
-		public object? Get(object? model) => model is { } ? ViewModels[model] : null;
+		public IWrapper? Get(object? model) => model is { } ? ViewModels[model] : null;
 
 		[return: NotNullIfNotNull(nameof(model))]
 		[return: MaybeNull]
-		public T Get<T>(object? model) => (T)Get(model);
+		public T Get<T>(object? model)
+			where T : IWrapper
+			=> (T)Get(model);
 
 		[return: NotNullIfNotNull(nameof(model))]
-		public object? GetOrCreate(object? model)
+		public IWrapper? GetOrCreate(object? model)
 		{
 			if (model is null)
 			{
@@ -66,6 +71,58 @@ namespace StepFlow.ViewModel
 		[return: NotNullIfNotNull(nameof(model))]
 		[return: MaybeNull]
 		public T GetOrCreate<T>(object? model)
+			where T : IWrapper
 			=> (T)GetOrCreate(model);
+
+		public void Clear()
+		{
+			var locks = new HashSet<IWrapper>();
+
+			var roots = ViewModels.Values.Where(x => x.Lock).ToArray();
+
+			foreach (var root in roots)
+			{
+				SetLock(root, locks);
+			}
+
+			foreach (var (key, wrapper) in ViewModels.ToArray())
+			{
+				if (!locks.Contains(wrapper))
+				{
+					ViewModels.Remove(wrapper);
+					wrapper.Dispose();
+				}
+			}
+		}
+
+		private void SetLock(IWrapper current, HashSet<IWrapper> locks)
+		{
+			if (locks.Add(current))
+			{
+				foreach (var content in current.GetContent())
+				{
+					SetLock(content, locks);
+				}
+			}
+		}
+	}
+
+	public interface IWrapper : IDisposable
+	{
+		bool Lock { get; }
+
+		IEnumerable<IWrapper> GetContent();
+	}
+
+	public static class WrapperExtensions
+	{
+		public static IEnumerable<IWrapper> ConcatIfNotNull(this IEnumerable<IWrapper> container, params IWrapper?[] wrappers)
+		{
+			var wrappersRequired = from wrapper in wrappers
+								   where wrapper is { }
+								   select wrapper;
+
+			return container.Concat(wrappersRequired);
+		}
 	}
 }

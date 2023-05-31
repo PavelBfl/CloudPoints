@@ -1,6 +1,6 @@
 ﻿namespace StepFlow.ViewModel
 {
-	public interface IParticleVm : IMarkered
+	public interface IParticleVm : IMarkered, IWrapper
 	{
 		void Refresh();
 	}

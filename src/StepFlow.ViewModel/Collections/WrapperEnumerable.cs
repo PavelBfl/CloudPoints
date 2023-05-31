@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 namespace StepFlow.ViewModel.Collections
 {
 	public class WrapperEnumerable<TWrapper, TCollection, TModelItem> : WrapperVm<TCollection>, IEnumerable<TWrapper>, INotifyCollectionChanged
+		where TWrapper : IWrapper
 		where TCollection : IEnumerable<TModelItem>
 	{
 		public WrapperEnumerable(WrapperProvider wrapperProvider, TCollection source) : base(wrapperProvider, source)

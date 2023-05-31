@@ -1,9 +1,12 @@
-﻿namespace StepFlow.ViewModel
+﻿using System.Collections.Generic;
+
+namespace StepFlow.ViewModel
 {
 	public class ContextVm : WrapperVm<GamePlay.Context>
 	{
 		internal ContextVm(WrapperProvider wrapperProvider, GamePlay.Context source) : base(wrapperProvider, source)
 		{
+			Lock = true;
 		}
 
 		private WorldVm? world;
@@ -45,5 +48,7 @@
 				}
 			}
 		}
+
+		public override IEnumerable<IWrapper> GetContent() => base.GetContent().ConcatIfNotNull(world, timeAxis, current);
 	}
 }
