@@ -2,7 +2,14 @@
 {
 	public class Piece : Particle
 	{
+		public Piece(Playground owner, Strength strength) : base(owner, strength)
+		{
+		}
+
+		public float CollisionDamage { get; set; }
+
 		private Node? current;
+
 		public Node? Current
 		{
 			get => current;
@@ -56,14 +63,6 @@
 		{
 			SetNext(null, false);
 			IsScheduledStep = false;
-		}
-
-		protected override void OnOwnerChange()
-		{
-			base.OnOwnerChange();
-
-			Current = null;
-			Clear();
 		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿namespace StepFlow.GamePlay
+﻿namespace StepFlow.Core
 {
 	public enum StrengthState
 	{

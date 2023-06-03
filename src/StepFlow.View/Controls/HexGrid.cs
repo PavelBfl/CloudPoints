@@ -30,9 +30,9 @@ namespace StepFlow.View.Controls
 			Refresh();
 		}
 
-		private WorldVm? source;
+		private PlaygroundVm? source;
 
-		public WorldVm? Source
+		public PlaygroundVm? Source
 		{
 			get => source;
 			set

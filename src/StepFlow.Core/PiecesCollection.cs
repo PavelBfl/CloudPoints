@@ -4,55 +4,34 @@ using System.Collections.Generic;
 
 namespace StepFlow.Core
 {
-	public sealed class PiecesCollection<TPiece> : ICollection<TPiece>
-		where TPiece : Piece
+	public sealed class PiecesCollection : Child, ICollection<Piece>
 	{
-		public PiecesCollection(IWorld owner)
+		public PiecesCollection(Playground owner) : base(owner)
 		{
-			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
 		}
 
 		public int Count => Items.Count;
 
 		public bool IsReadOnly => false;
 
-		private IWorld Owner { get; }
+		private HashSet<Piece> Items { get; } = new HashSet<Piece>();
 
-		private HashSet<TPiece> Items { get; } = new HashSet<TPiece>();
-
-		public void Add(TPiece item)
+		public void Add(Piece item)
 		{
-			item.Owner = Owner;
+			CheckInteractionRequired(item);
 
 			Items.Add(item);
 		}
 
-		public void Clear()
-		{
-			foreach (var item in Items)
-			{
-				item.Owner = null;
-			}
+		public void Clear() => Items.Clear();
 
-			Items.Clear();
-		}
+		public bool Contains(Piece item) => Items.Contains(item);
 
-		public bool Contains(TPiece item) => Items.Contains(item);
+		public void CopyTo(Piece[] array, int arrayIndex) => Items.CopyTo(array, arrayIndex);
 
-		public void CopyTo(TPiece[] array, int arrayIndex) => Items.CopyTo(array, arrayIndex);
+		public IEnumerator<Piece> GetEnumerator() => Items.GetEnumerator();
 
-		public IEnumerator<TPiece> GetEnumerator() => Items.GetEnumerator();
-
-		public bool Remove(TPiece item)
-		{
-			var removed = Items.Remove(item);
-			if (removed)
-			{
-				item.Owner = null;
-			}
-
-			return removed;
-		}
+		public bool Remove(Piece item) => Items.Remove(item);
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}

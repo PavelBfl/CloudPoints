@@ -9,9 +9,9 @@ namespace StepFlow.ViewModel
 			Lock = true;
 		}
 
-		private WorldVm? world;
+		private PlaygroundVm? playground;
 
-		public WorldVm World => world ??= WrapperProvider.GetOrCreate<WorldVm>(Source.World);
+		public PlaygroundVm Playground => playground ??= WrapperProvider.GetOrCreate<PlaygroundVm>(Source.Playground);
 
 		private AxisVm? timeAxis;
 
@@ -49,6 +49,6 @@ namespace StepFlow.ViewModel
 			}
 		}
 
-		public override IEnumerable<IWrapper> GetContent() => base.GetContent().ConcatIfNotNull(world, timeAxis, current);
+		public override IEnumerable<IWrapper> GetContent() => base.GetContent().ConcatIfNotNull(playground, timeAxis, current);
 	}
 }

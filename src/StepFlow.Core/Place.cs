@@ -6,10 +6,9 @@ using System.Linq;
 
 namespace StepFlow.Core
 {
-	public sealed class Place<TNode> : IReadOnlyDictionary<Point, TNode>
-		where TNode : Node
+	public sealed class Place : IReadOnlyDictionary<Point, Node>
 	{
-		public Place(IWorld owner)
+		public Place(Playground owner)
 		{
 			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
 		}
@@ -46,25 +45,25 @@ namespace StepFlow.Core
 
 		public bool ContainsKey(Point key) => Nodes.ContainsKey(key);
 
-		public bool TryGetValue(Point key, out TNode value) => Nodes.TryGetValue(key, out value);
+		public bool TryGetValue(Point key, out Node value) => Nodes.TryGetValue(key, out value);
 
-		public IEnumerator<KeyValuePair<Point, TNode>> GetEnumerator() => Nodes.GetEnumerator();
+		public IEnumerator<KeyValuePair<Point, Node>> GetEnumerator() => Nodes.GetEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-		private IWorld Owner { get; }
+		private Playground Owner { get; }
 
-		private Dictionary<Point, TNode> Nodes { get; } = new Dictionary<Point, TNode>();
+		private Dictionary<Point, Node> Nodes { get; } = new Dictionary<Point, Node>();
 
 		public IEnumerable<Point> Keys => Nodes.Keys;
 
-		public IEnumerable<TNode> Values => Nodes.Values;
+		public IEnumerable<Node> Values => Nodes.Values;
 
 		public int Count => Nodes.Count;
 
-		public TNode this[Point key] => Nodes[key];
+		public Node this[Point key] => Nodes[key];
 
-		public void Add(TNode node)
+		public void Add(Node node)
 		{
 			if (node is null)
 			{

@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\StepFlow.GamePlay\StepFlow.GamePlay.csproj" />
     <ProjectReference Include="..\StepFlow.Common\StepFlow.Common.csproj" />
     <ProjectReference Include="..\StepFlow.Core\StepFlow.Core.csproj" />
     <ProjectReference Include="..\StepFlow.Entities\StepFlow.Entities.csproj" />

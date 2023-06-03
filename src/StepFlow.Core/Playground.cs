@@ -1,24 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using StepFlow.Core.Collision;
+using StepFlow.Core.Commands;
+using StepFlow.TimeLine;
 
 namespace StepFlow.Core
 {
-	public class World<TNode, TPiece> : IWorld
-		where TNode : Node
-		where TPiece : Piece
+	public class Playground
 	{
-		public World()
+		public Playground()
 		{
-			Pieces = new PiecesCollection<TPiece>(this);
-			Place = new Place<TNode>(this);
+			Pieces = new PiecesCollection(this);
+			Place = new Place(this);
 		}
 
-		public PiecesCollection<TPiece> Pieces { get; }
+		public PiecesCollection Pieces { get; }
 
-		public Place<TNode> Place { get; }
+		public Place Place { get; }
 
-		private static IEnumerable<PairCollision<TPiece>> GetSwaps(TPiece[] pieces)
+		private static IEnumerable<PairCollision> GetSwaps(Piece[] pieces)
 		{
 			for (var iFirst = 0; iFirst < pieces.Length; iFirst++)
 			{
@@ -31,13 +31,13 @@ namespace StepFlow.Core
 						firstPiece.Current == secondPiece.Next && secondPiece.Current == firstPiece.Next
 					)
 					{
-						yield return new PairCollision<TPiece>(firstPiece, secondPiece);
+						yield return new PairCollision(firstPiece, secondPiece);
 					}
 				}
 			}
 		}
 
-		private static IEnumerable<CrashCollision<TPiece>> GetCrashes(TPiece[] pieces)
+		private static IEnumerable<CrashCollision> GetCrashes(Piece[] pieces)
 		{
 			for (var iFirst = 0; iFirst < pieces.Length; iFirst++)
 			{
@@ -47,26 +47,26 @@ namespace StepFlow.Core
 					var secondPiece = pieces[iSecond];
 					if (CheckCrash(firstPiece, secondPiece))
 					{
-						yield return new CrashCollision<TPiece>(firstPiece, secondPiece);
+						yield return new CrashCollision(firstPiece, secondPiece);
 					}
 					else if (CheckCrash(secondPiece, firstPiece))
 					{
-						yield return new CrashCollision<TPiece>(secondPiece, firstPiece);
+						yield return new CrashCollision(secondPiece, firstPiece);
 					}
 				}
 			}
 		}
 
-		private static IEnumerable<IReadOnlyList<TPiece>> GetCompetitors(TPiece[] pieces)
+		private static IEnumerable<IReadOnlyList<Piece>> GetCompetitors(Piece[] pieces)
 		{
-			var disputedNodes = new Dictionary<Node, List<TPiece>>();
+			var disputedNodes = new Dictionary<Node, List<Piece>>();
 			foreach (var piece in pieces)
 			{
 				if (piece.Next is { })
 				{
 					if (!disputedNodes.TryGetValue(piece.Next, out var competitors))
 					{
-						competitors = new List<TPiece>();
+						competitors = new List<Piece>();
 						disputedNodes[piece.Next] = competitors;
 					}
 
@@ -80,11 +80,11 @@ namespace StepFlow.Core
 			}
 		}
 
-		public CollisionResult<TPiece> GetCollision()
+		public CollisionResult GetCollision()
 		{
 			var pieces = Pieces.ToArray();
 
-			var result = new CollisionResult<TPiece>(
+			var result = new CollisionResult(
 				GetCrashes(pieces),
 				GetSwaps(pieces),
 				GetCompetitors(pieces)
@@ -95,5 +95,42 @@ namespace StepFlow.Core
 
 		private static bool CheckCrash(Piece stationary, Piece moved)
 			=> stationary.Current is { } && stationary.Next is null && moved.Next == stationary.Current;
+
+		public void TakeStep()
+		{
+			foreach (var piece in Pieces.Where(x => x.Commands.Any()))
+			{
+				var command = piece.Commands[0];
+				piece.Commands.RemoveAt(0);
+				Owner.AxisTime.Add(command);
+			}
+
+			var collision = GetCollision();
+
+			foreach (var collisionUnit in collision)
+			{
+				var fullDamage = collisionUnit.Sum(x => x.CollisionDamage);
+
+				foreach (var piece in collisionUnit)
+				{
+					var addResult = piece.Strength.Add(-(fullDamage - piece.CollisionDamage));
+					if (addResult == StrengthState.Min)
+					{
+						Pieces.Remove(piece);
+					}
+					else
+					{
+						piece.Clear();
+					}
+				}
+			}
+
+			foreach (var piece in Pieces)
+			{
+				piece.TakeStep();
+			}
+		}
+
+		public IList<ICommand> Commands { get; } = new List<ICommand>();
 	}
 }

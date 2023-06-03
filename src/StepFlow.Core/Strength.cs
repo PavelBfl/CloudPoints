@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace StepFlow.GamePlay
+namespace StepFlow.Core
 {
 	public class Strength : ICloneable
 	{

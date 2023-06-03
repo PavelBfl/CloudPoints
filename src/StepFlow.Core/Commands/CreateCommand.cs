@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace StepFlow.GamePlay.Commands
+namespace StepFlow.Core.Commands
 {
-	public class CreateCommand : Command
+	public class CreateCommand : Command<Playground>
 	{
-		public CreateCommand(Context owner, Strength original, float collisionDamage, Node? begin)
-			: base(owner)
+		public CreateCommand(Playground playground, Strength original, float collisionDamage, Node? begin)
+			: base(playground)
 		{
 			Strength = original ?? throw new ArgumentNullException(nameof(original));
 			CollisionDamage = collisionDamage;
@@ -22,11 +22,11 @@ namespace StepFlow.GamePlay.Commands
 
 		public override void Execute()
 		{
-			Piece ??= new Piece(Strength.Max)
+			Piece ??= new Piece(Target, Strength)
 			{
 				CollisionDamage = CollisionDamage,
 			};
-			Owner.World.Pieces.Add(Piece);
+			Target.Pieces.Add(Piece);
 			Piece.Current = Begin;
 		}
 
@@ -34,7 +34,7 @@ namespace StepFlow.GamePlay.Commands
 		{
 			if (Piece is { })
 			{
-				Owner.World.Pieces.Remove(Piece);
+				Target.Pieces.Remove(Piece);
 			}
 		}
 	}

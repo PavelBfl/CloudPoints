@@ -1,17 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using StepFlow.Core;
 
 namespace StepFlow.ViewModel
 {
-	public class WorldVm : WrapperVm<GamePlay.World>
+	public class PlaygroundVm : WrapperVm<Playground>
 	{
-		internal WorldVm(WrapperProvider wrapperProvider, GamePlay.World source) : base(wrapperProvider, source)
+		internal PlaygroundVm(WrapperProvider wrapperProvider, Playground source) : base(wrapperProvider, source)
 		{
 		}
-
-		private ContextVm? owner;
-
-		public ContextVm Owner => owner ??= WrapperProvider.GetOrCreate<ContextVm>(Source.Owner);
 
 		private PiecesCollectionVm? pieces;
 

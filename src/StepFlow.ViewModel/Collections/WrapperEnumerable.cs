@@ -32,5 +32,21 @@ namespace StepFlow.ViewModel.Collections
 
 			OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 		}
+
+		public override IEnumerable<IWrapper> GetContent()
+		{
+			foreach (var content in base.GetContent())
+			{
+				yield return content;
+			}
+
+			foreach (var item in Source)
+			{
+				if (item is { } && WrapperProvider.TryGetValue(item, out var itemVm))
+				{
+					yield return itemVm;
+				}
+			}
+		}
 	}
 }

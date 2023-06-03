@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using StepFlow.GamePlay;
+using StepFlow.Core;
 using StepFlow.ViewModel.Collections;
 
 namespace StepFlow.ViewModel

@@ -5,43 +5,42 @@ using System.Linq;
 
 namespace StepFlow.Core.Collision
 {
-	public class CollisionResult<TPiece> : IReadOnlyCollection<IReadOnlyList<TPiece>>
-		where TPiece : Piece
+	public class CollisionResult : IReadOnlyCollection<IReadOnlyList<Piece>>
 	{
-		public CollisionResult(IEnumerable<CrashCollision<TPiece>> crashes, IEnumerable<PairCollision<TPiece>> swaps, IEnumerable<IReadOnlyList<TPiece>> competitors)
+		public CollisionResult(IEnumerable<CrashCollision> crashes, IEnumerable<PairCollision> swaps, IEnumerable<IReadOnlyList<Piece>> competitors)
 		{
 			Crashes = crashes?.ToArray() ?? throw new ArgumentNullException(nameof(crashes));
 			Swaps = swaps?.ToArray() ?? throw new ArgumentNullException(nameof(swaps));
 			Competitors = competitors?.ToArray() ?? throw new ArgumentNullException(nameof(competitors));
 		}
 
-		public IReadOnlyList<CrashCollision<TPiece>> Crashes { get; }
+		public IReadOnlyList<CrashCollision> Crashes { get; }
 
-		public IReadOnlyList<PairCollision<TPiece>> Swaps { get; }
+		public IReadOnlyList<PairCollision> Swaps { get; }
 
-		public IReadOnlyList<IReadOnlyList<TPiece>> Competitors { get; }
+		public IReadOnlyList<IReadOnlyList<Piece>> Competitors { get; }
 
 		public int Count => Crashes.Count + Swaps.Count + Competitors.Count;
 
-		private IPiecesCollision<TPiece>? pieces;
+		private IPiecesCollision<Piece>? pieces;
 
-		public IPiecesCollision<TPiece> Pieces => pieces ??= new PiecesCollision(this.SelectMany(x => x));
+		public IPiecesCollision<Piece> Pieces => pieces ??= new PiecesCollision(this.SelectMany(x => x));
 
-		public IEnumerator<IReadOnlyList<TPiece>> GetEnumerator() => Swaps.Union(Crashes).Union(Competitors).GetEnumerator();
+		public IEnumerator<IReadOnlyList<Piece>> GetEnumerator() => Swaps.Union(Crashes).Union(Competitors).GetEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-		private sealed class PiecesCollision : IPiecesCollision<TPiece>
+		private sealed class PiecesCollision : IPiecesCollision<Piece>
 		{
-			public PiecesCollision(IEnumerable<TPiece> pieces) => Pieces = new HashSet<TPiece>(pieces);
+			public PiecesCollision(IEnumerable<Piece> pieces) => Pieces = new HashSet<Piece>(pieces);
 
 			public int Count => Pieces.Count;
 
-			private HashSet<TPiece> Pieces { get; }
+			private HashSet<Piece> Pieces { get; }
 
-			public bool Contains(TPiece piece) => Pieces.Contains(piece);
+			public bool Contains(Piece piece) => Pieces.Contains(piece);
 
-			public IEnumerator<TPiece> GetEnumerator() => Pieces.GetEnumerator();
+			public IEnumerator<Piece> GetEnumerator() => Pieces.GetEnumerator();
 
 			IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 		}

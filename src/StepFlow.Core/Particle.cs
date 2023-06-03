@@ -1,49 +1,19 @@
-﻿using StepFlow.Core.Exceptions;
+﻿using System;
+using System.Collections.Generic;
+using StepFlow.Core.Commands;
+using StepFlow.TimeLine;
 
 namespace StepFlow.Core
 {
-	public class Particle
+	public class Particle : Child
 	{
-		private IWorld? owner;
-
-		public IWorld? Owner
+		public Particle(Playground owner, Strength strength) : base(owner)
 		{
-			get => owner;
-			internal set
-			{
-				if (Owner != value)
-				{
-					owner = value;
-					OnOwnerChange();
-				}
-			}
+			Strength = strength ?? throw new ArgumentNullException(nameof(strength));
 		}
 
-		protected virtual void OnOwnerChange()
-		{
-		}
+		public Strength Strength { get; }
 
-		public IWorld OwnerRequired => Owner ?? throw ExceptionBuilder.CreateInvalidAccessOwner();
-
-		private void CheckInteraction()
-		{
-			if (Owner is null)
-			{
-				throw ExceptionBuilder.CreateParticleCanNotInteraction();
-			}
-		}
-
-		protected void CheckInteraction(Particle? other)
-		{
-			if (other is { })
-			{
-				CheckInteraction();
-				other.CheckInteraction();
-				if (Owner != other.Owner)
-				{
-					throw ExceptionBuilder.CreatePairParticlesCanNotInteraction();
-				}
-			}
-		}
+		public IList<ITargetingCommand<Particle>> Commands { get; } = new List<ITargetingCommand<Particle>>();
 	}
 }

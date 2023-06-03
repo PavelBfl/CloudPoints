@@ -1,21 +1,25 @@
 ﻿using System.Collections.Generic;
+using StepFlow.Core;
+using StepFlow.Core.Commands;
 
 namespace StepFlow.ViewModel
 {
-	public class ParticleVm<T> : WrapperVm<T>, IParticleVm
-		where T : GamePlay.IParticle
+	public class ParticleVm<TCommand, TParticle, TParticleVm> : WrapperVm<TParticle>, IParticleVm
+		where TCommand : ITargetingCommand<TParticle>
+		where TParticle : Particle
+		where TParticleVm : WrapperVm<TParticle>
 	{
-		public ParticleVm(WrapperProvider wrapperProvider, T source)
+		public ParticleVm(WrapperProvider wrapperProvider, TParticle source)
 			: base(wrapperProvider, source)
 		{
-			Commands = new CommandsCollectionVm(WrapperProvider, Source.Commands);
+			Commands = new CommandsCollectionVm<ITargetingCommand<Particle>, Particle, TParticleVm>(WrapperProvider, Source.Commands);
 		}
 
-		private WorldVm? owner;
+		private PlaygroundVm? owner;
 
-		public WorldVm Owner => owner ??= WrapperProvider.GetOrCreate<WorldVm>(Source.Owner);
+		public PlaygroundVm Owner => owner ??= WrapperProvider.GetOrCreate<PlaygroundVm>(Source.Owner);
 
-		public CommandsCollectionVm Commands { get; }
+		public CommandsCollectionVm<ITargetingCommand<Particle>, Particle, TParticleVm> Commands { get; }
 
 		private bool isMark;
 

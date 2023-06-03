@@ -35,7 +35,7 @@ namespace StepFlow.View
 
 			var hexGrid = new HexGrid(game, Root.ActionPlot)
 			{
-				Source = Root.Context.World,
+				Source = Root.Context.Playground,
 				Size = 20,
 			};
 			Base.Childs.Add(hexGrid);
@@ -47,7 +47,7 @@ namespace StepFlow.View
 			{
 				for (var iY = 0; iY < size.Height; iY++)
 				{
-					Root.Context.World.Place.Add(wrapperProvider.GetOrCreate<NodeVm>(new GamePlay.Node(new(iX, iY))));
+					Root.Context.Playground.Place.Add(wrapperProvider.GetOrCreate<NodeVm>(new GamePlay.Node(new(iX, iY))));
 				}
 			}
 		}

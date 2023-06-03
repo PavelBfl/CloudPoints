@@ -1,13 +1,15 @@
 ﻿using System.Drawing;
 using System.Linq;
+using StepFlow.Core;
+using StepFlow.Core.Commands;
 using StepFlow.ViewModel.Commands;
 using StepFlow.ViewModel.Marking;
 
 namespace StepFlow.ViewModel
 {
-	public class NodeVm : ParticleVm<GamePlay.Node>, IMarkered
+	public class NodeVm : ParticleVm<ITargetingCommand<Node>, Node>, IMarkered
 	{
-		public NodeVm(WrapperProvider wrapperProvider, GamePlay.Node source)
+		public NodeVm(WrapperProvider wrapperProvider, Node source)
 			: base(wrapperProvider, source)
 		{
 			State.OnMarkChanged += StateOnMarkChanged;
@@ -28,9 +30,9 @@ namespace StepFlow.ViewModel
 		{
 			var command = new CreateCommandVm(
 				WrapperProvider,
-				new GamePlay.Commands.CreateCommand(
-					Owner.Owner.Source,
-					new GamePlay.Strength(100),
+				new CreateCommand(
+					Source.Owner,
+					new Strength(100),
 					100,
 					Source
 				)

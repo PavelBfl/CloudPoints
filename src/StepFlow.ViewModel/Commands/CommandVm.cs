@@ -1,26 +1,24 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using StepFlow.GamePlay.Commands;
+using StepFlow.Core.Commands;
 
 namespace StepFlow.ViewModel.Commands
 {
-	public abstract class CommandVm : WrapperVm<Command>, IMarkered
+	public abstract class CommandVm<TCommand, TTarget, TTargetVm> : WrapperVm<TCommand>, IMarkered
+		where TTarget : notnull
+		where TCommand : ITargetingCommand<TTarget>
+		where TTargetVm : WrapperVm<TTarget>
 	{
-		public CommandVm(WrapperProvider wrapperProvider, Command source)
+		public CommandVm(WrapperProvider wrapperProvider, TCommand source)
 			: base(wrapperProvider, source)
 		{
 		}
 
-		private ContextVm? owner;
+		private TTargetVm? target;
 
-		public ContextVm Owner => owner ??= WrapperProvider.GetOrCreate<ContextVm>(Source.Owner);
-
-		private IParticleVm? target;
-
-		public IParticleVm? Target => target ??= WrapperProvider.Get<IParticleVm?>(Source.Target);
+		public TTargetVm Target => target ??= WrapperProvider.GetOrCreate<TTargetVm>(Source.Target);
 
 		public abstract bool IsMark { get; set; }
 
-		public override IEnumerable<IWrapper> GetContent() => base.GetContent().ConcatIfNotNull(owner, target);
+		public override IEnumerable<IWrapper> GetContent() => base.GetContent().ConcatIfNotNull(target);
 	}
 }

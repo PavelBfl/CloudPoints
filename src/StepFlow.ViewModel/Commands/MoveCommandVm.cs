@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using StepFlow.Core;
+using StepFlow.Core.Commands;
 
 namespace StepFlow.ViewModel.Commands
 {
-	public class MoveCommandVm : CommandVm
+	public class MoveCommandVm : CommandVm<MoveCommand, Piece, PieceVm>
 	{
-		public MoveCommandVm(WrapperProvider wrapperProvider, GamePlay.Commands.MoveCommand source)
+		public MoveCommandVm(WrapperProvider wrapperProvider, MoveCommand source)
 			: base(wrapperProvider, source)
 		{
 			Source = source;
@@ -13,7 +15,7 @@ namespace StepFlow.ViewModel.Commands
 			Refresh();
 		}
 
-		private new GamePlay.Commands.MoveCommand Source { get; }
+		private new MoveCommand Source { get; }
 
 		private NodeVm? next;
 

@@ -1,18 +1,17 @@
 ﻿using System;
-using StepFlow.GamePlay.Commands;
 using StepFlow.TimeLine;
 using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
-	public class AxisVm : WrapperVm<Axis<Command>>
+	public class AxisVm : WrapperVm<Axis<ICommand>>
 	{
-		public AxisVm(WrapperProvider wrapperProvider, Axis<Command> source)
+		public AxisVm(WrapperProvider wrapperProvider, Axis<ICommand> source)
 			: base(wrapperProvider, source)
 		{
 		}
 
-		public void Add(CommandVm command, bool isCompleted = false)
+		public void Add(ICommandVm<IWrapper> command, bool isCompleted = false)
 		{
 			if (command is null)
 			{

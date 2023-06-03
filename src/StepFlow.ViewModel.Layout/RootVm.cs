@@ -26,6 +26,7 @@ namespace StepFlow.ViewModel.Layout
 				Columns =
 				{
 					new CellSize(1, UnitMeasure.Ptc),
+					new CellSize(100, UnitMeasure.Pixels),
 				}
 			};
 
@@ -43,8 +44,14 @@ namespace StepFlow.ViewModel.Layout
 				}
 			};
 
+			AllowCommandsContainer = new GridPlot()
+			{
+				Margin = new Margin(0),
+			};
+
 			Root.Childs.Add(ActionPlot, new CellPosition(0, 0));
-			Root.Childs.Add(QueueCommandsContainer, new CellPosition(0, 1));
+			Root.Childs.Add(QueueCommandsContainer, new CellPosition(0, 1, 2, 1));
+			Root.Childs.Add(AllowCommandsContainer, new CellPosition(1, 0));
 
 			RefreshQueue(Array.Empty<CommandVm>());
 		}
@@ -109,6 +116,8 @@ namespace StepFlow.ViewModel.Layout
 		public RectPlot ActionPlot { get; }
 
 		public GridPlot QueueCommandsContainer { get; }
+
+		public GridPlot AllowCommandsContainer { get; }
 
 		private ObservableCollection<CommandLayout> QueueCommandInner { get; } = new ObservableCollection<CommandLayout>();
 

@@ -1,14 +1,13 @@
 ﻿namespace StepFlow.Core.Collision
 {
-	public sealed class CrashCollision<TPiece> : PairCollision<TPiece>
-		where TPiece : Piece
+	public sealed class CrashCollision : PairCollision
 	{
-		public CrashCollision(TPiece stationary, TPiece moved)
+		public CrashCollision(Piece stationary, Piece moved)
 			: base(stationary, moved)
 		{
 		}
 
-		public TPiece Stationary => First;
-		public TPiece Moved => Second;
+		public Piece Stationary => First;
+		public Piece Moved => Second;
 	}
 }

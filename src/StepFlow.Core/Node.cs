@@ -7,7 +7,7 @@ namespace StepFlow.Core
 	{
 		private const string VIEW_FORMAT = "{0}:{1}";
 
-		public Node(Point position)
+		public Node(Playground owner, Point position) : base(owner)
 		{
 			Position = position;
 		}
@@ -15,16 +15,6 @@ namespace StepFlow.Core
 		public Point Position { get; }
 
 		public OccupiersCollection Occupiers { get; } = new OccupiersCollection();
-
-		protected override void OnOwnerChange()
-		{
-			base.OnOwnerChange();
-
-			foreach (var occupier in Occupiers.ToArray())
-			{
-				occupier.Current = null;
-			}
-		}
 
 		public override string ToString() => string.Format(VIEW_FORMAT, Position.X, Position.Y);
 	}

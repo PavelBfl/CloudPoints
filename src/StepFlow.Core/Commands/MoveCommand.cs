@@ -1,15 +1,15 @@
 ﻿using System;
 
-namespace StepFlow.GamePlay.Commands
+namespace StepFlow.Core.Commands
 {
-	public class MoveCommand : Command
+	public class MoveCommand : Command<Piece>
 	{
 		public MoveCommand(Piece target, Node next)
-			: base(target ?? throw new ArgumentNullException(nameof(target)))
+			: base(target)
 		{
 			Target = target ?? throw new ArgumentNullException(nameof(target));
 			Next = next ?? throw new ArgumentNullException(nameof(next));
-			Prev = (Node?)Target.Current;
+			Prev = Target.Current;
 		}
 
 		public new Piece Target { get; }

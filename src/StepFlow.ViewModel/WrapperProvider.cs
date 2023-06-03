@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using StepFlow.Core;
+using StepFlow.Core.Commands;
 using StepFlow.TimeLine;
 using StepFlow.ViewModel.Commands;
 
@@ -50,13 +51,13 @@ namespace StepFlow.ViewModel
 			{
 				result = model switch
 				{
-					GamePlay.Commands.MoveCommand moveCommand => new MoveCommandVm(this, moveCommand),
-					GamePlay.Commands.CreateCommand createCommand => new CreateCommandVm(this, createCommand),
+					MoveCommand moveCommand => new MoveCommandVm(this, moveCommand),
+					CreateCommand createCommand => new CreateCommandVm(this, createCommand),
 					GamePlay.Node node => new NodeVm(this, node),
 					GamePlay.Piece piece => new PieceVm(this, piece),
-					Axis<GamePlay.Commands.Command> axis => new AxisVm(this, axis),
+					Axis<Command> axis => new AxisVm(this, axis),
 					GamePlay.Context context => new ContextVm(this, context),
-					GamePlay.World world => new WorldVm(this, world),
+					GamePlay.World world => new PlaygroundVm(this, world),
 					Place<GamePlay.Node> place => new PlaceVm(this, place),
 					PiecesCollection<GamePlay.Piece> pieceCollection => new PiecesCollectionVm(this, pieceCollection),
 					_ => throw Exceptions.Builder.CreateUnknownModel(),

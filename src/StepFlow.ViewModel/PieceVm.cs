@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using StepFlow.Core;
+using StepFlow.Core.Commands;
 using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
-	public class PieceVm : ParticleVm<GamePlay.Piece>, IMarkered
+	public class PieceVm : ParticleVm<ITargetingCommand<Piece>, Piece>, IMarkered
 	{
-		internal PieceVm(WrapperProvider wrapperProvider, GamePlay.Piece source)
+		internal PieceVm(WrapperProvider wrapperProvider, Piece source)
 			: base(wrapperProvider, source)
 		{
 		}

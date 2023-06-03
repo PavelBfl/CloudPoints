@@ -1,16 +1,15 @@
 ﻿using System.Collections.Generic;
+using StepFlow.Core;
+using StepFlow.Core.Commands;
 
 namespace StepFlow.ViewModel.Commands
 {
-	public sealed class CreateCommandVm : CommandVm
+	public sealed class CreateCommandVm : CommandVm<CreateCommand, Playground, PlaygroundVm>
 	{
-		public CreateCommandVm(WrapperProvider wrapperProvider, GamePlay.Commands.CreateCommand source)
+		public CreateCommandVm(WrapperProvider wrapperProvider, CreateCommand source)
 			: base(wrapperProvider, source)
 		{
-			Source = source;
 		}
-
-		private new GamePlay.Commands.CreateCommand Source { get; }
 
 		private NodeVm? begin;
 
