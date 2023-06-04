@@ -1,22 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using StepFlow.Core;
+using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.ViewModel
 {
-	public class PlaygroundVm : WrapperVm<Playground>
+    public class PlaygroundVm : WrapperVm<Playground>
 	{
-		internal PlaygroundVm(WrapperProvider wrapperProvider, Playground source) : base(wrapperProvider, source)
+		internal PlaygroundVm(LockProvider wrapperProvider, Playground source) : base(wrapperProvider, source)
 		{
 		}
 
 		private PiecesCollectionVm? pieces;
 
-		public PiecesCollectionVm Pieces => pieces ??= WrapperProvider.GetOrCreate<PiecesCollectionVm>(Source.Pieces);
+		public PiecesCollectionVm Pieces => pieces ??= LockProvider.GetOrCreate<PiecesCollectionVm>(Source.Pieces);
 
 		private PlaceVm? place;
 
-		public PlaceVm Place => place ??= WrapperProvider.GetOrCreate<PlaceVm>(Source.Place);
+		public PlaceVm Place => place ??= LockProvider.GetOrCreate<PlaceVm>(Source.Place);
 
 		public IEnumerable<IParticleVm> Particles => Pieces.AsEnumerable<IParticleVm>().Concat(Place);
 
@@ -24,25 +25,25 @@ namespace StepFlow.ViewModel
 		{
 			Source.TakeStep();
 
-			Pieces.Refresh();
+			Pieces.SourceHasChange();
 
 			if (Owner.Current is { } && !Pieces.Contains(Owner.Current))
 			{
 				Owner.Current = null;
 			}
 
-			Place.Refresh();
+			Place.SourceHasChange();
 
 			foreach (var particle in Particles)
 			{
-				particle.Refresh();
+				particle.SourceHasChange();
 			}
 
 			Owner.TimeAxis.Refresh();
 
-			WrapperProvider.Clear();
+			LockProvider.Clear();
 		}
 
-		public override IEnumerable<IWrapper> GetContent() => base.GetContent().ConcatIfNotNull(owner, pieces, place);
+		public override IEnumerable<ILockable> GetContent() => base.GetContent().ConcatIfNotNull(owner, pieces, place);
 	}
 }

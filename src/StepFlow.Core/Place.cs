@@ -70,30 +70,14 @@ namespace StepFlow.Core
 				throw new ArgumentNullException(nameof(node));
 			}
 
-			node.Owner = Owner;
-
 			Nodes.Add(node.Position, node);
 		}
 
-		public bool Remove(Point position)
-		{
-			if (TryGetValue(position, out var node))
-			{
-				node.Owner = null;
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
+		public bool Remove(Point position) => Nodes.Remove(position);
 
 		public void Clear()
 		{
-			foreach (var node in Nodes.Values.ToArray())
-			{
-				node.Owner = null;
-			}
+			Nodes.Clear();
 
 			OnChangeCollection();
 		}

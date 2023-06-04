@@ -1,25 +1,27 @@
 ﻿using System.Collections.Generic;
+using StepFlow.Core;
+using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.ViewModel
 {
-	public class ContextVm : WrapperVm<GamePlay.Context>
+	public class ContextVm : WrapperVm<Context>
 	{
-		internal ContextVm(WrapperProvider wrapperProvider, GamePlay.Context source) : base(wrapperProvider, source)
+		internal ContextVm(LockProvider wrapperProvider, Context source) : base(wrapperProvider, source)
 		{
 			Lock = true;
 		}
 
 		private PlaygroundVm? playground;
 
-		public PlaygroundVm Playground => playground ??= WrapperProvider.GetOrCreate<PlaygroundVm>(Source.Playground);
+		public PlaygroundVm Playground => playground ??= LockProvider.GetOrCreate<PlaygroundVm>(Source.Playground);
 
 		private AxisVm? timeAxis;
 
-		public AxisVm TimeAxis => timeAxis ??= WrapperProvider.GetOrCreate<AxisVm>(Source.AxisTime);
+		public AxisVm TimeAxis => timeAxis ??= LockProvider.GetOrCreate<AxisVm>(Source.AxisTime);
 
 		private CommandsCollectionVm? staticCommands;
 
-		public CommandsCollectionVm StaticCommands => staticCommands ??= WrapperProvider.GetOrCreate<CommandsCollectionVm>(Source.StaticCommands);
+		public CommandsCollectionVm StaticCommands => staticCommands ??= LockProvider.GetOrCreate<CommandsCollectionVm>(Source.StaticCommands);
 
 		private PieceVm? current = null;
 
@@ -49,6 +51,6 @@ namespace StepFlow.ViewModel
 			}
 		}
 
-		public override IEnumerable<IWrapper> GetContent() => base.GetContent().ConcatIfNotNull(playground, timeAxis, current);
+		public override IEnumerable<ILockable> GetContent() => base.GetContent().ConcatIfNotNull(playground, timeAxis, current);
 	}
 }

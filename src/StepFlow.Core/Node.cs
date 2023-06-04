@@ -7,7 +7,7 @@ namespace StepFlow.Core
 	{
 		private const string VIEW_FORMAT = "{0}:{1}";
 
-		public Node(Playground owner, Point position) : base(owner)
+		public Node(Playground owner, Point position, Strength strength) : base(owner, strength)
 		{
 			Position = position;
 		}

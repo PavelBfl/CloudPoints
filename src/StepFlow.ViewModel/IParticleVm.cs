@@ -1,7 +1,9 @@
-﻿namespace StepFlow.ViewModel
+﻿using StepFlow.ViewModel.Collector;
+
+namespace StepFlow.ViewModel
 {
-	public interface IParticleVm : IMarkered, IWrapper
+    public interface IParticleVm : IMarkered, ILockable
 	{
-		void Refresh();
+		void SourceHasChange();
 	}
 }

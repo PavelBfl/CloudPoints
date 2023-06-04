@@ -1,14 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.ViewModel.Collections
 {
 	public class WrapperEnumerable<TWrapper, TCollection, TModelItem> : WrapperVm<TCollection>, IEnumerable<TWrapper>, INotifyCollectionChanged
-		where TWrapper : IWrapper
+		where TWrapper : IWrapper<TModelItem>
 		where TCollection : IEnumerable<TModelItem>
 	{
-		public WrapperEnumerable(WrapperProvider wrapperProvider, TCollection source) : base(wrapperProvider, source)
+		public WrapperEnumerable(LockProvider wrapperProvider, TCollection source) : base(wrapperProvider, source)
 		{
 		}
 
@@ -20,20 +21,20 @@ namespace StepFlow.ViewModel.Collections
 		{
 			foreach (var model in Source)
 			{
-				yield return WrapperProvider.GetOrCreate<TWrapper>(model);
+				yield return LockProvider.GetOrCreate<TWrapper>(model);
 			}
 		}
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-		public override void Refresh()
+		public override void SourceHasChange()
 		{
-			base.Refresh();
+			base.SourceHasChange();
 
 			OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 		}
 
-		public override IEnumerable<IWrapper> GetContent()
+		public override IEnumerable<ILockable> GetContent()
 		{
 			foreach (var content in base.GetContent())
 			{
@@ -42,7 +43,7 @@ namespace StepFlow.ViewModel.Collections
 
 			foreach (var item in Source)
 			{
-				if (item is { } && WrapperProvider.TryGetValue(item, out var itemVm))
+				if (item is { } && LockProvider.TryGetValue(item, out var itemVm))
 				{
 					yield return itemVm;
 				}

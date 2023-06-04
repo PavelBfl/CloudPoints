@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using StepFlow.Core.Collision;
-using StepFlow.Core.Commands;
 using StepFlow.TimeLine;
 
 namespace StepFlow.Core
@@ -102,7 +101,8 @@ namespace StepFlow.Core
 			{
 				var command = piece.Commands[0];
 				piece.Commands.RemoveAt(0);
-				Owner.AxisTime.Add(command);
+				// TODO Передать ось команд
+				// Owner.AxisTime.Add(command);
 			}
 
 			var collision = GetCollision();

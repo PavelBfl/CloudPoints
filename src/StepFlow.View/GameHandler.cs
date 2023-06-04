@@ -4,11 +4,12 @@ using StepFlow.View.Controls;
 using StepFlow.View.Services;
 using StepFlow.View.Sketch;
 using StepFlow.ViewModel;
+using StepFlow.ViewModel.Collector;
 using StepFlow.ViewModel.Layout;
 
 namespace StepFlow.View
 {
-	public class GameHandler
+    public class GameHandler
 	{
 		public GameHandler(Game1 game, System.Drawing.RectangleF bounds)
 		{
@@ -22,7 +23,7 @@ namespace StepFlow.View
 			game.Services.AddService<IKeyboardService>(KeyboardService);
 			game.Services.AddService<IDrawer>(Drawer);
 
-			var wrapperProvider = new WrapperProvider();
+			var wrapperProvider = new LockProvider();
 			Root = new RootVm(wrapperProvider.GetOrCreate<ContextVm>(new GamePlay.Context()));
 
 			FillPlace(wrapperProvider, new(5, 5));
@@ -41,7 +42,7 @@ namespace StepFlow.View
 			Base.Childs.Add(hexGrid);
 		}
 
-		private void FillPlace(WrapperProvider wrapperProvider, System.Drawing.Size size)
+		private void FillPlace(LockProvider wrapperProvider, System.Drawing.Size size)
 		{
 			for (var iX = 0; iX < size.Width; iX++)
 			{

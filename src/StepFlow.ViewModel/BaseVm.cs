@@ -1,15 +1,16 @@
 ﻿using System;
 using StepFlow.Common;
+using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.ViewModel
 {
 	public class BaseVm : BaseNotifyer
 	{
-		public BaseVm(WrapperProvider wrapperProvider)
+		public BaseVm(LockProvider lockProvider)
 		{
-			WrapperProvider = wrapperProvider ?? throw new ArgumentNullException(nameof(wrapperProvider));
+			LockProvider = lockProvider ?? throw new ArgumentNullException(nameof(lockProvider));
 		}
 
-		public WrapperProvider WrapperProvider { get; }
+		public LockProvider LockProvider { get; }
 	}
 }

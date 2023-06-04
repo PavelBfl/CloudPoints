@@ -2,32 +2,33 @@
 using System.Collections.Generic;
 using StepFlow.Core;
 using StepFlow.Core.Commands;
+using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.ViewModel.Commands
 {
 	public class MoveCommandVm : CommandVm<MoveCommand, Piece, PieceVm>
 	{
-		public MoveCommandVm(WrapperProvider wrapperProvider, MoveCommand source)
+		public MoveCommandVm(LockProvider wrapperProvider, MoveCommand source)
 			: base(wrapperProvider, source)
 		{
 			Source = source;
 
-			Refresh();
+			SourceHasChange();
 		}
 
 		private new MoveCommand Source { get; }
 
 		private NodeVm? next;
 
-		public NodeVm Next => next ??= WrapperProvider.GetOrCreate<NodeVm>(Source.Next);
+		public NodeVm Next => next ??= LockProvider.GetOrCreate<NodeVm>(Source.Next);
 
 		private IDisposable? StateToken { get; set; }
 
 		public override bool IsMark { get => Next.IsMark; set => Next.IsMark = value; }
 
-		public override void Refresh()
+		public override void SourceHasChange()
 		{
-			base.Refresh();
+			base.SourceHasChange();
 
 			if (Owner.TimeAxis.IsCompleted(this) ?? false)
 			{
@@ -40,6 +41,6 @@ namespace StepFlow.ViewModel.Commands
 			}
 		}
 
-		public override IEnumerable<IWrapper> GetContent() => base.GetContent().ConcatIfNotNull(next);
+		public override IEnumerable<ILockable> GetContent() => base.GetContent().ConcatIfNotNull(next);
 	}
 }

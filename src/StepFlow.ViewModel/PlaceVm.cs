@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using StepFlow.Core;
+using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.ViewModel
 {
-	public sealed class PlaceVm : WrapperVm<Place<GamePlay.Node>>, ICollection<NodeVm>, INotifyCollectionChanged
+    public sealed class PlaceVm : WrapperVm<Place>, ICollection<NodeVm>, INotifyCollectionChanged
 	{
-		internal PlaceVm(WrapperProvider wrapperProvider, Place<GamePlay.Node> items)
+		internal PlaceVm(LockProvider wrapperProvider, Place items)
 			: base(wrapperProvider, items)
 		{
 		}
@@ -48,7 +49,7 @@ namespace StepFlow.ViewModel
 			}
 		}
 
-		public IEnumerator<NodeVm> GetEnumerator() => Source.Values.Select(x => WrapperProvider.GetOrCreate<NodeVm>(x)).GetEnumerator();
+		public IEnumerator<NodeVm> GetEnumerator() => Source.Values.Select(x => LockProvider.GetOrCreate<NodeVm>(x)).GetEnumerator();
 
 		public bool Remove(NodeVm item)
 		{

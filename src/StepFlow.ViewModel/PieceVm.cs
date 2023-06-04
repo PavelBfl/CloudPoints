@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using StepFlow.Core;
 using StepFlow.Core.Commands;
+using StepFlow.ViewModel.Collector;
 using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
-	public class PieceVm : ParticleVm<ITargetingCommand<Piece>, Piece>, IMarkered
+	public class PieceVm : ParticleVm<ITargetingCommand<Piece>, Piece, PieceVm>, IMarkered
 	{
-		internal PieceVm(WrapperProvider wrapperProvider, Piece source)
+		internal PieceVm(LockProvider wrapperProvider, Piece source)
 			: base(wrapperProvider, source)
 		{
 		}
@@ -47,23 +48,12 @@ namespace StepFlow.ViewModel
 			}
 		}
 
-		public override void Refresh()
+		public override void SourceHasChange()
 		{
-			base.Refresh();
+			base.SourceHasChange();
 
-			Current = WrapperProvider.Get<NodeVm?>(Source.Current);
-			Next = WrapperProvider.Get<NodeVm?>(Source.Next);
-		}
-
-		public void Add(CommandVm command)
-		{
-			if (command is null)
-			{
-				throw new ArgumentNullException(nameof(command));
-			}
-
-			command.IsMark = IsMark;
-			Commands.Add(command);
+			Current = LockProvider.Get<NodeVm?>(Source.Current);
+			Next = LockProvider.Get<NodeVm?>(Source.Next);
 		}
 
 		public void MoveTo(NodeVm node)
@@ -73,11 +63,12 @@ namespace StepFlow.ViewModel
 				throw new ArgumentNullException(nameof(node));
 			}
 
-			var command = WrapperProvider.GetOrCreate<MoveCommandVm>(new GamePlay.Commands.MoveCommand(Source, node.Source));
-			Add(command);
+			var command = LockProvider.GetOrCreate<MoveCommandVm>(new MoveCommand(Source, node.Source));
+			command.IsMark = IsMark;
+			Commands.Add(command);
 		}
 
-		public override IEnumerable<IWrapper> GetContent() => base.GetContent().ConcatIfNotNull(current, next);
+		public override IEnumerable<ILockable> GetContent() => base.GetContent().ConcatIfNotNull(current, next);
 
 		public override void Dispose()
 		{

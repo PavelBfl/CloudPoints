@@ -1,8 +1,7 @@
-﻿using StepFlow.Core;
-using StepFlow.Core.Commands;
+﻿using StepFlow.Core.Commands;
 using StepFlow.TimeLine;
 
-namespace StepFlow.GamePlay
+namespace StepFlow.Core
 {
 	public class Context
 	{

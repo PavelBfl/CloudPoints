@@ -1,23 +1,24 @@
 ﻿using System.Collections.Generic;
 using StepFlow.Core;
 using StepFlow.Core.Commands;
+using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.ViewModel.Commands
 {
-	public sealed class CreateCommandVm : CommandVm<CreateCommand, Playground, PlaygroundVm>
+    public sealed class CreateCommandVm : CommandVm<CreateCommand, Playground, PlaygroundVm>
 	{
-		public CreateCommandVm(WrapperProvider wrapperProvider, CreateCommand source)
+		public CreateCommandVm(LockProvider wrapperProvider, CreateCommand source)
 			: base(wrapperProvider, source)
 		{
 		}
 
 		private NodeVm? begin;
 
-		public NodeVm? Begin => begin ??= WrapperProvider.Get<NodeVm?>(Source.Begin);
+		public NodeVm? Begin => begin ??= LockProvider.Get<NodeVm?>(Source.Begin);
 
 		private PieceVm? piece;
 
-		public PieceVm? Piece => piece ??= WrapperProvider.GetOrCreate<PieceVm>(Source.Piece);
+		public PieceVm? Piece => piece ??= LockProvider.GetOrCreate<PieceVm>(Source.Piece);
 
 		public override bool IsMark
 		{
@@ -31,6 +32,6 @@ namespace StepFlow.ViewModel.Commands
 			}
 		}
 
-		public override IEnumerable<IWrapper> GetContent() => base.GetContent().ConcatIfNotNull(begin, piece);
+		public override IEnumerable<ILockable> GetContent() => base.GetContent().ConcatIfNotNull(begin, piece);
 	}
 }

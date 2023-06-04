@@ -1,20 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
+using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.ViewModel.Collections
 {
 	public class WrapperList<TWrapper, TCollection, TModelItem> : WrapperCollection<TWrapper, TCollection, TModelItem>, IList<TWrapper>, IReadOnlyList<TWrapper>
 		where TCollection : IList<TModelItem>
-		where TWrapper : WrapperVm<TModelItem>
+		where TWrapper : IWrapper<TModelItem>
 		where TModelItem : notnull
 	{
-		public WrapperList(WrapperProvider wrapperProvider, TCollection source) : base(wrapperProvider, source)
+		public WrapperList(LockProvider wrapperProvider, TCollection source) : base(wrapperProvider, source)
 		{
 		}
 
 		public TWrapper this[int index]
 		{
-			get => WrapperProvider.GetOrCreate<TWrapper>(Source[index]);
+			get => LockProvider.GetOrCreate<TWrapper>(Source[index]);
 			set
 			{
 				var oldItem = this[index];

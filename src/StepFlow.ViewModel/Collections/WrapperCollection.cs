@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.ViewModel.Collections
 {
 	public class WrapperCollection<TWrapper, TCollection, TModelItem> : WrapperEnumerable<TWrapper, TCollection, TModelItem>, ICollection<TWrapper>, IReadOnlyCollection<TWrapper>
+		where TWrapper : IWrapper<TModelItem>
 		where TCollection : ICollection<TModelItem>
-		where TWrapper : WrapperVm<TModelItem>
 		where TModelItem : notnull
 	{
-		public WrapperCollection(WrapperProvider wrapperProvider, TCollection source) : base(wrapperProvider, source)
+		public WrapperCollection(LockProvider wrapperProvider, TCollection source) : base(wrapperProvider, source)
 		{
 		}
 

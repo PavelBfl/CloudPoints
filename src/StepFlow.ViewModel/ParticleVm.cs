@@ -1,40 +1,35 @@
 ﻿using System.Collections.Generic;
 using StepFlow.Core;
-using StepFlow.Core.Commands;
+using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.ViewModel
 {
-	public class ParticleVm<TCommand, TParticle, TParticleVm> : WrapperVm<TParticle>, IParticleVm
-		where TCommand : ITargetingCommand<TParticle>
+	public class ParticleVm<TParticle> : WrapperVm<TParticle>, IParticleVm
 		where TParticle : Particle
-		where TParticleVm : WrapperVm<TParticle>
 	{
-		public ParticleVm(WrapperProvider wrapperProvider, TParticle source)
+		public ParticleVm(LockProvider wrapperProvider, TParticle source)
 			: base(wrapperProvider, source)
 		{
-			Commands = new CommandsCollectionVm<ITargetingCommand<Particle>, Particle, TParticleVm>(WrapperProvider, Source.Commands);
 		}
 
 		private PlaygroundVm? owner;
 
-		public PlaygroundVm Owner => owner ??= WrapperProvider.GetOrCreate<PlaygroundVm>(Source.Owner);
-
-		public CommandsCollectionVm<ITargetingCommand<Particle>, Particle, TParticleVm> Commands { get; }
+		public PlaygroundVm Owner => owner ??= LockProvider.GetOrCreate<PlaygroundVm>(Source.Owner);
 
 		private bool isMark;
 
 		public bool IsMark { get => isMark; set => SetValue(ref isMark, value); }
 
-		public override void Refresh()
+		public override void SourceHasChange()
 		{
-			Commands.Refresh();
+			Commands.SourceHasChange();
 
 			foreach (var command in Commands)
 			{
-				command.Refresh();
+				command.SourceHasChange();
 			}
 		}
 
-		public override IEnumerable<IWrapper> GetContent() => base.GetContent().ConcatIfNotNull(owner);
+		public override IEnumerable<ILockable> GetContent() => base.GetContent().ConcatIfNotNull(owner);
 	}
 }

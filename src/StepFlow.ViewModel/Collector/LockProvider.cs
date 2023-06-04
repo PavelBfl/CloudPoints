@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using StepFlow.Core;
@@ -7,18 +6,18 @@ using StepFlow.Core.Commands;
 using StepFlow.TimeLine;
 using StepFlow.ViewModel.Commands;
 
-namespace StepFlow.ViewModel
+namespace StepFlow.ViewModel.Collector
 {
-	public class WrapperProvider
+	public class LockProvider
 	{
-		private Dictionary<object, IWrapper> ViewModels { get; } = new Dictionary<object, IWrapper>();
+		private Dictionary<object, ILockable> ViewModels { get; } = new Dictionary<object, ILockable>();
 
-		public bool TryGetValue(object model, out IWrapper result) => ViewModels.TryGetValue(model, out result);
+		public bool TryGetValue(object model, out ILockable result) => ViewModels.TryGetValue(model, out result);
 
 		public bool TryGetValue<T>(object model, [MaybeNullWhen(false)] out T result)
-			where T : IWrapper
+			where T : ILockable
 		{
-			if (TryGetValue(model, out IWrapper viewModel))
+			if (TryGetValue(model, out ILockable viewModel))
 			{
 				result = (T)viewModel;
 				return true;
@@ -31,16 +30,16 @@ namespace StepFlow.ViewModel
 		}
 
 		[return: NotNullIfNotNull(nameof(model))]
-		public IWrapper? Get(object? model) => model is { } ? ViewModels[model] : null;
+		public ILockable? Get(object? model) => model is { } ? ViewModels[model] : null;
 
 		[return: NotNullIfNotNull(nameof(model))]
 		[return: MaybeNull]
 		public T Get<T>(object? model)
-			where T : IWrapper?
+			where T : ILockable?
 			=> (T)Get(model);
 
 		[return: NotNullIfNotNull(nameof(model))]
-		public IWrapper? GetOrCreate(object? model)
+		public ILockable? GetOrCreate(object? model)
 		{
 			if (model is null)
 			{
@@ -53,13 +52,13 @@ namespace StepFlow.ViewModel
 				{
 					MoveCommand moveCommand => new MoveCommandVm(this, moveCommand),
 					CreateCommand createCommand => new CreateCommandVm(this, createCommand),
-					GamePlay.Node node => new NodeVm(this, node),
-					GamePlay.Piece piece => new PieceVm(this, piece),
-					Axis<Command> axis => new AxisVm(this, axis),
-					GamePlay.Context context => new ContextVm(this, context),
-					GamePlay.World world => new PlaygroundVm(this, world),
-					Place<GamePlay.Node> place => new PlaceVm(this, place),
-					PiecesCollection<GamePlay.Piece> pieceCollection => new PiecesCollectionVm(this, pieceCollection),
+					Node node => new NodeVm(this, node),
+					Piece piece => new PieceVm(this, piece),
+					Axis<ICommand> axis => new AxisVm(this, axis),
+					Context context => new ContextVm(this, context),
+					Playground playground => new PlaygroundVm(this, playground),
+					Place place => new PlaceVm(this, place),
+					PiecesCollection pieceCollection => new PiecesCollectionVm(this, pieceCollection),
 					_ => throw Exceptions.Builder.CreateUnknownModel(),
 				};
 
@@ -72,12 +71,12 @@ namespace StepFlow.ViewModel
 		[return: NotNullIfNotNull(nameof(model))]
 		[return: MaybeNull]
 		public T GetOrCreate<T>(object? model)
-			where T : IWrapper?
+			where T : ILockable?
 			=> (T)GetOrCreate(model);
 
 		public void Clear()
 		{
-			var locks = new HashSet<IWrapper>();
+			var locks = new HashSet<ILockable>();
 
 			var roots = ViewModels.Values.Where(x => x.Lock).ToArray();
 
@@ -96,7 +95,7 @@ namespace StepFlow.ViewModel
 			}
 		}
 
-		private void SetLock(IWrapper current, HashSet<IWrapper> locks)
+		private void SetLock(ILockable current, HashSet<ILockable> locks)
 		{
 			if (locks.Add(current))
 			{
@@ -105,25 +104,6 @@ namespace StepFlow.ViewModel
 					SetLock(content, locks);
 				}
 			}
-		}
-	}
-
-	public interface IWrapper : IDisposable
-	{
-		bool Lock { get; }
-
-		IEnumerable<IWrapper> GetContent();
-	}
-
-	public static class WrapperExtensions
-	{
-		public static IEnumerable<IWrapper> ConcatIfNotNull(this IEnumerable<IWrapper> container, params IWrapper?[] wrappers)
-		{
-			var wrappersRequired = from wrapper in wrappers
-								   where wrapper is { }
-								   select wrapper;
-
-			return container.Concat(wrappersRequired);
 		}
 	}
 }

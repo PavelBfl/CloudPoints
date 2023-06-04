@@ -1,24 +1,35 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using StepFlow.Core.Commands;
+using StepFlow.TimeLine;
+using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.ViewModel.Commands
 {
-	public abstract class CommandVm<TCommand, TTarget, TTargetVm> : WrapperVm<TCommand>, IMarkered
-		where TTarget : notnull
-		where TCommand : ITargetingCommand<TTarget>
-		where TTargetVm : WrapperVm<TTarget>
+	public interface ICommandVm<out T> : IWrapper<T>
+		where T : notnull, ICommand
 	{
-		public CommandVm(WrapperProvider wrapperProvider, TCommand source)
+		
+	}
+
+	public abstract class CommandVm<TCommand, TTarget, TTargetVm> : WrapperVm<TCommand>, ICommandVm<TCommand>, IMarkered
+		where TCommand : ITargetingCommand<TTarget>
+		where TTarget : notnull
+		where TTargetVm : IWrapper<TTarget>
+	{
+		public CommandVm(LockProvider wrapperProvider, TCommand source)
 			: base(wrapperProvider, source)
 		{
 		}
 
-		private TTargetVm? target;
+		[MaybeNull]
+		[AllowNull]
+		private TTargetVm target;
 
-		public TTargetVm Target => target ??= WrapperProvider.GetOrCreate<TTargetVm>(Source.Target);
+		public TTargetVm Target => target ??= LockProvider.GetOrCreate<TTargetVm>(Source.Target);
 
 		public abstract bool IsMark { get; set; }
 
-		public override IEnumerable<IWrapper> GetContent() => base.GetContent().ConcatIfNotNull(target);
+		public override IEnumerable<ILockable> GetContent() => base.GetContent().ConcatIfNotNull(target);
 	}
 }
