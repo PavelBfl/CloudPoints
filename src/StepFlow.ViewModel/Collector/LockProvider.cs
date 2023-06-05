@@ -58,6 +58,8 @@ namespace StepFlow.ViewModel.Collector
 					Playground playground => new PlaygroundVm(this, playground),
 					Place place => new PlaceVm(this, place),
 					PiecesCollection pieceCollection => new PiecesCollectionVm(this, pieceCollection),
+					IList<ITargetingCommand<Piece>> pieceCommands => new CommandsCollectionVm<Piece>(this, pieceCommands),
+					IList<ITargetingCommand<Node>> nodeCommands => new CommandsCollectionVm<Node>(this, nodeCommands),
 					_ => throw Exceptions.Builder.CreateUnknownModel(),
 				};
 

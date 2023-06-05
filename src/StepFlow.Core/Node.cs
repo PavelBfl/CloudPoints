@@ -1,5 +1,7 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using StepFlow.Core.Commands;
 
 namespace StepFlow.Core
 {
@@ -15,6 +17,8 @@ namespace StepFlow.Core
 		public Point Position { get; }
 
 		public OccupiersCollection Occupiers { get; } = new OccupiersCollection();
+
+		public IList<ITargetingCommand<Node>> Commands { get; } = new List<ITargetingCommand<Node>>();
 
 		public override string ToString() => string.Format(VIEW_FORMAT, Position.X, Position.Y);
 	}

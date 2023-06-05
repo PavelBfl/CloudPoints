@@ -48,6 +48,10 @@ namespace StepFlow.ViewModel
 			}
 		}
 
+		private CommandsCollectionVm<Piece>? commands;
+
+		public CommandsCollectionVm<Piece> Commands => commands ??= LockProvider.GetOrCreate<CommandsCollectionVm<Piece>>(Source.Commands);
+
 		public override void SourceHasChange()
 		{
 			base.SourceHasChange();

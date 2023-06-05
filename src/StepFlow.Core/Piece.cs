@@ -1,4 +1,7 @@
-﻿namespace StepFlow.Core
+﻿using StepFlow.Core.Commands;
+using System.Collections.Generic;
+
+namespace StepFlow.Core
 {
 	public class Piece : Particle
 	{
@@ -64,5 +67,7 @@
 			SetNext(null, false);
 			IsScheduledStep = false;
 		}
+
+		public IList<ITargetingCommand<Piece>> Commands { get; } = new List<ITargetingCommand<Piece>>();
 	}
 }
