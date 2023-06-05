@@ -1,18 +1,19 @@
 ﻿using System;
+using StepFlow.Core.Commands;
 using StepFlow.TimeLine;
 using StepFlow.ViewModel.Collector;
 using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
-    public class AxisVm : WrapperVm<Axis<ICommand>>
+    public class AxisVm : WrapperVm<Axis<ITargetingCommand<object>>>
 	{
-		public AxisVm(LockProvider wrapperProvider, Axis<ICommand> source)
+		public AxisVm(LockProvider wrapperProvider, Axis<ITargetingCommand<object>> source)
 			: base(wrapperProvider, source)
 		{
 		}
 
-		public void Add(ICommandVm<ICommand> command, bool isCompleted = false)
+		public void Add(ICommandVm<ITargetingCommand<object>> command, bool isCompleted = false)
 		{
 			if (command is null)
 			{
@@ -22,7 +23,7 @@ namespace StepFlow.ViewModel
 			Source.Add(command.Source, isCompleted);
 		}
 
-		public bool? IsCompleted(ICommandVm<ICommand> command)
+		public bool? IsCompleted(ICommandVm<ITargetingCommand<object>> command)
 		{
 			if (command is null)
 			{

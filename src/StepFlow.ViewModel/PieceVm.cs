@@ -7,7 +7,7 @@ using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
-	public class PieceVm : ParticleVm<ITargetingCommand<Piece>, Piece, PieceVm>, IMarkered
+	public class PieceVm : ParticleVm<Piece>, IMarkered
 	{
 		internal PieceVm(LockProvider wrapperProvider, Piece source)
 			: base(wrapperProvider, source)

@@ -9,7 +9,7 @@ using StepFlow.ViewModel.Layout;
 
 namespace StepFlow.View
 {
-    public class GameHandler
+	public class GameHandler
 	{
 		public GameHandler(Game1 game, System.Drawing.RectangleF bounds)
 		{
@@ -24,7 +24,7 @@ namespace StepFlow.View
 			game.Services.AddService<IDrawer>(Drawer);
 
 			var wrapperProvider = new LockProvider();
-			Root = new RootVm(wrapperProvider.GetOrCreate<ContextVm>(new GamePlay.Context()));
+			Root = new RootVm(wrapperProvider.GetOrCreate<PlaygroundVm>(new Core.Playground()));
 
 			FillPlace(wrapperProvider, new(5, 5));
 
@@ -36,7 +36,7 @@ namespace StepFlow.View
 
 			var hexGrid = new HexGrid(game, Root.ActionPlot)
 			{
-				Source = Root.Context.Playground,
+				Source = Root.Playground,
 				Size = 20,
 			};
 			Base.Childs.Add(hexGrid);
@@ -48,7 +48,7 @@ namespace StepFlow.View
 			{
 				for (var iY = 0; iY < size.Height; iY++)
 				{
-					Root.Context.Playground.Place.Add(wrapperProvider.GetOrCreate<NodeVm>(new GamePlay.Node(new(iX, iY))));
+					Root.Playground.Place.Add(wrapperProvider.GetOrCreate<NodeVm>(new Core.Node(Root.Playground.Source, new(iX, iY), new(100))));
 				}
 			}
 		}

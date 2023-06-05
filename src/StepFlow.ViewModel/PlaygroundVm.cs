@@ -5,11 +5,16 @@ using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.ViewModel
 {
-    public class PlaygroundVm : WrapperVm<Playground>
+	public class PlaygroundVm : WrapperVm<Playground>
 	{
 		internal PlaygroundVm(LockProvider wrapperProvider, Playground source) : base(wrapperProvider, source)
 		{
+			Lock = true;
 		}
+
+		private AxisVm? axisTime;
+
+		public AxisVm AxisTime => axisTime ??= LockProvider.GetOrCreate<AxisVm>(Source.AxisTime);
 
 		private PiecesCollectionVm? pieces;
 
@@ -21,15 +26,43 @@ namespace StepFlow.ViewModel
 
 		public IEnumerable<IParticleVm> Particles => Pieces.AsEnumerable<IParticleVm>().Concat(Place);
 
+		private PieceVm? current = null;
+
+		public PieceVm? Current
+		{
+			get => current;
+			set
+			{
+				if (!Equals(Current, value))
+				{
+					OnPropertyChanging();
+
+					if (Current is { })
+					{
+						Current.IsMark = false;
+					}
+
+					current = value;
+
+					if (Current is { })
+					{
+						Current.IsMark = true;
+					}
+
+					OnPropertyChanged();
+				}
+			}
+		}
+
 		public void TakeStep()
 		{
 			Source.TakeStep();
 
 			Pieces.SourceHasChange();
 
-			if (Owner.Current is { } && !Pieces.Contains(Owner.Current))
+			if (Current is { } && !Pieces.Contains(Current))
 			{
-				Owner.Current = null;
+				Current = null;
 			}
 
 			Place.SourceHasChange();
@@ -39,11 +72,11 @@ namespace StepFlow.ViewModel
 				particle.SourceHasChange();
 			}
 
-			Owner.TimeAxis.Refresh();
+			AxisTime.SourceHasChange();
 
 			LockProvider.Clear();
 		}
 
-		public override IEnumerable<ILockable> GetContent() => base.GetContent().ConcatIfNotNull(owner, pieces, place);
+		public override IEnumerable<ILockable> GetContent() => base.GetContent().ConcatIfNotNull(pieces, place, axisTime, current);
 	}
 }

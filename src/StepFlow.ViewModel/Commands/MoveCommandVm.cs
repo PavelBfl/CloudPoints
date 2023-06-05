@@ -30,7 +30,7 @@ namespace StepFlow.ViewModel.Commands
 		{
 			base.SourceHasChange();
 
-			if (Owner.TimeAxis.IsCompleted(this) ?? false)
+			if (Target.Owner.AxisTime.IsCompleted(this) ?? false)
 			{
 				StateToken?.Dispose();
 				StateToken = null;

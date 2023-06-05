@@ -5,16 +5,17 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using StepFlow.Common;
 using StepFlow.Layout;
+using StepFlow.TimeLine;
 using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel.Layout
 {
 	public class RootVm
 	{
-		public RootVm(ContextVm context)
+		public RootVm(PlaygroundVm playground)
 		{
-			Context = context ?? throw new ArgumentNullException(nameof(context));
-			NotifyPropertyExtensions.TrySubscribe(Context, ContextPropertyChanging, ContextPropertyChanged);
+			Playground = playground ?? throw new ArgumentNullException(nameof(playground));
+			NotifyPropertyExtensions.TrySubscribe(Playground, ContextPropertyChanging, ContextPropertyChanged);
 
 			Root = new GridPlot()
 			{
@@ -53,15 +54,15 @@ namespace StepFlow.ViewModel.Layout
 			Root.Childs.Add(QueueCommandsContainer, new CellPosition(0, 1, 2, 1));
 			Root.Childs.Add(AllowCommandsContainer, new CellPosition(1, 0));
 
-			RefreshQueue(Array.Empty<CommandVm>());
+			RefreshQueue(Array.Empty<ICommandVm<ICommand>>());
 		}
 
 		private void ContextPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			switch (e.PropertyName)
 			{
-				case nameof(ContextVm.Current):
-					NotifyPropertyExtensions.TrySubscribe(Context.Current?.Commands, CommandsCollectionChanged);
+				case nameof(PlaygroundVm.Current):
+					NotifyPropertyExtensions.TrySubscribe(Playground.Current?.Commands, CommandsCollectionChanged);
 					break;
 			}
 		}
@@ -70,18 +71,18 @@ namespace StepFlow.ViewModel.Layout
 		{
 			switch (e.PropertyName)
 			{
-				case nameof(ContextVm.Current):
-					NotifyPropertyExtensions.TryUnsubscribe(Context.Current?.Commands, CommandsCollectionChanged);
+				case nameof(PlaygroundVm.Current):
+					NotifyPropertyExtensions.TryUnsubscribe(Playground.Current?.Commands, CommandsCollectionChanged);
 					break;
 			}
 		}
 
 		private void CommandsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			RefreshQueue((IReadOnlyList<CommandVm>?)Context.Current?.Commands ?? Array.Empty<CommandVm>());
+			RefreshQueue((IReadOnlyList<ICommandVm<ICommand>>?)Playground.Current?.Commands ?? Array.Empty<ICommandVm<ICommand>>());
 		}
 
-		private void RefreshQueue(IReadOnlyList<CommandVm> commandsQueue)
+		private void RefreshQueue(IReadOnlyList<ICommandVm<ICommand>> commandsQueue)
 		{
 			while (commandsQueue.Count > QueueCommandInner.Count)
 			{
@@ -109,7 +110,7 @@ namespace StepFlow.ViewModel.Layout
 			}
 		}
 
-		public ContextVm Context { get; }
+		public PlaygroundVm Playground { get; }
 
 		public GridPlot Root { get; }
 

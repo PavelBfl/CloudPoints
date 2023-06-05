@@ -6,13 +6,10 @@ using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
-	public class CommandsCollectionVm<TCommand, TCommandVm, TTarget, TTargetVm> : WrapperList<TCommandVm, IList<TCommand>, TCommand>
-		where TCommand : ITargetingCommand<TTarget>
-		where TCommandVm : ICommandVm<TCommand>
+	public class CommandsCollectionVm<TTarget> : WrapperList<ICommandVm<ITargetingCommand<TTarget>>, IList<ITargetingCommand<TTarget>>, ITargetingCommand<TTarget>>
 		where TTarget : notnull
-		where TTargetVm : IWrapper<TTarget>
 	{
-		public CommandsCollectionVm(LockProvider wrapperProvider, IList<TCommand> source) : base(wrapperProvider, source)
+		public CommandsCollectionVm(LockProvider wrapperProvider, IList<ITargetingCommand<TTarget>> source) : base(wrapperProvider, source)
 		{
 		}
 	}

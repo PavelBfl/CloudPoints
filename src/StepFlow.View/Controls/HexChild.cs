@@ -154,7 +154,7 @@ namespace StepFlow.View.Controls
 				}
 				else
 				{
-					Source.Owner.Owner.Current = Source.Owner.Pieces.FirstOrDefault(x => x.Current == Source);
+					Source.Owner.Current = Source.Owner.Pieces.FirstOrDefault(x => x.Current == Source);
 				}
 			}
 

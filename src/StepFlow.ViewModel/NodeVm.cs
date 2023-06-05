@@ -8,7 +8,7 @@ using StepFlow.ViewModel.Marking;
 
 namespace StepFlow.ViewModel
 {
-	public class NodeVm : ParticleVm<ITargetingCommand<Node>, Node, NodeVm>, IMarkered
+	public class NodeVm : ParticleVm<Node>, IMarkered
 	{
 		public NodeVm(LockProvider wrapperProvider, Node source)
 			: base(wrapperProvider, source)
@@ -39,14 +39,14 @@ namespace StepFlow.ViewModel
 				)
 			);
 
-			Owner.Owner.TimeAxis.Add(command);
+			Owner.AxisTime.Add(command);
 
-			Owner.Owner.Current = command.Piece;
+			Owner.Current = command.Piece;
 
-			Owner.Pieces.Refresh();
+			Owner.Pieces.SourceHasChange();
 			foreach (var piece in Owner.Pieces)
 			{
-				piece.Refresh();
+				piece.SourceHasChange();
 			}
 		}
 

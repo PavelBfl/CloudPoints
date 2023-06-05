@@ -1,17 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using StepFlow.Core.Collision;
+using StepFlow.Core.Commands;
 using StepFlow.TimeLine;
 
 namespace StepFlow.Core
 {
 	public class Playground
 	{
-		public Playground()
+		public Playground(Axis<ITargetingCommand<object>>? axisTime = null)
 		{
+			AxisTime = axisTime ?? new Axis<ITargetingCommand<object>>();
 			Pieces = new PiecesCollection(this);
 			Place = new Place(this);
 		}
+
+		public Axis<ITargetingCommand<object>> AxisTime { get; }
 
 		public PiecesCollection Pieces { get; }
 
