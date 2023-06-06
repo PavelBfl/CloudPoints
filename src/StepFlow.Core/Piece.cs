@@ -5,8 +5,9 @@ namespace StepFlow.Core
 {
 	public class Piece : Particle
 	{
-		public Piece(Playground owner, Strength strength) : base(owner, strength)
+		public Piece(Playground owner) : base(owner)
 		{
+			Scheduler = new Scheduler<Piece>(this);
 		}
 
 		public float CollisionDamage { get; set; }
@@ -68,6 +69,6 @@ namespace StepFlow.Core
 			IsScheduledStep = false;
 		}
 
-		public IList<ITargetingCommand<Piece>> Commands { get; } = new List<ITargetingCommand<Piece>>();
+		public IScheduler<Piece> Scheduler { get; }
 	}
 }

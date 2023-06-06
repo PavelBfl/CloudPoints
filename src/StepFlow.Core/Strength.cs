@@ -4,6 +4,10 @@ namespace StepFlow.Core
 {
 	public class Strength : ICloneable
 	{
+		public Strength()
+		{
+		}
+
 		public Strength(float max)
 			: this(max, max)
 		{

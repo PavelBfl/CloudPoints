@@ -13,6 +13,7 @@ namespace StepFlow.Core
 			AxisTime = axisTime ?? new Axis<ITargetingCommand<object>>();
 			Pieces = new PiecesCollection(this);
 			Place = new Place(this);
+			Scheduler = new Scheduler<Playground>(this);
 		}
 
 		public Axis<ITargetingCommand<object>> AxisTime { get; }
@@ -20,6 +21,8 @@ namespace StepFlow.Core
 		public PiecesCollection Pieces { get; }
 
 		public Place Place { get; }
+
+		public IScheduler<Playground> Scheduler { get; }
 
 		private static IEnumerable<PairCollision> GetSwaps(Piece[] pieces)
 		{
@@ -101,12 +104,14 @@ namespace StepFlow.Core
 
 		public void TakeStep()
 		{
-			foreach (var piece in Pieces.Where(x => x.Commands.Any()))
+			var commands = from piece in Pieces
+						   let command = piece.Scheduler.Queue.Dequeue()
+						   where command is { }
+						   select command;
+
+			foreach (var command in commands)
 			{
-				var command = piece.Commands[0];
-				piece.Commands.RemoveAt(0);
-				// TODO Передать ось команд
-				// Owner.AxisTime.Add(command);
+				AxisTime.Add(command);
 			}
 
 			var collision = GetCollision();
@@ -134,7 +139,5 @@ namespace StepFlow.Core
 				piece.TakeStep();
 			}
 		}
-
-		public IList<ICommand> Commands { get; } = new List<ICommand>();
 	}
 }

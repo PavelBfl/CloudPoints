@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using StepFlow.Core.Commands;
 
 namespace StepFlow.Core
@@ -9,14 +8,17 @@ namespace StepFlow.Core
 	{
 		private const string VIEW_FORMAT = "{0}:{1}";
 
-		public Node(Playground owner, Point position, Strength strength) : base(owner, strength)
+		public Node(Playground owner, Point position) : base(owner)
 		{
+			Scheduler = new Scheduler<Node>(this);
 			Position = position;
 		}
 
 		public Point Position { get; }
 
 		public OccupiersCollection Occupiers { get; } = new OccupiersCollection();
+
+		public IScheduler<Node> Scheduler { get; }
 
 		public IList<ITargetingCommand<Node>> Commands { get; } = new List<ITargetingCommand<Node>>();
 

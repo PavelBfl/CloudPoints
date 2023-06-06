@@ -4,11 +4,10 @@ namespace StepFlow.Core
 {
 	public class Particle : Child
 	{
-		public Particle(Playground owner, Strength strength) : base(owner)
+		public Particle(Playground owner) : base(owner)
 		{
-			Strength = strength ?? throw new ArgumentNullException(nameof(strength));
 		}
 
-		public Strength Strength { get; }
+		public Strength Strength { get; } = new Strength();
 	}
 }
