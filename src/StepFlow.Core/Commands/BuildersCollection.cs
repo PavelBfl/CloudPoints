@@ -6,7 +6,7 @@ namespace StepFlow.Core.Commands
 {
 	internal class BuildersCollection<T> : IBuildersCollection<T>
 	{
-		public BuildersCollection(TargetingContainer<T> container) => Container = container ?? throw new ArgumentNullException(nameof(container));
+		public BuildersCollection(ITargetingContainer<T> container) => Container = container ?? throw new ArgumentNullException(nameof(container));
 
 		public ITargetingBuilder<T> this[IBuilder<T> key] => Builders[key];
 
@@ -16,7 +16,7 @@ namespace StepFlow.Core.Commands
 
 		public int Count => Builders.Count;
 
-		private TargetingContainer<T> Container { get; }
+		private ITargetingContainer<T> Container { get; }
 
 		private Dictionary<IBuilder<T>, ITargetingBuilder<T>> Builders { get; } = new Dictionary<IBuilder<T>, ITargetingBuilder<T>>();
 

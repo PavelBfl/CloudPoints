@@ -4,7 +4,7 @@ namespace StepFlow.Core.Commands
 {
 	public class MoveCommand : Command<Piece>
 	{
-		public MoveCommand(Piece target, Node next)
+		public MoveCommand(Piece target, Node? next)
 			: base(target)
 		{
 			Target = target ?? throw new ArgumentNullException(nameof(target));
@@ -14,7 +14,7 @@ namespace StepFlow.Core.Commands
 
 		public new Piece Target { get; }
 
-		public Node Next { get; }
+		public Node? Next { get; }
 
 		public Node? Prev { get; }
 

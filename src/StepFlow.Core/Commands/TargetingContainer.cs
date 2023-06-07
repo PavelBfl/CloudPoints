@@ -1,13 +1,9 @@
-﻿using System.Collections.Generic;
-
-namespace StepFlow.Core.Commands
+﻿namespace StepFlow.Core.Commands
 {
-	internal class TargetingContainer<T>
+	internal interface ITargetingContainer<T>
 	{
-		public TargetingContainer(T target) => Target = target;
+		T Target { get; }
 
-		public T Target { get; }
-
-		public IList<ITargetingCommand<T>> Commands { get; } = new List<ITargetingCommand<T>>();
+		Queue<T> Queue { get; }
 	}
 }

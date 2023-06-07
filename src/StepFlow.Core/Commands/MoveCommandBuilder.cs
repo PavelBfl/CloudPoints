@@ -2,7 +2,7 @@
 {
 	internal class MoveCommandBuilder : IBuilder<Piece>
 	{
-		public Node Next { get; set; }
+		public Node? Next { get; set; }
 
 		public ITargetingCommand<Piece> Build(Piece target) => new MoveCommand(target, Next);
 

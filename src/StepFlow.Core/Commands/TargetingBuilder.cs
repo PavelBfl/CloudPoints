@@ -4,7 +4,7 @@ namespace StepFlow.Core.Commands
 {
 	internal class TargetingBuilder<T> : ITargetingBuilder<T>
 	{
-		public TargetingBuilder(TargetingContainer<T> container, IBuilder<T> builder)
+		public TargetingBuilder(ITargetingContainer<T> container, IBuilder<T> builder)
 		{
 			Container = container ?? throw new ArgumentNullException(nameof(container));
 			Builder = builder ?? throw new ArgumentNullException(nameof(builder));
@@ -12,14 +12,14 @@ namespace StepFlow.Core.Commands
 
 		public T Target => Container.Target;
 
-		private TargetingContainer<T> Container { get; }
+		private ITargetingContainer<T> Container { get; }
 
 		private IBuilder<T> Builder { get; }
 
-		public ITargetingCommand<T> Build()
+		public ITargetingCommand<T> Build(long key)
 		{
 			var result = Builder.Build(Target);
-			Container.Commands.Add(result);
+			Container.Queue.Add(key, result);
 			return result;
 		}
 

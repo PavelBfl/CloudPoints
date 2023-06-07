@@ -4,7 +4,7 @@
 	{
 		T Target { get; }
 
-		ITargetingCommand<T> Build();
+		ITargetingCommand<T> Build(long key);
 
 		bool CanBuild();
 	}

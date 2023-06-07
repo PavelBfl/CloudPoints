@@ -22,7 +22,7 @@ namespace StepFlow.Core.Commands
 
 		public override void Execute()
 		{
-			Piece ??= new Piece(Target, Strength)
+			Piece ??= new Piece(Target)
 			{
 				CollisionDamage = CollisionDamage,
 			};

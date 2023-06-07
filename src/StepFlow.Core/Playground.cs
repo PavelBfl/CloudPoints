@@ -18,6 +18,8 @@ namespace StepFlow.Core
 
 		public Axis<ITargetingCommand<object>> AxisTime { get; }
 
+		public long Time { get; private set; } = 0;
+
 		public PiecesCollection Pieces { get; }
 
 		public Place Place { get; }
@@ -105,8 +107,9 @@ namespace StepFlow.Core
 		public void TakeStep()
 		{
 			var commands = from piece in Pieces
-						   let command = piece.Scheduler.Queue.Dequeue()
-						   where command is { }
+						   let localCommands = piece.Scheduler.Queue.Dequeue(Time)
+						   where localCommands is { }
+						   from command in localCommands
 						   select command;
 
 			foreach (var command in commands)
@@ -138,6 +141,8 @@ namespace StepFlow.Core
 			{
 				piece.TakeStep();
 			}
+
+			Time++;
 		}
 	}
 }
