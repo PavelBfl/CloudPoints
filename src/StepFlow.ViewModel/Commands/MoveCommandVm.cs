@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using StepFlow.Core;
-using StepFlow.Core.Commands;
+using StepFlow.Core.Commands.Preset;
 using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.ViewModel.Commands
 {
-	public class MoveCommandVm : CommandVm<MoveCommand, Piece, PieceVm>
+    public class MoveCommandVm : CommandVm<MoveCommand, Piece, PieceVm>
 	{
 		public MoveCommandVm(LockProvider wrapperProvider, MoveCommand source)
 			: base(wrapperProvider, source)

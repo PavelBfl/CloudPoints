@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace StepFlow.Core.Commands
+namespace StepFlow.Core.Commands.Preset
 {
 	public class MoveCommand : Command<Piece>
 	{

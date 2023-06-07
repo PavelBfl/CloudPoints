@@ -3,12 +3,13 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using StepFlow.Core;
 using StepFlow.Core.Commands;
+using StepFlow.Core.Commands.Preset;
 using StepFlow.TimeLine;
 using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel.Collector
 {
-	public class LockProvider
+    public class LockProvider
 	{
 		private Dictionary<object, ILockable> ViewModels { get; } = new Dictionary<object, ILockable>();
 

@@ -1,12 +1,12 @@
 ﻿namespace StepFlow.Core.Commands
 {
-	internal class Scheduler<T> : IScheduler<T>, ITargetingContainer<T>
+	internal class Scheduler<T> : IScheduler<T>
 	{
 		public Scheduler(T target)
 		{
 			Target = target;
-			Queue = new Queue<T>();
-			Builders = new BuildersCollection<T>(this);
+			Queue = new Queue<T>(target);
+			Builders = new BuildersCollection<T>(Queue);
 		}
 
 		public T Target { get; }

@@ -24,6 +24,8 @@ namespace StepFlow.Core
 
 		public Place Place { get; }
 
+		public object? Buffer { get; set; }
+
 		public IScheduler<Playground> Scheduler { get; }
 
 		private static IEnumerable<PairCollision> GetSwaps(Piece[] pieces)

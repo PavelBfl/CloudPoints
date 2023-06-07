@@ -1,4 +1,4 @@
-﻿namespace StepFlow.Core.Commands
+﻿namespace StepFlow.Core.Commands.Preset
 {
 	internal class MoveCommandBuilder : IBuilder<Piece>
 	{

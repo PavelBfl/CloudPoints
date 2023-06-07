@@ -8,6 +8,13 @@ namespace StepFlow.Core.Commands
 {
 	internal class Queue<T> : IQueue<T>
 	{
+		public Queue(T target)
+		{
+			Target = target;
+		}
+
+		public T Target { get; }
+
 		public IReadOnlyCollection<ITargetingCommand<T>> this[long key] => Commands[key];
 
 		public IEnumerable<long> Keys => Commands.Keys;
@@ -22,20 +29,29 @@ namespace StepFlow.Core.Commands
 
 		public IReadOnlyCollection<ITargetingCommand<T>>? Dequeue(long key) => Commands.Remove(key, out var result) ? result : null;
 
-		public bool Add(long key, ITargetingCommand<T> command)
+		public ITargetingCommand<T>? Add(long key, IBuilder<T> builder)
 		{
-			if (command is null)
+			if (builder is null)
 			{
-				throw new ArgumentNullException(nameof(command));
+				throw new ArgumentNullException(nameof(builder));
 			}
 
-			if (!Commands.TryGetValue(key, out var localCommands))
+			if (builder.CanBuild(Target))
 			{
-				localCommands = new HashSet<ITargetingCommand<T>>();
-				Commands.Add(key, localCommands);
-			}
+				if (!Commands.TryGetValue(key, out var localCommands))
+				{
+					localCommands = new HashSet<ITargetingCommand<T>>();
+					Commands.Add(key, localCommands);
+				}
 
-			return localCommands.Add(command);
+				var command = builder.Build(Target);
+				localCommands.Add(command);
+				return command;
+			}
+			else
+			{
+				return null;
+			}
 		}
 
 		public IEnumerator<KeyValuePair<long, IReadOnlyCollection<ITargetingCommand<T>>>> GetEnumerator()
