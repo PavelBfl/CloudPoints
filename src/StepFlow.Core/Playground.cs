@@ -108,15 +108,16 @@ namespace StepFlow.Core
 
 		public void TakeStep()
 		{
-			var commands = from piece in Pieces
-						   let localCommands = piece.Scheduler.Queue.Dequeue(Time)
-						   where localCommands is { }
-						   from command in localCommands
-						   select command;
+			PushToAxis(Scheduler.Queue, Time);
 
-			foreach (var command in commands)
+			foreach (var node in Place.Values)
 			{
-				AxisTime.Add(command);
+				PushToAxis(node.Scheduler.Queue, Time);
+			}
+
+			foreach (var piece in Pieces)
+			{
+				PushToAxis(piece.Scheduler.Queue, Time);
 			}
 
 			var collision = GetCollision();
@@ -145,6 +146,18 @@ namespace StepFlow.Core
 			}
 
 			Time++;
+		}
+
+		private void PushToAxis<T>(IQueue<T> queue, long time)
+			where T : class
+		{
+			if (queue.Dequeue(time) is { } commands)
+			{
+				foreach (var command in commands)
+				{
+					AxisTime.Add(command);
+				}
+			}
 		}
 	}
 }

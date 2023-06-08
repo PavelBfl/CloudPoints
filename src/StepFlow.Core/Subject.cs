@@ -3,16 +3,16 @@ using StepFlow.Core.Exceptions;
 
 namespace StepFlow.Core
 {
-	public class Child
+	public class Subject
 	{
-		public Child(Playground owner)
+		public Subject(Playground owner)
 		{
 			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
 		}
 
 		public Playground Owner { get; }
 
-		protected void CheckInteraction(Child? other)
+		protected void CheckInteraction(Subject? other)
 		{
 			if (other is { } && Owner != other.Owner)
 			{
@@ -20,7 +20,7 @@ namespace StepFlow.Core
 			}
 		}
 
-		protected void CheckInteractionRequired(Child other)
+		protected void CheckInteractionRequired(Subject other)
 		{
 			if (other is null)
 			{

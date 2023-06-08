@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using StepFlow.Core;
-using StepFlow.Core.Commands;
 using StepFlow.ViewModel.Collector;
 using StepFlow.ViewModel.Commands;
 

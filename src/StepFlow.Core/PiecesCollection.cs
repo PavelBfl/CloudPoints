@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace StepFlow.Core
 {
-	public sealed class PiecesCollection : Child, ICollection<Piece>
+	public sealed class PiecesCollection : Subject, ICollection<Piece>
 	{
 		public PiecesCollection(Playground owner) : base(owner)
 		{
