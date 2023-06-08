@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using StepFlow.Core.Collision;
 using StepFlow.Core.Commands;
+using StepFlow.Core.Commands.Accessors;
 using StepFlow.TimeLine;
 
 namespace StepFlow.Core
@@ -135,14 +138,14 @@ namespace StepFlow.Core
 					}
 					else
 					{
-						piece.Clear();
+						Clear(piece);
 					}
 				}
 			}
 
 			foreach (var piece in Pieces)
 			{
-				piece.TakeStep();
+				TakeStep(piece);
 			}
 
 			Time++;
@@ -158,6 +161,28 @@ namespace StepFlow.Core
 					AxisTime.Add(command);
 				}
 			}
+		}
+
+		private void TakeStep(Piece piece)
+		{
+			if (piece.IsScheduledStep)
+			{
+				SetProperty(piece, x => x.Current, piece.Next);
+				Clear(piece);
+			}
+		}
+
+		private void Clear(Piece piece)
+		{
+			SetProperty(piece, x => x.Next, null);
+			SetProperty(piece, x => x.IsScheduledStep, false);
+		}
+
+		private void SetProperty<TTarget, TValue>(TTarget target, Expression<Func<TTarget, TValue>> propertyExpression, TValue newValue)
+			where TTarget : class
+		{
+			var builder = AccessorsExtensions.CreatePropertyBuilder(propertyExpression, newValue);
+			AxisTime.Add(builder.Build(target));
 		}
 	}
 }

@@ -44,7 +44,7 @@ namespace StepFlow.Core.Commands.Accessors
 			);
 		}
 
-		public static IBuilder<TTarget> CreatePropertyBuilder<TTarget, TValue>(Expression<Func<TTarget, TValue>> expression)
+		public static IBuilder<TTarget> CreatePropertyBuilder<TTarget, TValue>(Expression<Func<TTarget, TValue>> expression, TValue newValue)
 		{
 			if (expression is null)
 			{
@@ -53,7 +53,7 @@ namespace StepFlow.Core.Commands.Accessors
 
 			var accessor = CreatePropertyAccessor(expression);
 
-			return new ValueAccessorBuilder<TTarget, TValue>(accessor);
+			return new ValueAccessorBuilder<TTarget, TValue>(accessor, newValue);
 		}
 	}
 }

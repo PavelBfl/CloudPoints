@@ -1,18 +1,18 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace StepFlow.Core.Commands.Accessors
 {
 	internal class ValueAccessorBuilder<TTarget, TValue> : IBuilder<TTarget>
 	{
-		public ValueAccessorBuilder(IValueAccessor<TTarget, TValue> accessor)
-			=> Accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
+		public ValueAccessorBuilder(IValueAccessor<TTarget, TValue> accessor, TValue newValue)
+		{
+			Accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
+			NewValue = newValue;
+		}
 
 		public IValueAccessor<TTarget, TValue> Accessor { get; }
 
-		[MaybeNull]
-		[AllowNull]
-		public TValue NewValue { get; set; }
+		public TValue NewValue { get; }
 
 		public ITargetingCommand<TTarget> Build(TTarget target) => new ValueAccessorCommand<TTarget, TValue>(target, Accessor, NewValue);
 

@@ -1,5 +1,4 @@
 ﻿using StepFlow.Core.Commands;
-using System.Collections.Generic;
 
 namespace StepFlow.Core
 {
@@ -37,37 +36,15 @@ namespace StepFlow.Core
 		public Node? Next
 		{
 			get => next;
-			set => SetNext(value, true);
-		}
-
-		private void SetNext(Node? value, bool scheduled)
-		{
-			CheckInteraction(value);
-
-			next = value;
-
-			if (scheduled)
+			set
 			{
-				IsScheduledStep = true;
+				CheckInteraction(value);
+
+				next = value;
 			}
 		}
 
 		public bool IsScheduledStep { get; set; }
-
-		public void TakeStep()
-		{
-			if (IsScheduledStep)
-			{
-				Current = Next;
-				Clear();
-			}
-		}
-
-		public void Clear()
-		{
-			SetNext(null, false);
-			IsScheduledStep = false;
-		}
 
 		public IScheduler<Piece> Scheduler { get; }
 	}
