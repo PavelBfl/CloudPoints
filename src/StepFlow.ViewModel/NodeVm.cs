@@ -2,6 +2,7 @@
 using System.Linq;
 using StepFlow.Core;
 using StepFlow.Core.Commands;
+using StepFlow.Core.Commands.Preset;
 using StepFlow.ViewModel.Collector;
 using StepFlow.ViewModel.Commands;
 using StepFlow.ViewModel.Marking;
@@ -31,17 +32,12 @@ namespace StepFlow.ViewModel
 		{
 			var command = new CreateCommandVm(
 				LockProvider,
-				new CreateCommand(
-					Source.Owner,
-					new Strength(100),
-					100,
-					Source
-				)
+				new CreateCommand(Source.Owner)
 			);
 
 			Owner.AxisTime.Add(command);
 
-			Owner.Current = command.Piece;
+			Owner.Current = (PieceVm?)Owner.Buffer;
 
 			Owner.Pieces.SourceHasChange();
 			foreach (var piece in Owner.Pieces)

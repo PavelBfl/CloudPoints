@@ -54,6 +54,8 @@ namespace StepFlow.ViewModel
 			}
 		}
 
+		public ILockable? Buffer => LockProvider.Get(Source.Buffer);
+
 		public void TakeStep()
 		{
 			Source.TakeStep();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using StepFlow.Core;
+using StepFlow.Core.Commands.Preset;
 using StepFlow.ViewModel.Collector;
 using StepFlow.ViewModel.Commands;
 
@@ -16,6 +17,7 @@ namespace StepFlow.ViewModel
 		private IDisposable? stateToken;
 
 		private NodeVm? current;
+
 		public NodeVm? Current
 		{
 			get => current;
@@ -34,6 +36,7 @@ namespace StepFlow.ViewModel
 		}
 
 		private NodeVm? next;
+
 		public NodeVm? Next
 		{
 			get => next;
@@ -47,9 +50,9 @@ namespace StepFlow.ViewModel
 			}
 		}
 
-		private CommandsCollectionVm<Piece>? commands;
+		private SchedulerVm<Piece>? scheduler;
 
-		public CommandsCollectionVm<Piece> Commands => commands ??= LockProvider.GetOrCreate<CommandsCollectionVm<Piece>>(Source.Commands);
+		public SchedulerVm<Piece> Scheduler => scheduler ??= LockProvider.GetOrCreate<SchedulerVm<Piece>>(Source.Scheduler);
 
 		public override void SourceHasChange()
 		{
@@ -66,9 +69,10 @@ namespace StepFlow.ViewModel
 				throw new ArgumentNullException(nameof(node));
 			}
 
-			var command = LockProvider.GetOrCreate<MoveCommandVm>(new MoveCommand(Source, node.Source));
-			command.IsMark = IsMark;
-			Commands.Add(command);
+			// TODO Функция движения перестроена переделать под новую структуру через IBuilder
+			//var command = LockProvider.GetOrCreate<MoveCommandVm>(new MoveCommand(Source, node.Source));
+			//command.IsMark = IsMark;
+			//Scheduler.Add(command);
 		}
 
 		public override IEnumerable<ILockable> GetContent() => base.GetContent().ConcatIfNotNull(current, next);

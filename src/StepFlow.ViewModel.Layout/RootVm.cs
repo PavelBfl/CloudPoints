@@ -62,7 +62,7 @@ namespace StepFlow.ViewModel.Layout
 			switch (e.PropertyName)
 			{
 				case nameof(PlaygroundVm.Current):
-					NotifyPropertyExtensions.TrySubscribe(Playground.Current?.Commands, CommandsCollectionChanged);
+					NotifyPropertyExtensions.TrySubscribe(Playground.Current?.Scheduler.Queue, CommandsCollectionChanged);
 					break;
 			}
 		}
@@ -72,14 +72,14 @@ namespace StepFlow.ViewModel.Layout
 			switch (e.PropertyName)
 			{
 				case nameof(PlaygroundVm.Current):
-					NotifyPropertyExtensions.TryUnsubscribe(Playground.Current?.Commands, CommandsCollectionChanged);
+					NotifyPropertyExtensions.TryUnsubscribe(Playground.Current?.Scheduler.Queue, CommandsCollectionChanged);
 					break;
 			}
 		}
 
 		private void CommandsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			RefreshQueue((IReadOnlyList<ICommandVm<ICommand>>?)Playground.Current?.Commands ?? Array.Empty<ICommandVm<ICommand>>());
+			RefreshQueue((IReadOnlyList<ICommandVm<ICommand>>?)Playground.Current?.Scheduler.Queue ?? Array.Empty<ICommandVm<ICommand>>());
 		}
 
 		private void RefreshQueue(IReadOnlyList<ICommandVm<ICommand>> commandsQueue)
