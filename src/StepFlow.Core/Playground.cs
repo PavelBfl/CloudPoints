@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using StepFlow.Core.Collision;
 using StepFlow.Core.Commands;
 using StepFlow.Core.Commands.Accessors;
+using StepFlow.Core.Commands.Preset;
 using StepFlow.TimeLine;
 
 namespace StepFlow.Core
@@ -154,7 +155,7 @@ namespace StepFlow.Core
 		private void PushToAxis<T>(IQueue<T> queue, long time)
 			where T : class
 		{
-			if (queue.Dequeue(time) is { } commands)
+			if (queue.Dequeue() is { } commands)
 			{
 				foreach (var command in commands)
 				{
@@ -181,7 +182,7 @@ namespace StepFlow.Core
 		private void SetProperty<TTarget, TValue>(TTarget target, Expression<Func<TTarget, TValue>> propertyExpression, TValue newValue)
 			where TTarget : class
 		{
-			var builder = AccessorsExtensions.CreatePropertyBuilder(propertyExpression, newValue);
+			var builder = AccessorsExtensions.CreatePropertyBuilder(propertyExpression, newValue, TrueResolver.Instance);
 			AxisTime.Add(builder.Build(target));
 		}
 	}

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 
 namespace StepFlow.Core.Commands
 {
@@ -15,21 +13,34 @@ namespace StepFlow.Core.Commands
 
 		public T Target { get; }
 
-		public IReadOnlyCollection<ITargetingCommand<T>> this[long key] => Commands[key];
-
-		public IEnumerable<long> Keys => Commands.Keys;
-
-		public IEnumerable<IReadOnlyCollection<ITargetingCommand<T>>> Values => Commands.Values;
+		private List<ITargetingCommand<T>> Commands { get; } = new List<ITargetingCommand<T>>();
 
 		public int Count => Commands.Count;
 
-		private SortedDictionary<long, HashSet<ITargetingCommand<T>>> Commands { get; } = new SortedDictionary<long, HashSet<ITargetingCommand<T>>>();
+		public ITargetingCommand<T> this[int index] => Commands[index];
 
-		public bool ContainsKey(long key) => Commands.ContainsKey(key);
+		public IReadOnlyCollection<ITargetingCommand<T>>? Dequeue()
+		{
+			var result = new List<ITargetingCommand<T>>();
 
-		public IReadOnlyCollection<ITargetingCommand<T>>? Dequeue(long key) => Commands.Remove(key, out var result) ? result : null;
+			var i = 0;
+			while (i < Commands.Count)
+			{
+				if (Commands[i].CanExecute())
+				{
+					result.Add(Commands[i]);
+					Commands.RemoveAt(i);
+				}
+				else
+				{
+					i++;
+				}
+			}
 
-		public ITargetingCommand<T>? Add(long key, IBuilder<T> builder)
+			return result;
+		}
+
+		public ITargetingCommand<T>? Add(IBuilder<T> builder)
 		{
 			if (builder is null)
 			{
@@ -38,14 +49,8 @@ namespace StepFlow.Core.Commands
 
 			if (builder.CanBuild(Target))
 			{
-				if (!Commands.TryGetValue(key, out var localCommands))
-				{
-					localCommands = new HashSet<ITargetingCommand<T>>();
-					Commands.Add(key, localCommands);
-				}
-
 				var command = builder.Build(Target);
-				localCommands.Add(command);
+				Commands.Add(command);
 				return command;
 			}
 			else
@@ -54,22 +59,7 @@ namespace StepFlow.Core.Commands
 			}
 		}
 
-		public IEnumerator<KeyValuePair<long, IReadOnlyCollection<ITargetingCommand<T>>>> GetEnumerator()
-			=> Commands.Select(x => new KeyValuePair<long, IReadOnlyCollection<ITargetingCommand<T>>>(x.Key, x.Value)).GetEnumerator();
-
-		public bool TryGetValue(long key, [MaybeNullWhen(false)] out IReadOnlyCollection<ITargetingCommand<T>> value)
-		{
-			if (Commands.TryGetValue(key, out var result))
-			{
-				value = result;
-				return true;
-			}
-			else
-			{
-				value = null;
-				return false;
-			}
-		}
+		public IEnumerator<ITargetingCommand<T>> GetEnumerator() => Commands.GetEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}

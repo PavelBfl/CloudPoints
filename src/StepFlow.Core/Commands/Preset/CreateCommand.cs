@@ -2,8 +2,8 @@
 {
 	public class CreateCommand : Command<Playground>
 	{
-		public CreateCommand(Playground playground)
-			: base(playground)
+		public CreateCommand(Playground playground, IResolver<Playground> resolver)
+			: base(playground, resolver)
 		{
 		}
 

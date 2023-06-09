@@ -2,10 +2,10 @@
 
 namespace StepFlow.Core.Commands
 {
-	public interface IQueue<T> : IReadOnlyDictionary<long, IReadOnlyCollection<ITargetingCommand<T>>>
+	public interface IQueue<T> : IReadOnlyList<ITargetingCommand<T>>
 	{
-		IReadOnlyCollection<ITargetingCommand<T>>? Dequeue(long key);
+		IReadOnlyCollection<ITargetingCommand<T>>? Dequeue();
 
-		ITargetingCommand<T>? Add(long time, IBuilder<T> builder);
+		ITargetingCommand<T>? Add(IBuilder<T> builder);
 	}
 }
