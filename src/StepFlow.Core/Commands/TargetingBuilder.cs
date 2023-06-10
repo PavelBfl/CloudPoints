@@ -16,7 +16,7 @@ namespace StepFlow.Core.Commands
 
 		private IBuilder<T> Builder { get; }
 
-		public ITargetingCommand<T>? Build(long key) => Container.Add(key, Builder);
+		public ITargetingCommand<T>? Build() => Container.Add(Builder);
 
 		public bool CanBuild() => Builder.CanBuild(Target);
 	}

@@ -5,14 +5,14 @@ using System.Linq;
 
 namespace StepFlow.TimeLine
 {
-	public class Axis<T> : IReadOnlyList<T>
-		where T : notnull, ICommand
+	public class Axis<TCommand> : IReadOnlyList<TCommand>
+		where TCommand : notnull, ICommand
 	{
 		public int Current { get; private set; } = -1;
 
-		private List<T> Commands { get; } = new List<T>();
+		private List<TCommand> Commands { get; } = new List<TCommand>();
 
-		public bool? IsCompleted(T command)
+		public bool? IsCompleted(TCommand command)
 		{
 			if (command is null)
 			{
@@ -30,7 +30,7 @@ namespace StepFlow.TimeLine
 			}
 		}
 
-		public void Add(T command, bool isCompleted = false)
+		public void Add(TCommand command, bool isCompleted = false)
 		{
 			if (command is null)
 			{
@@ -93,9 +93,9 @@ namespace StepFlow.TimeLine
 
 		public int Count => Commands.Count;
 
-		public T this[int index] => Commands[index];
+		public TCommand this[int index] => Commands[index];
 
-		public IEnumerator<T> GetEnumerator() => Commands.GetEnumerator();
+		public IEnumerator<TCommand> GetEnumerator() => Commands.GetEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}

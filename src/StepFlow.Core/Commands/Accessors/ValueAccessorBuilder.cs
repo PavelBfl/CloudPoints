@@ -4,20 +4,21 @@ namespace StepFlow.Core.Commands.Accessors
 {
 	internal class ValueAccessorBuilder<TTarget, TValue> : IBuilder<TTarget>
 	{
-		public ValueAccessorBuilder(IValueAccessor<TTarget, TValue> accessor, TValue newValue, IResolver<TTarget> resolver)
+		public ValueAccessorBuilder(IValueAccessor<TTarget, TValue> accessor, TValue newValue, IResolverBuilder<TTarget> resolverBuilder)
 		{
 			Accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
 			NewValue = newValue;
-			Resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
+			ResolverBuilder = resolverBuilder ?? throw new ArgumentNullException(nameof(resolverBuilder));
 		}
 
 		public IValueAccessor<TTarget, TValue> Accessor { get; }
 
 		public TValue NewValue { get; }
 
-		public IResolver<TTarget> Resolver { get; }
+		public IResolverBuilder<TTarget> ResolverBuilder { get; }
 
-		public ITargetingCommand<TTarget> Build(TTarget target) => new ValueAccessorCommand<TTarget, TValue>(target, Accessor, NewValue, Resolver);
+		public ITargetingCommand<TTarget> Build(TTarget target)
+			=> new ValueAccessorCommand<TTarget, TValue>(target, Accessor, NewValue, ResolverBuilder.Build(target));
 
 		public bool CanBuild(TTarget target) => true;
 	}

@@ -182,7 +182,7 @@ namespace StepFlow.Core
 		private void SetProperty<TTarget, TValue>(TTarget target, Expression<Func<TTarget, TValue>> propertyExpression, TValue newValue)
 			where TTarget : class
 		{
-			var builder = AccessorsExtensions.CreatePropertyBuilder(propertyExpression, newValue, TrueResolver.Instance);
+			var builder = AccessorsExtensions.CreatePropertyBuilder(propertyExpression, newValue, new BooleanResolverBuilder<TTarget>(true));
 			AxisTime.Add(builder.Build(target));
 		}
 	}
