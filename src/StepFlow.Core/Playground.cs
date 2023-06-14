@@ -156,13 +156,14 @@ namespace StepFlow.Core
 		private void PushToAxis<T>(IQueue<T> queue, long time)
 			where T : class
 		{
-			if (queue.Dequeue() is { } commands)
-			{
-				foreach (var command in commands)
-				{
-					AxisTime.Add(command);
-				}
-			}
+			// TODO Восстановить
+			//if (queue.Dequeue() is { } commands)
+			//{
+			//	foreach (var command in commands)
+			//	{
+			//		AxisTime.Add(command);
+			//	}
+			//}
 		}
 
 		private void TakeStep(Piece piece)
