@@ -13,54 +13,52 @@ namespace StepFlow.Core.Commands
 
 		public T Target { get; }
 
-		private List<ITargetingCommand<T>> Commands { get; } = new List<ITargetingCommand<T>>();
+		private HashSet<ITargetingCommand<T>> Commands { get; } = new HashSet<ITargetingCommand<T>>();
 
 		public int Count => Commands.Count;
 
-		public ITargetingCommand<T> this[int index] => Commands[index];
-
-		public IReadOnlyCollection<ITargetingCommand<T>>? Dequeue()
-		{
-			var result = new List<ITargetingCommand<T>>();
-
-			var i = 0;
-			while (i < Commands.Count)
-			{
-				if (Commands[i].CanExecute())
-				{
-					result.Add(Commands[i]);
-					Commands.RemoveAt(i);
-				}
-				else
-				{
-					i++;
-				}
-			}
-
-			return result;
-		}
-
-		public ITargetingCommand<T>? Add(IBuilder<T> builder)
-		{
-			if (builder is null)
-			{
-				throw new ArgumentNullException(nameof(builder));
-			}
-
-			if (builder.CanBuild(Target))
-			{
-				var command = builder.Build(Target);
-				Commands.Add(command);
-				return command;
-			}
-			else
-			{
-				return null;
-			}
-		}
+		public bool IsReadOnly => throw new NotImplementedException();
 
 		public IEnumerator<ITargetingCommand<T>> GetEnumerator() => Commands.GetEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+		private void ItemValidate(ITargetingCommand<T> item)
+		{
+			if (item is null)
+			{
+				throw new ArgumentNullException(nameof(item));
+			}
+
+			if (!EqualityComparer<T>.Default.Equals(item.Target, Target))
+			{
+				throw new InvalidOperationException();
+			}
+		}
+
+		public void Add(ITargetingCommand<T> item)
+		{
+			ItemValidate(item);
+
+			Commands.Add(item);
+		}
+
+		public void Clear() => Commands.Clear();
+
+		public bool Contains(ITargetingCommand<T> item)
+		{
+			ItemValidate(item);
+
+			return Commands.Contains(item);
+		}
+
+		public void CopyTo(ITargetingCommand<T>[] array, int arrayIndex) => Commands.CopyTo(array, arrayIndex);
+
+		public bool Remove(ITargetingCommand<T> item)
+		{
+			ItemValidate(item);
+
+			return Commands.Remove(item);
+		}
 	}
 }

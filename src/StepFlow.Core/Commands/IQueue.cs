@@ -2,10 +2,8 @@
 
 namespace StepFlow.Core.Commands
 {
-	public interface IQueue<T> : IReadOnlyList<ITargetingCommand<T>>
+	public interface IQueue<T> : ICollection<ITargetingCommand<T>>
 	{
-		IReadOnlyCollection<ITargetingCommand<T>>? Dequeue();
-
-		ITargetingCommand<T>? Add(IBuilder<T> builder);
+		
 	}
 }

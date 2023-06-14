@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -10,7 +11,7 @@ using StepFlow.TimeLine;
 
 namespace StepFlow.Core
 {
-	public class Playground
+	public class Playground : IScheduled<Playground>
 	{
 		public Playground(Axis<ITargetingCommand<object>>? axisTime = null)
 		{
@@ -177,6 +178,22 @@ namespace StepFlow.Core
 		{
 			SetProperty(piece, x => x.Next, null);
 			SetProperty(piece, x => x.IsScheduledStep, false);
+		}
+
+		private IReadOnlyCollection<ITargetingCommand<Piece>> Dequeue(Piece piece)
+		{
+			var result = new List<ITargetingCommand<Piece>>();
+
+			foreach (var command in piece.Scheduler.Queue.ToArray())
+			{
+				if (command.CanExecute())
+				{
+					result.Add(command);
+					AxisTime.Add(new QueueRemoveCommand<Piece>(piece, new BooleanResolver<Piece>(true), command));
+				}
+			}
+
+			return result;
 		}
 
 		private void SetProperty<TTarget, TValue>(TTarget target, Expression<Func<TTarget, TValue>> propertyExpression, TValue newValue)

@@ -2,7 +2,7 @@
 
 namespace StepFlow.Core
 {
-	public class Piece : Particle
+	public class Piece : Particle, IScheduled<Piece>
 	{
 		public Piece(Playground owner) : base(owner)
 		{
