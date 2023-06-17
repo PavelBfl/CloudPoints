@@ -1,35 +1,23 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using StepFlow.Core.Collision;
 using StepFlow.Core.Commands;
-using StepFlow.Core.Commands.Accessors;
-using StepFlow.Core.Commands.Preset;
 using StepFlow.TimeLine;
 
 namespace StepFlow.Core
 {
 	public class Playground : IScheduled<Playground>
 	{
-		public Playground(Axis<ITargetingCommand<object>>? axisTime = null)
+		public Playground()
 		{
-			AxisTime = axisTime ?? new Axis<ITargetingCommand<object>>();
 			Pieces = new PiecesCollection(this);
 			Place = new Place(this);
 			Scheduler = new Scheduler<Playground>(this);
 		}
 
-		public Axis<ITargetingCommand<object>> AxisTime { get; }
-
-		public long Time { get; private set; } = 0;
-
 		public PiecesCollection Pieces { get; }
 
 		public Place Place { get; }
-
-		public object? Buffer { get; set; }
 
 		public IScheduler<Playground> Scheduler { get; }
 
@@ -151,57 +139,6 @@ namespace StepFlow.Core
 			}
 
 			Time++;
-		}
-
-		private void PushToAxis<T>(IQueue<T> queue, long time)
-			where T : class
-		{
-			// TODO Восстановить
-			//if (queue.Dequeue() is { } commands)
-			//{
-			//	foreach (var command in commands)
-			//	{
-			//		AxisTime.Add(command);
-			//	}
-			//}
-		}
-
-		private void TakeStep(Piece piece)
-		{
-			if (piece.IsScheduledStep)
-			{
-				SetProperty(piece, x => x.Current, piece.Next);
-				Clear(piece);
-			}
-		}
-
-		private void Clear(Piece piece)
-		{
-			SetProperty(piece, x => x.Next, null);
-			SetProperty(piece, x => x.IsScheduledStep, false);
-		}
-
-		private IReadOnlyCollection<ITargetingCommand<Piece>> Dequeue(Piece piece)
-		{
-			var result = new List<ITargetingCommand<Piece>>();
-
-			foreach (var command in piece.Scheduler.Queue.ToArray())
-			{
-				if (command.CanExecute())
-				{
-					result.Add(command);
-					AxisTime.Add(new QueueRemoveCommand<Piece>(piece, new BooleanResolver<Piece>(true), command));
-				}
-			}
-
-			return result;
-		}
-
-		private void SetProperty<TTarget, TValue>(TTarget target, Expression<Func<TTarget, TValue>> propertyExpression, TValue newValue)
-			where TTarget : class
-		{
-			var builder = AccessorsExtensions.CreatePropertyBuilder(propertyExpression, newValue, new BooleanResolverBuilder<TTarget>(true));
-			AxisTime.Add(builder.Build(target));
 		}
 	}
 }

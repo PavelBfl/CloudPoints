@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace StepFlow.Core
+﻿namespace StepFlow.Core
 {
 	public class Particle : Subject
 	{

@@ -17,7 +17,7 @@ namespace StepFlow.Core.Commands
 
 		public int Count => Commands.Count;
 
-		public bool IsReadOnly => false;
+		public bool IsReadOnly => throw new NotImplementedException();
 
 		public IEnumerator<ITargetingCommand<T>> GetEnumerator() => Commands.GetEnumerator();
 

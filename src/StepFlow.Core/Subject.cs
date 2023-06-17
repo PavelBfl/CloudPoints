@@ -1,11 +1,9 @@
 ﻿using System;
-using StepFlow.Core.Commands;
 using StepFlow.Core.Exceptions;
-using StepFlow.TimeLine;
 
 namespace StepFlow.Core
 {
-	public class Subject : IScheduled
+	public class Subject
 	{
 		public Subject(Playground owner)
 		{
@@ -13,12 +11,6 @@ namespace StepFlow.Core
 		}
 
 		public Playground Owner { get; }
-
-		public Axis<ITargetingCommand<object>> AxisTime => Owner.AxisTime;
-
-		public long Time => Owner.Time;
-
-		public object? Buffer { get => Owner.Buffer; set => Owner.Buffer = value; }
 
 		protected void CheckInteraction(Subject? other)
 		{

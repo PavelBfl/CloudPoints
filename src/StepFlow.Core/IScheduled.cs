@@ -1,18 +1,8 @@
 ﻿using StepFlow.Core.Commands;
-using StepFlow.TimeLine;
 
 namespace StepFlow.Core
 {
-	public interface IScheduled
-	{
-		Axis<ITargetingCommand<object>> AxisTime { get; }
-
-		long Time { get; }
-
-		object? Buffer { get; set; }
-	}
-
-	public interface IScheduled<T> : IScheduled
+	public interface IScheduled<T>
 	{
 		IScheduler<T> Scheduler { get; }
 	}
