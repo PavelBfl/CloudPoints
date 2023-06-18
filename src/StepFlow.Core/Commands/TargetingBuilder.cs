@@ -16,7 +16,12 @@ namespace StepFlow.Core.Commands
 
 		private IBuilder<T> Builder { get; }
 
-		public ITargetingCommand<T>? Build() => Container.Add(Builder);
+		public ITargetingCommand<T>? Build()
+		{
+			var result = Builder.Build(Target);
+			Container.Add(result);
+			return result;
+		}
 
 		public bool CanBuild() => Builder.CanBuild(Target);
 	}

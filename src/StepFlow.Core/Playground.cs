@@ -98,47 +98,5 @@ namespace StepFlow.Core
 
 		private static bool CheckCrash(Piece stationary, Piece moved)
 			=> stationary.Current is { } && stationary.Next is null && moved.Next == stationary.Current;
-
-		public void TakeStep()
-		{
-			PushToAxis(Scheduler.Queue, Time);
-
-			foreach (var node in Place.Values)
-			{
-				PushToAxis(node.Scheduler.Queue, Time);
-			}
-
-			foreach (var piece in Pieces)
-			{
-				PushToAxis(piece.Scheduler.Queue, Time);
-			}
-
-			var collision = GetCollision();
-
-			foreach (var collisionUnit in collision)
-			{
-				var fullDamage = collisionUnit.Sum(x => x.CollisionDamage);
-
-				foreach (var piece in collisionUnit)
-				{
-					var addResult = piece.Strength.Add(-(fullDamage - piece.CollisionDamage));
-					if (addResult == StrengthState.Min)
-					{
-						Pieces.Remove(piece);
-					}
-					else
-					{
-						Clear(piece);
-					}
-				}
-			}
-
-			foreach (var piece in Pieces)
-			{
-				TakeStep(piece);
-			}
-
-			Time++;
-		}
 	}
 }
