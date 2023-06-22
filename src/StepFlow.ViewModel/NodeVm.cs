@@ -1,8 +1,6 @@
 ﻿using System.Drawing;
 using System.Linq;
 using StepFlow.Core;
-using StepFlow.Core.Commands;
-using StepFlow.Core.Commands.Preset;
 using StepFlow.ViewModel.Collector;
 using StepFlow.ViewModel.Commands;
 using StepFlow.ViewModel.Marking;

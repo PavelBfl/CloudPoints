@@ -2,7 +2,7 @@
 
 namespace StepFlow.ViewModel
 {
-    public interface IParticleVm : IMarkered, ILockable
+	public interface IParticleVm : IMarkered, ILockable
 	{
 		void SourceHasChange();
 	}

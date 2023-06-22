@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using StepFlow.Core;
-using StepFlow.Core.Commands.Preset;
+﻿using StepFlow.Core;
 using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.ViewModel.Commands

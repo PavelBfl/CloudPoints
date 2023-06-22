@@ -8,7 +8,7 @@ using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.ViewModel
 {
-    public sealed class PlaceVm : WrapperVm<Place>, ICollection<NodeVm>, INotifyCollectionChanged
+	public sealed class PlaceVm : WrapperVm<Place>, ICollection<NodeVm>, INotifyCollectionChanged
 	{
 		internal PlaceVm(LockProvider wrapperProvider, Place items)
 			: base(wrapperProvider, items)

@@ -5,7 +5,7 @@ using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.ViewModel
 {
-    public sealed class PiecesCollectionVm : WrapperCollection<PieceVm, ICollection<Piece>, Piece>
+	public sealed class PiecesCollectionVm : WrapperCollection<PieceVm, ICollection<Piece>, Piece>
 	{
 		public PiecesCollectionVm(LockProvider wrapperProvider, ICollection<Piece> items) : base(wrapperProvider, items)
 		{

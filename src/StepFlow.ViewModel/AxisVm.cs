@@ -6,7 +6,7 @@ using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel
 {
-    public class AxisVm : WrapperVm<Axis<ITargetingCommand<object>>>
+	public class AxisVm : WrapperVm<Axis<ITargetingCommand<object>>>
 	{
 		public AxisVm(LockProvider wrapperProvider, Axis<ITargetingCommand<object>> source)
 			: base(wrapperProvider, source)
