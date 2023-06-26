@@ -14,4 +14,8 @@
     <ProjectReference Include="..\StepFlow.TimeLine\StepFlow.TimeLine.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="SimpleParser\" />
+  </ItemGroup>
+
 </Project>

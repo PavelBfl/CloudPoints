@@ -69,6 +69,9 @@ namespace StepFlow.Master
 				case nameof(PlaceAdd):
 					PlaceAdd((Node)GetValueRequired(e.Children[0]));
 					break;
+				case nameof(AddComponent):
+					AddComponent((Container)GetValueRequired(e.Children[0]), (string)GetValueRequired(e.Children[1]));
+					break;
 			}
 		}
 
