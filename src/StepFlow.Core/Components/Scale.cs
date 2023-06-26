@@ -1,25 +1,26 @@
 ﻿using System;
+using System.ComponentModel;
 
-namespace StepFlow.Core
+namespace StepFlow.Core.Components
 {
-	public class Strength : ICloneable
+	public class Scale : Component, ICloneable
 	{
-		public Strength()
+		public Scale()
 		{
 		}
 
-		public Strength(float max)
+		public Scale(float max)
 			: this(max, max)
 		{
 		}
 
-		public Strength(float value, float max)
+		public Scale(float value, float max)
 		{
 			this.value = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
 			this.max = max >= 0 ? max : throw new ArgumentOutOfRangeException(nameof(max));
 		}
 
-		public Strength(Strength original)
+		public Scale(Scale original)
 			: this(
 				(original ?? throw new ArgumentNullException(nameof(original))).Value,
 				(original ?? throw new ArgumentNullException(nameof(original))).Max
@@ -60,28 +61,28 @@ namespace StepFlow.Core
 			}
 		}
 
-		public StrengthState Add(float value)
+		public ScaleState Add(float value)
 		{
 			var newValue = Value + value;
 
 			if (newValue <= 0)
 			{
 				Value = 0;
-				return StrengthState.Min;
+				return ScaleState.Min;
 			}
 			else if (newValue > Max)
 			{
 				Value = Max;
-				return StrengthState.Max;
+				return ScaleState.Max;
 			}
 			else
 			{
 				Value = newValue;
-				return StrengthState.Node;
+				return ScaleState.Node;
 			}
 		}
 
-		public Strength Clone() => new Strength(this);
+		public Scale Clone() => new Scale(this);
 
 		object ICloneable.Clone() => Clone();
 	}

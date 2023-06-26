@@ -1,9 +1,11 @@
-﻿namespace StepFlow.Core.Commands
-{
-	public interface IBuilder<T>
-	{
-		ITargetingCommand<T> Build(T target);
+﻿using StepFlow.TimeLine;
 
-		bool CanBuild(T target);
+namespace StepFlow.Core.Commands
+{
+	public interface IBuilder
+	{
+		ICommand Build(object target);
+
+		bool CanBuild(object target);
 	}
 }

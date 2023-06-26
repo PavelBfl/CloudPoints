@@ -1,12 +1,9 @@
-﻿using StepFlow.Core.Commands;
-
-namespace StepFlow.Core
+﻿namespace StepFlow.Core
 {
-	public class Piece : Particle, IScheduled<Piece>
+	public class Piece : Particle
 	{
 		public Piece(Playground owner) : base(owner)
 		{
-			Scheduler = new Scheduler<Piece>(this);
 		}
 
 		public float CollisionDamage { get; set; }
@@ -45,7 +42,5 @@ namespace StepFlow.Core
 		}
 
 		public bool IsScheduledStep { get; set; }
-
-		public IScheduler<Piece> Scheduler { get; }
 	}
 }

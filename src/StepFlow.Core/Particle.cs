@@ -5,7 +5,5 @@
 		public Particle(Playground owner) : base(owner)
 		{
 		}
-
-		public Strength Strength { get; } = new Strength();
 	}
 }

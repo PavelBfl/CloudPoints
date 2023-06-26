@@ -43,17 +43,5 @@ namespace StepFlow.Core.Commands.Accessors
 				(Action<TTarget, TValue>)setter.CreateDelegate(typeof(Action<TTarget, TValue>))
 			);
 		}
-
-		public static IBuilder<TTarget> CreatePropertyBuilder<TTarget, TValue>(Expression<Func<TTarget, TValue>> expression, TValue newValue, IResolverBuilder<TTarget> resolverBuilder)
-		{
-			if (expression is null)
-			{
-				throw new ArgumentNullException(nameof(expression));
-			}
-
-			var accessor = CreatePropertyAccessor(expression);
-
-			return new ValueAccessorBuilder<TTarget, TValue>(accessor, newValue, resolverBuilder);
-		}
 	}
 }

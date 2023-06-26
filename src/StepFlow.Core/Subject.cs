@@ -1,9 +1,10 @@
 ﻿using System;
+using System.ComponentModel;
 using StepFlow.Core.Exceptions;
 
 namespace StepFlow.Core
 {
-	public class Subject
+	public class Subject : Container
 	{
 		public Subject(Playground owner)
 		{

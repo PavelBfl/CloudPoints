@@ -1,7 +1,9 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using AdaptiveExpressions;
 using StepFlow.Core;
+using StepFlow.Core.Components;
 using StepFlow.Master.Commands;
 using StepFlow.TimeLine;
 
@@ -24,6 +26,31 @@ namespace StepFlow.Master
 		public void PiecesAdd(Piece piece) => TimeAxis.Add(new CollectionAdd<Piece>(Playground.Pieces, piece));
 
 		public void PlaceAdd(Node node) => TimeAxis.Add(new PlaceAdd(Playground.Place, node));
+
+		public void AddComponent(Container container, string componentName)
+		{
+			TimeAxis.Add(new AddComponent(
+				container,
+				componentName switch
+				{
+					"Scheduled" => new Scheduled(),
+					"Strength" => new Scale(),
+					_ => throw new InvalidOperationException(),
+				},
+				componentName
+			));
+		}
+
+		public void RemoveComponent(Container container, string componentName)
+		{
+			TimeAxis.Add(new Reverse(new AddComponent(
+				container,
+				container.Components[componentName],
+				componentName
+			)));
+		}
+
+		public IComponent GetComponent(Container container, string componentName) => container.Components[componentName];
 
 		public void Execute(string expression)
 		{

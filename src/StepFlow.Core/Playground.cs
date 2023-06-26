@@ -1,24 +1,21 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using StepFlow.Core.Collision;
-using StepFlow.Core.Commands;
 
 namespace StepFlow.Core
 {
-	public class Playground : IScheduled<Playground>
+	public class Playground : Container
 	{
 		public Playground()
 		{
 			Pieces = new PiecesCollection(this);
 			Place = new Place(this);
-			Scheduler = new Scheduler<Playground>(this);
 		}
 
 		public PiecesCollection Pieces { get; }
 
 		public Place Place { get; }
-
-		public IScheduler<Playground> Scheduler { get; }
 
 		private static IEnumerable<PairCollision> GetSwaps(Piece[] pieces)
 		{

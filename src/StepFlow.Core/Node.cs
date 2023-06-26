@@ -10,15 +10,12 @@ namespace StepFlow.Core
 
 		public Node(Playground owner, Point position) : base(owner)
 		{
-			Scheduler = new Scheduler<Node>(this);
 			Position = position;
 		}
 
 		public Point Position { get; }
 
 		public OccupiersCollection Occupiers { get; } = new OccupiersCollection();
-
-		public IScheduler<Node> Scheduler { get; }
 
 		public IList<ITargetingCommand<Node>> Commands { get; } = new List<ITargetingCommand<Node>>();
 
