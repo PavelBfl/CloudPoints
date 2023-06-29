@@ -5,7 +5,7 @@ namespace StepFlow.Core.Commands.Accessors
 {
 	internal class ValueAccessorCommand<TTarget, TValue> : ICommand
 	{
-		public ValueAccessorCommand(TTarget target, IValueAccessor<TTarget, TValue> accessor, TValue newValue, IResolver<TTarget> resolver)
+		public ValueAccessorCommand(TTarget target, IValueAccessor<TTarget, TValue> accessor, TValue newValue)
 		{
 			Target = target;
 			Accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));

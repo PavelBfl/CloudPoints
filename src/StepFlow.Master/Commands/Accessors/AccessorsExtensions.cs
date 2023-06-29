@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using StepFlow.TimeLine;
 
 namespace StepFlow.Core.Commands.Accessors
 {
@@ -42,6 +43,13 @@ namespace StepFlow.Core.Commands.Accessors
 				(Func<TTarget, TValue>)getter.CreateDelegate(typeof(Func<TTarget, TValue>)),
 				(Action<TTarget, TValue>)setter.CreateDelegate(typeof(Action<TTarget, TValue>))
 			);
+		}
+
+		public static ICommand CreatePropertyCommand<TTarget, TValue>(this TTarget target, Expression<Func<TTarget, TValue>> expression, TValue newValue)
+		{
+			var accessor = CreatePropertyAccessor(expression);
+
+			return new ValueAccessorCommand<TTarget, TValue>(target, accessor, newValue);
 		}
 	}
 }

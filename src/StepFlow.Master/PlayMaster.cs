@@ -27,6 +27,16 @@ namespace StepFlow.Master
 
 		public void PlaceAdd(Node node) => TimeAxis.Add(new PlaceAdd(Playground.Place, node));
 
+		public IComponent CreateComponent(string componentName)
+		{
+			return componentName switch
+			{
+				"Scheduled" => new Scheduled(),
+				"Strength" => new Scale(),
+				_ => throw new InvalidOperationException(),
+			};
+		}
+
 		public void AddComponent(Container container, string componentName)
 		{
 			TimeAxis.Add(new AddComponent(
