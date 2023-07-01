@@ -11,9 +11,9 @@ namespace StepFlow.Master
 
 		private INodeCmd? Create(Node? node) => node is { } ? new NodeCmd(Owner, node) : null;
 
-		public INodeCmd? Current { get => Create(Source.Current); set => Source.Current = value?.Source; }
+		public INodeCmd? Current { get => Create(Source.Current); set => Owner.TimeAxis.Add(Source.CreatePropertyCommand(x => x.Current, value?.Source)); }
 
-		public INodeCmd? Next { get => Create(Source.Next); set => Source.Next = value?.Source; }
+		public INodeCmd? Next { get => Create(Source.Next); set => Owner.TimeAxis.Add(Source.CreatePropertyCommand(x => x.Next, value?.Source)); }
 
 		public bool IsScheduledStep { get => Source.IsScheduledStep; set => Owner.TimeAxis.Add(Source.CreatePropertyCommand(x => x.IsScheduledStep, value)); }
 	}

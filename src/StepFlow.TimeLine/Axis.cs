@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace StepFlow.TimeLine
 {
-	public class Axis<TCommand> : IReadOnlyList<TCommand>
+	public class Axis<TCommand> : IAxis<TCommand>
 		where TCommand : notnull, ICommand
 	{
 		public int Current { get; private set; } = -1;

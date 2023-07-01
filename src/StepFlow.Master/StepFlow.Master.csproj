@@ -6,10 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AdaptiveExpressions" Version="4.20.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\StepFlow.Core\StepFlow.Core.csproj" />
     <ProjectReference Include="..\StepFlow.TimeLine\StepFlow.TimeLine.csproj" />
   </ItemGroup>
