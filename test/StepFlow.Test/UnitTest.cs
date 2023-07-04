@@ -21,5 +21,27 @@ namespace StepFlow.Test
 			master.Playground.Pieces.Add(piece);
 			piece.Current = master.Playground.Place[new(0, 1)];
 		}
+
+		[Fact]
+		public void TestLua()
+		{
+			var master = new PlayMaster();
+
+			master.Execute(@"
+				for x = 0, 2, 1
+				do
+					for y = 0, 2, 1
+					do
+						playground.place.Add(playground.createNode(x, y))
+					end
+				end
+			");
+
+			master.Execute(@"
+				piece = playground.createPiece()
+				playground.pieces.Add(piece)
+				piece.current = playground.place[0, 1]
+			");
+		}
 	}
 }

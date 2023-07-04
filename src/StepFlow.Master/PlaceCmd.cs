@@ -20,6 +20,8 @@ namespace StepFlow.Master
 
 		public INodeCmd this[Point key] => CreateNode(Place[key]);
 
+		public INodeCmd this[int x, int y] => this[new Point(x, y)];
+
 		public IEnumerable<Point> Keys => Place.Keys;
 
 		public IEnumerable<INodeCmd> Values => Place.Values.Select(CreateNode);

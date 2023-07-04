@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using MoonSharp.Interpreter;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.TimeLine;
@@ -11,6 +13,8 @@ namespace StepFlow.Master
 		public PlayMaster()
 		{
 			Playground = new PlaygroundCmd(this, new Playground());
+
+			InitLua();
 		}
 
 		public IAxis<ICommand> TimeAxis { get; } = new Axis<ICommand>();
@@ -67,6 +71,26 @@ namespace StepFlow.Master
 			//}
 
 			//Time++;
+		}
+
+		private void InitLua()
+		{
+			UserData.RegisterType<IPlaygroundCmd>();
+
+			UserData.RegisterType<ICollectionCmd<IPieceCmd>>();
+			UserData.RegisterType<ICollection<IPieceCmd>>();
+
+			UserData.RegisterType<IPlaceCmd>();
+			UserData.RegisterType<INodeCmd>();
+			UserData.RegisterType<IPieceCmd>();
+		}
+
+		public void Execute(string scriptText)
+		{
+			var script = new Script();
+
+			script.Globals["playground"] = Playground;
+			script.DoString(scriptText);
 		}
 	}
 }
