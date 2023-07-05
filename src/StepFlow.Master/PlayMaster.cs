@@ -76,13 +76,21 @@ namespace StepFlow.Master
 		private void InitLua()
 		{
 			UserData.RegisterType<IPlaygroundCmd>();
+			UserData.RegisterType<IContainerCmd<Playground>>();
 
 			UserData.RegisterType<ICollectionCmd<IPieceCmd>>();
 			UserData.RegisterType<ICollection<IPieceCmd>>();
 
 			UserData.RegisterType<IPlaceCmd>();
 			UserData.RegisterType<INodeCmd>();
+			UserData.RegisterType<IParticleCmd<Node>>();
+			UserData.RegisterType<ISubjectCmd<Node>>();
+			UserData.RegisterType<IContainerCmd<Node>>();
+
 			UserData.RegisterType<IPieceCmd>();
+			UserData.RegisterType<IParticleCmd<Piece>>();
+			UserData.RegisterType<ISubjectCmd<Piece>>();
+			UserData.RegisterType<IContainerCmd<Piece>>();
 		}
 
 		public void Execute(string scriptText)

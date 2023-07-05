@@ -40,6 +40,7 @@ namespace StepFlow.Test
 			master.Execute(@"
 				piece = playground.createPiece()
 				playground.pieces.Add(piece)
+				piece.AddComponent(""Strength"")
 				piece.current = playground.place[0, 1]
 			");
 		}
