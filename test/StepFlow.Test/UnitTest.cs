@@ -41,8 +41,23 @@ namespace StepFlow.Test
 				piece = playground.createPiece()
 				playground.pieces.Add(piece)
 				piece.AddComponent(""Strength"")
-				piece.current = playground.place[0, 1]
+				piece.current = playground.place[0, 0]
+				piece.next = playground.place[1, 0]
+				piece.IsScheduledStep = true
+				piece.CollisionDamage = 10
 			");
+
+			master.Execute(@"
+				piece = playground.createPiece()
+				playground.pieces.Add(piece)
+				piece.AddComponent(""Strength"")
+				piece.current = playground.place[1, 0]
+				piece.next = playground.place[0, 0]
+				piece.IsScheduledStep = true
+				piece.CollisionDamage = 10
+			");
+
+			master.TakeStep();
 		}
 	}
 }

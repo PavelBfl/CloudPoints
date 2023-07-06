@@ -9,5 +9,7 @@ namespace StepFlow.Master
 		INodeCmd? Next { get; set; }
 
 		bool IsScheduledStep { get; set; }
+
+		float CollisionDamage { get; set; }
 	}
 }

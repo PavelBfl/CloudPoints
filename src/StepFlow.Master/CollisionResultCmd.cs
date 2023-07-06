@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
+using StepFlow.Core;
 using StepFlow.Core.Collision;
 
 namespace StepFlow.Master
@@ -58,6 +57,7 @@ namespace StepFlow.Master
 		{
 			Crashes = new CrashesListCmd(Owner, Source.Crashes);
 			Swaps = new SwapsListCmd(Owner, Source.Swaps);
+			Competitors = new CompetitorsCollection(Owner, Source.Competitors);
 		}
 
 		public int Count => Source.Count;
@@ -66,11 +66,15 @@ namespace StepFlow.Master
 
 		public IReadOnlyList<IPairCollisionCmd<PairCollision>> Swaps { get; }
 
-		public IReadOnlyList<IReadOnlyList<IPieceCmd>> Competitors => throw new System.NotImplementedException();
+		public IReadOnlyList<IReadOnlyList<IPieceCmd>> Competitors { get; }
 
 		public IEnumerator<IReadOnlyList<IPieceCmd>> GetEnumerator()
 		{
-			throw new System.NotImplementedException();
+			// Так сложно сделано с инстанцированием коллекции в Array т.к. lua у Enumerator может вызвать Reset который не поддерживает yield return
+			return Source.Select(x => new PiecesReadOnlyListCmd<IReadOnlyList<Piece>>(Owner, x))
+				.ToArray()
+				.AsEnumerable<IReadOnlyList<IPieceCmd>>()
+				.GetEnumerator();
 		}
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -90,7 +94,22 @@ namespace StepFlow.Master
 			{
 			}
 
-			protected override IPairCollisionCmd<PairCollision> Wrap(PairCollision item) => new PairCollisionCmd<PairCollision>(Owner, item);
+			protected override IPairCollisionCmd<PairCollision> Wrap(PairCollision item)
+				=> new PairCollisionCmd<PairCollision>(Owner, item);
+		}
+
+		private sealed class CompetitorsCollection : ReadOnlyListCmd<
+			IReadOnlyList<IReadOnlyList<Piece>>,
+			IReadOnlyList<Piece>,
+			IReadOnlyListCmd<IReadOnlyList<Piece>, Piece, IPieceCmd>
+		>
+		{
+			public CompetitorsCollection(PlayMaster owner, IReadOnlyList<IReadOnlyList<Piece>> source) : base(owner, source)
+			{
+			}
+
+			protected override IReadOnlyListCmd<IReadOnlyList<Piece>, Piece, IPieceCmd> Wrap(IReadOnlyList<Piece> item)
+				=> new PiecesReadOnlyListCmd<IReadOnlyList<Piece>>(Owner, item);
 		}
 	}
 
@@ -100,20 +119,24 @@ namespace StepFlow.Master
 		
 	}
 
-	internal class PairCollisionCmd<TSource> : WrapperCmd<TSource>, IPairCollisionCmd<TSource>
+	internal class PiecesReadOnlyListCmd<TSource> : ReadOnlyListCmd<TSource, Piece, IPieceCmd>
+		where TSource : class, IReadOnlyList<Piece>
+	{
+		public PiecesReadOnlyListCmd(PlayMaster owner, TSource source) : base(owner, source)
+		{
+		}
+
+		protected override IPieceCmd Wrap(Piece item) => new PieceCmd(Owner, item);
+	}
+
+	internal class PairCollisionCmd<TSource> : PiecesReadOnlyListCmd<TSource>, IPairCollisionCmd<TSource>
 		where TSource : PairCollision
 	{
 		public PairCollisionCmd(PlayMaster owner, TSource source) : base(owner, source)
 		{
 		}
 
-		public IPieceCmd this[int index] => new PieceCmd(Owner, Source[index]);
-
-		public int Count => Source.Count;
-
-		public IEnumerator<IPieceCmd> GetEnumerator() => Source.Select(x => new PieceCmd(Owner, x)).GetEnumerator();
-
-		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+		protected override IPieceCmd Wrap(Piece item) => new PieceCmd(Owner, item);
 	}
 
 	internal sealed class CrashCollisionCmd : PairCollisionCmd<CrashCollision>, ICrashCollisionCmd

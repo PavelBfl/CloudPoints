@@ -33,6 +33,34 @@ namespace StepFlow.Master
 
 		public void TakeStep()
 		{
+			try
+			{
+				// TODO Реализовать Enumerable т.к. lua может вызвать метод Reset который не поддерживают Linq
+				Execute(@"
+				collision = playground.GetCollision()
+
+				for collisionUnit in collision
+				do
+					fullDamage = 0
+					for piece in collisionUnit
+					do
+						fullDamage = fullDamage + piece.CollisionDamage
+						strength = piece.GetComponent(""Strength"")
+					end
+
+					for piece in collisionUnit
+					do
+						--strength = piece.GetComponent(""Strength"")
+					end
+				end
+			");
+			}
+			catch (Exception e)
+			{
+
+				throw;
+			}
+
 			//PushToAxis(Scheduler.Queue, Time);
 
 			//foreach (var node in Place.Values)
@@ -75,6 +103,8 @@ namespace StepFlow.Master
 
 		private void InitLua()
 		{
+			UserData.RegisterType<Scale>();
+
 			UserData.RegisterType<IPlaygroundCmd>();
 			UserData.RegisterType<IContainerCmd<Playground>>();
 

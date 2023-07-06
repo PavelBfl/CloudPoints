@@ -15,5 +15,7 @@ namespace StepFlow.Master
 		public void AddComponent(string name) => Owner.TimeAxis.Add(new AddComponent(Source, Owner.CreateComponent(name), name));
 
 		public void RemoveComponent(string name) => Owner.TimeAxis.Add(new Reverse(new AddComponent(Source, Owner.CreateComponent(name), name)));
+
+		public object GetComponent(string name) => Source.Components[name];
 	}
 }

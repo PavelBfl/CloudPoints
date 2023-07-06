@@ -11,5 +11,7 @@ namespace StepFlow.Master
 		INodeCmd CreateNode(int x, int y);
 
 		IPieceCmd CreatePiece();
+
+		ICollisionResultCmd GetCollision();
 	}
 }

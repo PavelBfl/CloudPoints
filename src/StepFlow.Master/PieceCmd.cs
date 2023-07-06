@@ -1,4 +1,5 @@
-﻿using StepFlow.Core;
+﻿using System.Linq;
+using StepFlow.Core;
 using StepFlow.Core.Commands.Accessors;
 
 namespace StepFlow.Master
@@ -16,5 +17,7 @@ namespace StepFlow.Master
 		public INodeCmd? Next { get => Create(Source.Next); set => Owner.TimeAxis.Add(Source.CreatePropertyCommand(x => x.Next, value?.Source)); }
 
 		public bool IsScheduledStep { get => Source.IsScheduledStep; set => Owner.TimeAxis.Add(Source.CreatePropertyCommand(x => x.IsScheduledStep, value)); }
+
+		public float CollisionDamage { get => Source.CollisionDamage; set => Owner.TimeAxis.Add(Source.CreatePropertyCommand(x => x.CollisionDamage, value)); }
 	}
 }

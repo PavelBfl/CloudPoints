@@ -21,6 +21,8 @@ namespace StepFlow.Master
 
 		public IPlaceCmd Place { get; }
 
+		public ICollisionResultCmd GetCollision() => new CollisionResultCmd(Owner, Source.GetCollision());
+
 		public INodeCmd CreateNode(int x, int y) => new NodeCmd(Owner, new Node(Source, new Point(x, y)));
 
 		public IPieceCmd CreatePiece() => new PieceCmd(Owner, new Piece(Source));
