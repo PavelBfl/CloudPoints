@@ -13,13 +13,13 @@ namespace StepFlow.Test
 			{
 				for (var y = 0; y < 2; y++)
 				{
-					master.Playground.Place.Add(master.Playground.CreateNode(x, y));
+					//master.Playground.Place.Add(master.Playground.CreateNode(x, y));
 				}
 			}
 
-			var piece = master.Playground.CreatePiece();
-			master.Playground.Pieces.Add(piece);
-			piece.Current = master.Playground.Place[new(0, 1)];
+			//var piece = master.Playground.CreatePiece();
+			//master.Playground.Pieces.Add(piece);
+			//piece.Current = master.Playground.Place[new(0, 1)];
 		}
 
 		[Fact]

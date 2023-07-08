@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using MoonSharp.Interpreter;
 using StepFlow.Core;
+using StepFlow.Core.Collision;
 using StepFlow.Core.Components;
+using StepFlow.Master.Proxies;
 using StepFlow.TimeLine;
 
 namespace StepFlow.Master
@@ -12,14 +14,12 @@ namespace StepFlow.Master
 	{
 		public PlayMaster()
 		{
-			Playground = new PlaygroundCmd(this, new Playground());
-
 			InitLua();
 		}
 
 		public IAxis<ICommand> TimeAxis { get; } = new Axis<ICommand>();
 
-		public IPlaygroundCmd Playground { get; }
+		public Playground Playground { get; } = new Playground();
 
 		public IComponent CreateComponent(string componentName)
 		{
@@ -45,12 +45,11 @@ namespace StepFlow.Master
 					for piece in collisionUnit
 					do
 						fullDamage = fullDamage + piece.CollisionDamage
-						strength = piece.GetComponent(""Strength"")
 					end
 
 					for piece in collisionUnit
 					do
-						--strength = piece.GetComponent(""Strength"")
+						strength = piece.GetComponent(""Strength"")
 					end
 				end
 			");
@@ -101,26 +100,29 @@ namespace StepFlow.Master
 			//Time++;
 		}
 
+		private static void RegisterReadOnlyList<T>()
+		{
+			UserData.RegisterType<IReadOnlyList<T>>();
+			UserData.RegisterType<IReadOnlyCollection<T>>();
+			UserData.RegisterType<IEnumerable<T>>();
+		}
+
 		private void InitLua()
 		{
-			UserData.RegisterType<Scale>();
+			UserData.RegisterType<CollisionResult>();
+			UserData.RegisterType<PairCollision>();
+			UserData.RegisterType<CrashCollision>();
 
-			UserData.RegisterType<IPlaygroundCmd>();
-			UserData.RegisterType<IContainerCmd<Playground>>();
+			RegisterReadOnlyList<CrashCollision>();
+			RegisterReadOnlyList<PairCollision>();
+			RegisterReadOnlyList<Piece>();
+			RegisterReadOnlyList<IReadOnlyList<Piece>>();
 
-			UserData.RegisterType<ICollectionCmd<IPieceCmd>>();
-			UserData.RegisterType<ICollection<IPieceCmd>>();
-
-			UserData.RegisterType<IPlaceCmd>();
-			UserData.RegisterType<INodeCmd>();
-			UserData.RegisterType<IParticleCmd<Node>>();
-			UserData.RegisterType<ISubjectCmd<Node>>();
-			UserData.RegisterType<IContainerCmd<Node>>();
-
-			UserData.RegisterType<IPieceCmd>();
-			UserData.RegisterType<IParticleCmd<Piece>>();
-			UserData.RegisterType<ISubjectCmd<Piece>>();
-			UserData.RegisterType<IContainerCmd<Piece>>();
+			UserData.RegisterProxyType<NodeProxy, Node>(x => new NodeProxy(this, x));
+			UserData.RegisterProxyType<PieceProxy, Piece>(x => new PieceProxy(this, x));
+			UserData.RegisterProxyType<PiecesCollectionProxy, PiecesCollection>(x => new PiecesCollectionProxy(this, x));
+			UserData.RegisterProxyType<PlaceProxy, Place>(x => new PlaceProxy(this, x));
+			UserData.RegisterProxyType<PlaygroundProxy, Playground>(x => new PlaygroundProxy(this, x));
 		}
 
 		public void Execute(string scriptText)
