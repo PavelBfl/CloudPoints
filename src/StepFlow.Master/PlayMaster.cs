@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using MoonSharp.Interpreter;
@@ -37,19 +38,21 @@ namespace StepFlow.Master
 			{
 				// TODO Реализовать Enumerable т.к. lua может вызвать метод Reset который не поддерживают Linq
 				Execute(@"
-				collision = playground.GetCollision()
+				collision = playground.GetCollision();
 
-				for collisionUnit in collision
-				do
-					fullDamage = 0
-					for piece in collisionUnit
-					do
-						fullDamage = fullDamage + piece.CollisionDamage
+				collisionEnumerator = collision.GetEnumerator();
+				while collisionEnumerator.MoveNext() do
+					fullDamage = 0;
+					
+					damageEnumerator = collisionEnumerator.Current.GetEnumerator();
+					while damageEnumerator.MoveNext() do
+						fullDamage = fullDamage + damageEnumerator.Current.CollisionDamage;
 					end
 
-					for piece in collisionUnit
-					do
-						strength = piece.GetComponent(""Strength"")
+					damageEnumerator = collisionEnumerator.Current.GetEnumerator();
+					while damageEnumerator.MoveNext() do
+						strength = damageEnumerator.Current.GetComponent(""Strength"");
+						strength.Add(-(fullDamage - damageEnumerator.Current.CollisionDamage));
 					end
 				end
 			");
@@ -109,6 +112,8 @@ namespace StepFlow.Master
 
 		private void InitLua()
 		{
+			UserData.RegisterType<IEnumerator>();
+
 			UserData.RegisterType<CollisionResult>();
 			UserData.RegisterType<PairCollision>();
 			UserData.RegisterType<CrashCollision>();
@@ -123,6 +128,8 @@ namespace StepFlow.Master
 			UserData.RegisterProxyType<PiecesCollectionProxy, PiecesCollection>(x => new PiecesCollectionProxy(this, x));
 			UserData.RegisterProxyType<PlaceProxy, Place>(x => new PlaceProxy(this, x));
 			UserData.RegisterProxyType<PlaygroundProxy, Playground>(x => new PlaygroundProxy(this, x));
+
+			UserData.RegisterProxyType<ScaleProxy, Scale>(x => new ScaleProxy(this, x));
 		}
 
 		public void Execute(string scriptText)
@@ -130,7 +137,13 @@ namespace StepFlow.Master
 			var script = new Script();
 
 			script.Globals["playground"] = Playground;
+			script.Globals["Debug"] = (Action<object?>)Debug;
 			script.DoString(scriptText);
+		}
+
+		private static void Debug(object? obj)
+		{
+			
 		}
 	}
 }

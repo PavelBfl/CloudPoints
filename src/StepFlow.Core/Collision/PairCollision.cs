@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace StepFlow.Core.Collision
 {
@@ -24,11 +25,7 @@ namespace StepFlow.Core.Collision
 		public Piece First { get; }
 		public Piece Second { get; }
 
-		public IEnumerator<Piece> GetEnumerator()
-		{
-			yield return First;
-			yield return Second;
-		}
+		public IEnumerator<Piece> GetEnumerator() => new[] { First, Second }.AsEnumerable().GetEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}
