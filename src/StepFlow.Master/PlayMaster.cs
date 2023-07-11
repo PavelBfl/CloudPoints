@@ -40,19 +40,16 @@ namespace StepFlow.Master
 				Execute(@"
 				collision = playground.GetCollision();
 
-				collisionEnumerator = collision.GetEnumerator();
-				while collisionEnumerator.MoveNext() do
+				for _, collisionUnit in enumerate(collision) do
 					fullDamage = 0;
-					
-					damageEnumerator = collisionEnumerator.Current.GetEnumerator();
-					while damageEnumerator.MoveNext() do
-						fullDamage = fullDamage + damageEnumerator.Current.CollisionDamage;
+
+					for _, piece in enumerate(collisionUnit) do
+						fullDamage = fullDamage + piece.CollisionDamage;
 					end
 
-					damageEnumerator = collisionEnumerator.Current.GetEnumerator();
-					while damageEnumerator.MoveNext() do
-						strength = damageEnumerator.Current.GetComponent(""Strength"");
-						strength.Add(-(fullDamage - damageEnumerator.Current.CollisionDamage));
+					for _, piece in enumerate(collisionUnit) do
+						strength = piece.GetComponent(""Strength"");
+						strength.Add(-(fullDamage - piece.CollisionDamage));
 					end
 				end
 			");
@@ -132,13 +129,38 @@ namespace StepFlow.Master
 			UserData.RegisterProxyType<ScaleProxy, Scale>(x => new ScaleProxy(this, x));
 		}
 
+		private static string GetEnumerateIteration()
+		{
+			return $@"function {ENUMERATE_ITERATION_NAME}(enumerable, enumerator)
+				if enumerator.MoveNext() then
+					return enumerator, enumerator.Current
+				end
+			end";
+		}
+
+		private static string GetEnumerate()
+		{
+			return @$"function {ENUMERATE_NAME}(enumerable)
+				return {ENUMERATE_ITERATION_NAME}, enumerable, enumerable.GetEnumerator()
+			end";
+		}
+
+		public const string ENUMERATE_ITERATION_NAME = "enumerateIteration";
+		public const string ENUMERATE_NAME = "enumerate";
+
 		public void Execute(string scriptText)
 		{
 			var script = new Script();
 
 			script.Globals["playground"] = Playground;
 			script.Globals["Debug"] = (Action<object?>)Debug;
-			script.DoString(scriptText);
+			script.DoString(
+				GetEnumerateIteration() +
+				Environment.NewLine +
+				GetEnumerate() +
+				Environment.NewLine +
+				scriptText
+			);
 		}
 
 		private static void Debug(object? obj)
