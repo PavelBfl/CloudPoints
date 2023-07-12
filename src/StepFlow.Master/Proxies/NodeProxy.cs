@@ -1,4 +1,5 @@
-﻿using MoonSharp.Interpreter;
+﻿using System.Drawing;
+using MoonSharp.Interpreter;
 using StepFlow.Core;
 
 namespace StepFlow.Master.Proxies
@@ -11,5 +12,7 @@ namespace StepFlow.Master.Proxies
 		}
 
 		public OccupiersCollection Occupiers => Target.Occupiers;
+
+		public Point Position => Target.Position;
 	}
 }

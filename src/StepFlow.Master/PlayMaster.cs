@@ -47,9 +47,17 @@ namespace StepFlow.Master
 						fullDamage = fullDamage + piece.CollisionDamage;
 					end
 
+					removing = {}
 					for _, piece in enumerate(collisionUnit) do
 						strength = piece.GetComponent(""Strength"");
-						strength.Add(-(fullDamage - piece.CollisionDamage));
+						state = strength.Add(-(fullDamage - piece.CollisionDamage));
+						if state == 1 then
+							table.insert(removing, piece)
+						end
+					end
+
+					for _, piece in pairs(removing) do
+						playground.Pieces.Remove(piece)
 					end
 				end
 			");
@@ -129,38 +137,47 @@ namespace StepFlow.Master
 			UserData.RegisterProxyType<ScaleProxy, Scale>(x => new ScaleProxy(this, x));
 		}
 
-		private static string GetEnumerateIteration()
+		public static DynValue Enumerate(ScriptExecutionContext context, CallbackArguments arguments)
 		{
-			return $@"function {ENUMERATE_ITERATION_NAME}(enumerable, enumerator)
-				if enumerator.MoveNext() then
-					return enumerator, enumerator.Current
-				end
-			end";
-		}
+			var dynEnumerable = arguments[0];
+			var enumerable = (IEnumerable)dynEnumerable.UserData.Object;
 
-		private static string GetEnumerate()
-		{
-			return @$"function {ENUMERATE_NAME}(enumerable)
-				return {ENUMERATE_ITERATION_NAME}, enumerable, enumerable.GetEnumerator()
-			end";
-		}
+			return DynValue.NewTuple(
+				DynValue.NewCallback(EnumerateIteration),
+				dynEnumerable,
+				DynValue.FromObject(context.GetScript(), enumerable.GetEnumerator())
+			);
 
-		public const string ENUMERATE_ITERATION_NAME = "enumerateIteration";
-		public const string ENUMERATE_NAME = "enumerate";
+			DynValue EnumerateIteration(ScriptExecutionContext context, CallbackArguments arguments)
+			{
+				var dynEnumerable = arguments[0];
+				var enumerable = (IEnumerable)dynEnumerable.UserData.Object;
+
+				var dynEnumerator = arguments[1];
+				var enumerator = (IEnumerator)dynEnumerator.UserData.Object;
+
+				if (enumerator.MoveNext())
+				{
+					return DynValue.NewTuple(
+						dynEnumerator,
+						DynValue.FromObject(context.GetScript(), enumerator.Current)
+					);
+				}
+				else
+				{
+					return DynValue.Nil;
+				}
+			}
+		}
 
 		public void Execute(string scriptText)
 		{
 			var script = new Script();
 
 			script.Globals["playground"] = Playground;
+			script.Globals.Set("enumerate", DynValue.NewCallback(Enumerate));
 			script.Globals["Debug"] = (Action<object?>)Debug;
-			script.DoString(
-				GetEnumerateIteration() +
-				Environment.NewLine +
-				GetEnumerate() +
-				Environment.NewLine +
-				scriptText
-			);
+			script.DoString(scriptText);
 		}
 
 		private static void Debug(object? obj)
