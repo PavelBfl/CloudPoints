@@ -9,6 +9,7 @@
     <ProjectReference Include="..\StepFlow.Common\StepFlow.Common.csproj" />
     <ProjectReference Include="..\StepFlow.Core\StepFlow.Core.csproj" />
     <ProjectReference Include="..\StepFlow.Entities\StepFlow.Entities.csproj" />
+    <ProjectReference Include="..\StepFlow.Master\StepFlow.Master.csproj" />
     <ProjectReference Include="..\StepFlow.TimeLine\StepFlow.TimeLine.csproj" />
   </ItemGroup>
 

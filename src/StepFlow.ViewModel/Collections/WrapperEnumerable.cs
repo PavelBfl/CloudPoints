@@ -1,38 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.ViewModel.Collections
 {
-	public class WrapperEnumerable<TWrapper, TCollection, TModelItem> : WrapperVm<TCollection>, IEnumerable<TWrapper>, INotifyCollectionChanged
-		where TWrapper : IWrapper<TModelItem>
-		where TCollection : IEnumerable<TModelItem>
+	public class WrapperEnumerable<TWrapperItem, TCollection, TModelItem> : WrapperVm<TCollection>, IEnumerable<TWrapperItem>
+		where TModelItem : class
+		where TWrapperItem : class, IWrapper<TModelItem>
+		where TCollection : class, IEnumerable<TModelItem>
 	{
 		public WrapperEnumerable(LockProvider wrapperProvider, TCollection source) : base(wrapperProvider, source)
 		{
 		}
 
-		public event NotifyCollectionChangedEventHandler? CollectionChanged;
-
-		protected void OnCollectionChanged(NotifyCollectionChangedEventArgs args) => CollectionChanged?.Invoke(this, args);
-
-		public IEnumerator<TWrapper> GetEnumerator()
+		public IEnumerator<TWrapperItem> GetEnumerator()
 		{
 			foreach (var model in Source)
 			{
-				yield return LockProvider.GetOrCreate<TWrapper>(model);
+				yield return LockProvider.GetOrCreate<TWrapperItem>(model);
 			}
 		}
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-		public override void SourceHasChange()
-		{
-			base.SourceHasChange();
-
-			OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-		}
 
 		public override IEnumerable<ILockable> GetContent()
 		{

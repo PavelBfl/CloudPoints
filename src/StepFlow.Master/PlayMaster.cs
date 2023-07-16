@@ -34,78 +34,30 @@ namespace StepFlow.Master
 
 		public void TakeStep()
 		{
-			try
-			{
-				// TODO Реализовать Enumerable т.к. lua может вызвать метод Reset который не поддерживают Linq
-				Execute(@"
-				collision = playground.GetCollision();
+			Execute(@"
+			collision = playground.GetCollision();
 
-				for _, collisionUnit in enumerate(collision) do
-					fullDamage = 0;
+			for _, collisionUnit in enumerate(collision) do
+				fullDamage = 0;
 
-					for _, piece in enumerate(collisionUnit) do
-						fullDamage = fullDamage + piece.CollisionDamage;
-					end
+				for _, piece in enumerate(collisionUnit) do
+					fullDamage = fullDamage + piece.CollisionDamage;
+				end
 
-					removing = {}
-					for _, piece in enumerate(collisionUnit) do
-						strength = piece.GetComponent(""Strength"");
-						state = strength.Add(-(fullDamage - piece.CollisionDamage));
-						if state == 1 then
-							table.insert(removing, piece)
-						end
-					end
-
-					for _, piece in pairs(removing) do
-						playground.Pieces.Remove(piece)
+				removing = {}
+				for _, piece in enumerate(collisionUnit) do
+					strength = piece.GetComponent(""Strength"");
+					state = strength.Add(-(fullDamage - piece.CollisionDamage));
+					if state == 1 then
+						table.insert(removing, piece)
 					end
 				end
+
+				for _, piece in pairs(removing) do
+					playground.Pieces.Remove(piece)
+				end
+			end
 			");
-			}
-			catch (Exception e)
-			{
-
-				throw;
-			}
-
-			//PushToAxis(Scheduler.Queue, Time);
-
-			//foreach (var node in Place.Values)
-			//{
-			//	PushToAxis(node.Scheduler.Queue, Time);
-			//}
-
-			//foreach (var piece in Pieces)
-			//{
-			//	PushToAxis(piece.Scheduler.Queue, Time);
-			//}
-
-			//var collision = GetCollision();
-
-			//foreach (var collisionUnit in collision)
-			//{
-			//	var fullDamage = collisionUnit.Sum(x => x.CollisionDamage);
-
-			//	foreach (var piece in collisionUnit)
-			//	{
-			//		var addResult = piece.Strength.Add(-(fullDamage - piece.CollisionDamage));
-			//		if (addResult == StrengthState.Min)
-			//		{
-			//			Pieces.Remove(piece);
-			//		}
-			//		else
-			//		{
-			//			Clear(piece);
-			//		}
-			//	}
-			//}
-
-			//foreach (var piece in Pieces)
-			//{
-			//	TakeStep(piece);
-			//}
-
-			//Time++;
 		}
 
 		private static void RegisterReadOnlyList<T>()
@@ -176,13 +128,7 @@ namespace StepFlow.Master
 
 			script.Globals["playground"] = Playground;
 			script.Globals.Set("enumerate", DynValue.NewCallback(Enumerate));
-			script.Globals["Debug"] = (Action<object?>)Debug;
 			script.DoString(scriptText);
-		}
-
-		private static void Debug(object? obj)
-		{
-			
 		}
 	}
 }

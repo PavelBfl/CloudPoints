@@ -2,9 +2,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using StepFlow.Core;
-using StepFlow.Core.Commands;
-using StepFlow.TimeLine;
-using StepFlow.ViewModel.Commands;
+using StepFlow.Core.Components;
+using StepFlow.ViewModel.Components;
 
 namespace StepFlow.ViewModel.Collector
 {
@@ -50,16 +49,13 @@ namespace StepFlow.ViewModel.Collector
 			{
 				result = model switch
 				{
-					MoveCommand moveCommand => new MoveCommandVm(this, moveCommand),
-					CreateCommand createCommand => new CreateCommandVm(this, createCommand),
 					Node node => new NodeVm(this, node),
 					Piece piece => new PieceVm(this, piece),
-					Axis<ITargetingCommand<object>> axis => new AxisVm(this, axis),
 					Playground playground => new PlaygroundVm(this, playground),
 					Place place => new PlaceVm(this, place),
 					PiecesCollection pieceCollection => new PiecesCollectionVm(this, pieceCollection),
-					IList<ITargetingCommand<Piece>> pieceCommands => new CommandsCollectionVm<Piece>(this, pieceCommands),
-					IList<ITargetingCommand<Node>> nodeCommands => new CommandsCollectionVm<Node>(this, nodeCommands),
+
+					Scale scale => new ScaleVm(this, scale),
 					_ => throw Exceptions.Builder.CreateUnknownModel(),
 				};
 

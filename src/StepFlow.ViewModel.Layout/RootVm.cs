@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using StepFlow.Common;
 using StepFlow.Layout;
 using StepFlow.TimeLine;
-using StepFlow.ViewModel.Commands;
 
 namespace StepFlow.ViewModel.Layout
 {
@@ -15,7 +11,6 @@ namespace StepFlow.ViewModel.Layout
 		public RootVm(PlaygroundVm playground)
 		{
 			Playground = playground ?? throw new ArgumentNullException(nameof(playground));
-			NotifyPropertyExtensions.TrySubscribe(Playground, ContextPropertyChanging, ContextPropertyChanged);
 
 			Root = new GridPlot()
 			{
@@ -53,33 +48,6 @@ namespace StepFlow.ViewModel.Layout
 			Root.Childs.Add(ActionPlot, new CellPosition(0, 0));
 			Root.Childs.Add(QueueCommandsContainer, new CellPosition(0, 1, 2, 1));
 			Root.Childs.Add(AllowCommandsContainer, new CellPosition(1, 0));
-
-			RefreshQueue(Array.Empty<ICommandVm<ICommand>>());
-		}
-
-		private void ContextPropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			switch (e.PropertyName)
-			{
-				case nameof(PlaygroundVm.Current):
-					NotifyPropertyExtensions.TrySubscribe(Playground.Current?.Scheduler.Queue, CommandsCollectionChanged);
-					break;
-			}
-		}
-
-		private void ContextPropertyChanging(object sender, PropertyChangingEventArgs e)
-		{
-			switch (e.PropertyName)
-			{
-				case nameof(PlaygroundVm.Current):
-					NotifyPropertyExtensions.TryUnsubscribe(Playground.Current?.Scheduler.Queue, CommandsCollectionChanged);
-					break;
-			}
-		}
-
-		private void CommandsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			RefreshQueue((IReadOnlyList<ICommandVm<ICommand>>?)Playground.Current?.Scheduler.Queue ?? Array.Empty<ICommandVm<ICommand>>());
 		}
 
 		private void RefreshQueue(IReadOnlyList<ICommandVm<ICommand>> commandsQueue)
@@ -119,9 +87,5 @@ namespace StepFlow.ViewModel.Layout
 		public GridPlot QueueCommandsContainer { get; }
 
 		public GridPlot AllowCommandsContainer { get; }
-
-		private ObservableCollection<CommandLayout> QueueCommandInner { get; } = new ObservableCollection<CommandLayout>();
-
-		public IReadOnlyList<CommandLayout> QueueCommands => QueueCommandInner;
 	}
 }

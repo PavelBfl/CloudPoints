@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using StepFlow.Master;
 using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.ViewModel
 {
 	public interface IWrapper<out T> : ILockable
-		where T : notnull
+		where T : class
 	{
 		T Source { get; }
 
@@ -14,7 +15,7 @@ namespace StepFlow.ViewModel
 	}
 
 	public abstract class WrapperVm<T> : BaseVm, IWrapper<T>
-		where T : notnull
+		where T : class
 	{
 		public WrapperVm(LockProvider wrapperProvider, T source)
 			: base(wrapperProvider)
@@ -33,6 +34,13 @@ namespace StepFlow.ViewModel
 		public T Source { get; }
 
 		public virtual void SourceHasChange()
+		{
+		}
+	}
+
+	public sealed class PlayMasterVm : WrapperVm<PlayMaster>
+	{
+		public PlayMasterVm(LockProvider wrapperProvider, PlayMaster source) : base(wrapperProvider, source)
 		{
 		}
 	}

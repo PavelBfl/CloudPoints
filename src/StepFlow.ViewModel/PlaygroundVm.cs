@@ -12,10 +12,6 @@ namespace StepFlow.ViewModel
 			Lock = true;
 		}
 
-		private AxisVm? axisTime;
-
-		public AxisVm AxisTime => axisTime ??= LockProvider.GetOrCreate<AxisVm>(Source.AxisTime);
-
 		private PiecesCollectionVm? pieces;
 
 		public PiecesCollectionVm Pieces => pieces ??= LockProvider.GetOrCreate<PiecesCollectionVm>(Source.Pieces);
@@ -54,31 +50,6 @@ namespace StepFlow.ViewModel
 			}
 		}
 
-		public ILockable? Buffer => LockProvider.Get(Source.Buffer);
-
-		public void TakeStep()
-		{
-			Source.TakeStep();
-
-			Pieces.SourceHasChange();
-
-			if (Current is { } && !Pieces.Contains(Current))
-			{
-				Current = null;
-			}
-
-			Place.SourceHasChange();
-
-			foreach (var particle in Particles)
-			{
-				particle.SourceHasChange();
-			}
-
-			AxisTime.SourceHasChange();
-
-			LockProvider.Clear();
-		}
-
-		public override IEnumerable<ILockable> GetContent() => base.GetContent().ConcatIfNotNull(pieces, place, axisTime, current);
+		public override IEnumerable<ILockable> GetContent() => base.GetContent().ConcatIfNotNull(pieces, place, current);
 	}
 }

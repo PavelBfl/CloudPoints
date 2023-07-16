@@ -1,57 +1,19 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Specialized;
 using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.ViewModel.Collections
 {
-	public class WrapperList<TWrapper, TCollection, TModelItem> : WrapperCollection<TWrapper, TCollection, TModelItem>, IList<TWrapper>, IReadOnlyList<TWrapper>
-		where TCollection : IList<TModelItem>
-		where TWrapper : IWrapper<TModelItem>
-		where TModelItem : notnull
+	public class WrapperList<TWrapperItem, TCollection, TModelItem> : WrapperCollection<TWrapperItem, TCollection, TModelItem>, IReadOnlyList<TWrapperItem>
+		where TCollection : class, IList<TModelItem>
+		where TWrapperItem : class, IWrapper<TModelItem>
+		where TModelItem : class
 	{
 		public WrapperList(LockProvider wrapperProvider, TCollection source) : base(wrapperProvider, source)
 		{
 		}
 
-		public TWrapper this[int index]
-		{
-			get => LockProvider.GetOrCreate<TWrapper>(Source[index]);
-			set
-			{
-				var oldItem = this[index];
-				if (!EqualityComparer<TModelItem>.Default.Equals(oldItem.Source, value.Source))
-				{
-					Source[index] = value.Source;
-					OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, value, oldItem, index));
-				}
-			}
-		}
+		public TWrapperItem this[int index] => LockProvider.GetOrCreate<TWrapperItem>(Source[index]);
 
-		public override bool Remove(TWrapper item)
-		{
-			var index = IndexOf(item);
-			var canRemove = index >= 0;
-			if (canRemove)
-			{
-				RemoveAt(index);
-			}
-
-			return canRemove;
-		}
-
-		public int IndexOf(TWrapper item) => Source.IndexOf(item.Source);
-
-		public void Insert(int index, TWrapper item)
-		{
-			Source.Insert(index, item.Source);
-			OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
-		}
-
-		public void RemoveAt(int index)
-		{
-			var oldItem = this[index];
-			Source.RemoveAt(index);
-			OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldItem, index));
-		}
+		public int IndexOf(TWrapperItem item) => Source.IndexOf(item.Source);
 	}
 }
