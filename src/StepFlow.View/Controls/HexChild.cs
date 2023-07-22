@@ -1,170 +1,144 @@
-﻿using System.ComponentModel;
-using System.Linq;
-using Microsoft.Xna.Framework;
-using StepFlow.Common;
-using StepFlow.Common.Exceptions;
-using StepFlow.View.Services;
-using StepFlow.View.Sketch;
-using StepFlow.ViewModel;
+﻿//using System.ComponentModel;
+//using System.Linq;
+//using Microsoft.Xna.Framework;
+//using StepFlow.Common.Exceptions;
+//using StepFlow.View.Services;
+//using StepFlow.View.Sketch;
 
-namespace StepFlow.View.Controls
-{
-	public class HexChild : Primitive
-	{
-		private const int POINTY_SPACING = 3;
-		private const int FLAT_SPACING = 2;
-		private const int MARKED_THICKNESS = 5;
-		private const int UNMARKED_THICKNESS = 1;
+//namespace StepFlow.View.Controls
+//{
+//	public class HexChild : Primitive
+//	{
+//		private const int POINTY_SPACING = 3;
+//		private const int FLAT_SPACING = 2;
+//		private const int MARKED_THICKNESS = 5;
+//		private const int UNMARKED_THICKNESS = 1;
 
-		public HexChild(Game game) : base(game)
-		{
-			Background = new Hex(Game);
-			Selector = new Hex(Game)
-			{
-				Visible = false,
-			};
-			MouseHandler = new MouseHandler(Game);
+//		public HexChild(Game game) : base(game)
+//		{
+//			Background = new Hex(Game);
+//			Selector = new Hex(Game)
+//			{
+//				Visible = false,
+//			};
 
-			Childs.Add(Background);
-			Childs.Add(Selector);
-			Childs.Add(MouseHandler);
-		}
+//			Childs.Add(Background);
+//			Childs.Add(Selector);
+//		}
 
-		private NodeVm? source;
+//		private Hex Background { get; }
 
-		public NodeVm? Source
-		{
-			get => source;
-			set
-			{
-				if (Source != value)
-				{
-					NotifyPropertyExtensions.TryUnsubscribe(Source, SourcePropertyChanged);
+//		private Hex Selector { get; }
 
-					source = value;
+//		protected override void OnOwnerChange()
+//		{
+//			base.OnOwnerChange();
+//			Refresh();
+//		}
 
-					NotifyPropertyExtensions.TrySubscribe(Source, SourcePropertyChanged);
+//		private static bool IsOdd(int value) => value % 2 == 1;
 
-					Refresh();
-				}
-			}
-		}
+//		public void Refresh()
+//		{
+//			if (Owner is HexGrid hexGrid && Source is { })
+//			{
+//				Visible = true;
 
-		private Hex Background { get; }
+//				var position = Source.Position;
+//				var cellPosition = hexGrid.Orientation switch
+//				{
+//					HexOrientation.Flat => new Point(
+//						position.X * POINTY_SPACING,
+//						position.Y * FLAT_SPACING + (IsOdd(position.X) == hexGrid.OffsetOdd ? 1 : 0)
+//					),
+//					HexOrientation.Pointy => new Point(
+//						position.X * FLAT_SPACING + (IsOdd(position.Y) == hexGrid.OffsetOdd ? 1 : 0),
+//						position.Y * POINTY_SPACING
+//					),
+//					_ => throw EnumNotSupportedException.Create(hexGrid.Orientation),
+//				};
 
-		private Hex Selector { get; }
+//				var center = hexGrid.GetPosition(cellPosition);
 
-		private MouseHandler MouseHandler { get; }
+//				Background.Orientation = hexGrid.Orientation;
+//				Background.Size = hexGrid.Size;
+//				Background.Position = center;
 
-		protected override void OnOwnerChange()
-		{
-			base.OnOwnerChange();
-			Refresh();
-		}
+//				Selector.Orientation = hexGrid.Orientation;
+//				Selector.Size = hexGrid.Size * 0.9f;
+//				Selector.Thickness = Source.IsMark ? MARKED_THICKNESS : UNMARKED_THICKNESS;
+//				Selector.Position = center;
+//				if (Source.State.ContainsKey(NodeState.Current))
+//				{
+//					Selector.Color = Color.Yellow;
+//					Selector.Visible = true;
+//				}
+//				else if (Source.State.ContainsKey(NodeState.Planned))
+//				{
+//					Selector.Color = Color.Green;
+//					Selector.Visible = true;
+//				}
+//				else
+//				{
+//					Selector.Color = default;
+//					Selector.Visible = false;
+//				}
+//			}
+//			else
+//			{
+//				Visible = false;
+//			}
+//		}
 
-		private static bool IsOdd(int value) => value % 2 == 1;
+//		private void SourcePropertyChanged(object? sender, PropertyChangedEventArgs e)
+//		{
+//			if (e.PropertyName is nameof(NodeVm.State) or nameof(NodeVm.IsMark))
+//			{
+//				Refresh();
+//			}
+//		}
 
-		public void Refresh()
-		{
-			if (Owner is HexGrid hexGrid && Source is { })
-			{
-				Visible = true;
+//		public override void Update(GameTime gameTime)
+//		{
+//			if (Source is null || Source.Owner is null)
+//			{
+//				return;
+//			}
 
-				var position = Source.Position;
-				var cellPosition = hexGrid.Orientation switch
-				{
-					HexOrientation.Flat => new Point(
-						position.X * POINTY_SPACING,
-						position.Y * FLAT_SPACING + (IsOdd(position.X) == hexGrid.OffsetOdd ? 1 : 0)
-					),
-					HexOrientation.Pointy => new Point(
-						position.X * FLAT_SPACING + (IsOdd(position.Y) == hexGrid.OffsetOdd ? 1 : 0),
-						position.Y * POINTY_SPACING
-					),
-					_ => throw EnumNotSupportedException.Create(hexGrid.Orientation),
-				};
+//			var mouseService = Game.Services.GetService<IMouseService>();
 
-				var center = hexGrid.GetPosition(cellPosition);
+//			var vertices = Background.GetVertices() ?? IReadOnlyVertices.Empty;
+//			var mouseContains = vertices.FillContains(mouseService.Position);
 
-				Background.Orientation = hexGrid.Orientation;
-				Background.Size = hexGrid.Size;
-				Background.Position = center;
+//			Background.Color = mouseContains ? Color.Blue : Color.Red;
 
-				Selector.Orientation = hexGrid.Orientation;
-				Selector.Size = hexGrid.Size * 0.9f;
-				Selector.Thickness = Source.IsMark ? MARKED_THICKNESS : UNMARKED_THICKNESS;
-				Selector.Position = center;
-				if (Source.State.ContainsKey(NodeState.Current))
-				{
-					Selector.Color = Color.Yellow;
-					Selector.Visible = true;
-				}
-				else if (Source.State.ContainsKey(NodeState.Planned))
-				{
-					Selector.Color = Color.Green;
-					Selector.Visible = true;
-				}
-				else
-				{
-					Selector.Color = default;
-					Selector.Visible = false;
-				}
-			}
-			else
-			{
-				Visible = false;
-			}
-		}
+//			if (mouseContains && mouseService.LeftButtonOnPress)
+//			{
+//				var keyboard = Game.Services.GetService<IKeyboardService>();
+//				if (keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
+//				{
+//					Source.CreateSimple();
+//				}
+//				else if (keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift))
+//				{
+//					foreach (var piece in Source.Owner.Pieces.Where(x => x.IsMark))
+//					{
+//						piece.MoveTo(Source);
+//					}
+//				}
+//				else
+//				{
+//					Source.Owner.Current = Source.Owner.Pieces.FirstOrDefault(x => x.Current == Source);
+//				}
+//			}
 
-		private void SourcePropertyChanged(object? sender, PropertyChangedEventArgs e)
-		{
-			if (e.PropertyName is nameof(NodeVm.State) or nameof(NodeVm.IsMark))
-			{
-				Refresh();
-			}
-		}
+//			base.Update(gameTime);
+//		}
 
-		public override void Update(GameTime gameTime)
-		{
-			if (Source is null || Source.Owner is null)
-			{
-				return;
-			}
-
-			var mouseService = Game.Services.GetService<IMouseService>();
-
-			var vertices = Background.GetVertices() ?? IReadOnlyVertices.Empty;
-			var mouseContains = vertices.FillContains(mouseService.Position);
-
-			Background.Color = mouseContains ? Color.Blue : Color.Red;
-
-			if (mouseContains && mouseService.LeftButtonOnPress)
-			{
-				var keyboard = Game.Services.GetService<IKeyboardService>();
-				if (keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
-				{
-					Source.CreateSimple();
-				}
-				else if (keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift))
-				{
-					foreach (var piece in Source.Owner.Pieces.Where(x => x.IsMark))
-					{
-						piece.MoveTo(Source);
-					}
-				}
-				else
-				{
-					Source.Owner.Current = Source.Owner.Pieces.FirstOrDefault(x => x.Current == Source);
-				}
-			}
-
-			base.Update(gameTime);
-		}
-
-		public override void Free()
-		{
-			Source = null;
-			base.Free();
-		}
-	}
-}
+//		public override void Free()
+//		{
+//			Source = null;
+//			base.Free();
+//		}
+//	}
+//}

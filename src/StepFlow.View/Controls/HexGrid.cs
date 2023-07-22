@@ -1,17 +1,17 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using StepFlow.Common;
 using StepFlow.Common.Exceptions;
-using StepFlow.Layout;
 using StepFlow.View.Services;
 using StepFlow.View.Sketch;
-using StepFlow.ViewModel;
 
 namespace StepFlow.View.Controls
 {
-	public class HexGrid : Primitive
+	public class HexGrid : LayoutControl, IReadOnlyDictionary<Point, ILayoutCanvas>
 	{
 		private static float BigRadiusToFlatRatio { get; } = MathF.Sqrt(3);
 		private static (float Pointy, float Flat, float CellPointy, float CellFlat) GetSize(float bigRadius)
@@ -21,65 +21,9 @@ namespace StepFlow.View.Controls
 			return (pointy, flat, pointy / 4, flat / 2);
 		}
 
-		public HexGrid(Game game, RectPlot plot) : base(game)
+		public HexGrid(IServiceProvider serviceProvider) : base(serviceProvider)
 		{
-			Plot = plot ?? throw new ArgumentNullException(nameof(plot));
-
-			Refresh();
 		}
-
-		private PlaygroundVm? source;
-
-		public PlaygroundVm? Source
-		{
-			get => source;
-			set
-			{
-				if (Source != value)
-				{
-					NotifyPropertyExtensions.TryUnsubscribe(Source?.Place, ParticlesCollectionChanged);
-
-					source = value;
-
-					NotifyPropertyExtensions.TrySubscribe(Source?.Place, ParticlesCollectionChanged);
-				}
-			}
-		}
-
-		private void ParticlesCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-		{
-			var nodesVm = Source?.Place.ToArray();
-
-			if (nodesVm is null || !nodesVm.Any())
-			{
-				foreach (var child in Childs)
-				{
-					child.Free();
-				}
-				Childs.Clear();
-				return;
-			}
-
-			while (Childs.Count < nodesVm.Length)
-			{
-				Childs.Add(new HexChild(Game));
-			}
-
-			while (Childs.Count > nodesVm.Length)
-			{
-				var lastIndex = Childs.Count - 1;
-				var lastNodeV = Childs[lastIndex];
-				Childs.RemoveAt(lastIndex);
-				lastNodeV.Free();
-			}
-
-			for (var i = 0; i < Childs.Count; i++)
-			{
-				((HexChild)Childs[i]).Source = nodesVm[i];
-			}
-		}
-
-		private RectPlot Plot { get; }
 
 		private HexOrientation orientation = HexOrientation.Flat;
 
@@ -91,7 +35,7 @@ namespace StepFlow.View.Controls
 				if (Orientation != value)
 				{
 					orientation = value;
-					Refresh();
+					hexSize = null;
 				}
 			}
 		}
@@ -106,7 +50,7 @@ namespace StepFlow.View.Controls
 				if (OffsetOdd != value)
 				{
 					offsetOdd = value;
-					Refresh();
+					hexSize = null;
 				}
 			}
 		}
@@ -121,55 +65,131 @@ namespace StepFlow.View.Controls
 				if (Size != value)
 				{
 					size = value;
-					Refresh();
+					hexSize = null;
 				}
 			}
 		}
 
-		private void Refresh()
+		private HexSize CreateHexSize()
 		{
+			float width;
+			float height;
+			float cellWidth;
+			float cellHeight;
 			switch (Orientation)
 			{
 				case HexOrientation.Flat:
-					(Width, Height, CellWidth, CellHeight) = GetSize(Size);
+					(width, height, cellWidth, cellHeight) = GetSize(Size);
 					break;
 				case HexOrientation.Pointy:
-					(Height, Width, CellHeight, CellWidth) = GetSize(Size);
+					(height, width, cellHeight, cellWidth) = GetSize(Size);
 					break;
 				default: throw EnumNotSupportedException.Create(Orientation);
 			}
 
-			foreach (var child in Childs.OfType<HexChild>())
-			{
-				child.Refresh();
-			}
+			return new(width, height, cellWidth, cellHeight);
 		}
 
-		public float Width { get; private set; }
-		public float Height { get; private set; }
-		public float CellWidth { get; private set; }
-		public float CellHeight { get; private set; }
+		private HexSize? hexSize;
 
-		internal Vector2 GetPosition(Point cellPosition) => new Vector2(
-			cellPosition.X * CellWidth + Plot.Bounds.Left + Width / 2,
-			cellPosition.Y * CellHeight + Plot.Bounds.Top + Height / 2
+		public HexSize HexSize => hexSize ??= CreateHexSize();
+
+		public Vector2 GetPosition(Point cellPosition) => new Vector2(
+			cellPosition.X * HexSize.CellWidth + Place.Left + HexSize.Width / 2,
+			cellPosition.Y * HexSize.CellHeight + Place.Top + HexSize.Height / 2
 		);
 
-		public override void Update(GameTime gameTime)
+		private Dictionary<Point, HexCell> Cells { get; } = new();
+
+		public IEnumerable<Point> Keys => Cells.Keys;
+
+		public IEnumerable<ILayoutCanvas> Values => Cells.Values;
+
+		public int Count => Cells.Count;
+
+		public ILayoutCanvas this[Point key] => Cells[key];
+
+		public ILayoutCanvas Add(Point position)
 		{
-			var keyboardService = Game.Services.GetService<IKeyboardService>();
+			var result = new HexCell(this, position);
+			Cells.Add(position, result);
+			return result;
+		}
 
-			if (keyboardService.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.Space))
+		public bool ContainsKey(Point key) => Cells.ContainsKey(key);
+
+		public bool TryGetValue(Point key, [MaybeNullWhen(false)] out ILayoutCanvas value)
+		{
+			if (Cells.TryGetValue(key, out var result))
 			{
-				if (Source is null)
-				{
-					throw new PropertyNullException(nameof(Source));
-				}
+				value = result;
+				return true;
+			}
+			else
+			{
+				value = default;
+				return false;
+			}
+		}
 
-				Source.TakeStep();
+		public IEnumerator<KeyValuePair<Point, ILayoutCanvas>> GetEnumerator()
+			=> Cells.Select(x => new KeyValuePair<Point, ILayoutCanvas>(x.Key, x.Value)).GetEnumerator();
+
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+		private sealed class HexCell : ILayoutCanvas
+		{
+			public HexCell(HexGrid owner, Point position)
+			{
+				Owner = owner ?? throw new ArgumentNullException(nameof(owner));
+				Position = position;
 			}
 
-			base.Update(gameTime);
+			public HexGrid Owner { get; }
+
+			public Point Position { get; }
+
+			private System.Drawing.RectangleF? place;
+
+			public System.Drawing.RectangleF Place
+			{
+				get
+				{
+					if (place is null)
+					{
+						var position = Owner.GetPosition(Position);
+						place = new(
+							position.X - Owner.Width / 2,
+							position.Y - Owner.Height / 2,
+							Owner.Width,
+							Owner.Height
+						);
+					}
+
+					return place.Value;
+				}
+			}
+
+			public void Refresh() => place = null;
 		}
+	}
+
+	public readonly struct HexSize
+	{
+		public HexSize(float width, float height, float cellWidth, float cellHeight)
+		{
+			Width = width;
+			Height = height;
+			CellWidth = cellWidth;
+			CellHeight = cellHeight;
+		}
+
+		public float Width { get; }
+
+		public float Height { get; }
+
+		public float CellWidth { get; }
+
+		public float CellHeight { get; }
 	}
 }

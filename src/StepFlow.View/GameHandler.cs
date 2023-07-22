@@ -1,15 +1,14 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Net.NetworkInformation;
+using System.Xml.Schema;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StepFlow.View.Controls;
 using StepFlow.View.Services;
 using StepFlow.View.Sketch;
-using StepFlow.ViewModel;
-using StepFlow.ViewModel.Collector;
-using StepFlow.ViewModel.Layout;
 
 namespace StepFlow.View
 {
-	public class GameHandler
+	public class GameHandler : ILayoutCanvas
 	{
 		public GameHandler(Game1 game, System.Drawing.RectangleF bounds)
 		{
@@ -23,39 +22,72 @@ namespace StepFlow.View
 			game.Services.AddService<IKeyboardService>(KeyboardService);
 			game.Services.AddService<IDrawer>(Drawer);
 
-			var wrapperProvider = new LockProvider();
-			Root = new RootVm(wrapperProvider.GetOrCreate<PlaygroundVm>(new Core.Playground()));
+			Place = bounds;
 
-			FillPlace(wrapperProvider, new(5, 5));
+			Base = new Primitive(game.Services);
 
-			Root.Root.OwnerBounds = bounds;
-			Root.Root.Margin = new Layout.Margin(1);
-
-			Base = new Sketch.Primitive(game);
-			Base.Childs.Add(new GridControl(game, Root.Root));
-
-			var hexGrid = new HexGrid(game, Root.ActionPlot)
+			Base.Childs.Add(new Polygon(game.Services)
 			{
-				Source = Root.Playground,
-				Size = 20,
-			};
-			Base.Childs.Add(hexGrid);
-		}
-
-		private void FillPlace(LockProvider wrapperProvider, System.Drawing.Size size)
-		{
-			for (var iX = 0; iX < size.Width; iX++)
-			{
-				for (var iY = 0; iY < size.Height; iY++)
+				Color = Color.Yellow,
+				Thickness = 5,
+				Vertices = new VerticesCollection()
 				{
-					Root.Playground.Place.Add(wrapperProvider.GetOrCreate<NodeVm>(new Core.Node(Root.Playground.Source, new(iX, iY), new(100))));
-				}
-			}
+					new(0, 0),
+					new(100, 0),
+					new(100, 100),
+					new(0, 100),
+				},
+			});
+
+			Base.Childs.Add(new Polygon(game.Services)
+			{
+				Color = Color.Red,
+				Thickness = 6,
+				Vertices = new VerticesCollection()
+				{
+					new(200, 200),
+					new(230, 200),
+					new(230, 230),
+				},
+			});
+
+			var b = new LayoutControl(game.Services)
+			{
+				Layout = new Layout()
+				{
+					Canvas = this,
+					Margin = new(30),
+				},
+			};
+			Base.Childs.Add(b);
+
+			Base.Childs.Add(new Text(game.Services)
+			{
+				Content = "My text!",
+				Color = Color.Pink,
+				HorizontalAlign = HorizontalAlign.Right,
+				VerticalAlign = VerticalAlign.Center,
+				Font = Font,
+				Layout = new Layout()
+				{
+					Canvas = b,
+					Size = new(150, 100),
+					Margin = new(15)
+					{
+						Left = new Unit(0, UnitKind.None),
+					},
+				},
+			});
+
+			Base.Childs.Add(new Hex(game.Services)
+			{
+				Position = new(200, 100),
+				Orientation = HexOrientation.Pointy,
+				Size = 30,
+			});
 		}
 
-		private RootVm Root { get; }
-
-		private Sketch.Primitive Base { get; }
+		private Primitive Base { get; }
 
 		private SpriteFont Font { get; }
 
@@ -67,6 +99,8 @@ namespace StepFlow.View
 		private KeyboardService KeyboardService { get; } = new KeyboardService();
 
 		private Drawer Drawer { get; }
+
+		public System.Drawing.RectangleF Place { get; }
 
 		public void Update(GameTime gameTime)
 		{

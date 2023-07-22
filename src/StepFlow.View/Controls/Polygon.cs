@@ -11,10 +11,10 @@ namespace StepFlow.View.Controls
 {
 	public abstract class PolygonBase : Primitive
 	{
-		public PolygonBase(Game game)
-			: base(game)
+		public PolygonBase(IServiceProvider serviceProvider)
+			: base(serviceProvider)
 		{
-			Drawer = Game.Services.GetRequiredService<IDrawer>();
+			Drawer = ServiceProvider.GetRequiredService<IDrawer>();
 		}
 
 		private IDrawer Drawer { get; }
@@ -51,8 +51,8 @@ namespace StepFlow.View.Controls
 
 	public class Polygon : PolygonBase
 	{
-		public Polygon(Game game)
-			: base(game)
+		public Polygon(IServiceProvider serviceProvider)
+			: base(serviceProvider)
 		{
 		}
 
@@ -80,7 +80,7 @@ namespace StepFlow.View.Controls
 				.Select(x => x + center);
 		}
 
-		public Hex(Game game) : base(game)
+		public Hex(IServiceProvider serviceProvider) : base(serviceProvider)
 		{
 		}
 
