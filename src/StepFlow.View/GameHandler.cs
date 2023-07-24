@@ -1,4 +1,6 @@
-﻿using System.Net.NetworkInformation;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Net.NetworkInformation;
 using System.Xml.Schema;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -26,65 +28,53 @@ namespace StepFlow.View
 
 			Base = new Primitive(game.Services);
 
-			Base.Childs.Add(new Polygon(game.Services)
+			var points = Create(50).Select(x => new Point(x.X + 20, x.Y + 20)).ToHashSet();
+			const int SIZE = 10;
+			const float OFFSET = 0.25f;
+			for (var iX = 0; iX < 50; iX++)
 			{
-				Color = Color.Yellow,
-				Thickness = 5,
-				Vertices = new VerticesCollection()
+				for (var iY = 0; iY < 50; iY++)
 				{
-					new(0, 0),
-					new(100, 0),
-					new(100, 100),
-					new(0, 100),
-				},
-			});
-
-			Base.Childs.Add(new Polygon(game.Services)
-			{
-				Color = Color.Red,
-				Thickness = 6,
-				Vertices = new VerticesCollection()
-				{
-					new(200, 200),
-					new(230, 200),
-					new(230, 230),
-				},
-			});
-
-			var b = new LayoutControl(game.Services)
-			{
-				Layout = new Layout()
-				{
-					Canvas = this,
-					Margin = new(30),
-				},
-			};
-			Base.Childs.Add(b);
-
-			Base.Childs.Add(new Text(game.Services)
-			{
-				Content = "My text!",
-				Color = Color.Pink,
-				HorizontalAlign = HorizontalAlign.Right,
-				VerticalAlign = VerticalAlign.Center,
-				Font = Font,
-				Layout = new Layout()
-				{
-					Canvas = b,
-					Size = new(150, 100),
-					Margin = new(15)
+					Base.Childs.Add(new Polygon(game.Services)
 					{
-						Left = new Unit(0, UnitKind.None),
-					},
-				},
-			});
+						Color = points.Contains(new Point(iX, iY)) ? Color.Green : Color.Red,
+						Thickness = 1,
+						Vertices = new BoundsVertices()
+						{
+							Bounds = new System.Drawing.RectangleF(
+								iX * SIZE + OFFSET,
+								iY * SIZE + OFFSET,
+								SIZE - OFFSET * 2,
+								SIZE - OFFSET * 2
+							),
+						},
+					});
+				}
+			}
+		}
 
-			Base.Childs.Add(new Hex(game.Services)
+		private IEnumerable<Point> Create(int diameter)
+		{
+			if (diameter == 0)
 			{
-				Position = new(200, 100),
-				Orientation = HexOrientation.Pointy,
-				Size = 30,
-			});
+				yield return Point.Zero;
+			}
+			else
+			{
+				var begin = diameter / 2;
+				var radius = diameter / 2f;
+				var radiusD = radius * radius;
+				for (var iX = -begin; iX < diameter; iX++)
+				{
+					for (var iY = -begin; iY < diameter; iY++)
+					{
+						if ((iY * iY) + (iX * iX) <= radiusD)
+						{
+							yield return new(iX, iY);
+						}
+					}
+				}
+			}
 		}
 
 		private Primitive Base { get; }
