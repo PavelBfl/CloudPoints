@@ -1,98 +1,76 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using StepFlow.Core.Collision;
 
 namespace StepFlow.Core
 {
 	public class Playground : Container
 	{
-		public Playground()
+		public ICollection<Points> Tables { get; } = new HashSet<Points>();
+
+		public IEnumerable<(Points, Points)> DeclareCollision()
 		{
-			Pieces = new PiecesCollection(this);
-			Place = new Place(this);
-		}
+			var instance = Tables.ToArray();
 
-		public PiecesCollection Pieces { get; }
-
-		public Place Place { get; }
-
-		private static IEnumerable<PairCollision> GetSwaps(Piece[] pieces)
-		{
-			for (var iFirst = 0; iFirst < pieces.Length; iFirst++)
+			for (var iFirst = 0; iFirst < instance.Length; iFirst++)
 			{
 				for (var iSecond = 0; iSecond < iFirst; iSecond++)
 				{
-					var firstPiece = pieces[iFirst];
-					var secondPiece = pieces[iSecond];
-					if (firstPiece.Current is { } && firstPiece.Next is { } &&
-						secondPiece.Current is { } && secondPiece.Next is { } &&
-						firstPiece.Current == secondPiece.Next && secondPiece.Current == firstPiece.Next
-					)
+					var firstTable = instance[iFirst];
+					var secondTable = instance[iSecond];
+					if (firstTable.Course != secondTable.Course)
 					{
-						yield return new PairCollision(firstPiece, secondPiece);
+						var firstBounds = firstTable.Bounds;
+						var secondBounds = secondTable.Bounds;
+						firstBounds.Offset(firstTable.Course.ToOffset());
+						secondBounds.Offset(secondTable.Course.ToOffset());
+						if (firstBounds.IntersectsWith(secondBounds) && GetDetailCollision(firstTable, secondTable))
+						{
+							yield return (firstTable, secondTable);
+						}
 					}
 				}
 			}
 		}
 
-		private static IEnumerable<CrashCollision> GetCrashes(Piece[] pieces)
+		private bool GetDetailCollision(Points first, Points second)
 		{
-			for (var iFirst = 0; iFirst < pieces.Length; iFirst++)
+			if (first.Course != Course.None && first.Course.Invert() == second.Course)
 			{
-				for (var iSecond = 0; iSecond < iFirst; iSecond++)
+				foreach (var firstPoint in first)
 				{
-					var firstPiece = pieces[iFirst];
-					var secondPiece = pieces[iSecond];
-					if (CheckCrash(firstPiece, secondPiece))
+					var firstNext = firstPoint;
+					firstNext.Offset(first.Course.ToOffset());
+					foreach (var secondPoint in second)
 					{
-						yield return new CrashCollision(firstPiece, secondPiece);
-					}
-					else if (CheckCrash(secondPiece, firstPiece))
-					{
-						yield return new CrashCollision(secondPiece, firstPiece);
+						var secondNext = secondPoint;
+						secondNext.Offset(second.Course.ToOffset());
+
+						if (firstPoint == secondPoint || firstPoint == secondNext || firstNext == secondPoint || firstNext == secondNext)
+						{
+							return true;
+						}
 					}
 				}
 			}
-		}
-
-		private static IEnumerable<IReadOnlyList<Piece>> GetCompetitors(Piece[] pieces)
-		{
-			var disputedNodes = new Dictionary<Node, List<Piece>>();
-			foreach (var piece in pieces)
+			else
 			{
-				if (piece.Next is { })
+				foreach (var firstPoint in first)
 				{
-					if (!disputedNodes.TryGetValue(piece.Next, out var competitors))
+					firstPoint.Offset(first.Course.ToOffset());
+					foreach (var secondPoint in second)
 					{
-						competitors = new List<Piece>();
-						disputedNodes[piece.Next] = competitors;
-					}
+						secondPoint.Offset(second.Course.ToOffset());
 
-					competitors.Add(piece);
+						if (firstPoint == secondPoint)
+						{
+							return true;
+						}
+					}
 				}
 			}
 
-			foreach (var competitors in disputedNodes.Values.Where(x => x.Count > 1))
-			{
-				yield return competitors;
-			}
+			return false;
 		}
-
-		public CollisionResult GetCollision()
-		{
-			var pieces = Pieces.ToArray();
-
-			var result = new CollisionResult(
-				GetCrashes(pieces),
-				GetSwaps(pieces),
-				GetCompetitors(pieces)
-			);
-
-			return result;
-		}
-
-		private static bool CheckCrash(Piece stationary, Piece moved)
-			=> stationary.Current is { } && stationary.Next is null && moved.Next == stationary.Current;
 	}
 }
