@@ -1,76 +1,56 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 
 namespace StepFlow.Core
 {
+	public interface ICell
+	{
+		Point Current { get; set; }
+
+		Point Next { get; set; }
+
+		bool IsStatic => Current == Next;
+
+		bool IsMoved => !IsStatic;
+
+		void TakeStep() => Current = Next;
+	}
+
+	public sealed class Cell
+	{
+		public Point Current { get; set; }
+
+		public Point Next { get; set; }
+
+		public bool IsStatic => Current == Next;
+
+		public bool IsMoved => !IsStatic;
+
+		public void TakeStep() => Current = Next;
+	}
+
 	public class Playground : Container
 	{
-		public ICollection<Points> Tables { get; } = new HashSet<Points>();
+		public ICollection<ICell> Cells { get; } = new HashSet<ICell>();
 
-		public IEnumerable<(Points, Points)> DeclareCollision()
+		public IEnumerable<ICollection<ICell>> DeclareCollision()
 		{
-			var instance = Tables.ToArray();
+			var counter = new Dictionary<Point, HashSet<ICell>>();
 
-			for (var iFirst = 0; iFirst < instance.Length; iFirst++)
+			foreach (var cell in Cells)
 			{
-				for (var iSecond = 0; iSecond < iFirst; iSecond++)
+				if (!counter.TryGetValue(cell.Next, out var candidates))
 				{
-					var firstTable = instance[iFirst];
-					var secondTable = instance[iSecond];
-					if (firstTable.Course != secondTable.Course)
-					{
-						var firstBounds = firstTable.Bounds;
-						var secondBounds = secondTable.Bounds;
-						firstBounds.Offset(firstTable.Course.ToOffset());
-						secondBounds.Offset(secondTable.Course.ToOffset());
-						if (firstBounds.IntersectsWith(secondBounds) && GetDetailCollision(firstTable, secondTable))
-						{
-							yield return (firstTable, secondTable);
-						}
-					}
+					candidates = new HashSet<ICell>();
+					counter.Add(cell.Next, candidates);
 				}
-			}
-		}
 
-		private bool GetDetailCollision(Points first, Points second)
-		{
-			if (first.Course != Course.None && first.Course.Invert() == second.Course)
-			{
-				foreach (var firstPoint in first)
-				{
-					var firstNext = firstPoint;
-					firstNext.Offset(first.Course.ToOffset());
-					foreach (var secondPoint in second)
-					{
-						var secondNext = secondPoint;
-						secondNext.Offset(second.Course.ToOffset());
-
-						if (firstPoint == secondPoint || firstPoint == secondNext || firstNext == secondPoint || firstNext == secondNext)
-						{
-							return true;
-						}
-					}
-				}
-			}
-			else
-			{
-				foreach (var firstPoint in first)
-				{
-					firstPoint.Offset(first.Course.ToOffset());
-					foreach (var secondPoint in second)
-					{
-						secondPoint.Offset(second.Course.ToOffset());
-
-						if (firstPoint == secondPoint)
-						{
-							return true;
-						}
-					}
-				}
+				candidates.Add(cell);
 			}
 
-			return false;
+			return counter.Values.Where(x => x.Count > 1);
 		}
 	}
 }

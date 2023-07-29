@@ -1,4 +1,6 @@
-﻿namespace StepFlow.Core
+﻿using System.Drawing;
+
+namespace StepFlow.Core
 {
 	public enum Course
 	{

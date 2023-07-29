@@ -27,7 +27,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StepFlow.Master", "src\Step
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{02A612D4-2756-4509-8A1A-02FB900E5C4E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StepFlow.Test", "test\StepFlow.Test\StepFlow.Test.csproj", "{766CB723-BD0A-4EF2-9898-8CAB7C133B6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StepFlow.Test", "test\StepFlow.Test\StepFlow.Test.csproj", "{766CB723-BD0A-4EF2-9898-8CAB7C133B6F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StepFlow.Core.Test", "test\StepFlow.Core.Test\StepFlow.Core.Test.csproj", "{F1040937-265B-4C7D-9D7D-DAE3D5BD3196}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,6 +81,10 @@ Global
 		{766CB723-BD0A-4EF2-9898-8CAB7C133B6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{766CB723-BD0A-4EF2-9898-8CAB7C133B6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{766CB723-BD0A-4EF2-9898-8CAB7C133B6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1040937-265B-4C7D-9D7D-DAE3D5BD3196}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1040937-265B-4C7D-9D7D-DAE3D5BD3196}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1040937-265B-4C7D-9D7D-DAE3D5BD3196}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1040937-265B-4C7D-9D7D-DAE3D5BD3196}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -95,6 +101,7 @@ Global
 		{3D6BA132-2670-44F4-92D9-46959843895A} = {1F837992-33AA-4744-B791-90BB3FDC2D4E}
 		{1D77BFA1-7DD5-4239-A55F-C748881666D1} = {1F837992-33AA-4744-B791-90BB3FDC2D4E}
 		{766CB723-BD0A-4EF2-9898-8CAB7C133B6F} = {02A612D4-2756-4509-8A1A-02FB900E5C4E}
+		{F1040937-265B-4C7D-9D7D-DAE3D5BD3196} = {02A612D4-2756-4509-8A1A-02FB900E5C4E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {52553761-5033-48FA-B06E-D149C927B957}
