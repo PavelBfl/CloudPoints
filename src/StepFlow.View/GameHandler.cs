@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Net.NetworkInformation;
 using System.Xml.Schema;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StepFlow.Core;
 using StepFlow.View.Controls;
 using StepFlow.View.Services;
 using StepFlow.View.Sketch;
@@ -28,16 +30,31 @@ namespace StepFlow.View
 
 			Base = new Primitive(game.Services);
 
-			var points = Create(50).Select(x => new Point(x.X + 20, x.Y + 20)).ToHashSet();
+			var bordered0 = CreateBordered(10);
+			bordered0.Offset(new(20, 20));
+			var bordered1 = CreateBordered(17);
+			bordered1.Offset(new(30, 20));
+
 			const int SIZE = 10;
 			const float OFFSET = 0.25f;
 			for (var iX = 0; iX < 50; iX++)
 			{
 				for (var iY = 0; iY < 50; iY++)
 				{
+					var position = new System.Drawing.Point(iX, iY);
+					Color color;
+					if (bordered0.Contains(position))
+					{
+						color = bordered1.Contains(position) ? Color.Yellow : Color.Green;
+					}
+					else
+					{
+						color = bordered1.Contains(position) ? Color.Blue : Color.Red;
+					}
+
 					Base.Childs.Add(new Polygon(game.Services)
 					{
-						Color = points.Contains(new Point(iX, iY)) ? Color.Green : Color.Red,
+						Color = color,
 						Thickness = 1,
 						Vertices = new BoundsVertices()
 						{
@@ -53,11 +70,21 @@ namespace StepFlow.View
 			}
 		}
 
-		private IEnumerable<Point> Create(int diameter)
+		private Bordered CreateBordered(int diameter)
+		{
+			var bordered = new StepFlow.Core.Bordered();
+			foreach (var point in Create(diameter))
+			{
+				bordered.AddCell(new(point, new System.Drawing.Size(1, 1)));
+			}
+			return bordered;
+		}
+
+		private IEnumerable<System.Drawing.Point> Create(int diameter)
 		{
 			if (diameter == 0)
 			{
-				yield return Point.Zero;
+				yield return System.Drawing.Point.Empty;
 			}
 			else
 			{

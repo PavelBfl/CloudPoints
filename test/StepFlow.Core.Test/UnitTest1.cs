@@ -5,25 +5,13 @@ public class UnitTest1
 	[Fact]
 	public void Test1()
 	{
-		var playground = new Playground();
+		var bordered0 = new Bordered();
+		bordered0.AddCell(new(0, 0, 1, 1));
+		bordered0.AddCell(new(2, 0, 1, 1));
 
-		var cells0 = new CellsCollection(playground)
-		{
-			new(0, 0),
-			new(1, 0),
-			new(2, 0),
-		};
+		var bordered1 = new Bordered();
+		bordered1.AddCell(new(0, 0, 1, 1));
 
-		var cells1 = new CellsCollection(playground)
-		{
-			{ new(0, 1), new(0, 0) }
-		};
-
-		foreach (var cell in new[] { cells0, cells1 }.SelectMany(x => x))
-		{
-			playground.Cells.Add(cell);
-		}
-
-		var collisions = playground.DeclareCollision().ToArray();
+		var result = Playground.GetCollisions(new[] { bordered0, bordered1 }).ToArray();
 	}
 }
