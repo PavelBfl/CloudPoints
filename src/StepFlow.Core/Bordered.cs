@@ -5,10 +5,25 @@ using System.Linq;
 
 namespace StepFlow.Core
 {
-	public class Bordered : IBorderedChild
+	public class Bordered : IBorderedNode
 	{
 		public Bordered()
 		{
+		}
+
+		public Bordered(Bordered original, Bordered? owner)
+		{
+			if (original is null)
+			{
+				throw new ArgumentNullException(nameof(original));
+			}
+
+			Owner = owner;
+
+			foreach (var child in original.childs)
+			{
+				childs.Add(child.Clone(this));
+			}
 		}
 
 		private Bordered(Bordered owner) => Owner = owner ?? throw new ArgumentNullException(nameof(owner));
@@ -41,7 +56,7 @@ namespace StepFlow.Core
 			}
 		}
 
-		private HashSet<IBorderedChild> childs = new HashSet<IBorderedChild>();
+		private HashSet<IBorderedNode> childs = new HashSet<IBorderedNode>();
 
 		public IEnumerable<IBordered> Childs => childs;
 
@@ -70,7 +85,7 @@ namespace StepFlow.Core
 			return result;
 		}
 
-		public bool Remove(IBorderedChild border)
+		public bool Remove(IBorderedNode border)
 		{
 			if (border is null)
 			{
@@ -86,13 +101,23 @@ namespace StepFlow.Core
 			return removed;
 		}
 
+		public IBorderedNode Clone(Bordered? owner) => new Bordered(this, owner);
+
 		private sealed class ChildCell : Cell
 		{
-			public ChildCell(Bordered owner) => Owner = owner ?? throw new ArgumentNullException(nameof(owner));
+			public ChildCell(Bordered? owner) => Owner = owner;
 
-			public Bordered Owner { get; }
+			private ChildCell(ChildCell original, Bordered? owner)
+				: base(original)
+			{
+				Owner = owner;
+			}
 
-			protected override void ChangeBorder() => Owner.Refresh();
+			public Bordered? Owner { get; }
+
+			public override IBorderedNode Clone(Bordered? owner) => new ChildCell(this, owner);
+
+			protected override void ChangeBorder() => Owner?.Refresh();
 		}
 	}
 }

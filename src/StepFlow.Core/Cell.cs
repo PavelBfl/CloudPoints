@@ -1,10 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace StepFlow.Core
 {
-	public abstract class Cell : IBorderedChild
+	public abstract class Cell : IBorderedNode
 	{
+		protected Cell()
+		{
+		}
+
+		protected Cell(Cell original)
+		{
+			if (original is null)
+			{
+				throw new ArgumentNullException();
+			}
+
+			border = original.border;
+		}
+
 		private Rectangle border;
 
 		public Rectangle Border
@@ -29,5 +44,7 @@ namespace StepFlow.Core
 			border.Offset(point);
 			ChangeBorder();
 		}
+
+		public abstract IBorderedNode Clone(Bordered? owner);
 	}
 }

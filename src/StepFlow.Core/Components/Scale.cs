@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace StepFlow.Core.Components
 {
-	public class Scale : Component, ICloneable
+	public sealed class Scale : Component
 	{
 		public Scale()
 		{
@@ -18,14 +18,6 @@ namespace StepFlow.Core.Components
 		{
 			this.value = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
 			this.max = max >= 0 ? max : throw new ArgumentOutOfRangeException(nameof(max));
-		}
-
-		public Scale(Scale original)
-			: this(
-				(original ?? throw new ArgumentNullException(nameof(original))).Value,
-				(original ?? throw new ArgumentNullException(nameof(original))).Max
-			)
-		{
 		}
 
 		private float value;
@@ -81,9 +73,5 @@ namespace StepFlow.Core.Components
 				return ScaleState.Node;
 			}
 		}
-
-		public Scale Clone() => new Scale(this);
-
-		object ICloneable.Clone() => Clone();
 	}
 }

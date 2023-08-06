@@ -2,8 +2,10 @@
 
 namespace StepFlow.Core
 {
-	public interface IBorderedChild : IBordered
+	public interface IBorderedNode : IBordered
 	{
 		void Offset(Point point);
+
+		IBorderedNode Clone(Bordered? owner);
 	}
 }
