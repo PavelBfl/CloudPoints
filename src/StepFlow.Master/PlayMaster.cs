@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using MoonSharp.Interpreter;
 using StepFlow.Core;
-using StepFlow.Core.Collision;
 using StepFlow.Core.Components;
 using StepFlow.Master.Proxies;
 using StepFlow.TimeLine;
@@ -70,21 +69,6 @@ namespace StepFlow.Master
 		private void InitLua()
 		{
 			UserData.RegisterType<IEnumerator>();
-
-			UserData.RegisterType<CollisionResult>();
-			UserData.RegisterType<PairCollision>();
-			UserData.RegisterType<CrashCollision>();
-
-			RegisterReadOnlyList<CrashCollision>();
-			RegisterReadOnlyList<PairCollision>();
-			RegisterReadOnlyList<Piece>();
-			RegisterReadOnlyList<IReadOnlyList<Piece>>();
-
-			UserData.RegisterProxyType<NodeProxy, Node>(x => new NodeProxy(this, x));
-			UserData.RegisterProxyType<PieceProxy, Piece>(x => new PieceProxy(this, x));
-			UserData.RegisterProxyType<PiecesCollectionProxy, PiecesCollection>(x => new PiecesCollectionProxy(this, x));
-			UserData.RegisterProxyType<PlaceProxy, Place>(x => new PlaceProxy(this, x));
-			UserData.RegisterProxyType<PlaygroundProxy, Playground>(x => new PlaygroundProxy(this, x));
 
 			UserData.RegisterProxyType<ScaleProxy, Scale>(x => new ScaleProxy(this, x));
 		}

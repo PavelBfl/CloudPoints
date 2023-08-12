@@ -49,12 +49,6 @@ namespace StepFlow.ViewModel.Collector
 			{
 				result = model switch
 				{
-					Node node => new NodeVm(this, node),
-					Piece piece => new PieceVm(this, piece),
-					Playground playground => new PlaygroundVm(this, playground),
-					Place place => new PlaceVm(this, place),
-					PiecesCollection pieceCollection => new PiecesCollectionVm(this, pieceCollection),
-
 					Scale scale => new ScaleVm(this, scale),
 					_ => throw Exceptions.Builder.CreateUnknownModel(),
 				};
