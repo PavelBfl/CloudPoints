@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using MoonSharp.Interpreter;
 using StepFlow.Core;
 using StepFlow.Core.Components;
@@ -25,6 +26,7 @@ namespace StepFlow.Master
 		{
 			return componentName switch
 			{
+				Playground.COLLIDED_NAME => new Collided(),
 				"Scheduled" => new Scheduled(),
 				"Strength" => new Scale(),
 				_ => throw new InvalidOperationException(),
@@ -69,8 +71,15 @@ namespace StepFlow.Master
 		private void InitLua()
 		{
 			UserData.RegisterType<IEnumerator>();
+			UserData.RegisterType<Rectangle>();
+			UserData.RegisterType<Point>();
+
+			UserData.RegisterProxyType<PlaygroundProxy, Playground>(x => new PlaygroundProxy(this, x));
+			UserData.RegisterProxyType<SubjectProxy<Subject>, Subject>(x => new SubjectProxy<Subject>(this, x));
+			UserData.RegisterProxyType<SubjectsCollectionProxy, ICollection<Subject>>(x => new SubjectsCollectionProxy(this, x));
 
 			UserData.RegisterProxyType<ScaleProxy, Scale>(x => new ScaleProxy(this, x));
+			UserData.RegisterProxyType<CollidedProxy, Collided>(x => new CollidedProxy(this, x));
 		}
 
 		public static DynValue Enumerate(ScriptExecutionContext context, CallbackArguments arguments)

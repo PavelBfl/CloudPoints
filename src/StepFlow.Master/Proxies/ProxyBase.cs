@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq.Expressions;
 using MoonSharp.Interpreter;
+using StepFlow.Core.Commands.Accessors;
 
 namespace StepFlow.Master.Proxies
 {
@@ -16,5 +18,11 @@ namespace StepFlow.Master.Proxies
 		public PlayMaster Owner { get; }
 
 		public TTarget Target { get; }
+
+		protected void SetValue<TValue>(Expression<Func<TTarget, TValue>> expression, TValue newValue)
+		{
+			var command = Target.CreatePropertyCommand(expression, newValue);
+			Owner.TimeAxis.Add(command);
+		}
 	}
 }
