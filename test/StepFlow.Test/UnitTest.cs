@@ -1,4 +1,3 @@
-using StepFlow.Core.Components;
 using StepFlow.Master;
 
 namespace StepFlow.Test
@@ -19,6 +18,25 @@ namespace StepFlow.Test
 				playground.Subjects.Add(subject)
 			");
 
+			master.Execute(@"
+				subject = playground.CreateSubject()
+				subject.AddComponent(""Collided"")
+				collided = subject.GetComponent(""Collided"")
+				collided.Size = playground.CreateRectangle(10, 10, 100, 100)
+				collided.Offset = playground.CreatePoint(0, 0)
+				playground.Subjects.Add(subject)
+			");
+
+			master.Execute(@"
+				a = {playground.CreateRectangle(1, 1, 5, 10), playground.CreatePoint(100, 200)}
+				debug(a)
+
+				for _, collisionUnit in enumerate(playground.GetCollision()) do
+					debug(collisionUnit)
+				end
+			");
+
+			return;
 			master.Execute(@"
 				for x = 0, 2, 1
 				do

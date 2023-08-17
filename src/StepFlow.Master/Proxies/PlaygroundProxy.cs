@@ -1,6 +1,9 @@
-﻿using System.Drawing;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Drawing;
 using MoonSharp.Interpreter;
 using StepFlow.Core;
+using StepFlow.Core.Components;
 
 namespace StepFlow.Master.Proxies
 {
@@ -14,6 +17,8 @@ namespace StepFlow.Master.Proxies
 		public SubjectsCollectionProxy Subjects => new SubjectsCollectionProxy(Owner, Target.Subjects);
 
 		public Subject CreateSubject() => new Subject(Target);
+
+		public IEnumerable<(Collided, Collided)> GetCollision() => Target.GetCollision();
 
 		public Rectangle CreateRectangle(int x, int y, int width, int height) => new Rectangle(x, y, width, height);
 

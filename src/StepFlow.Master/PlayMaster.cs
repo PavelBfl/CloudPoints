@@ -74,6 +74,10 @@ namespace StepFlow.Master
 			UserData.RegisterType<Rectangle>();
 			UserData.RegisterType<Point>();
 
+			UserData.RegisterType<(Collided, Collided)>();
+			UserData.RegisterType<IEnumerable<(Collided, Collided)>>();
+			UserData.RegisterType<IEnumerator<(Collided, Collided)>>();
+
 			UserData.RegisterProxyType<PlaygroundProxy, Playground>(x => new PlaygroundProxy(this, x));
 			UserData.RegisterProxyType<SubjectProxy<Subject>, Subject>(x => new SubjectProxy<Subject>(this, x));
 			UserData.RegisterProxyType<SubjectsCollectionProxy, ICollection<Subject>>(x => new SubjectsCollectionProxy(this, x));
@@ -121,7 +125,13 @@ namespace StepFlow.Master
 
 			script.Globals["playground"] = Playground;
 			script.Globals.Set("enumerate", DynValue.NewCallback(Enumerate));
+			script.Globals["debug"] = (Action<object>)Debug;
 			script.DoString(scriptText);
+		}
+
+		private void Debug(object obj)
+		{
+			
 		}
 	}
 }
