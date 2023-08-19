@@ -13,8 +13,15 @@ namespace StepFlow.Test
 				subject = playground.CreateSubject()
 				subject.AddComponent(""Collided"")
 				collided = subject.GetComponent(""Collided"")
-				collided.Size = playground.CreateRectangle(0, 0, 20, 10)
-				collided.Offset = playground.CreatePoint(15, 20)
+				bordered = playground.CreateBordered()
+				bordered.AddCell(playground.CreateRectangle(0, 0, 5, 6))
+				collided.Current = bordered
+				collided.Offset(playground.CreatePoint(5, 5))
+				collided.Damage = 5
+				subject.AddComponent(""Strength"")
+				strength = subject.GetComponent(""Strength"")
+				strength.Max = 100
+				strength.Value = 100
 				playground.Subjects.Add(subject)
 			");
 
@@ -22,49 +29,16 @@ namespace StepFlow.Test
 				subject = playground.CreateSubject()
 				subject.AddComponent(""Collided"")
 				collided = subject.GetComponent(""Collided"")
-				collided.Size = playground.CreateRectangle(10, 10, 100, 100)
-				collided.Offset = playground.CreatePoint(0, 0)
+				bordered = playground.CreateBordered()
+				bordered.AddCell(playground.CreateRectangle(0, 0, 20, 10))
+				collided.Current = bordered
+				collided.Offset(playground.CreatePoint(0, 0))
+				collided.Damage = 10
+				subject.AddComponent(""Strength"")
+				strength = subject.GetComponent(""Strength"")
+				strength.Max = 1000
+				strength.Value = 1000
 				playground.Subjects.Add(subject)
-			");
-
-			master.Execute(@"
-				a = {playground.CreateRectangle(1, 1, 5, 10), playground.CreatePoint(100, 200)}
-				debug(a)
-
-				for _, collisionUnit in enumerate(playground.GetCollision()) do
-					debug(collisionUnit)
-				end
-			");
-
-			return;
-			master.Execute(@"
-				for x = 0, 2, 1
-				do
-					for y = 0, 2, 1
-					do
-						playground.place.Add(playground.createNode(x, y))
-					end
-				end
-			");
-
-			master.Execute(@"
-				piece = playground.createPiece()
-				playground.pieces.Add(piece)
-				piece.AddComponent(""Strength"")
-				piece.current = playground.place[0, 0]
-				piece.next = playground.place[1, 0]
-				piece.IsScheduledStep = true
-				piece.CollisionDamage = 10
-			");
-
-			master.Execute(@"
-				piece = playground.createPiece()
-				playground.pieces.Add(piece)
-				piece.AddComponent(""Strength"")
-				piece.current = playground.place[1, 0]
-				piece.next = playground.place[0, 0]
-				piece.IsScheduledStep = true
-				piece.CollisionDamage = 10
 			");
 
 			master.TakeStep();

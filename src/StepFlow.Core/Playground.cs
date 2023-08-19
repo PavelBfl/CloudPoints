@@ -21,14 +21,9 @@ namespace StepFlow.Core
 				{
 					var first = instance[iFirst];
 					var second = instance[iSecond];
-					if (first.Border is { } firstBorder && second.Border is { } secondBorder)
+					if (first.Next is { } firstBorder && second.Next is { } secondBorder)
 					{
-						var firstOffset = firstBorder.Clone(null);
-						firstOffset.Offset(first.Offset);
-						var secondOffset = secondBorder.Clone(null);
-						secondOffset.Offset(second.Offset);
-
-						if (firstOffset.IsCollision(secondOffset))
+						if (firstBorder.IsCollision(secondBorder))
 						{
 							yield return (instance[iFirst], instance[iSecond]);
 						}

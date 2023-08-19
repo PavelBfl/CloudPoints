@@ -14,7 +14,7 @@ public class UnitTest1
 		border0.AddCell(new(0, 0, 3, 2));
 		var collided0 = new Collided()
 		{
-			Border = border0,
+			Current = border0,
 			Offset = new(1, 0),
 		};
 		subject0.Add(collided0, Playground.COLLIDED_NAME);
@@ -25,7 +25,7 @@ public class UnitTest1
 		border1.AddCell(new(3, 0, 1, 1));
 		var collided1 = new Collided()
 		{
-			Border = border1,
+			Current = border1,
 			Offset = new(0),
 		};
 		subject1.Add(collided1, Playground.COLLIDED_NAME);

@@ -23,5 +23,7 @@ namespace StepFlow.Master.Proxies
 		public Rectangle CreateRectangle(int x, int y, int width, int height) => new Rectangle(x, y, width, height);
 
 		public Point CreatePoint(int x, int y) => new Point(x, y);
+
+		public Bordered CreateBordered() => new Bordered();
 	}
 }

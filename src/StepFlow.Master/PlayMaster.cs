@@ -39,23 +39,15 @@ namespace StepFlow.Master
 			collision = playground.GetCollision();
 
 			for _, collisionUnit in enumerate(collision) do
-				fullDamage = 0;
 
-				for _, piece in enumerate(collisionUnit) do
-					fullDamage = fullDamage + piece.CollisionDamage;
+				strengthFirst = collisionUnit.Item1.GetComponent(""Strength"")
+				if strengthFirst != null then
+					strengthFirst.Add(collisionUnit.Item2.Damage)
 				end
 
-				removing = {}
-				for _, piece in enumerate(collisionUnit) do
-					strength = piece.GetComponent(""Strength"");
-					state = strength.Add(-(fullDamage - piece.CollisionDamage));
-					if state == 1 then
-						table.insert(removing, piece)
-					end
-				end
-
-				for _, piece in pairs(removing) do
-					playground.Pieces.Remove(piece)
+				strengthSecond = collisionUnit.Item2.GetComponent(""Strength"")
+				if strengthSecond != null then
+					strengthSecond.Add(collisionUnit.Item1.Damage)
 				end
 			end
 			");
@@ -81,6 +73,8 @@ namespace StepFlow.Master
 			UserData.RegisterProxyType<PlaygroundProxy, Playground>(x => new PlaygroundProxy(this, x));
 			UserData.RegisterProxyType<SubjectProxy<Subject>, Subject>(x => new SubjectProxy<Subject>(this, x));
 			UserData.RegisterProxyType<SubjectsCollectionProxy, ICollection<Subject>>(x => new SubjectsCollectionProxy(this, x));
+			UserData.RegisterProxyType<BorderedProxy, Bordered>(x => new BorderedProxy(this, x));
+			UserData.RegisterProxyType<CellProxy, Cell>(x => new CellProxy(this, x));
 
 			UserData.RegisterProxyType<ScaleProxy, Scale>(x => new ScaleProxy(this, x));
 			UserData.RegisterProxyType<CollidedProxy, Collided>(x => new CollidedProxy(this, x));

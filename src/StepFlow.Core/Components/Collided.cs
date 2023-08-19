@@ -5,17 +5,10 @@ namespace StepFlow.Core.Components
 {
 	public sealed class Collided : Component
 	{
-		public IBorderedNode? Border { get; set; }
+		public Bordered? Current { get; set; }
 
-		public Point Offset { get; set; }
+		public Bordered? Next { get; set; }
 
-		public void Move()
-		{
-			if (Border is { } border)
-			{
-				Border.Offset(Offset);
-				Offset = Point.Empty;
-			}
-		}
+		public float Damage { get; set; }
 	}
 }

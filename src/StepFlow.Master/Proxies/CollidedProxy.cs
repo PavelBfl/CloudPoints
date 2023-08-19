@@ -1,29 +1,42 @@
 ﻿using System.Drawing;
 using MoonSharp.Interpreter;
 using StepFlow.Core;
-using StepFlow.Core.Commands.Accessors;
 using StepFlow.Core.Components;
 
 namespace StepFlow.Master.Proxies
 {
-	public sealed class CollidedProxy : ProxyBase<Collided>
+	public sealed class CollidedProxy : ComponentProxy<Collided>
 	{
 		[MoonSharpHidden]
 		public CollidedProxy(PlayMaster owner, Collided target) : base(owner, target)
 		{
 		}
 
-		public Rectangle Size
+		public Bordered? Current { get => Target.Current; set => SetValue(x => x.Current, value); }
+
+		public Bordered? Next { get => Target.Next; set => SetValue(x => x.Next, value); }
+
+		public float Damage { get => Target.Damage; set => SetValue(x => x.Damage, value); }
+
+		public bool Offset(Point value)
 		{
-			get => Target.Border?.Border ?? Rectangle.Empty;
-			set
+			if (Current is { } current)
 			{
-				var bordered = new Bordered();
-				bordered.AddCell(value);
-				Target.Border = bordered;
+				var clone = (Bordered)current.Clone(null);
+				clone.Offset(value);
+				Next = clone;
+				return true;
+			}
+			else
+			{
+				return false;
 			}
 		}
 
-		public Point Offset { get => Target.Offset; set => SetValue(x => x.Offset, value); }
+		public void Move()
+		{
+			Current = Next;
+			Next = null;
+		}
 	}
 }
