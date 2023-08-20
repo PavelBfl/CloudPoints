@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Net.NetworkInformation;
-using System.Xml.Schema;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StepFlow.Core;
+using StepFlow.Core.Components;
+using StepFlow.Master;
 using StepFlow.View.Controls;
 using StepFlow.View.Services;
 using StepFlow.View.Sketch;
+using StepFlow.ViewModel;
+using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.View
 {
@@ -34,10 +30,10 @@ namespace StepFlow.View
 
 			Base = new Primitive(game.Services);
 
-			TestVm = new TestVm(Base, 100, 100, 5, 0.25f, game.Services);
+			PlayMaster = new PlayMasterVm(new LockProvider(), new PlayMaster());
 		}
 
-		private TestVm TestVm { get; }
+		private PlayMasterVm PlayMaster { get; }
 
 		private Primitive Base { get; }
 
@@ -56,7 +52,25 @@ namespace StepFlow.View
 
 		public void Update(GameTime gameTime)
 		{
-			TestVm.Update();
+			if (KeyboardService.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.Space))
+			{
+				PlayMaster.Execute(@$"
+					subject = playground.CreateSubject()
+					subject.AddComponent(""Collided"")
+					collided = subject.GetComponent(""Collided"")
+					bordered = playground.CreateBordered()
+					bordered.AddCell(playground.CreateRectangle({Random.Shared.Next(100)}, {Random.Shared.Next(100)}, {Random.Shared.Next(10, 100)}, {Random.Shared.Next(10, 100)}))
+					collided.Current = bordered
+					collided.Offset(playground.CreatePoint(5, 5))
+					collided.Damage = 5
+					subject.AddComponent(""Strength"")
+					strength = subject.GetComponent(""Strength"")
+					strength.Max = 100
+					strength.Value = 100
+					playground.Subjects.Add(subject)
+				");
+			}
+
 			Update(Base, gameTime);
 
 			KeyboardService.Update();
@@ -78,6 +92,23 @@ namespace StepFlow.View
 
 		public void Draw(GameTime gameTime)
 		{
+			Base.Childs.Clear();
+			foreach (var subject in PlayMaster.Playground.Subjects)
+			{
+				if (subject.Source.Components[Playground.COLLIDED_NAME] is Collided collided && collided.Current is not null)
+				{
+					var polygon = new Polygon(Base.ServiceProvider)
+					{
+						Color = subject.IsSelect ? Color.Green : Color.Red,
+						Vertices = new BoundsVertices()
+						{
+							Bounds = collided.Current.Border,
+						},
+					};
+					Base.Childs.Add(polygon);
+				}
+			}
+
 			SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
 
 			Draw(Base, gameTime);
@@ -94,150 +125,6 @@ namespace StepFlow.View
 				foreach (var child in primitive.Childs)
 				{
 					Draw(child, gameTime);
-				}
-			}
-		}
-	}
-
-	internal sealed class TestVm
-	{
-		public TestVm(Primitive owner, int width, int height, float size, float offset, IServiceProvider serviceProvider)
-		{
-			if (owner is null)
-			{
-				throw new ArgumentNullException(nameof(owner));
-			}
-
-			if (serviceProvider is null)
-			{
-				throw new ArgumentNullException(nameof(serviceProvider));
-			}
-
-			KeyboardService = serviceProvider.GetRequiredService<IKeyboardService>();
-
-			Cells = new Polygon[width, height];
-			for (var iX = 0; iX < width; iX++)
-			{
-				for (var iY = 0; iY < height; iY++)
-				{
-					Cells[iX, iY] = new Polygon(serviceProvider)
-					{
-						Color = Microsoft.Xna.Framework.Color.Red,
-						Thickness = 1,
-						Vertices = new BoundsVertices()
-						{
-							Bounds = new System.Drawing.RectangleF(
-								iX * size + offset,
-								iY * size + offset,
-								size - offset * 2,
-								size - offset * 2
-							),
-						},
-					};
-					owner.Childs.Add(Cells[iX, iY]);
-				}
-			}
-
-			var piecesCount = 2;
-			for (var i = 0; i < piecesCount; i++)
-			{
-				AddPieces(10);
-				Current.Offset(new(Random.Shared.Next(100), Random.Shared.Next(100)));
-			}
-		}
-
-		private IKeyboardService KeyboardService { get; }
-
-		private Polygon[,] Cells { get; }
-
-		private Bordered? Current { get; set; }
-
-		private List<Bordered> Pieces { get; } = new List<Bordered>();
-
-		public void AddPieces(int diameter)
-		{
-			Current = CreateBordered(diameter);
-			Pieces.Add(Current);
-		}
-
-		private static Bordered CreateBordered(int diameter)
-		{
-			var bordered = new StepFlow.Core.Bordered();
-			foreach (var point in Create(diameter))
-			{
-				bordered.AddCell(new(point, new System.Drawing.Size(1, 1)));
-			}
-			return bordered;
-		}
-
-		private static IEnumerable<System.Drawing.Point> Create(int diameter)
-		{
-			if (diameter == 0)
-			{
-				yield return System.Drawing.Point.Empty;
-			}
-			else
-			{
-				var begin = diameter / 2;
-				var radius = diameter / 2f;
-				var radiusD = radius * radius;
-				for (var iX = -begin; iX < diameter; iX++)
-				{
-					for (var iY = -begin; iY < diameter; iY++)
-					{
-						if ((iY * iY) + (iX * iX) <= radiusD)
-						{
-							yield return new(iX, iY);
-						}
-					}
-				}
-			}
-		}
-
-		public void Update()
-		{
-			var sw = Stopwatch.StartNew();
-			for (var iX = 0; iX < Cells.GetLength(0); iX++)
-			{
-				for (var iY = 0; iY < Cells.GetLength(1); iY++)
-				{
-					var count = Pieces.Where(x => x.Contains(new(iX, iY))).Count();
-					Cells[iX, iY].Color = count switch
-					{
-						0 => Microsoft.Xna.Framework.Color.Red,
-						1 => Microsoft.Xna.Framework.Color.Green,
-						_ => Microsoft.Xna.Framework.Color.Lerp(
-							Microsoft.Xna.Framework.Color.Yellow,
-							Microsoft.Xna.Framework.Color.Blue,
-							Math.Min(count - 2, 5) / 5f
-						),
-					};
-				}
-			}
-			System.Diagnostics.Trace.WriteLine(sw.Elapsed);
-
-			if (KeyboardService.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.Space))
-			{
-				AddPieces(10);
-			}
-
-			if (Current is not null)
-			{
-				if (KeyboardService.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.Up))
-				{
-					Current.Offset(new System.Drawing.Point(0, -1));
-				}
-				else if (KeyboardService.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.Down))
-				{
-					Current.Offset(new System.Drawing.Point(0, 1));
-				}
-				else if (KeyboardService.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.Left))
-				{
-					Current.Offset(new System.Drawing.Point(-1, 0));
-				}
-				else if (KeyboardService.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.Right))
-				{
-					Current.Offset(new System.Drawing.Point(1, 0));
 				}
 			}
 		}

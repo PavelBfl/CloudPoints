@@ -27,6 +27,8 @@
   <ItemGroup>
     <ProjectReference Include="..\StepFlow.Common\StepFlow.Common.csproj" />
     <ProjectReference Include="..\StepFlow.Core\StepFlow.Core.csproj" />
+    <ProjectReference Include="..\StepFlow.Master\StepFlow.Master.csproj" />
+    <ProjectReference Include="..\StepFlow.ViewModel\StepFlow.ViewModel.csproj" />
   </ItemGroup>
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
     <Message Text="Restoring dotnet tools" Importance="High" />

@@ -2,8 +2,11 @@
 
 namespace StepFlow.ViewModel
 {
-	public interface IParticleVm : IMarkered, ILockable
+	public interface IWrapper<out T> : ILockable
+		where T : class
 	{
+		T Source { get; }
+
 		void SourceHasChange();
 	}
 }
