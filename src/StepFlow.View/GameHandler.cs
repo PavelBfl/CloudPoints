@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StepFlow.Core;
@@ -69,6 +70,81 @@ namespace StepFlow.View
 					strength.Value = 100
 					playground.Subjects.Add(subject)
 				");
+			}
+
+			if (KeyboardService.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.Tab))
+			{
+				var subjects = PlayMaster.Playground.Subjects.ToArray();
+				var current = Array.FindIndex(subjects, x => x.IsSelect);
+				if (current >= 0)
+				{
+					subjects[current].IsSelect = false;
+					subjects[(current + 1) % subjects.Length].IsSelect = true;
+				}
+				else
+				{
+					subjects[0].IsSelect = true;
+				}
+			}
+
+			if (KeyboardService.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.Up))
+			{
+				var subjects = PlayMaster.Playground.Subjects.ToArray();
+				var current = Array.FindIndex(subjects, x => x.IsSelect);
+				if (current >= 0)
+				{
+					PlayMaster.Execute($@"
+						border = playground.Subjects[{current}].GetComponent(""Collided"").Current
+						if border != null then
+							border.Offset(playground.CreatePoint(0, -5))
+						end
+					");
+				}
+			}
+
+			if (KeyboardService.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.Left))
+			{
+				var subjects = PlayMaster.Playground.Subjects.ToArray();
+				var current = Array.FindIndex(subjects, x => x.IsSelect);
+				if (current >= 0)
+				{
+					PlayMaster.Execute($@"
+						border = playground.Subjects[{current}].GetComponent(""Collided"").Current
+						if border != null then
+							border.Offset(playground.CreatePoint(-5, 0))
+						end
+					");
+				}
+			}
+
+			if (KeyboardService.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.Right))
+			{
+				var subjects = PlayMaster.Playground.Subjects.ToArray();
+				var current = Array.FindIndex(subjects, x => x.IsSelect);
+				if (current >= 0)
+				{
+					PlayMaster.Execute($@"
+						border = playground.Subjects[{current}].GetComponent(""Collided"").Current
+						if border != null then
+							border.Offset(playground.CreatePoint(5, 0))
+						end
+					");
+				}
+			}
+
+			if (KeyboardService.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.Down))
+			{
+				var subjects = PlayMaster.Playground.Subjects.ToArray();
+				var current = Array.FindIndex(subjects, x => x.IsSelect);
+				if (current >= 0)
+				{
+					PlayMaster.Execute($@"
+						border = playground.Subjects[{current}].GetComponent(""Collided"").Current
+						if border != null then
+							border.Offset(playground.CreatePoint(0, 5))
+						end
+					");
+				}
 			}
 
 			Update(Base, gameTime);

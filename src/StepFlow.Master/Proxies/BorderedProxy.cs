@@ -10,5 +10,7 @@ namespace StepFlow.Master.Proxies
 		}
 
 		public Cell AddCell(Rectangle border) => Target.AddCell(border);
+
+		public void Offset(Point value) => Target.Offset(value);
 	}
 }

@@ -9,7 +9,7 @@ namespace StepFlow.Core
 	{
 		public const string COLLIDED_NAME = nameof(Collided);
 
-		public ICollection<Subject> Subjects { get; } = new HashSet<Subject>();
+		public IList<Subject> Subjects { get; } = new List<Subject>();
 
 		public IEnumerable<(Collided, Collided)> GetCollision()
 		{

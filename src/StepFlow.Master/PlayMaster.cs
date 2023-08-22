@@ -53,11 +53,14 @@ namespace StepFlow.Master
 			");
 		}
 
-		private static void RegisterReadOnlyList<T>()
+		private static void RegisterList<T>()
 		{
+			UserData.RegisterType<IEnumerable<T>>();
+			UserData.RegisterType<IEnumerator<T>>();
 			UserData.RegisterType<IReadOnlyList<T>>();
 			UserData.RegisterType<IReadOnlyCollection<T>>();
-			UserData.RegisterType<IEnumerable<T>>();
+			UserData.RegisterType<IList<T>>();
+			UserData.RegisterType<ICollection<T>>();
 		}
 
 		private void InitLua()
@@ -67,12 +70,14 @@ namespace StepFlow.Master
 			UserData.RegisterType<Point>();
 
 			UserData.RegisterType<(Collided, Collided)>();
-			UserData.RegisterType<IEnumerable<(Collided, Collided)>>();
-			UserData.RegisterType<IEnumerator<(Collided, Collided)>>();
+			RegisterList<(Collided, Collided)>();
 
 			UserData.RegisterProxyType<PlaygroundProxy, Playground>(x => new PlaygroundProxy(this, x));
+
 			UserData.RegisterProxyType<SubjectProxy<Subject>, Subject>(x => new SubjectProxy<Subject>(this, x));
-			UserData.RegisterProxyType<SubjectsCollectionProxy, ICollection<Subject>>(x => new SubjectsCollectionProxy(this, x));
+			RegisterList<Subject>();
+
+			UserData.RegisterProxyType<SubjectsCollectionProxy, IList<Subject>>(x => new SubjectsCollectionProxy(this, x));
 			UserData.RegisterProxyType<BorderedProxy, Bordered>(x => new BorderedProxy(this, x));
 			UserData.RegisterProxyType<CellProxy, Cell>(x => new CellProxy(this, x));
 

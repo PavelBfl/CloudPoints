@@ -6,12 +6,15 @@ using StepFlow.Master.Commands.Collections;
 
 namespace StepFlow.Master.Proxies
 {
-	public sealed class SubjectsCollectionProxy : ProxyBase<ICollection<Subject>>, ICollection<Subject>
+	public sealed class SubjectsCollectionProxy : ProxyBase<IList<Subject>>, IList<Subject>
 	{
 		[MoonSharpHidden]
-		public SubjectsCollectionProxy(PlayMaster owner, ICollection<Subject> target) : base(owner, target)
+		public SubjectsCollectionProxy(PlayMaster owner, IList<Subject> target) : base(owner, target)
 		{
 		}
+
+		// TODO Добавить команду
+		public Subject this[int index] { get => Target[index]; set => Target[index] = value; }
 
 		public int Count => Target.Count;
 
@@ -27,7 +30,15 @@ namespace StepFlow.Master.Proxies
 
 		public IEnumerator<Subject> GetEnumerator() => Target.GetEnumerator();
 
+		public int IndexOf(Subject item) => Target.IndexOf(item);
+
+		// TODO Добавить команду
+		public void Insert(int index, Subject item) => Target.Insert(index, item);
+
 		public bool Remove(Subject item) => Target.Remove(item);
+
+		// TODO Добавить команду
+		public void RemoveAt(int index) => Target.RemoveAt(index);
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}
