@@ -16,6 +16,8 @@ namespace StepFlow.Master.Proxies
 
 		public Bordered? Next { get => Target.Next; set => SetValue(x => x.Next, value); }
 
+		public bool IsMoving { get => Target.IsMoving; set => SetValue(x => x.IsMoving, value); }
+
 		public float Damage { get => Target.Damage; set => SetValue(x => x.Damage, value); }
 
 		public bool Offset(Point value)
@@ -25,6 +27,7 @@ namespace StepFlow.Master.Proxies
 				var clone = (Bordered)current.Clone(null);
 				clone.Offset(value);
 				Next = clone;
+				IsMoving = true;
 				return true;
 			}
 			else
@@ -35,8 +38,12 @@ namespace StepFlow.Master.Proxies
 
 		public void Move()
 		{
-			Current = Next;
-			Next = null;
+			if (IsMoving)
+			{
+				Current = Next;
+				Next = null;
+				IsMoving = false;
+			}
 		}
 	}
 }

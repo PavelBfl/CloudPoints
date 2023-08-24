@@ -94,9 +94,9 @@ namespace StepFlow.View
 				if (current >= 0)
 				{
 					PlayMaster.Execute($@"
-						border = playground.Subjects[{current}].GetComponent(""Collided"").Current
-						if border != null then
-							border.Offset(playground.CreatePoint(0, -5))
+						collided = playground.Subjects[{current}].GetComponent(""Collided"")
+						if collided != null then
+							collided.Offset(playground.CreatePoint(0, -5))
 						end
 					");
 				}
@@ -109,9 +109,9 @@ namespace StepFlow.View
 				if (current >= 0)
 				{
 					PlayMaster.Execute($@"
-						border = playground.Subjects[{current}].GetComponent(""Collided"").Current
-						if border != null then
-							border.Offset(playground.CreatePoint(-5, 0))
+						collided = playground.Subjects[{current}].GetComponent(""Collided"")
+						if collided != null then
+							collided.Offset(playground.CreatePoint(-5, 0))
 						end
 					");
 				}
@@ -124,9 +124,9 @@ namespace StepFlow.View
 				if (current >= 0)
 				{
 					PlayMaster.Execute($@"
-						border = playground.Subjects[{current}].GetComponent(""Collided"").Current
-						if border != null then
-							border.Offset(playground.CreatePoint(5, 0))
+						collided = playground.Subjects[{current}].GetComponent(""Collided"")
+						if collided != null then
+							collided.Offset(playground.CreatePoint(5, 0))
 						end
 					");
 				}
@@ -139,13 +139,15 @@ namespace StepFlow.View
 				if (current >= 0)
 				{
 					PlayMaster.Execute($@"
-						border = playground.Subjects[{current}].GetComponent(""Collided"").Current
-						if border != null then
-							border.Offset(playground.CreatePoint(0, 5))
+						collided = playground.Subjects[{current}].GetComponent(""Collided"")
+						if collided != null then
+							collided.Offset(playground.CreatePoint(0, 5))
 						end
 					");
 				}
 			}
+
+			PlayMaster.TakeStep();
 
 			Update(Base, gameTime);
 
@@ -173,14 +175,42 @@ namespace StepFlow.View
 			{
 				if (subject.Source.Components[Playground.COLLIDED_NAME] is Collided collided && collided.Current is not null)
 				{
+					var color = subject.IsSelect ? Color.Green : Color.Red;
 					var polygon = new Polygon(Base.ServiceProvider)
 					{
-						Color = subject.IsSelect ? Color.Green : Color.Red,
+						Color = color,
 						Vertices = new BoundsVertices()
 						{
 							Bounds = collided.Current.Border,
 						},
 					};
+
+					if (subject.Source.Components["Strength"] is Scale strength)
+					{
+						var border = collided.Current.Border;
+						var text = new Text(Base.ServiceProvider)
+						{
+							Color = color,
+							Font = Font,
+							Content = strength.Value.ToString(),
+							VerticalAlign = VerticalAlign.Center,
+							HorizontalAlign = HorizontalAlign.Center,
+							Layout = new Layout()
+							{
+								Canvas = this,
+								Margin = new()
+								{
+									Left = new Unit(border.X),
+									Top = new Unit(border.Y),
+									Right = new Unit(0, UnitKind.None),
+									Bottom = new Unit(0, UnitKind.None),
+								},
+								Size = new System.Drawing.SizeF(border.Width, border.Height),
+							}
+						};
+						polygon.Childs.Add(text);
+					}
+
 					Base.Childs.Add(polygon);
 				}
 			}

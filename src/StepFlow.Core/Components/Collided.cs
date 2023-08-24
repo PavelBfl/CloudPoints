@@ -9,6 +9,8 @@ namespace StepFlow.Core.Components
 
 		public Bordered? Next { get; set; }
 
+		public bool IsMoving { get; set; }
+
 		public float Damage { get; set; }
 	}
 }

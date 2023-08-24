@@ -50,6 +50,11 @@ namespace StepFlow.Master
 					strengthSecond.Add(collisionUnit.Item1.Damage)
 				end
 			end
+
+			for _, subject in enumerate(playground.Subjects) do
+				collided = subject.GetComponent(""Collided"")
+				collided.Move()
+			end
 			");
 		}
 

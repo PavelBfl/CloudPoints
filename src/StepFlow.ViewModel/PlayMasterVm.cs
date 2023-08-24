@@ -14,6 +14,8 @@ namespace StepFlow.ViewModel
 
 		public PlaygroundVm Playground => playground ??= LockProvider.GetOrCreate<PlaygroundVm>(Source.Playground);
 
+		public void TakeStep() => Source.TakeStep();
+
 		public void Execute(string script) => Source.Execute(script);
 
 		public override IEnumerable<ILockable> GetContent() => base.GetContent().ConcatIfNotNull(playground);
