@@ -8,10 +8,11 @@ namespace StepFlow.Core
 	public class Playground : Container
 	{
 		public const string COLLIDED_NAME = nameof(Collided);
+		public const string STRENGTH_NAME = "Strength";
 
 		public IList<Subject> Subjects { get; } = new List<Subject>();
 
-		public IEnumerable<(Collided, Collided)> GetCollision()
+		public IEnumerable<(Subject, Subject)> GetCollision()
 		{
 			var instance = Subjects.Select(x => x.Components[COLLIDED_NAME]).OfType<Collided>().ToArray();
 
@@ -21,11 +22,13 @@ namespace StepFlow.Core
 				{
 					var first = instance[iFirst];
 					var second = instance[iSecond];
-					if (first.Next is { } firstBorder && second.Next is { } secondBorder)
+					var firstBorder = first.Next ?? first.Current;
+					var secondBorder = second.Next ?? second.Current;
+					if (firstBorder is { } && secondBorder is { })
 					{
 						if (firstBorder.IsCollision(secondBorder))
 						{
-							yield return (instance[iFirst], instance[iSecond]);
+							yield return ((Subject)instance[iFirst].Container, (Subject)instance[iSecond].Container);
 						}
 					}
 				}

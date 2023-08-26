@@ -18,7 +18,7 @@ namespace StepFlow.Master.Proxies
 
 		public Subject CreateSubject() => new Subject(Target);
 
-		public IEnumerable<(Collided, Collided)> GetCollision() => Target.GetCollision();
+		public IEnumerable<(Subject, Subject)> GetCollision() => Target.GetCollision();
 
 		public Rectangle CreateRectangle(int x, int y, int width, int height) => new Rectangle(x, y, width, height);
 

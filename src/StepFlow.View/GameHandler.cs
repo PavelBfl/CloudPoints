@@ -147,7 +147,10 @@ namespace StepFlow.View
 				}
 			}
 
-			PlayMaster.TakeStep();
+			if (KeyboardService.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.LeftShift))
+			{
+				PlayMaster.TakeStep();
+			}
 
 			Update(Base, gameTime);
 

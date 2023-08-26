@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using MoonSharp.Interpreter;
+using MoonSharp.Interpreter.Interop;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Master.Proxies;
@@ -22,13 +24,31 @@ namespace StepFlow.Master
 
 		public Playground Playground { get; } = new Playground();
 
+		private Dictionary<Type, IProxyFactory> Proxies { get; } = new Dictionary<Type, IProxyFactory>();
+
+		private void RegisterProxyType<TProxy, TTarget>(Func<TTarget, TProxy> wrapDelegate)
+			where TProxy : class
+			where TTarget : class
+		{
+			var proxyFactory = new DelegateProxyFactory<TProxy, TTarget>(wrapDelegate);
+			UserData.RegisterProxyType(proxyFactory);
+			Proxies.Add(typeof(TTarget), proxyFactory);
+		}
+
+		[return: NotNullIfNotNull("obj")]
+		internal object? CreateProxy(object? obj) => obj is null ? null : Proxies[obj.GetType()].CreateProxyObject(obj);
+
 		public IComponent CreateComponent(string componentName)
 		{
+			if (componentName is null)
+			{
+				throw new ArgumentNullException(nameof(componentName));
+			}
+
 			return componentName switch
 			{
 				Playground.COLLIDED_NAME => new Collided(),
-				"Scheduled" => new Scheduled(),
-				"Strength" => new Scale(),
+				Playground.STRENGTH_NAME => new Scale(),
 				_ => throw new InvalidOperationException(),
 			};
 		}
@@ -39,16 +59,7 @@ namespace StepFlow.Master
 			collision = playground.GetCollision();
 
 			for _, collisionUnit in enumerate(collision) do
-
-				strengthFirst = collisionUnit.Item1.GetComponent(""Strength"")
-				if strengthFirst != null then
-					strengthFirst.Add(collisionUnit.Item2.Damage)
-				end
-
-				strengthSecond = collisionUnit.Item2.GetComponent(""Strength"")
-				if strengthSecond != null then
-					strengthSecond.Add(collisionUnit.Item1.Damage)
-				end
+				CollidedHandle(collisionUnit.Item1, collisionUnit.Item2)
 			end
 
 			for _, subject in enumerate(playground.Subjects) do
@@ -74,20 +85,20 @@ namespace StepFlow.Master
 			UserData.RegisterType<Rectangle>();
 			UserData.RegisterType<Point>();
 
-			UserData.RegisterType<(Collided, Collided)>();
-			RegisterList<(Collided, Collided)>();
+			UserData.RegisterType<(Subject, Subject)>();
+			RegisterList<(Subject, Subject)>();
 
-			UserData.RegisterProxyType<PlaygroundProxy, Playground>(x => new PlaygroundProxy(this, x));
+			RegisterProxyType<PlaygroundProxy, Playground>(x => new PlaygroundProxy(this, x));
 
-			UserData.RegisterProxyType<SubjectProxy<Subject>, Subject>(x => new SubjectProxy<Subject>(this, x));
+			RegisterProxyType<SubjectProxy<Subject>, Subject>(x => new SubjectProxy<Subject>(this, x));
 			RegisterList<Subject>();
 
-			UserData.RegisterProxyType<SubjectsCollectionProxy, IList<Subject>>(x => new SubjectsCollectionProxy(this, x));
-			UserData.RegisterProxyType<BorderedProxy, Bordered>(x => new BorderedProxy(this, x));
-			UserData.RegisterProxyType<CellProxy, Cell>(x => new CellProxy(this, x));
+			RegisterProxyType<SubjectsCollectionProxy, IList<Subject>>(x => new SubjectsCollectionProxy(this, x));
+			RegisterProxyType<BorderedProxy, Bordered>(x => new BorderedProxy(this, x));
+			RegisterProxyType<CellProxy, Cell>(x => new CellProxy(this, x));
 
-			UserData.RegisterProxyType<ScaleProxy, Scale>(x => new ScaleProxy(this, x));
-			UserData.RegisterProxyType<CollidedProxy, Collided>(x => new CollidedProxy(this, x));
+			RegisterProxyType<ScaleProxy, Scale>(x => new ScaleProxy(this, x));
+			RegisterProxyType<CollidedProxy, Collided>(x => new CollidedProxy(this, x));
 		}
 
 		public static DynValue Enumerate(ScriptExecutionContext context, CallbackArguments arguments)
@@ -123,12 +134,39 @@ namespace StepFlow.Master
 			}
 		}
 
+		public DynValue CollidedHandle(ScriptExecutionContext context, CallbackArguments arguments)
+		{
+			var dynFirst = arguments[0];
+			var firstProxy = (SubjectProxy<Subject>)CreateProxy(dynFirst.UserData.Object);
+
+			var dynSecond = arguments[1];
+			var secondProxy = (SubjectProxy<Subject>)CreateProxy(dynSecond.UserData.Object);
+
+			var firstCollided = (CollidedProxy)CreateProxy(firstProxy.GetComponent(Playground.COLLIDED_NAME));
+			var secondCollided = (CollidedProxy)CreateProxy(secondProxy.GetComponent(Playground.COLLIDED_NAME));
+
+			if (firstProxy.GetComponent(Playground.STRENGTH_NAME) is { } firstStrength)
+			{
+				var firstStrengthProxy = (ScaleProxy)CreateProxy(firstStrength);
+				firstStrengthProxy.Add(-secondCollided.Damage);
+			}
+
+			if (secondProxy.GetComponent(Playground.STRENGTH_NAME) is { } secondStrength)
+			{
+				var secondStrengthProxy = (ScaleProxy)CreateProxy(secondStrength);
+				secondStrengthProxy.Add(-firstCollided.Damage);
+			}
+
+			return DynValue.Nil;
+		}
+
 		public void Execute(string scriptText)
 		{
 			var script = new Script();
 
 			script.Globals["playground"] = Playground;
 			script.Globals.Set("enumerate", DynValue.NewCallback(Enumerate));
+			script.Globals.Set(nameof(CollidedHandle), DynValue.NewCallback(CollidedHandle));
 			script.Globals["debug"] = (Action<object>)Debug;
 			script.DoString(scriptText);
 		}
