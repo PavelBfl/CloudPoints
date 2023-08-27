@@ -41,6 +41,14 @@ namespace StepFlow.Master.Proxies
 			if (IsMoving)
 			{
 				Current = Next;
+				Breck();
+			}
+		}
+
+		public void Breck()
+		{
+			if (IsMoving)
+			{
 				Next = null;
 				IsMoving = false;
 			}

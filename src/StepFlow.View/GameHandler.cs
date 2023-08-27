@@ -32,6 +32,7 @@ namespace StepFlow.View
 			Base = new Primitive(game.Services);
 
 			PlayMaster = new PlayMasterVm(new LockProvider(), new PlayMaster());
+			Init();
 		}
 
 		private PlayMasterVm PlayMaster { get; }
@@ -50,6 +51,43 @@ namespace StepFlow.View
 		private Drawer Drawer { get; }
 
 		public System.Drawing.RectangleF Place { get; }
+
+		public void Init()
+		{
+			CreateWall(new(0, 0, 10, 100));
+			CreateWall(new(0, 0, 100, 10));
+			CreateWall(new(90, 0, 10, 100));
+			CreateWall(new(0, 90, 100, 10));
+
+			PlayMaster.Execute(@$"
+				subject = playground.CreateSubject()
+				subject.AddComponent(""Collided"")
+				collided = subject.GetComponent(""Collided"")
+				bordered = playground.CreateBordered()
+				bordered.AddCell(playground.CreateRectangle({40}, {40}, {20}, {20}))
+				collided.Current = bordered
+				collided.Offset(playground.CreatePoint(5, 5))
+				collided.Damage = 5
+				subject.AddComponent(""Strength"")
+				strength = subject.GetComponent(""Strength"")
+				strength.Max = 100
+				strength.Value = 100
+				playground.Subjects.Add(subject)
+			");
+		}
+
+		public void CreateWall(Rectangle rectangle)
+		{
+			PlayMaster.Execute(@$"
+				subject = playground.CreateSubject()
+				subject.AddComponent(""Collided"")
+				collided = subject.GetComponent(""Collided"")
+				bordered = playground.CreateBordered()
+				bordered.AddCell(playground.CreateRectangle({rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height}))
+				collided.Current = bordered
+				playground.Subjects.Add(subject)
+			");
+		}
 
 		public void Update(GameTime gameTime)
 		{
@@ -75,15 +113,10 @@ namespace StepFlow.View
 			if (KeyboardService.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.Tab))
 			{
 				var subjects = PlayMaster.Playground.Subjects.ToArray();
-				var current = Array.FindIndex(subjects, x => x.IsSelect);
+				var current = Array.FindIndex(subjects, x => x.Source.Components[Playground.STRENGTH_NAME] is not null);
 				if (current >= 0)
 				{
-					subjects[current].IsSelect = false;
-					subjects[(current + 1) % subjects.Length].IsSelect = true;
-				}
-				else
-				{
-					subjects[0].IsSelect = true;
+					subjects[current].IsSelect = true;
 				}
 			}
 
@@ -96,7 +129,7 @@ namespace StepFlow.View
 					PlayMaster.Execute($@"
 						collided = playground.Subjects[{current}].GetComponent(""Collided"")
 						if collided != null then
-							collided.Offset(playground.CreatePoint(0, -5))
+							collided.OffsetCourse(3)
 						end
 					");
 				}

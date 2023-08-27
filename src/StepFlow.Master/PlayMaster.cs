@@ -22,6 +22,31 @@ namespace StepFlow.Master
 
 		public IAxis<ICommand> TimeAxis { get; } = new Axis<ICommand>();
 
+		public long Time { get; private set; }
+
+		private Dictionary<long, List<ICommand>> Planned { get; } = new Dictionary<long, List<ICommand>>();
+
+		public void CommandPlaned(ICommand command, long time)
+		{
+			if (command is null)
+			{
+				throw new ArgumentNullException(nameof(command));
+			}
+
+			if (time <= Time)
+			{
+				throw new IndexOutOfRangeException(nameof(time));
+			}
+
+			if (!Planned.TryGetValue(time, out var commands))
+			{
+				commands = new List<ICommand>();
+				Planned.Add(time, commands);
+			}
+
+			commands.Add(command);
+		}
+
 		public Playground Playground { get; } = new Playground();
 
 		private Dictionary<Type, IProxyFactory> Proxies { get; } = new Dictionary<Type, IProxyFactory>();
@@ -67,6 +92,16 @@ namespace StepFlow.Master
 				collided.Move()
 			end
 			");
+
+			Time++;
+
+			if (Planned.Remove(Time, out var commands))
+			{
+				foreach (var command in commands)
+				{
+					TimeAxis.Add(command);
+				}
+			}
 		}
 
 		private static void RegisterList<T>()
@@ -149,12 +184,14 @@ namespace StepFlow.Master
 			{
 				var firstStrengthProxy = (ScaleProxy)CreateProxy(firstStrength);
 				firstStrengthProxy.Add(-secondCollided.Damage);
+				firstCollided.Breck();
 			}
 
 			if (secondProxy.GetComponent(Playground.STRENGTH_NAME) is { } secondStrength)
 			{
 				var secondStrengthProxy = (ScaleProxy)CreateProxy(secondStrength);
 				secondStrengthProxy.Add(-firstCollided.Damage);
+				secondCollided.Breck();
 			}
 
 			return DynValue.Nil;
