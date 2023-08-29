@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Linq;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using StepFlow.Core;
@@ -23,29 +24,6 @@ namespace StepFlow.Master
 		public IAxis<ICommand> TimeAxis { get; } = new Axis<ICommand>();
 
 		public long Time { get; private set; }
-
-		private Dictionary<long, List<ICommand>> Planned { get; } = new Dictionary<long, List<ICommand>>();
-
-		public void CommandPlaned(ICommand command, long time)
-		{
-			if (command is null)
-			{
-				throw new ArgumentNullException(nameof(command));
-			}
-
-			if (time <= Time)
-			{
-				throw new IndexOutOfRangeException(nameof(time));
-			}
-
-			if (!Planned.TryGetValue(time, out var commands))
-			{
-				commands = new List<ICommand>();
-				Planned.Add(time, commands);
-			}
-
-			commands.Add(command);
-		}
 
 		public Playground Playground { get; } = new Playground();
 
@@ -74,6 +52,7 @@ namespace StepFlow.Master
 			{
 				Playground.COLLIDED_NAME => new Collided(),
 				Playground.STRENGTH_NAME => new Scale(),
+				Playground.SCHEDULER_NAME => new Scheduled(),
 				_ => throw new InvalidOperationException(),
 			};
 		}
@@ -95,11 +74,25 @@ namespace StepFlow.Master
 
 			Time++;
 
-			if (Planned.Remove(Time, out var commands))
+			foreach (var scheduler in Playground.Subjects
+				.Select(x => x.Components[Playground.SCHEDULER_NAME])
+				.OfType<Scheduled>()
+				.Where(x => x.Course is { } && x.Time == Time)
+			)
 			{
-				foreach (var command in commands)
+
+				if (scheduler.Container.Components[Playground.COLLIDED_NAME] is Collided collided)
 				{
-					TimeAxis.Add(command);
+					if (collided.Current is { } current)
+					{
+						var schedulerProxy = (ScheduledProxy)CreateProxy(scheduler);
+						var collidedProxy = (CollidedProxy)CreateProxy(collided);
+
+						collidedProxy.Next = (Bordered)current.Clone(null);
+						collidedProxy.Next.Offset(schedulerProxy.Course.Value.ToOffset());
+
+						schedulerProxy.Clear();
+					}
 				}
 			}
 		}
@@ -134,6 +127,7 @@ namespace StepFlow.Master
 
 			RegisterProxyType<ScaleProxy, Scale>(x => new ScaleProxy(this, x));
 			RegisterProxyType<CollidedProxy, Collided>(x => new CollidedProxy(this, x));
+			RegisterProxyType<ScheduledProxy, Scheduled>(x => new ScheduledProxy(this, x));
 		}
 
 		public static DynValue Enumerate(ScriptExecutionContext context, CallbackArguments arguments)

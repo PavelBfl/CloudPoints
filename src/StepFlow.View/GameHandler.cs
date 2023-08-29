@@ -64,7 +64,7 @@ namespace StepFlow.View
 				subject.AddComponent(""Collided"")
 				collided = subject.GetComponent(""Collided"")
 				bordered = playground.CreateBordered()
-				bordered.AddCell(playground.CreateRectangle({40}, {40}, {20}, {20}))
+				bordered.AddCell(playground.CreateRectangle(40, 40, 20, 20))
 				collided.Current = bordered
 				collided.Offset(playground.CreatePoint(5, 5))
 				collided.Damage = 5
@@ -72,6 +72,7 @@ namespace StepFlow.View
 				strength = subject.GetComponent(""Strength"")
 				strength.Max = 100
 				strength.Value = 100
+				subject.AddComponent(""Scheduler"")
 				playground.Subjects.Add(subject)
 			");
 		}
@@ -127,9 +128,9 @@ namespace StepFlow.View
 				if (current >= 0)
 				{
 					PlayMaster.Execute($@"
-						collided = playground.Subjects[{current}].GetComponent(""Collided"")
-						if collided != null then
-							collided.OffsetCourse(3)
+						scheduler = playground.Subjects[{current}].GetComponent(""Scheduler"")
+						if scheduler != null then
+							scheduler.SetCourse(2)
 						end
 					");
 				}
@@ -142,9 +143,9 @@ namespace StepFlow.View
 				if (current >= 0)
 				{
 					PlayMaster.Execute($@"
-						collided = playground.Subjects[{current}].GetComponent(""Collided"")
-						if collided != null then
-							collided.Offset(playground.CreatePoint(-5, 0))
+						scheduler = playground.Subjects[{current}].GetComponent(""Scheduler"")
+						if scheduler != null then
+							scheduler.SetCourse(0)
 						end
 					");
 				}
@@ -157,9 +158,9 @@ namespace StepFlow.View
 				if (current >= 0)
 				{
 					PlayMaster.Execute($@"
-						collided = playground.Subjects[{current}].GetComponent(""Collided"")
-						if collided != null then
-							collided.Offset(playground.CreatePoint(5, 0))
+						scheduler = playground.Subjects[{current}].GetComponent(""Scheduler"")
+						if scheduler != null then
+							scheduler.SetCourse(4)
 						end
 					");
 				}
@@ -172,15 +173,15 @@ namespace StepFlow.View
 				if (current >= 0)
 				{
 					PlayMaster.Execute($@"
-						collided = playground.Subjects[{current}].GetComponent(""Collided"")
-						if collided != null then
-							collided.Offset(playground.CreatePoint(0, 5))
+						scheduler = playground.Subjects[{current}].GetComponent(""Scheduler"")
+						if scheduler != null then
+							scheduler.SetCourse(6)
 						end
 					");
 				}
 			}
 
-			if (KeyboardService.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.LeftShift))
+			if (KeyboardService.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.N))
 			{
 				PlayMaster.TakeStep();
 			}

@@ -1,14 +1,11 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
-using StepFlow.Core.Commands;
-using StepFlow.TimeLine;
+﻿using System.ComponentModel;
 
 namespace StepFlow.Core.Components
 {
 	public sealed class Scheduled : Component
 	{
-		public IList<ICommand> Queue { get; } = new List<ICommand>();
+		public long Time { get; set; }
 
-		public IList<IBuilder> Builders { get; } = new List<IBuilder>();
+		public Course? Course { get; set; }
 	}
 }

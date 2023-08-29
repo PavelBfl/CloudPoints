@@ -15,7 +15,6 @@ public class UnitTest1
 		var collided0 = new Collided()
 		{
 			Current = border0,
-			Offset = new(1, 0),
 		};
 		subject0.Add(collided0, Playground.COLLIDED_NAME);
 		playground.Subjects.Add(subject0);
@@ -26,7 +25,6 @@ public class UnitTest1
 		var collided1 = new Collided()
 		{
 			Current = border1,
-			Offset = new(0),
 		};
 		subject1.Add(collided1, Playground.COLLIDED_NAME);
 		playground.Subjects.Add(subject1);

@@ -4,7 +4,6 @@ namespace StepFlow.Core
 {
 	public enum Course
 	{
-		None,
 		Left,
 		LeftTop,
 		Top,

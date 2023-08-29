@@ -7,7 +7,6 @@ namespace StepFlow.Core
 	{
 		public static Point ToOffset(this Course course) => course switch
 		{
-			Course.None => Point.Empty,
 			Course.Left => new Point(-1, 0),
 			Course.LeftTop => new Point(-1, -1),
 			Course.Top => new Point(0, -1),
