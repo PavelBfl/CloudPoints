@@ -66,7 +66,6 @@ namespace StepFlow.View
 				bordered = playground.CreateBordered()
 				bordered.AddCell(playground.CreateRectangle(40, 40, 20, 20))
 				collided.Current = bordered
-				collided.Offset(playground.CreatePoint(5, 5))
 				collided.Damage = 5
 				subject.AddComponent(""Strength"")
 				strength = subject.GetComponent(""Strength"")

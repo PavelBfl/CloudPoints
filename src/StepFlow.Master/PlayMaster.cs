@@ -88,8 +88,7 @@ namespace StepFlow.Master
 						var schedulerProxy = (ScheduledProxy)CreateProxy(scheduler);
 						var collidedProxy = (CollidedProxy)CreateProxy(collided);
 
-						collidedProxy.Next = (Bordered)current.Clone(null);
-						collidedProxy.Next.Offset(schedulerProxy.Course.Value.ToOffset());
+						collidedProxy.Offset(schedulerProxy.Course.Value.ToOffset());
 
 						schedulerProxy.Clear();
 					}
