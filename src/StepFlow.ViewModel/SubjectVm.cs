@@ -1,4 +1,5 @@
 ﻿using StepFlow.Core;
+using StepFlow.Core.Components;
 using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.ViewModel

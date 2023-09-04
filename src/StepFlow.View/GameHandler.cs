@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Master;
@@ -110,7 +111,7 @@ namespace StepFlow.View
 				");
 			}
 
-			if (KeyboardService.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.Tab))
+			if (KeyboardService.IsKeyOnPress(Keys.Tab))
 			{
 				var subjects = PlayMaster.Playground.Subjects.ToArray();
 				var current = Array.FindIndex(subjects, x => x.Source.Components[Playground.STRENGTH_NAME] is not null);
@@ -120,67 +121,43 @@ namespace StepFlow.View
 				}
 			}
 
-			if (KeyboardService.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.Up))
+			if (KeyboardService.IsKeyOnPress(Keys.Up) && KeyboardService.IsKeyOnPress(Keys.Right))
 			{
-				var subjects = PlayMaster.Playground.Subjects.ToArray();
-				var current = Array.FindIndex(subjects, x => x.IsSelect);
-				if (current >= 0)
-				{
-					PlayMaster.Execute($@"
-						scheduler = playground.Subjects[{current}].GetComponent(""Scheduler"")
-						if scheduler != null then
-							scheduler.SetCourse(2)
-						end
-					");
-				}
+				SetCourse(Course.RightTop);
+			}
+			else if (KeyboardService.IsKeyOnPress(Keys.Up) && KeyboardService.IsKeyOnPress(Keys.Left))
+			{
+				SetCourse(Course.LeftTop);
+			}
+			else if (KeyboardService.IsKeyOnPress(Keys.Down) && KeyboardService.IsKeyOnPress(Keys.Right))
+			{
+				SetCourse(Course.RightBottom);
+			}
+			else if (KeyboardService.IsKeyOnPress(Keys.Down) && KeyboardService.IsKeyOnPress(Keys.Left))
+			{
+				SetCourse(Course.LeftBottom);
+			}
+			else if (KeyboardService.IsKeyOnPress(Keys.Up))
+			{
+				SetCourse(Course.Top);
+			}
+			else if (KeyboardService.IsKeyOnPress(Keys.Right))
+			{
+				SetCourse(Course.Right);
+			}
+			else if (KeyboardService.IsKeyOnPress(Keys.Down))
+			{
+				SetCourse(Course.Bottom);
+			}
+			else if (KeyboardService.IsKeyOnPress(Keys.Left))
+			{
+				SetCourse(Course.Left);
 			}
 
-			if (KeyboardService.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.Left))
-			{
-				var subjects = PlayMaster.Playground.Subjects.ToArray();
-				var current = Array.FindIndex(subjects, x => x.IsSelect);
-				if (current >= 0)
-				{
-					PlayMaster.Execute($@"
-						scheduler = playground.Subjects[{current}].GetComponent(""Scheduler"")
-						if scheduler != null then
-							scheduler.SetCourse(0)
-						end
-					");
-				}
-			}
-
-			if (KeyboardService.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.Right))
-			{
-				var subjects = PlayMaster.Playground.Subjects.ToArray();
-				var current = Array.FindIndex(subjects, x => x.IsSelect);
-				if (current >= 0)
-				{
-					PlayMaster.Execute($@"
-						scheduler = playground.Subjects[{current}].GetComponent(""Scheduler"")
-						if scheduler != null then
-							scheduler.SetCourse(4)
-						end
-					");
-				}
-			}
-
-			if (KeyboardService.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.Down))
-			{
-				var subjects = PlayMaster.Playground.Subjects.ToArray();
-				var current = Array.FindIndex(subjects, x => x.IsSelect);
-				if (current >= 0)
-				{
-					PlayMaster.Execute($@"
-						scheduler = playground.Subjects[{current}].GetComponent(""Scheduler"")
-						if scheduler != null then
-							scheduler.SetCourse(6)
-						end
-					");
-				}
-			}
-
-			if (KeyboardService.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.N))
+			if (PlayMaster.Source.Playground.Subjects
+				.Select(x => x.Components[Playground.SCHEDULER_NAME])
+				.OfType<Scheduled>()
+				.Where(x => x.Queue.Any()).Any())
 			{
 				PlayMaster.TakeStep();
 			}
@@ -189,6 +166,21 @@ namespace StepFlow.View
 
 			KeyboardService.Update();
 			MouseService.Update();
+		}
+
+		private void SetCourse(Course value)
+		{
+			var subjects = PlayMaster.Playground.Subjects.ToArray();
+			var current = Array.FindIndex(subjects, x => x.IsSelect);
+			if (current >= 0)
+			{
+				PlayMaster.Execute($@"
+						scheduler = playground.Subjects[{current}].GetComponent(""Scheduler"")
+						if scheduler != null then
+							scheduler.SetCourse({(int)value})
+						end
+					");
+			}
 		}
 
 		private static void Update(Primitive primitive, GameTime gameTime)

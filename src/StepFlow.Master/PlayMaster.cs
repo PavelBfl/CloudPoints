@@ -77,22 +77,11 @@ namespace StepFlow.Master
 			foreach (var scheduler in Playground.Subjects
 				.Select(x => x.Components[Playground.SCHEDULER_NAME])
 				.OfType<Scheduled>()
-				.Where(x => x.Course is { } && x.Time == Time)
+				.Where(x => x.Queue.Any())
 			)
 			{
-
-				if (scheduler.Container.Components[Playground.COLLIDED_NAME] is Collided collided)
-				{
-					if (collided.Current is { } current)
-					{
-						var schedulerProxy = (ScheduledProxy)CreateProxy(scheduler);
-						var collidedProxy = (CollidedProxy)CreateProxy(collided);
-
-						collidedProxy.Offset(schedulerProxy.Course.Value.ToOffset());
-
-						schedulerProxy.Clear();
-					}
-				}
+				var schedulerProxy = (ScheduledProxy)CreateProxy(scheduler);
+				schedulerProxy.TryDequeue();
 			}
 		}
 
@@ -119,6 +108,8 @@ namespace StepFlow.Master
 
 			RegisterProxyType<SubjectProxy<Subject>, Subject>(x => new SubjectProxy<Subject>(this, x));
 			RegisterList<Subject>();
+
+			RegisterProxyType<ListProxy<Turn, List<Turn>>, List<Turn>>(x => new ListProxy<Turn, List<Turn>>(this, x));
 
 			RegisterProxyType<SubjectsCollectionProxy, IList<Subject>>(x => new SubjectsCollectionProxy(this, x));
 			RegisterProxyType<BorderedProxy, Bordered>(x => new BorderedProxy(this, x));
