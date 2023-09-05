@@ -18,8 +18,6 @@ namespace StepFlow.Master.Proxies
 
 		public bool IsMoving { get => Target.IsMoving; set => SetValue(x => x.IsMoving, value); }
 
-		public float Damage { get => Target.Damage; set => SetValue(x => x.Damage, value); }
-
 		public bool Offset(Point value)
 		{
 			if (Current is { } current)
@@ -41,11 +39,11 @@ namespace StepFlow.Master.Proxies
 			if (IsMoving)
 			{
 				Current = Next;
-				Breck();
+				Break();
 			}
 		}
 
-		public void Breck()
+		public void Break()
 		{
 			if (IsMoving)
 			{

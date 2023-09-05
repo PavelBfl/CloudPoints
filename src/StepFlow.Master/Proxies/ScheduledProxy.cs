@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
 using StepFlow.Common.Exceptions;
 using StepFlow.Core;
 using StepFlow.Core.Components;
@@ -15,7 +16,11 @@ namespace StepFlow.Master.Proxies
 
 		public long QueueBegin { get => Target.QueueBegin; set => SetValue(x => x.QueueBegin, value); }
 
-		public void SetCourse(Course course)
+		public void CreateProjectile(Course course) => Add(new ProjectileBuilderTurn(this, course, 1, 10, 10));
+
+		public void SetCourse(Course course) => Add(CourseTurn.Create(this, course, 1));
+
+		private void Add(Turn turn)
 		{
 			var queueProxy = (ListProxy<Turn, List<Turn>>)Owner.CreateProxy(Target.Queue);
 
@@ -24,7 +29,7 @@ namespace StepFlow.Master.Proxies
 				QueueBegin = Owner.Time;
 			}
 
-			queueProxy.Add(CourseTurn.Create(this, course, 1));
+			queueProxy.Add(turn);
 		}
 
 		public bool TryDequeue()
@@ -93,6 +98,73 @@ namespace StepFlow.Master.Proxies
 					var collidedProxy = (CollidedProxy)Owner.Owner.CreateProxy(collided);
 					var offset = Course.ToOffset();
 					collidedProxy.Offset(offset);
+				}
+			}
+		}
+
+		private sealed class ProjectileBuilderTurn : Turn
+		{
+			public ProjectileBuilderTurn(
+				ScheduledProxy owner,
+				Course course,
+				long duration,
+				int size,
+				float damage
+			) : base(duration)
+			{
+				Owner = owner ?? throw new ArgumentNullException(nameof(owner));
+				Course = course;
+				Size = size > 0 ? size : throw new ArgumentOutOfRangeException(nameof(size));
+				Damage = damage;
+			}
+
+			private ScheduledProxy Owner { get; }
+
+			private Course Course { get; }
+
+			private int Size { get; }
+
+			private float Damage { get; }
+
+			public override void Execute()
+			{
+				var ownerCollided = Owner.Target.Container.Components[Playground.COLLIDED_NAME];
+				if (ownerCollided is Collided { Current: { } current })
+				{
+					var playgroundProxy = (PlaygroundProxy)Owner.Owner.CreateProxy(Owner.Owner.Playground);
+					var subject = playgroundProxy.CreateSubject();
+					playgroundProxy.Subjects.Add(subject);
+					var subjectProxy = (SubjectProxy<Subject>)Owner.Owner.CreateProxy(subject);
+
+					subjectProxy.AddComponent(Playground.COLLIDED_NAME);
+					var collided = (Collided)subjectProxy.GetComponent(Playground.COLLIDED_NAME);
+					var collidedProxy = (CollidedProxy)Owner.Owner.CreateProxy(collided);
+
+					var bordered = playgroundProxy.CreateBordered();
+					var borderedProxy = (BorderedProxy)Owner.Owner.CreateProxy(bordered);
+
+					var border = current.Border;
+					var center = new System.Drawing.Point(border.X + border.Width / 2, border.Y + border.Height / 2);
+					borderedProxy.AddCell(new System.Drawing.Rectangle(
+						center.X - Size / 2,
+						center.Y - Size / 2,
+						Size,
+						Size
+					));
+					collidedProxy.Current = borderedProxy.Target;
+
+					subjectProxy.AddComponent(Playground.PROJECTILE_NAME);
+					var projectile = subjectProxy.GetComponent(Playground.PROJECTILE_NAME);
+					var projectileProxy = (ProjectileProxy)Owner.Owner.CreateProxy(projectile);
+					projectileProxy.Damage = Damage;
+
+					subjectProxy.AddComponent(Playground.SCHEDULER_NAME);
+					var scheduler = subjectProxy.GetComponent(Playground.SCHEDULER_NAME);
+					var schedulerProxy = (ScheduledProxy)Owner.Owner.CreateProxy(scheduler);
+					for (var i = 0; i < 20; i++)
+					{
+						schedulerProxy.SetCourse(Course);
+					}
 				}
 			}
 		}

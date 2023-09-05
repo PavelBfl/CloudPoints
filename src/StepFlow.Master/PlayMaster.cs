@@ -16,6 +16,9 @@ namespace StepFlow.Master
 {
 	public class PlayMaster
 	{
+		private const string TAKE_STEP_NAME = nameof(TakeStep);
+		private const string ENUMERATE_NAME = "Enumerate";
+
 		public PlayMaster()
 		{
 			InitLua();
@@ -53,28 +56,49 @@ namespace StepFlow.Master
 				Playground.COLLIDED_NAME => new Collided(),
 				Playground.STRENGTH_NAME => new Scale(),
 				Playground.SCHEDULER_NAME => new Scheduled(),
+				Playground.PROJECTILE_NAME => new Projectile(),
 				_ => throw new InvalidOperationException(),
 			};
 		}
 
-		public void TakeStep()
+		public void TakeStep() => Execute(TAKE_STEP_NAME + "()");
+
+		private void CollisionHandle(Subject strength, Subject damage)
 		{
-			Execute(@"
-			collision = playground.GetCollision();
+			if (
+				strength.Components[Playground.STRENGTH_NAME] is Scale scale &&
+				damage.Components[Playground.PROJECTILE_NAME] is Projectile projectile
+			)
+			{
+				var scaleProxy = (ScaleProxy)CreateProxy(scale);
+				var projectileProxy = (ProjectileProxy)CreateProxy(projectile);
+				scaleProxy.Add(-projectileProxy.Damage);
 
-			for _, collisionUnit in enumerate(collision) do
-				CollidedHandle(collisionUnit.Item1, collisionUnit.Item2)
-			end
+				((CollidedProxy?)CreateProxy(strength.Components[Playground.COLLIDED_NAME]))?.Break();
+			}
+		}
 
-			for _, subject in enumerate(playground.Subjects) do
-				collided = subject.GetComponent(""Collided"")
-				collided.Move()
-			end
-			");
+		private void TakeStepInner()
+		{
+			foreach (var collision in Playground.GetCollision())
+			{
+				CollisionHandle(collision.Item1, collision.Item2);
+				CollisionHandle(collision.Item2, collision.Item1);
+			}
+
+			foreach (var subject in Playground.Subjects)
+			{
+				if (subject.Components[Playground.COLLIDED_NAME] is { } collided)
+				{
+					var collidedProxy = (CollidedProxy)CreateProxy(collided);
+					collidedProxy.Move();
+				}
+			}
 
 			Time++;
 
 			foreach (var scheduler in Playground.Subjects
+				.ToArray()
 				.Select(x => x.Components[Playground.SCHEDULER_NAME])
 				.OfType<Scheduled>()
 				.Where(x => x.Queue.Any())
@@ -118,6 +142,7 @@ namespace StepFlow.Master
 			RegisterProxyType<ScaleProxy, Scale>(x => new ScaleProxy(this, x));
 			RegisterProxyType<CollidedProxy, Collided>(x => new CollidedProxy(this, x));
 			RegisterProxyType<ScheduledProxy, Scheduled>(x => new ScheduledProxy(this, x));
+			RegisterProxyType<ProjectileProxy, Projectile>(x => new ProjectileProxy(this, x));
 		}
 
 		public static DynValue Enumerate(ScriptExecutionContext context, CallbackArguments arguments)
@@ -153,41 +178,14 @@ namespace StepFlow.Master
 			}
 		}
 
-		public DynValue CollidedHandle(ScriptExecutionContext context, CallbackArguments arguments)
-		{
-			var dynFirst = arguments[0];
-			var firstProxy = (SubjectProxy<Subject>)CreateProxy(dynFirst.UserData.Object);
-
-			var dynSecond = arguments[1];
-			var secondProxy = (SubjectProxy<Subject>)CreateProxy(dynSecond.UserData.Object);
-
-			var firstCollided = (CollidedProxy)CreateProxy(firstProxy.GetComponent(Playground.COLLIDED_NAME));
-			var secondCollided = (CollidedProxy)CreateProxy(secondProxy.GetComponent(Playground.COLLIDED_NAME));
-
-			if (firstProxy.GetComponent(Playground.STRENGTH_NAME) is { } firstStrength)
-			{
-				var firstStrengthProxy = (ScaleProxy)CreateProxy(firstStrength);
-				firstStrengthProxy.Add(-secondCollided.Damage);
-				firstCollided.Breck();
-			}
-
-			if (secondProxy.GetComponent(Playground.STRENGTH_NAME) is { } secondStrength)
-			{
-				var secondStrengthProxy = (ScaleProxy)CreateProxy(secondStrength);
-				secondStrengthProxy.Add(-firstCollided.Damage);
-				secondCollided.Breck();
-			}
-
-			return DynValue.Nil;
-		}
-
 		public void Execute(string scriptText)
 		{
 			var script = new Script();
 
 			script.Globals["playground"] = Playground;
-			script.Globals.Set("enumerate", DynValue.NewCallback(Enumerate));
-			script.Globals.Set(nameof(CollidedHandle), DynValue.NewCallback(CollidedHandle));
+
+			script.Globals[TAKE_STEP_NAME] = (Action)TakeStepInner;
+			script.Globals.Set(ENUMERATE_NAME, DynValue.NewCallback(Enumerate));
 			script.Globals["debug"] = (Action<object>)Debug;
 			script.DoString(scriptText);
 		}

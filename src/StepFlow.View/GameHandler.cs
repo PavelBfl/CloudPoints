@@ -68,7 +68,6 @@ namespace StepFlow.View
 				bordered = playground.CreateBordered()
 				bordered.AddCell(playground.CreateRectangle(40, 40, 20, 20))
 				collided.Current = bordered
-				collided.Damage = 5
 				subject.AddComponent(""Strength"")
 				strength = subject.GetComponent(""Strength"")
 				strength.Max = 100
@@ -163,6 +162,23 @@ namespace StepFlow.View
 				SetCourse(Course.Left);
 			}
 
+			if (KeyboardService.IsKeyOnPress(Keys.A))
+			{
+				CreateProjectile(Course.Left);
+			}
+			else if (KeyboardService.IsKeyOnPress(Keys.W))
+			{
+				CreateProjectile(Course.Top);
+			}
+			else if (KeyboardService.IsKeyOnPress(Keys.D))
+			{
+				CreateProjectile(Course.Right);
+			}
+			else if (KeyboardService.IsKeyOnPress(Keys.S))
+			{
+				CreateProjectile(Course.Bottom);
+			}
+
 			if (PlayMaster.Source.Playground.Subjects
 				.Select(x => x.Components[Playground.SCHEDULER_NAME])
 				.OfType<Scheduled>()
@@ -187,6 +203,21 @@ namespace StepFlow.View
 						scheduler = playground.Subjects[{current}].GetComponent(""Scheduler"")
 						if scheduler != null then
 							scheduler.SetCourse({(int)value})
+						end
+					");
+			}
+		}
+
+		private void CreateProjectile(Course course)
+		{
+			var subjects = PlayMaster.Playground.Subjects.ToArray();
+			var current = Array.FindIndex(subjects, x => x.IsSelect);
+			if (current >= 0)
+			{
+				PlayMaster.Execute($@"
+						scheduler = playground.Subjects[{current}].GetComponent(""Scheduler"")
+						if scheduler != null then
+							scheduler.CreateProjectile({(int)course})
 						end
 					");
 			}
