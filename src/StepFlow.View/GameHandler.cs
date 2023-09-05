@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -33,8 +34,11 @@ namespace StepFlow.View
 			Base = new Primitive(game.Services);
 
 			PlayMaster = new PlayMasterVm(new LockProvider(), new PlayMaster());
+			Meter.CreateObservableGauge("Time", () => PlayMaster.Source.Time);
 			Init();
 		}
+
+		private Meter Meter { get; } = new Meter("Game.Gameplay");
 
 		private PlayMasterVm PlayMaster { get; }
 
@@ -55,10 +59,7 @@ namespace StepFlow.View
 
 		public void Init()
 		{
-			CreateWall(new(0, 0, 10, 100));
-			CreateWall(new(0, 0, 100, 10));
-			CreateWall(new(90, 0, 10, 100));
-			CreateWall(new(0, 90, 100, 10));
+			CreateRoom(new(0, 0, 200, 100), 10);
 
 			PlayMaster.Execute(@$"
 				subject = playground.CreateSubject()
@@ -77,6 +78,14 @@ namespace StepFlow.View
 			");
 		}
 
+
+		public void CreateRoom(Rectangle rectangle, int width)
+		{
+			CreateWall(new(rectangle.X, rectangle.Y, rectangle.Width, width));
+			CreateWall(new(rectangle.X, rectangle.Y, width, rectangle.Height));
+			CreateWall(new(rectangle.Right - width, rectangle.Y, width, rectangle.Height));
+			CreateWall(new(rectangle.X, rectangle.Bottom - width, rectangle.Width, width));
+		}
 		public void CreateWall(Rectangle rectangle)
 		{
 			PlayMaster.Execute(@$"
