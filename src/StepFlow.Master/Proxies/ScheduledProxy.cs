@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
-using System.Net.WebSockets;
 using StepFlow.Common.Exceptions;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 
 namespace StepFlow.Master.Proxies
 {
-	public sealed class ScheduledProxy : ProxyBase<Scheduled>
+	public sealed class ScheduledProxy : ComponentProxy<Scheduled>
 	{
 		public ScheduledProxy(PlayMaster owner, Scheduled target) : base(owner, target)
 		{
@@ -132,41 +132,56 @@ namespace StepFlow.Master.Proxies
 				if (ownerCollided is Collided { Current: { } current })
 				{
 					var playgroundProxy = (PlaygroundProxy)Owner.Owner.CreateProxy(Owner.Owner.Playground);
-					var subject = playgroundProxy.CreateSubject();
-					playgroundProxy.Subjects.Add(subject);
-					var subjectProxy = (SubjectProxy<Subject>)Owner.Owner.CreateProxy(subject);
 
-					subjectProxy.AddComponent(Playground.COLLIDED_NAME);
-					var collided = (Collided)subjectProxy.GetComponent(Playground.COLLIDED_NAME);
-					var collidedProxy = (CollidedProxy)Owner.Owner.CreateProxy(collided);
+					var subject = playgroundProxy.CreateSubjectProxy();
+					var collided = subject.AddComponentProxy<CollidedProxy>(Playground.COLLIDED_NAME);
 
 					var bordered = playgroundProxy.CreateBordered();
 					var borderedProxy = (BorderedProxy)Owner.Owner.CreateProxy(bordered);
 
-					var border = current.Border;
-					var center = new System.Drawing.Point(border.X + border.Width / 2, border.Y + border.Height / 2);
-					borderedProxy.AddCell(new System.Drawing.Rectangle(
-						center.X - Size / 2,
-						center.Y - Size / 2,
-						Size,
-						Size
-					));
-					collidedProxy.Current = borderedProxy.Target;
+					var pivot = GetPivot(current.Border, Course);
+					var projectileBorder = CreateRectangle(Course.Invert(), pivot, new Size(Size, Size));
+					projectileBorder.Offset(Course.ToOffset());
 
-					subjectProxy.AddComponent(Playground.PROJECTILE_NAME);
-					var projectile = subjectProxy.GetComponent(Playground.PROJECTILE_NAME);
-					var projectileProxy = (ProjectileProxy)Owner.Owner.CreateProxy(projectile);
-					projectileProxy.Damage = Damage;
+					borderedProxy.AddCell(projectileBorder);
+					collided.Current = borderedProxy.Target;
 
-					subjectProxy.AddComponent(Playground.SCHEDULER_NAME);
-					var scheduler = subjectProxy.GetComponent(Playground.SCHEDULER_NAME);
-					var schedulerProxy = (ScheduledProxy)Owner.Owner.CreateProxy(scheduler);
-					for (var i = 0; i < 20; i++)
+					var projectile = subject.AddComponentProxy<ProjectileProxy>(Playground.PROJECTILE_NAME);
+					projectile.Damage = Damage;
+
+					var scheduler = subject.AddComponentProxy<ScheduledProxy>(Playground.SCHEDULER_NAME);
+					for (var i = 0; i < 100; i++)
 					{
-						schedulerProxy.SetCourse(Course);
+						scheduler.SetCourse(Course);
 					}
 				}
 			}
+
+			private static Point GetPivot(Rectangle rectangle, Course position) => position switch
+			{
+				Course.Left => new Point(rectangle.Left, rectangle.Top + rectangle.Height / 2),
+				Course.LeftTop => new Point(rectangle.Left, rectangle.Top),
+				Course.Top => new Point(rectangle.Left + rectangle.Width / 2, rectangle.Top),
+				Course.RightTop => new Point(rectangle.Right, rectangle.Top),
+				Course.Right => new Point(rectangle.Right, rectangle.Top + rectangle.Height / 2),
+				Course.RightBottom => new Point(rectangle.Right, rectangle.Bottom),
+				Course.Bottom => new Point(rectangle.Left + rectangle.Width / 2, rectangle.Bottom),
+				Course.LeftBottom => new Point(rectangle.Left, rectangle.Bottom),
+				_ => throw EnumNotSupportedException.Create(position),
+			};
+
+			private static Rectangle CreateRectangle(Course pivot, Point position, Size size) => pivot switch
+			{
+				Course.Left => new Rectangle(new Point(position.X, position.Y - size.Width / 2), size),
+				Course.LeftTop => new Rectangle(position, size),
+				Course.Top => new Rectangle(new Point(position.X - size.Width / 2, position.Y), size),
+				Course.RightTop => new Rectangle(new Point(position.X - size.Width, position.Y), size),
+				Course.Right => new Rectangle(new Point(position.X - size.Width, position.Y - size.Height / 2), size),
+				Course.RightBottom => new Rectangle(new Point(position.X - size.Width, position.Y - size.Height), size),
+				Course.Bottom => new Rectangle(new Point(position.X - size.Width / 2, position.Y - size.Height), size),
+				Course.LeftBottom => new Rectangle(new Point(position.X, position.Y - size.Height), size),
+				_ => throw EnumNotSupportedException.Create(pivot),
+			};
 		}
 	}
 }

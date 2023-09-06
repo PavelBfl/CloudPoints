@@ -14,6 +14,17 @@ namespace StepFlow.Master.Proxies
 		{
 		}
 
+		[MoonSharpHidden]
+		public SubjectProxy<Subject> CreateSubjectProxy(bool addContainer = true)
+		{
+			var result = (SubjectProxy<Subject>)Owner.CreateProxy(CreateSubject());
+			if (addContainer)
+			{
+				Subjects.Add(result.Target);
+			}
+			return result;
+		}
+
 		public SubjectsCollectionProxy Subjects => new SubjectsCollectionProxy(Owner, Target.Subjects);
 
 		public Subject CreateSubject() => new Subject(Target);

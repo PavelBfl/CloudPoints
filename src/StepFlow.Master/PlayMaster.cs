@@ -84,6 +84,9 @@ namespace StepFlow.Master
 			{
 				CollisionHandle(collision.Item1, collision.Item2);
 				CollisionHandle(collision.Item2, collision.Item1);
+
+				((CollidedProxy?)CreateProxy(collision.Item1.Components[Playground.COLLIDED_NAME]))?.Break();
+				((CollidedProxy?)CreateProxy(collision.Item2.Components[Playground.COLLIDED_NAME]))?.Break();
 			}
 
 			foreach (var subject in Playground.Subjects)
@@ -186,13 +189,7 @@ namespace StepFlow.Master
 
 			script.Globals[TAKE_STEP_NAME] = (Action)TakeStepInner;
 			script.Globals.Set(ENUMERATE_NAME, DynValue.NewCallback(Enumerate));
-			script.Globals["debug"] = (Action<object>)Debug;
 			script.DoString(scriptText);
-		}
-
-		private void Debug(object obj)
-		{
-			
 		}
 	}
 }

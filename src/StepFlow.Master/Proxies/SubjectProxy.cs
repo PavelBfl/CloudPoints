@@ -10,5 +10,8 @@ namespace StepFlow.Master.Proxies
 		public SubjectProxy(PlayMaster owner, TTarget target) : base(owner, target)
 		{
 		}
+
+		[MoonSharpHidden]
+		public PlaygroundProxy GetPlaygroundProxy() => (PlaygroundProxy)Owner.CreateProxy(Target.Owner);
 	}
 }
