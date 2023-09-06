@@ -73,13 +73,12 @@ namespace StepFlow.Master
 				var scaleProxy = (ScaleProxy)CreateProxy(scale);
 				var projectileProxy = (ProjectileProxy)CreateProxy(projectile);
 				scaleProxy.Add(-projectileProxy.Damage);
-
-				((CollidedProxy?)CreateProxy(strength.Components[Playground.COLLIDED_NAME]))?.Break();
 			}
 		}
 
 		private void TakeStepInner()
 		{
+			var removed = new List<Subject>();
 			foreach (var collision in Playground.GetCollision())
 			{
 				CollisionHandle(collision.Item1, collision.Item2);
@@ -87,14 +86,32 @@ namespace StepFlow.Master
 
 				((CollidedProxy?)CreateProxy(collision.Item1.Components[Playground.COLLIDED_NAME]))?.Break();
 				((CollidedProxy?)CreateProxy(collision.Item2.Components[Playground.COLLIDED_NAME]))?.Break();
+
+				if (collision.Item1.Components[Playground.PROJECTILE_NAME] is { })
+				{
+					removed.Add(collision.Item1);
+				}
+
+				if (collision.Item2.Components[Playground.PROJECTILE_NAME] is { })
+				{
+					removed.Add(collision.Item2);
+				}
 			}
 
-			foreach (var subject in Playground.Subjects)
+			var playgroundProxy = (PlaygroundProxy)CreateProxy(Playground);
+			foreach (var subject in removed)
 			{
-				if (subject.Components[Playground.COLLIDED_NAME] is { } collided)
+				playgroundProxy.Subjects.Remove(subject);
+			}
+
+			foreach (var subject in Playground.Subjects
+				.Select(x => (SubjectProxy<Subject>)CreateProxy(x))
+				.ToArray()
+			)
+			{
+				if (subject.GetComponentProxy<CollidedProxy>(Playground.COLLIDED_NAME) is { } collided)
 				{
-					var collidedProxy = (CollidedProxy)CreateProxy(collided);
-					collidedProxy.Move();
+					collided.Move();
 				}
 			}
 
