@@ -61,12 +61,18 @@ namespace StepFlow.View
 		{
 			CreateRoom(new(0, 0, 200, 100), 10);
 
+			CreateItem(new(40, 40, 20, 20));
+			CreateItem(new(100, 40, 20, 20));
+		}
+
+		private void CreateItem(Rectangle rectangle)
+		{
 			PlayMaster.Execute(@$"
 				subject = playground.CreateSubject()
 				subject.AddComponent(""Collided"")
 				collided = subject.GetComponent(""Collided"")
 				bordered = playground.CreateBordered()
-				bordered.AddCell(playground.CreateRectangle(40, 40, 20, 20))
+				bordered.AddCell(playground.CreateRectangle({rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height}))
 				collided.Current = bordered
 				subject.AddComponent(""Strength"")
 				strength = subject.GetComponent(""Strength"")
@@ -77,15 +83,15 @@ namespace StepFlow.View
 			");
 		}
 
-
-		public void CreateRoom(Rectangle rectangle, int width)
+		private void CreateRoom(Rectangle rectangle, int width)
 		{
 			CreateWall(new(rectangle.X, rectangle.Y, rectangle.Width, width));
 			CreateWall(new(rectangle.X, rectangle.Y, width, rectangle.Height));
 			CreateWall(new(rectangle.Right - width, rectangle.Y, width, rectangle.Height));
 			CreateWall(new(rectangle.X, rectangle.Bottom - width, rectangle.Width, width));
 		}
-		public void CreateWall(Rectangle rectangle)
+
+		private void CreateWall(Rectangle rectangle)
 		{
 			PlayMaster.Execute(@$"
 				subject = playground.CreateSubject()

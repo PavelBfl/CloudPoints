@@ -18,7 +18,7 @@ namespace StepFlow.Master.Proxies
 
 		public void CreateProjectile(Course course) => Add(new ProjectileBuilderTurn(this, course, 1, 10, 10));
 
-		public void SetCourse(Course course) => Add(CourseTurn.Create(this, course, 1));
+		public void SetCourse(Course course, int stepTime = 1) => Add(CourseTurn.Create(this, course, stepTime));
 
 		private void Add(Turn turn)
 		{

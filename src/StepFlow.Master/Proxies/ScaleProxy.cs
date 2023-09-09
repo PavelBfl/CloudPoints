@@ -13,13 +13,21 @@ namespace StepFlow.Master.Proxies
 
 		public float Max { get => Target.Max; set => Owner.TimeAxis.Add(Target.CreatePropertyCommand(x => x.Max, value)); }
 
-		public ScaleState Add(float value)
+		public void Add(float value)
 		{
-			var result = Target.Add(value);
-
-			Owner.TimeAxis.Add(Target.CreatePropertyCommand(x => x.Value, Target.Value), true);
-
-			return result;
+			var newValue = Value + value;
+			if (newValue > Max)
+			{
+				Value = Max;
+			}
+			else if (newValue < 0)
+			{
+				Value = 0;
+			}
+			else
+			{
+				Value = newValue;
+			}
 		}
 	}
 }
