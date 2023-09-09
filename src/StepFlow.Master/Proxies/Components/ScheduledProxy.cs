@@ -6,9 +6,9 @@ using StepFlow.Common.Exceptions;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 
-namespace StepFlow.Master.Proxies
+namespace StepFlow.Master.Proxies.Components
 {
-	public sealed class ScheduledProxy : ComponentProxy<Scheduled>
+	public sealed class ScheduledProxy : ComponentProxy<Scheduled>, IScheduledProxy
 	{
 		public ScheduledProxy(PlayMaster owner, Scheduled target) : base(owner, target)
 		{

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using MoonSharp.Interpreter;
 using StepFlow.Core;
+using StepFlow.Master.Proxies.Collections;
 
 namespace StepFlow.Master.Proxies
 {

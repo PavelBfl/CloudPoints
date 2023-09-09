@@ -1,9 +1,16 @@
-﻿using StepFlow.Core;
-using StepFlow.Core.Components;
+﻿using StepFlow.Core.Components;
 
-namespace StepFlow.Master.Proxies
+namespace StepFlow.Master.Proxies.Components
 {
-	public class ScaleProxy : ProxyBase<Scale>
+	public interface IScaleProxy : IComponentProxy
+	{
+		float Value { get; set; }
+		float Max { get; set; }
+		bool RemoveIfEmpty { get; set; }
+		void Add(float value);
+	}
+
+	public class ScaleProxy : ComponentProxy<Scale>, IScaleProxy
 	{
 		public ScaleProxy(PlayMaster owner, Scale target) : base(owner, target)
 		{
@@ -29,7 +36,7 @@ namespace StepFlow.Master.Proxies
 				if (RemoveIfEmpty)
 				{
 					var playground = (PlaygroundProxy)Owner.CreateProxy(Owner.Playground);
-					var subject = (SubjectProxy<Subject>)Owner.CreateProxy(Target.Container);
+					var subject = (SubjectProxy)Owner.CreateProxy(Target.Container);
 					playground.Subjects.Remove(subject.Target);
 				}
 			}

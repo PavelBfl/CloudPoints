@@ -1,8 +1,8 @@
 ﻿using StepFlow.Core.Components;
 
-namespace StepFlow.Master.Proxies
+namespace StepFlow.Master.Proxies.Components
 {
-	public sealed class ProjectileProxy : ProxyBase<Projectile>
+	public sealed class ProjectileProxy : ComponentProxy<Projectile>, IProjectileProxy
 	{
 		public ProjectileProxy(PlayMaster owner, Projectile target) : base(owner, target)
 		{

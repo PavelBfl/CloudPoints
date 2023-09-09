@@ -10,11 +10,13 @@ using MoonSharp.Interpreter.Interop;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Master.Proxies;
+using StepFlow.Master.Proxies.Collections;
+using StepFlow.Master.Proxies.Components;
 using StepFlow.TimeLine;
 
 namespace StepFlow.Master
 {
-	public class PlayMaster
+    public class PlayMaster
 	{
 		private const string TAKE_STEP_NAME = nameof(TakeStep);
 		private const string ENUMERATE_NAME = "Enumerate";
@@ -107,7 +109,7 @@ namespace StepFlow.Master
 			}
 
 			foreach (var subject in Playground.Subjects
-				.Select(x => (SubjectProxy<Subject>)CreateProxy(x))
+				.Select(x => (SubjectProxy)CreateProxy(x))
 				.ToArray()
 			)
 			{
@@ -152,7 +154,7 @@ namespace StepFlow.Master
 
 			RegisterProxyType<PlaygroundProxy, Playground>(x => new PlaygroundProxy(this, x));
 
-			RegisterProxyType<SubjectProxy<Subject>, Subject>(x => new SubjectProxy<Subject>(this, x));
+			RegisterProxyType<SubjectProxy, Subject>(x => new SubjectProxy(this, x));
 			RegisterList<Subject>();
 
 			RegisterProxyType<ListProxy<Turn, List<Turn>>, List<Turn>>(x => new ListProxy<Turn, List<Turn>>(this, x));

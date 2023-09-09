@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Linq.Expressions;
-using MoonSharp.Interpreter;
 using StepFlow.Core.Commands.Accessors;
 
 namespace StepFlow.Master.Proxies
 {
-	public class ProxyBase<TTarget>
+	public class ProxyBase<TTarget> : IProxyBase<TTarget>
 		where TTarget : class
 	{
-		[MoonSharpHidden]
 		public ProxyBase(PlayMaster owner, TTarget target)
 		{
 			Owner = owner ?? throw new ArgumentNullException(nameof(owner));

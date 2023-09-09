@@ -1,13 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using MoonSharp.Interpreter;
 using StepFlow.Core;
-using StepFlow.Core.Components;
+using StepFlow.Master.Proxies.Collections;
+using StepFlow.Master.Proxies.Components;
 
 namespace StepFlow.Master.Proxies
 {
-	public sealed class PlaygroundProxy : ContainerProxy<Playground>
+	public sealed class PlaygroundProxy : ProxyBase<Playground>, IPlaygroundProxy
 	{
 		[MoonSharpHidden]
 		public PlaygroundProxy(PlayMaster owner, Playground target) : base(owner, target)
@@ -15,9 +15,9 @@ namespace StepFlow.Master.Proxies
 		}
 
 		[MoonSharpHidden]
-		public SubjectProxy<Subject> CreateSubjectProxy(bool addContainer = true)
+		public SubjectProxy CreateSubjectProxy(bool addContainer = true)
 		{
-			var result = (SubjectProxy<Subject>)Owner.CreateProxy(CreateSubject());
+			var result = (SubjectProxy)Owner.CreateProxy(CreateSubject());
 			if (addContainer)
 			{
 				Subjects.Add(result.Target);
@@ -25,7 +25,7 @@ namespace StepFlow.Master.Proxies
 			return result;
 		}
 
-		public SubjectsCollectionProxy Subjects => new SubjectsCollectionProxy(Owner, Target.Subjects);
+		public ICollection<ISubjectProxy> Subjects => new CollectionProxy<Subject, ICollection<Subject>, ISubjectProxy>(Owner, Target.Subjects);
 
 		public Subject CreateSubject() => new Subject(Target);
 

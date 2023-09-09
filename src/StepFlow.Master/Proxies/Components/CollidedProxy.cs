@@ -1,13 +1,11 @@
 ﻿using System.Drawing;
-using MoonSharp.Interpreter;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 
-namespace StepFlow.Master.Proxies
+namespace StepFlow.Master.Proxies.Components
 {
-	public sealed class CollidedProxy : ComponentProxy<Collided>
+	public sealed class CollidedProxy : ComponentProxy<Collided>, ICollidedProxy
 	{
-		[MoonSharpHidden]
 		public CollidedProxy(PlayMaster owner, Collided target) : base(owner, target)
 		{
 		}
