@@ -1,4 +1,4 @@
-﻿using StepFlow.Core.Commands.Accessors;
+﻿using StepFlow.Core;
 using StepFlow.Core.Components;
 
 namespace StepFlow.Master.Proxies
@@ -9,9 +9,11 @@ namespace StepFlow.Master.Proxies
 		{
 		}
 
-		public float Value { get => Target.Value; set => Owner.TimeAxis.Add(Target.CreatePropertyCommand(x => x.Value, value)); }
+		public float Value { get => Target.Value; set => SetValue(x => x.Value, value); }
 
-		public float Max { get => Target.Max; set => Owner.TimeAxis.Add(Target.CreatePropertyCommand(x => x.Max, value)); }
+		public float Max { get => Target.Max; set => SetValue(x => x.Max, value); }
+
+		public bool RemoveIfEmpty { get => Target.RemoveIfEmpty; set => SetValue(x => x.RemoveIfEmpty, value); }
 
 		public void Add(float value)
 		{
@@ -20,9 +22,16 @@ namespace StepFlow.Master.Proxies
 			{
 				Value = Max;
 			}
-			else if (newValue < 0)
+			else if (newValue <= 0)
 			{
 				Value = 0;
+
+				if (RemoveIfEmpty)
+				{
+					var playground = (PlaygroundProxy)Owner.CreateProxy(Owner.Playground);
+					var subject = (SubjectProxy<Subject>)Owner.CreateProxy(Target.Container);
+					playground.Subjects.Remove(subject.Target);
+				}
 			}
 			else
 			{

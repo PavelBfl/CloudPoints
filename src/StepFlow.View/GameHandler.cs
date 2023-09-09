@@ -59,10 +59,11 @@ namespace StepFlow.View
 
 		public void Init()
 		{
-			CreateRoom(new(0, 0, 200, 100), 10);
+			CreateRoom(new(0, 0, 400, 200), 10);
 
 			CreateItem(new(40, 40, 20, 20));
 			CreateItem(new(100, 40, 20, 20));
+			CreateItem(new(50, 100, 35, 35));
 		}
 
 		private void CreateItem(Rectangle rectangle)
@@ -78,6 +79,7 @@ namespace StepFlow.View
 				strength = subject.GetComponent(""Strength"")
 				strength.Max = 100
 				strength.Value = 100
+				strength.RemoveIfEmpty = true
 				subject.AddComponent(""Scheduler"")
 				playground.Subjects.Add(subject)
 			");
@@ -106,25 +108,6 @@ namespace StepFlow.View
 
 		public void Update(GameTime gameTime)
 		{
-			if (KeyboardService.IsKeyOnPress(Microsoft.Xna.Framework.Input.Keys.Space))
-			{
-				PlayMaster.Execute(@$"
-					subject = playground.CreateSubject()
-					subject.AddComponent(""Collided"")
-					collided = subject.GetComponent(""Collided"")
-					bordered = playground.CreateBordered()
-					bordered.AddCell(playground.CreateRectangle({Random.Shared.Next(100)}, {Random.Shared.Next(100)}, {Random.Shared.Next(10, 100)}, {Random.Shared.Next(10, 100)}))
-					collided.Current = bordered
-					collided.Offset(playground.CreatePoint(5, 5))
-					collided.Damage = 5
-					subject.AddComponent(""Strength"")
-					strength = subject.GetComponent(""Strength"")
-					strength.Max = 100
-					strength.Value = 100
-					playground.Subjects.Add(subject)
-				");
-			}
-
 			if (KeyboardService.IsKeyOnPress(Keys.Tab))
 			{
 				var subjects = PlayMaster.Playground.Subjects.ToArray();
@@ -208,7 +191,7 @@ namespace StepFlow.View
 				PlayMaster.Execute($@"
 						scheduler = playground.Subjects[{current}].GetComponent(""Scheduler"")
 						if scheduler != null then
-							scheduler.SetCourse({(int)value})
+							scheduler.SetCourse({(int)value}, 10)
 						end
 					");
 			}

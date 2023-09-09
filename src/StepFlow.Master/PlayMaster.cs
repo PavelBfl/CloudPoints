@@ -19,6 +19,8 @@ namespace StepFlow.Master
 		private const string TAKE_STEP_NAME = nameof(TakeStep);
 		private const string ENUMERATE_NAME = "Enumerate";
 
+		private const string TAKE_STEP_CALL = TAKE_STEP_NAME + "()";
+
 		public PlayMaster()
 		{
 			InitLua();
@@ -61,7 +63,7 @@ namespace StepFlow.Master
 			};
 		}
 
-		public void TakeStep() => Execute(TAKE_STEP_NAME + "()");
+		public void TakeStep() => Execute(TAKE_STEP_CALL);
 
 		private void CollisionHandle(Subject strength, Subject damage)
 		{
@@ -200,13 +202,20 @@ namespace StepFlow.Master
 
 		public void Execute(string scriptText)
 		{
-			var script = new Script();
+			if (scriptText == TAKE_STEP_CALL)
+			{
+				TakeStepInner();
+			}
+			else
+			{
+				var script = new Script();
 
-			script.Globals["playground"] = Playground;
+				script.Globals["playground"] = Playground;
 
-			script.Globals[TAKE_STEP_NAME] = (Action)TakeStepInner;
-			script.Globals.Set(ENUMERATE_NAME, DynValue.NewCallback(Enumerate));
-			script.DoString(scriptText);
+				script.Globals[TAKE_STEP_NAME] = (Action)TakeStepInner;
+				script.Globals.Set(ENUMERATE_NAME, DynValue.NewCallback(Enumerate));
+				script.DoString(scriptText); 
+			}
 		}
 	}
 }
