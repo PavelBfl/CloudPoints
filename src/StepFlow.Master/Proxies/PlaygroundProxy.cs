@@ -14,22 +14,17 @@ namespace StepFlow.Master.Proxies
 		{
 		}
 
-		[MoonSharpHidden]
-		public SubjectProxy CreateSubjectProxy(bool addContainer = true)
-		{
-			var result = (SubjectProxy)Owner.CreateProxy(CreateSubject());
-			if (addContainer)
-			{
-				Subjects.Add(result.Target);
-			}
-			return result;
-		}
-
 		public ICollection<ISubjectProxy> Subjects => new CollectionProxy<Subject, ICollection<Subject>, ISubjectProxy>(Owner, Target.Subjects);
 
-		public Subject CreateSubject() => new Subject(Target);
+		public ISubjectProxy CreateSubject() => Owner.CreateProxy(new Subject(Target));
 
-		public IEnumerable<(Subject, Subject)> GetCollision() => Target.GetCollision();
+		public IEnumerable<(ISubjectProxy, ISubjectProxy)> GetCollision()
+		{
+			foreach (var collision in Target.GetCollision())
+			{
+				yield return (Owner.CreateProxy(collision.Item1), Owner.CreateProxy(collision.Item2));
+			}
+		}
 
 		public Rectangle CreateRectangle(int x, int y, int width, int height) => new Rectangle(x, y, width, height);
 

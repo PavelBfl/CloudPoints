@@ -22,32 +22,35 @@ namespace StepFlow.Master.Proxies.Components
 
 		private void Add(Turn turn)
 		{
-			var queueProxy = (ListProxy<Turn, List<Turn>>)Owner.CreateProxy(Target.Queue);
+			// TODO Доделать
+			//var queueProxy = (ListProxy<Turn, List<Turn>>)Owner.CreateProxy(Target.Queue);
 
-			if (!queueProxy.Any())
-			{
-				QueueBegin = Owner.Time;
-			}
+			//if (!queueProxy.Any())
+			//{
+			//	QueueBegin = Owner.Time;
+			//}
 
-			queueProxy.Add(turn);
+			//queueProxy.Add(turn);
 		}
 
 		public bool TryDequeue()
 		{
-			var queueProxy = (ListProxy<Turn, List<Turn>>)Owner.CreateProxy(Target.Queue);
+			// TODO Доделать
 
-			if (queueProxy.Any())
-			{
-				var turn = queueProxy[0];
-				if (QueueBegin + turn.Duration == Owner.Time)
-				{
-					queueProxy.RemoveAt(0);
-					QueueBegin += turn.Duration;
-					turn.Execute();
+			//var queueProxy = (ListProxy<Turn, List<Turn>>)Owner.CreateProxy(Target.Queue);
 
-					return true;
-				}
-			}
+			//if (queueProxy.Any())
+			//{
+			//	var turn = queueProxy[0];
+			//	if (QueueBegin + turn.Duration == Owner.Time)
+			//	{
+			//		queueProxy.RemoveAt(0);
+			//		QueueBegin += turn.Duration;
+			//		turn.Execute();
+
+			//		return true;
+			//	}
+			//}
 
 			return false;
 		}
@@ -133,8 +136,8 @@ namespace StepFlow.Master.Proxies.Components
 				{
 					var playgroundProxy = (PlaygroundProxy)Owner.Owner.CreateProxy(Owner.Owner.Playground);
 
-					var subject = playgroundProxy.CreateSubjectProxy();
-					var collided = subject.AddComponentProxy<CollidedProxy>(Playground.COLLIDED_NAME);
+					var subject = playgroundProxy.CreateSubject();
+					var collided = (CollidedProxy)subject.AddComponent(Playground.COLLIDED_NAME);
 
 					var bordered = playgroundProxy.CreateBordered();
 					var borderedProxy = (BorderedProxy)Owner.Owner.CreateProxy(bordered);
@@ -146,10 +149,10 @@ namespace StepFlow.Master.Proxies.Components
 					borderedProxy.AddCell(projectileBorder);
 					collided.Current = borderedProxy.Target;
 
-					var projectile = subject.AddComponentProxy<ProjectileProxy>(Playground.PROJECTILE_NAME);
+					var projectile = (ProjectileProxy)subject.AddComponent(Playground.PROJECTILE_NAME);
 					projectile.Damage = Damage;
 
-					var scheduler = subject.AddComponentProxy<ScheduledProxy>(Playground.SCHEDULER_NAME);
+					var scheduler = (ScheduledProxy)subject.AddComponent(Playground.SCHEDULER_NAME);
 					for (var i = 0; i < 100; i++)
 					{
 						scheduler.SetCourse(Course);

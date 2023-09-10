@@ -37,7 +37,7 @@ namespace StepFlow.Master.Proxies.Components
 				{
 					var playground = (PlaygroundProxy)Owner.CreateProxy(Owner.Playground);
 					var subject = (SubjectProxy)Owner.CreateProxy(Target.Container);
-					playground.Subjects.Remove(subject.Target);
+					playground.Subjects.Remove(subject);
 				}
 			}
 			else

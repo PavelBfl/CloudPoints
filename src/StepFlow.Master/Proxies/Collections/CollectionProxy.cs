@@ -25,7 +25,14 @@ namespace StepFlow.Master.Proxies.Collections
 
 		public bool Contains(TItemProxy item) => Target.Contains(item.Target);
 
-		public void CopyTo(TItemProxy[] array, int arrayIndex) => Target.CopyTo(array, arrayIndex);
+		public void CopyTo(TItemProxy[] array, int arrayIndex)
+		{
+			foreach (var item in this)
+			{
+				array[arrayIndex] = item;
+				arrayIndex++;
+			}
+		}
 
 		public IEnumerator<TItemProxy> GetEnumerator() => Target.Select(x => (TItemProxy)Owner.CreateProxy(x)).GetEnumerator();
 

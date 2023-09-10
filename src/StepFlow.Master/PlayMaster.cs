@@ -10,13 +10,12 @@ using MoonSharp.Interpreter.Interop;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Master.Proxies;
-using StepFlow.Master.Proxies.Collections;
 using StepFlow.Master.Proxies.Components;
 using StepFlow.TimeLine;
 
 namespace StepFlow.Master
 {
-    public class PlayMaster
+	public class PlayMaster
 	{
 		private const string TAKE_STEP_NAME = nameof(TakeStep);
 		private const string ENUMERATE_NAME = "Enumerate";
@@ -34,19 +33,36 @@ namespace StepFlow.Master
 
 		public Playground Playground { get; } = new Playground();
 
-		private Dictionary<Type, IProxyFactory> Proxies { get; } = new Dictionary<Type, IProxyFactory>();
-
-		private void RegisterProxyType<TProxy, TTarget>(Func<TTarget, TProxy> wrapDelegate)
-			where TProxy : class
-			where TTarget : class
+		[return: NotNullIfNotNull("obj")]
+		internal object? CreateProxy(object? obj) => obj switch
 		{
-			var proxyFactory = new DelegateProxyFactory<TProxy, TTarget>(wrapDelegate);
-			UserData.RegisterProxyType(proxyFactory);
-			Proxies.Add(typeof(TTarget), proxyFactory);
-		}
+			Playground playground => CreateProxy(playground),
+			Subject subject => CreateProxy(subject),
+			Collided collided => CreateProxy(collided),
+			Projectile projectile => CreateProxy(projectile),
+			Scale scale => CreateProxy(scale),
+			Scheduled scheduled => CreateProxy(scheduled),
+			null => null,
+			_ => throw new InvalidOperationException(),
+		};
 
 		[return: NotNullIfNotNull("obj")]
-		internal object? CreateProxy(object? obj) => obj is null ? null : Proxies[obj.GetType()].CreateProxyObject(obj);
+		internal IPlaygroundProxy? CreateProxy(Playground? obj) => obj is null ? null : new PlaygroundProxy(this, obj);
+
+		[return: NotNullIfNotNull("obj")]
+		internal ISubjectProxy? CreateProxy(Subject? obj) => obj is null ? null : new SubjectProxy(this, obj);
+
+		[return: NotNullIfNotNull("obj")]
+		internal ICollidedProxy? CreateProxy(Collided? obj) => obj is null ? null : new CollidedProxy(this, obj);
+
+		[return: NotNullIfNotNull("obj")]
+		internal IProjectileProxy? CreateProxy(Projectile? obj) => obj is null ? null : new ProjectileProxy(this, obj);
+
+		[return: NotNullIfNotNull("obj")]
+		internal IScaleProxy? CreateProxy(Scale? obj) => obj is null ? null : new ScaleProxy(this, obj);
+
+		[return: NotNullIfNotNull("obj")]
+		internal IScheduledProxy? CreateProxy(Scheduled? obj) => obj is null ? null : new ScheduledProxy(this, obj);
 
 		public IComponent CreateComponent(string componentName)
 		{
@@ -67,38 +83,39 @@ namespace StepFlow.Master
 
 		public void TakeStep() => Execute(TAKE_STEP_CALL);
 
-		private void CollisionHandle(Subject strength, Subject damage)
+		private void CollisionHandle(ISubjectProxy strength, ISubjectProxy damage)
 		{
 			if (
-				strength.Components[Playground.STRENGTH_NAME] is Scale scale &&
-				damage.Components[Playground.PROJECTILE_NAME] is Projectile projectile
+				strength.GetComponent(Playground.STRENGTH_NAME) is IScaleProxy scale &&
+				damage.GetComponent(Playground.PROJECTILE_NAME) is IProjectileProxy projectile
 			)
 			{
-				var scaleProxy = (ScaleProxy)CreateProxy(scale);
-				var projectileProxy = (ProjectileProxy)CreateProxy(projectile);
-				scaleProxy.Add(-projectileProxy.Damage);
+				scale.Add(-projectile.Damage);
 			}
 		}
 
 		private void TakeStepInner()
 		{
-			var removed = new List<Subject>();
+			var removed = new List<ISubjectProxy>();
 			foreach (var collision in Playground.GetCollision())
 			{
-				CollisionHandle(collision.Item1, collision.Item2);
-				CollisionHandle(collision.Item2, collision.Item1);
+				var item1 = (ISubjectProxy)CreateProxy(collision.Item1);
+				var item2 = (ISubjectProxy)CreateProxy(collision.Item2);
 
-				((CollidedProxy?)CreateProxy(collision.Item1.Components[Playground.COLLIDED_NAME]))?.Break();
-				((CollidedProxy?)CreateProxy(collision.Item2.Components[Playground.COLLIDED_NAME]))?.Break();
+				CollisionHandle(item1, item2);
+				CollisionHandle(item2, item1);
 
-				if (collision.Item1.Components[Playground.PROJECTILE_NAME] is { })
+				((ICollidedProxy?)item1.GetComponent(Playground.COLLIDED_NAME))?.Break();
+				((ICollidedProxy?)item2.GetComponent(Playground.COLLIDED_NAME))?.Break();
+
+				if (item1.GetComponent(Playground.PROJECTILE_NAME) is { })
 				{
-					removed.Add(collision.Item1);
+					removed.Add(item1);
 				}
 
-				if (collision.Item2.Components[Playground.PROJECTILE_NAME] is { })
+				if (item2.GetComponent(Playground.PROJECTILE_NAME) is { })
 				{
-					removed.Add(collision.Item2);
+					removed.Add(item2);
 				}
 			}
 
@@ -113,7 +130,7 @@ namespace StepFlow.Master
 				.ToArray()
 			)
 			{
-				if (subject.GetComponentProxy<CollidedProxy>(Playground.COLLIDED_NAME) is { } collided)
+				if (subject.GetComponent(Playground.COLLIDED_NAME) is ICollidedProxy collided)
 				{
 					collided.Move();
 				}
@@ -135,6 +152,8 @@ namespace StepFlow.Master
 
 		private static void RegisterList<T>()
 		{
+			UserData.RegisterType<T>();
+
 			UserData.RegisterType<IEnumerable<T>>();
 			UserData.RegisterType<IEnumerator<T>>();
 			UserData.RegisterType<IReadOnlyList<T>>();
@@ -149,24 +168,18 @@ namespace StepFlow.Master
 			UserData.RegisterType<Rectangle>();
 			UserData.RegisterType<Point>();
 
-			UserData.RegisterType<(Subject, Subject)>();
 			RegisterList<(Subject, Subject)>();
 
-			RegisterProxyType<PlaygroundProxy, Playground>(x => new PlaygroundProxy(this, x));
+			RegisterList<IComponentController>();
+			RegisterList<IContainerProxy>();
+			RegisterList<IComponentProxy>();
 
-			RegisterProxyType<SubjectProxy, Subject>(x => new SubjectProxy(this, x));
-			RegisterList<Subject>();
-
-			RegisterProxyType<ListProxy<Turn, List<Turn>>, List<Turn>>(x => new ListProxy<Turn, List<Turn>>(this, x));
-
-			RegisterProxyType<SubjectsCollectionProxy, IList<Subject>>(x => new SubjectsCollectionProxy(this, x));
-			RegisterProxyType<BorderedProxy, Bordered>(x => new BorderedProxy(this, x));
-			RegisterProxyType<CellProxy, Cell>(x => new CellProxy(this, x));
-
-			RegisterProxyType<ScaleProxy, Scale>(x => new ScaleProxy(this, x));
-			RegisterProxyType<CollidedProxy, Collided>(x => new CollidedProxy(this, x));
-			RegisterProxyType<ScheduledProxy, Scheduled>(x => new ScheduledProxy(this, x));
-			RegisterProxyType<ProjectileProxy, Projectile>(x => new ProjectileProxy(this, x));
+			RegisterList<IPlaygroundProxy>();
+			RegisterList<ISubjectProxy>();
+			RegisterList<ICollidedProxy>();
+			RegisterList<IProjectileProxy>();
+			RegisterList<IScaleProxy>();
+			RegisterList<IScheduledProxy>();
 		}
 
 		public static DynValue Enumerate(ScriptExecutionContext context, CallbackArguments arguments)
