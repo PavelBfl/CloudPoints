@@ -42,9 +42,17 @@ namespace StepFlow.Master
 			Projectile projectile => CreateProxy(projectile),
 			Scale scale => CreateProxy(scale),
 			Scheduled scheduled => CreateProxy(scheduled),
+			Cell cell => CreateProxy(cell),
+			Bordered bordered => CreateProxy(bordered),
 			null => null,
 			_ => throw new InvalidOperationException(),
 		};
+
+		[return: NotNullIfNotNull("obj")]
+		internal ICellProxy? CreateProxy(Cell? obj) => obj is null ? null : new CellProxy(this, obj);
+
+		[return: NotNullIfNotNull("obj")]
+		internal IBorderedProxy? CreateProxy(Bordered? obj) => obj is null ? null : new BorderedProxy(this, obj);
 
 		[return: NotNullIfNotNull("obj")]
 		internal IPlaygroundProxy? CreateProxy(Playground? obj) => obj is null ? null : new PlaygroundProxy(this, obj);
@@ -169,6 +177,8 @@ namespace StepFlow.Master
 			UserData.RegisterType<Point>();
 
 			RegisterList<(Subject, Subject)>();
+			RegisterList<ICellProxy>();
+			RegisterList<IBorderedProxy>();
 
 			RegisterList<IComponentController>();
 			RegisterList<IContainerProxy>();
@@ -225,7 +235,7 @@ namespace StepFlow.Master
 			{
 				var script = new Script();
 
-				script.Globals["playground"] = Playground;
+				script.Globals["playground"] = CreateProxy(Playground);
 
 				script.Globals[TAKE_STEP_NAME] = (Action)TakeStepInner;
 				script.Globals.Set(ENUMERATE_NAME, DynValue.NewCallback(Enumerate));

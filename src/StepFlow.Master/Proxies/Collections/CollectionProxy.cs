@@ -1,15 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using StepFlow.Master.Commands.Collections;
 using StepFlow.TimeLine;
 
 namespace StepFlow.Master.Proxies.Collections
 {
-	public class CollectionProxy<TItem, TCollection, TItemProxy> : ProxyBase<TCollection>, ICollection<TItemProxy>
-		where TItem : class
+	public class CollectionProxy<TItem, TCollection> : ProxyBase<TCollection>, ICollection<TItem>
 		where TCollection : class, ICollection<TItem>
-		where TItemProxy : IProxyBase<TItem>
 	{
 		public CollectionProxy(PlayMaster owner, TCollection target) : base(owner, target)
 		{
@@ -19,29 +16,22 @@ namespace StepFlow.Master.Proxies.Collections
 
 		public bool IsReadOnly => Target.IsReadOnly;
 
-		public void Add(TItemProxy item) => Owner.TimeAxis.Add(new AddItemCommand<TItem>(Target, item.Target));
+		public void Add(TItem item) => Owner.TimeAxis.Add(new AddItemCommand<TItem>(Target, item));
 
 		public void Clear() => Owner.TimeAxis.Add(new ClearCommand<TItem>(Target));
 
-		public bool Contains(TItemProxy item) => Target.Contains(item.Target);
+		public bool Contains(TItem item) => Target.Contains(item);
 
-		public void CopyTo(TItemProxy[] array, int arrayIndex)
+		public void CopyTo(TItem[] array, int arrayIndex) => Target.CopyTo(array, arrayIndex);
+
+		public IEnumerator<TItem> GetEnumerator() => Target.GetEnumerator();
+
+		public bool Remove(TItem item)
 		{
-			foreach (var item in this)
-			{
-				array[arrayIndex] = item;
-				arrayIndex++;
-			}
-		}
-
-		public IEnumerator<TItemProxy> GetEnumerator() => Target.Select(x => (TItemProxy)Owner.CreateProxy(x)).GetEnumerator();
-
-		public bool Remove(TItemProxy item)
-		{
-			var removed = Target.Remove(item.Target);
+			var removed = Target.Remove(item);
 			if (removed)
 			{
-				Owner.TimeAxis.Add(new Reverse(new AddItemCommand<TItem>(Target, item.Target)));
+				Owner.TimeAxis.Add(new Reverse(new AddItemCommand<TItem>(Target, item)), true);
 			}
 
 			return removed;

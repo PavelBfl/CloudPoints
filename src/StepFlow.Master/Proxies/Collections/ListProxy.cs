@@ -4,29 +4,27 @@ using StepFlow.TimeLine;
 
 namespace StepFlow.Master.Proxies.Collections
 {
-	public class ListProxy<TItem, TList, TItemProxy> : CollectionProxy<TItem, TList, TItemProxy>, IList<TItemProxy>
-		where TItem : class
-		where TItemProxy : ProxyBase<TItem>
+	public class ListProxy<TItem, TList> : CollectionProxy<TItem, TList>, IList<TItem>
 		where TList : class, IList<TItem>
 	{
 		public ListProxy(PlayMaster owner, TList target) : base(owner, target)
 		{
 		}
 
-		public TItemProxy this[int index]
+		public TItem this[int index]
 		{
-			get => (TItemProxy)Owner.CreateProxy(Target[index]);
-			set => Owner.TimeAxis.Add(new SetItemCommand<TItem>(Target, value.Target, index));
+			get => Target[index];
+			set => Owner.TimeAxis.Add(new SetItemCommand<TItem>(Target, value, index));
 		}
 
-		public int IndexOf(TItemProxy item) => Target.IndexOf(item.Target);
+		public int IndexOf(TItem item) => Target.IndexOf(item);
 
-		public void Insert(int index, TItemProxy item) => Owner.TimeAxis.Add(new InsertItemCommand<TItem>(Target, item.Target, index));
+		public void Insert(int index, TItem item) => Owner.TimeAxis.Add(new InsertItemCommand<TItem>(Target, item, index));
 
 		public void RemoveAt(int index)
 		{
-			var oldItem = Target[index];
-			Owner.TimeAxis.Add(new Reverse(new InsertItemCommand<TItem>(Target, oldItem, index)));
+			var item = Target[index];
+			Owner.TimeAxis.Add(new Reverse(new InsertItemCommand<TItem>(Target, item, index)));
 		}
 	}
 }

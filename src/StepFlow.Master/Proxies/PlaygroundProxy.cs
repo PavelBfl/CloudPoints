@@ -14,7 +14,7 @@ namespace StepFlow.Master.Proxies
 		{
 		}
 
-		public ICollection<ISubjectProxy> Subjects => new CollectionProxy<Subject, ICollection<Subject>, ISubjectProxy>(Owner, Target.Subjects);
+		public IList<ISubjectProxy> Subjects => new ListItemsProxy<Subject, IList<Subject>, ISubjectProxy>(Owner, Target.Subjects);
 
 		public ISubjectProxy CreateSubject() => Owner.CreateProxy(new Subject(Target));
 
@@ -30,6 +30,6 @@ namespace StepFlow.Master.Proxies
 
 		public Point CreatePoint(int x, int y) => new Point(x, y);
 
-		public Bordered CreateBordered() => new Bordered();
+		public IBorderedProxy CreateBordered() => Owner.CreateProxy(new Bordered());
 	}
 }

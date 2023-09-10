@@ -3,16 +3,14 @@ using StepFlow.Core;
 
 namespace StepFlow.Master.Proxies
 {
-	public sealed class BorderedProxy : ProxyBase<Bordered>
+	public sealed class BorderedProxy : ProxyBase<Bordered>, IBorderedProxy
 	{
 		public BorderedProxy(PlayMaster owner, Bordered target) : base(owner, target)
 		{
 		}
 
-		public Cell AddCell(Rectangle border) => Target.AddCell(border);
+		public ICellProxy AddCell(Rectangle border) => Owner.CreateProxy(Target.AddCell(border));
 
 		public void Offset(Point value) => Target.Offset(value);
-
-		public IBorderedNode Clone() => Target.Clone(null);
 	}
 }

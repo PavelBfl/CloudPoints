@@ -5,6 +5,7 @@ using System.Linq;
 using StepFlow.Common.Exceptions;
 using StepFlow.Core;
 using StepFlow.Core.Components;
+using StepFlow.Master.Proxies.Collections;
 
 namespace StepFlow.Master.Proxies.Components
 {
@@ -16,41 +17,40 @@ namespace StepFlow.Master.Proxies.Components
 
 		public long QueueBegin { get => Target.QueueBegin; set => SetValue(x => x.QueueBegin, value); }
 
+		private IList<Turn> Queue => new ListProxy<Turn, List<Turn>>(Owner, Target.Queue);
+
 		public void CreateProjectile(Course course) => Add(new ProjectileBuilderTurn(this, course, 1, 10, 10));
 
 		public void SetCourse(Course course, int stepTime = 1) => Add(CourseTurn.Create(this, course, stepTime));
 
 		private void Add(Turn turn)
 		{
-			// TODO Доделать
-			//var queueProxy = (ListProxy<Turn, List<Turn>>)Owner.CreateProxy(Target.Queue);
+			var queue = Queue;
 
-			//if (!queueProxy.Any())
-			//{
-			//	QueueBegin = Owner.Time;
-			//}
+			if (!queue.Any())
+			{
+				QueueBegin = Owner.Time;
+			}
 
-			//queueProxy.Add(turn);
+			queue.Add(turn);
 		}
 
 		public bool TryDequeue()
 		{
-			// TODO Доделать
+			var queue = Queue;
 
-			//var queueProxy = (ListProxy<Turn, List<Turn>>)Owner.CreateProxy(Target.Queue);
+			if (queue.Any())
+			{
+				var turn = queue[0];
+				if (QueueBegin + turn.Duration == Owner.Time)
+				{
+					queue.RemoveAt(0);
+					QueueBegin += turn.Duration;
+					turn.Execute();
 
-			//if (queueProxy.Any())
-			//{
-			//	var turn = queueProxy[0];
-			//	if (QueueBegin + turn.Duration == Owner.Time)
-			//	{
-			//		queueProxy.RemoveAt(0);
-			//		QueueBegin += turn.Duration;
-			//		turn.Execute();
-
-			//		return true;
-			//	}
-			//}
+					return true;
+				}
+			}
 
 			return false;
 		}
@@ -137,17 +137,17 @@ namespace StepFlow.Master.Proxies.Components
 					var playgroundProxy = (PlaygroundProxy)Owner.Owner.CreateProxy(Owner.Owner.Playground);
 
 					var subject = playgroundProxy.CreateSubject();
+					playgroundProxy.Subjects.Add(subject);
 					var collided = (CollidedProxy)subject.AddComponent(Playground.COLLIDED_NAME);
 
 					var bordered = playgroundProxy.CreateBordered();
-					var borderedProxy = (BorderedProxy)Owner.Owner.CreateProxy(bordered);
 
 					var pivot = GetPivot(current.Border, Course);
 					var projectileBorder = CreateRectangle(Course.Invert(), pivot, new Size(Size, Size));
 					projectileBorder.Offset(Course.ToOffset());
 
-					borderedProxy.AddCell(projectileBorder);
-					collided.Current = borderedProxy.Target;
+					bordered.AddCell(projectileBorder);
+					collided.Current = bordered;
 
 					var projectile = (ProjectileProxy)subject.AddComponent(Playground.PROJECTILE_NAME);
 					projectile.Damage = Damage;

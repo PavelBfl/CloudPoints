@@ -5,9 +5,9 @@ namespace StepFlow.Master.Proxies.Components
 {
 	public interface ICollidedProxy : IComponentProxy
 	{
-		Bordered? Current { get; set; }
+		IBorderedProxy? Current { get; set; }
 
-		Bordered? Next { get; set; }
+		IBorderedProxy? Next { get; set; }
 
 		bool IsMoving { get; set; }
 
