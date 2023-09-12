@@ -2,6 +2,6 @@
 {
 	public interface IComponentProxy : IComponentController
 	{
-		IContainerProxy Container { get; }
+		ISubjectProxy Subject { get; }
 	}
 }

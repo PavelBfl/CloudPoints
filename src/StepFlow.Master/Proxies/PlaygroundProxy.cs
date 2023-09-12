@@ -1,18 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using MoonSharp.Interpreter;
 using StepFlow.Core;
 using StepFlow.Master.Proxies.Collections;
 using StepFlow.Master.Proxies.Components;
+using StepFlow.Master.Proxies.Components.Custom;
 
 namespace StepFlow.Master.Proxies
 {
 	public sealed class PlaygroundProxy : ProxyBase<Playground>, IPlaygroundProxy
 	{
-		[MoonSharpHidden]
+		public const string COLLISION_HANDLE = "Collision";
+		public const string REMOVE_HANDLE = "Remove";
+
 		public PlaygroundProxy(PlayMaster owner, Playground target) : base(owner, target)
 		{
 		}
+
+		public IReadOnlyDictionary<string, IHandler> Handlers { get; } = new Dictionary<string, IHandler>()
+		{
+			{ COLLISION_HANDLE, new CollisionHandler() },
+			{ REMOVE_HANDLE, new RemoveHandler() },
+		};
 
 		public IList<ISubjectProxy> Subjects => new ListItemsProxy<Subject, IList<Subject>, ISubjectProxy>(Owner, Target.Subjects);
 

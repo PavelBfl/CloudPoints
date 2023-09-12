@@ -1,5 +1,5 @@
 ﻿using System;
-using MoonSharp.Interpreter;
+using System.Diagnostics.CodeAnalysis;
 
 namespace StepFlow.Master.Proxies.Components
 {
@@ -9,7 +9,7 @@ namespace StepFlow.Master.Proxies.Components
 
 		bool RemoveComponent(string name);
 
-		IComponentProxy? GetComponent(string name);
+		IComponentProxy? GetComponent(string? name);
 
 		IComponentProxy GetComponentRequired(string name) => GetComponent(name) ?? throw new InvalidOperationException();
 	}

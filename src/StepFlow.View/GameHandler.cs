@@ -66,21 +66,21 @@ namespace StepFlow.View
 			CreateItem(new(50, 100, 35, 35));
 		}
 
-		private void CreateItem(Rectangle rectangle)
+		private void CreateItem(Rectangle rectangle, int strength = 100)
 		{
 			PlayMaster.Execute(@$"
 				subject = playground.CreateSubject()
-				subject.AddComponent(""Collided"")
-				collided = subject.GetComponent(""Collided"")
+				collided = subject.AddComponent(""Collided"")
 				bordered = playground.CreateBordered()
 				bordered.AddCell(playground.CreateRectangle({rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height}))
 				collided.Current = bordered
-				subject.AddComponent(""Strength"")
-				strength = subject.GetComponent(""Strength"")
-				strength.Max = 100
-				strength.Value = 100
-				strength.RemoveIfEmpty = true
+				collided.CollidedEvent = ""Collision""
+				strength = subject.AddComponent(""Strength"")
+				strength.Max = {strength}
+				strength.Value = {strength}
+				strength.ValueMinEvent = ""Remove""
 				subject.AddComponent(""Scheduler"")
+				subject.AddComponent(""CollisionDamage"").Damage = 1
 				playground.Subjects.Add(subject)
 			");
 		}

@@ -9,12 +9,20 @@ namespace StepFlow.Master.Proxies.Components
 		{
 		}
 
-		public IContainerProxy Container => (IContainerProxy)Owner.CreateProxy(Target.Container);
+		public ISubjectProxy Subject => (ISubjectProxy)Owner.CreateProxy(Target.Container);
 
-		public IComponentProxy AddComponent(string name) => Container.AddComponent(name);
+		public IComponentProxy AddComponent(string name) => Subject.AddComponent(name);
 
-		public IComponentProxy? GetComponent(string name) => Container.GetComponent(name);
+		public IComponentProxy? GetComponent(string? name) => Subject.GetComponent(name);
 
-		public bool RemoveComponent(string name) => Container.RemoveComponent(name);
+		public bool RemoveComponent(string name) => Subject.RemoveComponent(name);
+
+		public void HandleEvent(string? name, object? args = null)
+		{
+			if (name is { } && Subject.Playground.Handlers.TryGetValue(name, out var handler))
+			{
+				handler.Handle(this, name, args);
+			}
+		}
 	}
 }

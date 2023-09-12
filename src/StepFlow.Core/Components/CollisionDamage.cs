@@ -2,7 +2,7 @@
 
 namespace StepFlow.Core.Components
 {
-	public sealed class Projectile : Component
+	public sealed class CollisionDamage : Component
 	{
 		public float Damage { get; set; }
 	}

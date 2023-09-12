@@ -10,7 +10,7 @@ namespace StepFlow.Core
 		public const string COLLIDED_NAME = nameof(Collided);
 		public const string STRENGTH_NAME = "Strength";
 		public const string SCHEDULER_NAME = "Scheduler";
-		public const string PROJECTILE_NAME = "Projectile";
+		public const string COLLISION_DAMAGE_NAME = "CollisionDamage";
 
 		public IList<Subject> Subjects { get; } = new List<Subject>();
 

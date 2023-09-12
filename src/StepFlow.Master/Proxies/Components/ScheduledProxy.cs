@@ -19,6 +19,8 @@ namespace StepFlow.Master.Proxies.Components
 
 		private IList<Turn> Queue => new ListProxy<Turn, List<Turn>>(Owner, Target.Queue);
 
+		public bool IsEmpty => !Queue.Any();
+
 		public void CreateProjectile(Course course) => Add(new ProjectileBuilderTurn(this, course, 1, 10, 10));
 
 		public void SetCourse(Course course, int stepTime = 1) => Add(CourseTurn.Create(this, course, stepTime));
@@ -131,28 +133,34 @@ namespace StepFlow.Master.Proxies.Components
 
 			public override void Execute()
 			{
-				var ownerCollided = Owner.Target.Container.Components[Playground.COLLIDED_NAME];
-				if (ownerCollided is Collided { Current: { } current })
+				var ownerCollided = Owner.GetComponent(Playground.COLLIDED_NAME);
+				if (ownerCollided is ICollidedProxy { Current: { } current })
 				{
-					var playgroundProxy = (PlaygroundProxy)Owner.Owner.CreateProxy(Owner.Owner.Playground);
+					var playground = Owner.Subject.Playground;
 
-					var subject = playgroundProxy.CreateSubject();
-					playgroundProxy.Subjects.Add(subject);
-					var collided = (CollidedProxy)subject.AddComponent(Playground.COLLIDED_NAME);
+					var subject = playground.CreateSubject();
+					playground.Subjects.Add(subject);
+					var collided = (ICollidedProxy)subject.AddComponent(Playground.COLLIDED_NAME);
 
-					var bordered = playgroundProxy.CreateBordered();
+					var bordered = playground.CreateBordered();
 
-					var pivot = GetPivot(current.Border, Course);
+					var pivot = GetPivot(current.Target.Border, Course);
 					var projectileBorder = CreateRectangle(Course.Invert(), pivot, new Size(Size, Size));
 					projectileBorder.Offset(Course.ToOffset());
 
 					bordered.AddCell(projectileBorder);
 					collided.Current = bordered;
+					collided.CollidedEvent = PlaygroundProxy.COLLISION_HANDLE;
 
-					var projectile = (ProjectileProxy)subject.AddComponent(Playground.PROJECTILE_NAME);
+					var projectile = (ICollisionDamageProxy)subject.AddComponent(Playground.COLLISION_DAMAGE_NAME);
 					projectile.Damage = Damage;
 
-					var scheduler = (ScheduledProxy)subject.AddComponent(Playground.SCHEDULER_NAME);
+					var strength = (IScaleProxy)subject.AddComponent(Playground.STRENGTH_NAME);
+					strength.Max = 1;
+					strength.Value = 1;
+					strength.ValueMinEvent = PlaygroundProxy.REMOVE_HANDLE;
+
+					var scheduler = (IScheduledProxy)subject.AddComponent(Playground.SCHEDULER_NAME);
 					for (var i = 0; i < 100; i++)
 					{
 						scheduler.SetCourse(Course);

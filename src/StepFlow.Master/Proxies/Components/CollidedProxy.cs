@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 
@@ -15,6 +16,18 @@ namespace StepFlow.Master.Proxies.Components
 		public IBorderedProxy? Next { get => Owner.CreateProxy(Target.Next); set => SetValue(x => x.Next, value?.Target); }
 
 		public bool IsMoving { get => Target.IsMoving; set => SetValue(x => x.IsMoving, value); }
+
+		public string? CollidedEvent { get => Target.CollidedEvent; set => SetValue(x => x.CollidedEvent, value); }
+
+		public void CollidedHandle(ISubjectProxy other)
+		{
+			if (other is null)
+			{
+				throw new ArgumentNullException(nameof(other));
+			}
+
+			HandleEvent(CollidedEvent, other);
+		}
 
 		public bool Offset(Point value)
 		{

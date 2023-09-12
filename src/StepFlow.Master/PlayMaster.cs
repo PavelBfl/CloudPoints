@@ -6,7 +6,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using MoonSharp.Interpreter;
-using MoonSharp.Interpreter.Interop;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Master.Proxies;
@@ -33,13 +32,15 @@ namespace StepFlow.Master
 
 		public Playground Playground { get; } = new Playground();
 
+		public IPlaygroundProxy GetPlaygroundProxy() => CreateProxy(Playground);
+
 		[return: NotNullIfNotNull("obj")]
 		internal object? CreateProxy(object? obj) => obj switch
 		{
 			Playground playground => CreateProxy(playground),
 			Subject subject => CreateProxy(subject),
 			Collided collided => CreateProxy(collided),
-			Projectile projectile => CreateProxy(projectile),
+			CollisionDamage projectile => CreateProxy(projectile),
 			Scale scale => CreateProxy(scale),
 			Scheduled scheduled => CreateProxy(scheduled),
 			Cell cell => CreateProxy(cell),
@@ -64,7 +65,7 @@ namespace StepFlow.Master
 		internal ICollidedProxy? CreateProxy(Collided? obj) => obj is null ? null : new CollidedProxy(this, obj);
 
 		[return: NotNullIfNotNull("obj")]
-		internal IProjectileProxy? CreateProxy(Projectile? obj) => obj is null ? null : new ProjectileProxy(this, obj);
+		internal ICollisionDamageProxy? CreateProxy(CollisionDamage? obj) => obj is null ? null : new CollisionDamageProxy(this, obj);
 
 		[return: NotNullIfNotNull("obj")]
 		internal IScaleProxy? CreateProxy(Scale? obj) => obj is null ? null : new ScaleProxy(this, obj);
@@ -84,77 +85,42 @@ namespace StepFlow.Master
 				Playground.COLLIDED_NAME => new Collided(),
 				Playground.STRENGTH_NAME => new Scale(),
 				Playground.SCHEDULER_NAME => new Scheduled(),
-				Playground.PROJECTILE_NAME => new Projectile(),
+				Playground.COLLISION_DAMAGE_NAME => new CollisionDamage(),
 				_ => throw new InvalidOperationException(),
 			};
 		}
 
 		public void TakeStep() => Execute(TAKE_STEP_CALL);
 
-		private void CollisionHandle(ISubjectProxy strength, ISubjectProxy damage)
-		{
-			if (
-				strength.GetComponent(Playground.STRENGTH_NAME) is IScaleProxy scale &&
-				damage.GetComponent(Playground.PROJECTILE_NAME) is IProjectileProxy projectile
-			)
-			{
-				scale.Add(-projectile.Damage);
-			}
-		}
-
 		private void TakeStepInner()
 		{
-			var removed = new List<ISubjectProxy>();
-			foreach (var collision in Playground.GetCollision())
+			var playground = GetPlaygroundProxy();
+
+			foreach (var collision in playground.GetCollision().ToArray())
 			{
-				var item1 = (ISubjectProxy)CreateProxy(collision.Item1);
-				var item2 = (ISubjectProxy)CreateProxy(collision.Item2);
-
-				CollisionHandle(item1, item2);
-				CollisionHandle(item2, item1);
-
-				((ICollidedProxy?)item1.GetComponent(Playground.COLLIDED_NAME))?.Break();
-				((ICollidedProxy?)item2.GetComponent(Playground.COLLIDED_NAME))?.Break();
-
-				if (item1.GetComponent(Playground.PROJECTILE_NAME) is { })
-				{
-					removed.Add(item1);
-				}
-
-				if (item2.GetComponent(Playground.PROJECTILE_NAME) is { })
-				{
-					removed.Add(item2);
-				}
+				((ICollidedProxy?)collision.Item1.GetComponent(Playground.COLLIDED_NAME))?.CollidedHandle(collision.Item2);
+				((ICollidedProxy?)collision.Item2.GetComponent(Playground.COLLIDED_NAME))?.CollidedHandle(collision.Item1);
 			}
 
-			var playgroundProxy = (PlaygroundProxy)CreateProxy(Playground);
-			foreach (var subject in removed)
-			{
-				playgroundProxy.Subjects.Remove(subject);
-			}
-
-			foreach (var subject in Playground.Subjects
-				.Select(x => (SubjectProxy)CreateProxy(x))
+			foreach (var collided in playground.Subjects
 				.ToArray()
+				.Select(x => x.GetComponent(Playground.COLLIDED_NAME))
+				.OfType<ICollidedProxy>()
 			)
 			{
-				if (subject.GetComponent(Playground.COLLIDED_NAME) is ICollidedProxy collided)
-				{
-					collided.Move();
-				}
+				collided.Move();
 			}
 
 			Time++;
 
-			foreach (var scheduler in Playground.Subjects
+			foreach (var scheduler in playground.Subjects
 				.ToArray()
-				.Select(x => x.Components[Playground.SCHEDULER_NAME])
-				.OfType<Scheduled>()
-				.Where(x => x.Queue.Any())
+				.Select(x => x.GetComponent(Playground.SCHEDULER_NAME))
+				.OfType<IScheduledProxy>()
+				.Where(x => !x.IsEmpty)
 			)
 			{
-				var schedulerProxy = (ScheduledProxy)CreateProxy(scheduler);
-				schedulerProxy.TryDequeue();
+				scheduler.TryDequeue();
 			}
 		}
 
@@ -181,13 +147,12 @@ namespace StepFlow.Master
 			RegisterList<IBorderedProxy>();
 
 			RegisterList<IComponentController>();
-			RegisterList<IContainerProxy>();
 			RegisterList<IComponentProxy>();
 
 			RegisterList<IPlaygroundProxy>();
 			RegisterList<ISubjectProxy>();
 			RegisterList<ICollidedProxy>();
-			RegisterList<IProjectileProxy>();
+			RegisterList<ICollisionDamageProxy>();
 			RegisterList<IScaleProxy>();
 			RegisterList<IScheduledProxy>();
 		}
@@ -235,7 +200,7 @@ namespace StepFlow.Master
 			{
 				var script = new Script();
 
-				script.Globals["playground"] = CreateProxy(Playground);
+				script.Globals["playground"] = GetPlaygroundProxy();
 
 				script.Globals[TAKE_STEP_NAME] = (Action)TakeStepInner;
 				script.Globals.Set(ENUMERATE_NAME, DynValue.NewCallback(Enumerate));

@@ -2,8 +2,8 @@
 
 namespace StepFlow.Master.Proxies.Components
 {
-	public interface ISubjectProxy : IContainerProxy, IProxyBase<Subject>
+	public interface ISubjectProxy : IComponentController, IProxyBase<Subject>
 	{
-	
+		IPlaygroundProxy Playground { get; }
 	}
 }

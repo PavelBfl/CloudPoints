@@ -10,9 +10,10 @@ namespace StepFlow.Master.Proxies.Components
 		IBorderedProxy? Next { get; set; }
 
 		bool IsMoving { get; set; }
+		string? CollidedEvent { get; set; }
 
 		void Break();
-
+		void CollidedHandle(ISubjectProxy other);
 		void Move();
 
 		bool Offset(Point value);

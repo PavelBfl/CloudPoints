@@ -2,12 +2,14 @@
 using System.Drawing;
 using StepFlow.Core;
 using StepFlow.Master.Proxies.Components;
+using StepFlow.Master.Proxies.Components.Custom;
 
 namespace StepFlow.Master.Proxies
 {
 	public interface IPlaygroundProxy
 	{
 		IList<ISubjectProxy> Subjects { get; }
+		IReadOnlyDictionary<string, IHandler> Handlers { get; }
 
 		IBorderedProxy CreateBordered();
 		Point CreatePoint(int x, int y);
