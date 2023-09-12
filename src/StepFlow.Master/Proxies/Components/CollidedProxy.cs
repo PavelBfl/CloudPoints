@@ -17,18 +17,6 @@ namespace StepFlow.Master.Proxies.Components
 
 		public bool IsMoving { get => Target.IsMoving; set => SetValue(x => x.IsMoving, value); }
 
-		public string? CollidedEvent { get => Target.CollidedEvent; set => SetValue(x => x.CollidedEvent, value); }
-
-		public void CollidedHandle(ISubjectProxy other)
-		{
-			if (other is null)
-			{
-				throw new ArgumentNullException(nameof(other));
-			}
-
-			HandleEvent(CollidedEvent, other);
-		}
-
 		public bool Offset(Point value)
 		{
 			if (Current is { } current)

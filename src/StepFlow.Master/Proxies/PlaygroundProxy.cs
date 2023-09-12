@@ -3,24 +3,14 @@ using System.Drawing;
 using StepFlow.Core;
 using StepFlow.Master.Proxies.Collections;
 using StepFlow.Master.Proxies.Components;
-using StepFlow.Master.Proxies.Components.Custom;
 
 namespace StepFlow.Master.Proxies
 {
 	public sealed class PlaygroundProxy : ProxyBase<Playground>, IPlaygroundProxy
 	{
-		public const string COLLISION_HANDLE = "Collision";
-		public const string REMOVE_HANDLE = "Remove";
-
 		public PlaygroundProxy(PlayMaster owner, Playground target) : base(owner, target)
 		{
 		}
-
-		public IReadOnlyDictionary<string, IHandler> Handlers { get; } = new Dictionary<string, IHandler>()
-		{
-			{ COLLISION_HANDLE, new CollisionHandler() },
-			{ REMOVE_HANDLE, new RemoveHandler() },
-		};
 
 		public IList<ISubjectProxy> Subjects => new ListItemsProxy<Subject, IList<Subject>, ISubjectProxy>(Owner, Target.Subjects);
 
@@ -39,5 +29,40 @@ namespace StepFlow.Master.Proxies
 		public Point CreatePoint(int x, int y) => new Point(x, y);
 
 		public IBorderedProxy CreateBordered() => Owner.CreateProxy(new Bordered());
+
+		private void CreateWall(Rectangle rectangle)
+		{
+			var subject = CreateSubject();
+			var collided = (ICollidedProxy)subject.AddComponent(Playground.COLLIDED_NAME);
+			var bordered = Owner.CreateProxy(new Bordered());
+			bordered.AddCell(rectangle);
+			collided.Current = bordered;
+			Subjects.Add(subject);
+		}
+
+		public void CreateRoom(Rectangle rectangle, int width)
+		{
+			CreateWall(new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, width));
+			CreateWall(new Rectangle(rectangle.X, rectangle.Y, width, rectangle.Height));
+			CreateWall(new Rectangle(rectangle.Right - width, rectangle.Y, width, rectangle.Height));
+			CreateWall(new Rectangle(rectangle.X, rectangle.Bottom - width, rectangle.Width, width));
+		}
+
+		public void CreateItem(Rectangle rectangle, int strengthValue)
+		{
+			var subject = CreateSubject();
+			var collided = (ICollidedProxy)subject.AddComponent(Playground.COLLIDED_NAME);
+			var bordered = Owner.CreateProxy(new Bordered());
+			bordered.AddCell(rectangle);
+			collided.Current = bordered;
+			var strength = (IScaleProxy)subject.AddComponent(Playground.STRENGTH_NAME);
+			strength.Max = strengthValue;
+			strength.Value = strengthValue;
+			subject.AddComponent(Playground.SCHEDULER_NAME);
+			var damage = (ICollisionDamageProxy)subject.AddComponent(Playground.COLLISION_DAMAGE_NAME);
+			damage.Damage = 1;
+			subject.AddComponent(PlayMaster.COLLISION_HANDLE);
+			Subjects.Add(subject);
+		}
 	}
 }

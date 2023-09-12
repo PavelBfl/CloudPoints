@@ -110,7 +110,7 @@ namespace StepFlow.Master.Proxies.Components
 		private sealed class ProjectileBuilderTurn : Turn
 		{
 			public ProjectileBuilderTurn(
-				ScheduledProxy owner,
+				IComponentProxy owner,
 				Course course,
 				long duration,
 				int size,
@@ -123,7 +123,7 @@ namespace StepFlow.Master.Proxies.Components
 				Damage = damage;
 			}
 
-			private ScheduledProxy Owner { get; }
+			private IComponentProxy Owner { get; }
 
 			private Course Course { get; }
 
@@ -150,7 +150,6 @@ namespace StepFlow.Master.Proxies.Components
 
 					bordered.AddCell(projectileBorder);
 					collided.Current = bordered;
-					collided.CollidedEvent = PlaygroundProxy.COLLISION_HANDLE;
 
 					var projectile = (ICollisionDamageProxy)subject.AddComponent(Playground.COLLISION_DAMAGE_NAME);
 					projectile.Damage = Damage;
@@ -158,7 +157,8 @@ namespace StepFlow.Master.Proxies.Components
 					var strength = (IScaleProxy)subject.AddComponent(Playground.STRENGTH_NAME);
 					strength.Max = 1;
 					strength.Value = 1;
-					strength.ValueMinEvent = PlaygroundProxy.REMOVE_HANDLE;
+
+					subject.AddComponent(PlayMaster.COLLISION_HANDLE);
 
 					var scheduler = (IScheduledProxy)subject.AddComponent(Playground.SCHEDULER_NAME);
 					for (var i = 0; i < 100; i++)

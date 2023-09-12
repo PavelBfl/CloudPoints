@@ -8,7 +8,5 @@ namespace StepFlow.Core.Components
 		public float Value { get; set; }
 
 		public float Max { get; set; }
-
-		public string? ValueMinEvent { get; set; }
 	}
 }

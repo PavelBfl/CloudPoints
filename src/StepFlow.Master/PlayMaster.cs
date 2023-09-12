@@ -10,6 +10,7 @@ using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Master.Proxies;
 using StepFlow.Master.Proxies.Components;
+using StepFlow.Master.Proxies.Components.Custom;
 using StepFlow.TimeLine;
 
 namespace StepFlow.Master
@@ -20,6 +21,8 @@ namespace StepFlow.Master
 		private const string ENUMERATE_NAME = "Enumerate";
 
 		private const string TAKE_STEP_CALL = TAKE_STEP_NAME + "()";
+
+		public const string COLLISION_HANDLE = "CollisionHandle";
 
 		public PlayMaster()
 		{
@@ -86,6 +89,8 @@ namespace StepFlow.Master
 				Playground.STRENGTH_NAME => new Scale(),
 				Playground.SCHEDULER_NAME => new Scheduled(),
 				Playground.COLLISION_DAMAGE_NAME => new CollisionDamage(),
+
+				COLLISION_HANDLE => new CollisionHandler(this),
 				_ => throw new InvalidOperationException(),
 			};
 		}
@@ -98,8 +103,15 @@ namespace StepFlow.Master
 
 			foreach (var collision in playground.GetCollision().ToArray())
 			{
-				((ICollidedProxy?)collision.Item1.GetComponent(Playground.COLLIDED_NAME))?.CollidedHandle(collision.Item2);
-				((ICollidedProxy?)collision.Item2.GetComponent(Playground.COLLIDED_NAME))?.CollidedHandle(collision.Item1);
+				foreach (var handler in collision.Item1.GetComponents().OfType<ICollisionHandler>())
+				{
+					handler.Collision(collision.Item2);
+				}
+
+				foreach (var handler in collision.Item2.GetComponents().OfType<ICollisionHandler>())
+				{
+					handler.Collision(collision.Item1);
+				}
 			}
 
 			foreach (var collided in playground.Subjects
@@ -115,7 +127,7 @@ namespace StepFlow.Master
 
 			foreach (var scheduler in playground.Subjects
 				.ToArray()
-				.Select(x => x.GetComponent(Playground.SCHEDULER_NAME))
+				.SelectMany(x => x.GetComponents())
 				.OfType<IScheduledProxy>()
 				.Where(x => !x.IsEmpty)
 			)

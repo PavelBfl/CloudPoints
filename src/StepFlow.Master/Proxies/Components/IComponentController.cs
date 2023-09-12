@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
+using System.Collections.Generic;
 
 namespace StepFlow.Master.Proxies.Components
 {
@@ -8,6 +8,8 @@ namespace StepFlow.Master.Proxies.Components
 		IComponentProxy AddComponent(string name);
 
 		bool RemoveComponent(string name);
+
+		IEnumerable<IComponentProxy> GetComponents();
 
 		IComponentProxy? GetComponent(string? name);
 

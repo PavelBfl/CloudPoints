@@ -69,40 +69,16 @@ namespace StepFlow.View
 		private void CreateItem(Rectangle rectangle, int strength = 100)
 		{
 			PlayMaster.Execute(@$"
-				subject = playground.CreateSubject()
-				collided = subject.AddComponent(""Collided"")
-				bordered = playground.CreateBordered()
-				bordered.AddCell(playground.CreateRectangle({rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height}))
-				collided.Current = bordered
-				collided.CollidedEvent = ""Collision""
-				strength = subject.AddComponent(""Strength"")
-				strength.Max = {strength}
-				strength.Value = {strength}
-				strength.ValueMinEvent = ""Remove""
-				subject.AddComponent(""Scheduler"")
-				subject.AddComponent(""CollisionDamage"").Damage = 1
-				playground.Subjects.Add(subject)
+				rectangle = playground.CreateRectangle({rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height})
+				playground.CreateItem(rectangle, {strength})
 			");
 		}
 
 		private void CreateRoom(Rectangle rectangle, int width)
 		{
-			CreateWall(new(rectangle.X, rectangle.Y, rectangle.Width, width));
-			CreateWall(new(rectangle.X, rectangle.Y, width, rectangle.Height));
-			CreateWall(new(rectangle.Right - width, rectangle.Y, width, rectangle.Height));
-			CreateWall(new(rectangle.X, rectangle.Bottom - width, rectangle.Width, width));
-		}
-
-		private void CreateWall(Rectangle rectangle)
-		{
 			PlayMaster.Execute(@$"
-				subject = playground.CreateSubject()
-				subject.AddComponent(""Collided"")
-				collided = subject.GetComponent(""Collided"")
-				bordered = playground.CreateBordered()
-				bordered.AddCell(playground.CreateRectangle({rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height}))
-				collided.Current = bordered
-				playground.Subjects.Add(subject)
+				rectangle = playground.CreateRectangle({rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height})
+				playground.CreateRoom(rectangle, {width})
 			");
 		}
 

@@ -1,4 +1,7 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Xml.Linq;
 using StepFlow.Master.Commands;
 using StepFlow.TimeLine;
 
@@ -19,10 +22,22 @@ namespace StepFlow.Master.Proxies.Components
 			return ((IComponentController)this).GetComponentRequired(name);
 		}
 
-		public IComponentProxy? GetComponent(string? name)
+		public IComponentProxy? GetComponent(string? name) => CreateProxy(Target.Components[name]);
+
+		private IComponentProxy? CreateProxy(IComponent? component)
 		{
-			return (IComponentProxy?)Owner.CreateProxy(Target.Components[name]);
+			if (component is IComponentProxy componentProxy)
+			{
+				return componentProxy;
+			}
+			else
+			{
+				return (IComponentProxy?)Owner.CreateProxy(component);
+			}
 		}
+
+		public IEnumerable<IComponentProxy> GetComponents()
+			=> Target.Components.OfType<IComponent>().Select(CreateProxy).OfType<IComponentProxy>();
 
 		public bool RemoveComponent(string name)
 		{
