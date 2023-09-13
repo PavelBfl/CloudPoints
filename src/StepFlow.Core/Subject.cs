@@ -4,14 +4,18 @@ using StepFlow.Core.Exceptions;
 
 namespace StepFlow.Core
 {
-	public class Subject : Container
+	public class Subject : Container, IIdentity
 	{
 		public Subject(Playground owner)
 		{
 			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
+			Id = Owner.GenerateId();
+			Owner.Register(this);
 		}
 
 		public Playground Owner { get; }
+
+		public uint Id { get; }
 
 		protected void CheckInteraction(Subject? other)
 		{

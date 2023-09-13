@@ -1,7 +1,9 @@
-﻿namespace StepFlow.Master.Proxies.Components.Custom
+﻿using StepFlow.Core;
+
+namespace StepFlow.Master.Proxies.Components.Custom
 {
-	public interface ICollisionHandler
+	public interface ICollisionHandler : IIdentity
 	{
-		void Collision(ISubjectProxy other);
+		void Collision(ISubjectProxy main, ISubjectProxy other);
 	}
 }

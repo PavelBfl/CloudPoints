@@ -23,6 +23,7 @@ namespace StepFlow.Master
 		private const string TAKE_STEP_CALL = TAKE_STEP_NAME + "()";
 
 		public const string COLLISION_HANDLE = "CollisionHandle";
+		public const string SCALE_HANDLE = "ScaleHandle";
 
 		public PlayMaster()
 		{
@@ -85,17 +86,27 @@ namespace StepFlow.Master
 
 			return componentName switch
 			{
-				Playground.COLLIDED_NAME => new Collided(),
-				Playground.STRENGTH_NAME => new Scale(),
-				Playground.SCHEDULER_NAME => new Scheduled(),
-				Playground.COLLISION_DAMAGE_NAME => new CollisionDamage(),
+				Playground.COLLIDED_NAME => new Collided(Playground),
+				Playground.STRENGTH_NAME => new Scale(Playground),
+				Playground.SCHEDULER_NAME => new Scheduled(Playground),
+				Playground.COLLISION_DAMAGE_NAME => new CollisionDamage(Playground),
 
 				COLLISION_HANDLE => new CollisionHandler(this),
+				SCALE_HANDLE => new ScaleHandler(this),
 				_ => throw new InvalidOperationException(),
 			};
 		}
 
 		public void TakeStep() => Execute(TAKE_STEP_CALL);
+
+		private void CollisionHandle(ISubjectProxy main, ISubjectProxy other)
+		{
+			var collided = (ICollidedProxy)main.GetComponentRequired(Playground.COLLIDED_NAME);
+			foreach (var id in collided.Collision)
+			{
+				((ICollisionHandler)Playground.Objects[id]).Collision(main, other);
+			}
+		}
 
 		private void TakeStepInner()
 		{
@@ -103,15 +114,8 @@ namespace StepFlow.Master
 
 			foreach (var collision in playground.GetCollision().ToArray())
 			{
-				foreach (var handler in collision.Item1.GetComponents().OfType<ICollisionHandler>())
-				{
-					handler.Collision(collision.Item2);
-				}
-
-				foreach (var handler in collision.Item2.GetComponents().OfType<ICollisionHandler>())
-				{
-					handler.Collision(collision.Item1);
-				}
+				CollisionHandle(collision.Item1, collision.Item2);
+				CollisionHandle(collision.Item2, collision.Item1);
 			}
 
 			foreach (var collided in playground.Subjects

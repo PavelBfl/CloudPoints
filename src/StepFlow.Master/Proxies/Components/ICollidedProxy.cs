@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using StepFlow.Core;
 
 namespace StepFlow.Master.Proxies.Components
@@ -10,6 +11,7 @@ namespace StepFlow.Master.Proxies.Components
 		IBorderedProxy? Next { get; set; }
 
 		bool IsMoving { get; set; }
+		ICollection<uint> Collision { get; }
 
 		void Break();
 

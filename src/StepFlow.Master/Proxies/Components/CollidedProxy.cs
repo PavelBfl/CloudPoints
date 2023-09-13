@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using StepFlow.Core;
 using StepFlow.Core.Components;
@@ -16,6 +16,8 @@ namespace StepFlow.Master.Proxies.Components
 		public IBorderedProxy? Next { get => Owner.CreateProxy(Target.Next); set => SetValue(x => x.Next, value?.Target); }
 
 		public bool IsMoving { get => Target.IsMoving; set => SetValue(x => x.IsMoving, value); }
+
+		public ICollection<uint> Collision => CreateEvenProxy(Target.Collision);
 
 		public bool Offset(Point value)
 		{

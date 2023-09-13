@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using StepFlow.Core.Components;
@@ -11,6 +12,26 @@ namespace StepFlow.Core
 		public const string STRENGTH_NAME = "Strength";
 		public const string SCHEDULER_NAME = "Scheduler";
 		public const string COLLISION_DAMAGE_NAME = "CollisionDamage";
+
+		private Dictionary<uint, IIdentity> objects = new Dictionary<uint, IIdentity>();
+
+		public IReadOnlyDictionary<uint, IIdentity> Objects => objects;
+
+		public void Register(IIdentity identity)
+		{
+			if (identity is null)
+			{
+				throw new ArgumentNullException(nameof(identity));
+			}
+
+			objects.Add(identity.Id, identity);
+		}
+
+		public bool Unregister(uint id) => objects.Remove(id);
+
+		private uint currentId = 0;
+
+		public uint GenerateId() => currentId++;
 
 		public IList<Subject> Subjects { get; } = new List<Subject>();
 

@@ -8,16 +8,15 @@ namespace StepFlow.Master.Proxies.Components.Custom
 		{
 		}
 
-		public void Collision(ISubjectProxy other)
+		public void Collision(ISubjectProxy main, ISubjectProxy other)
 		{
-			IComponentController controller = this;
-			if (controller.GetComponent(Playground.STRENGTH_NAME) is IScaleProxy scale &&
+			if (main.GetComponent(Playground.STRENGTH_NAME) is IScaleProxy scale &&
 				other.GetComponent(Playground.COLLISION_DAMAGE_NAME) is ICollisionDamageProxy damage)
 			{
 				scale.Add(-damage.Damage);
 			}
 
-			((ICollidedProxy?)controller.GetComponent(Playground.COLLIDED_NAME))?.Break();
+			((ICollidedProxy?)main.GetComponent(Playground.COLLIDED_NAME))?.Break();
 		}
 	}
 }

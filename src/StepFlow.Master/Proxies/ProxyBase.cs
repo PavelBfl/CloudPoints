@@ -1,5 +1,7 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using StepFlow.Core.Commands.Accessors;
 
 namespace StepFlow.Master.Proxies
@@ -17,7 +19,7 @@ namespace StepFlow.Master.Proxies
 
 		public TTarget Target { get; }
 
-		protected void SetValue<TValue>(Expression<Func<TTarget, TValue>> expression, TValue newValue)
+		protected void SetValue<TValue>(Expression<Func<TTarget, TValue>> expression, TValue newValue, [CallerMemberName] string? propertyName = null)
 		{
 			var command = Target.CreatePropertyCommand(expression, newValue);
 			Owner.TimeAxis.Add(command);
