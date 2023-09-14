@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace StepFlow.Core.Components
 {
-	public class ComponentBase : Component, IIdentity
+	public class ComponentBase : Component, IComponentChild
 	{
 		public ComponentBase(Playground owner)
 		{

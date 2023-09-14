@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
-using StepFlow.Master.Proxies.Collections;
+using StepFlow.Core.Components;
 
 namespace StepFlow.Master.Proxies.Components
 {
@@ -13,6 +13,6 @@ namespace StepFlow.Master.Proxies.Components
 
 		public ISubjectProxy Subject => (ISubjectProxy)Owner.CreateProxy(Target.Container);
 
-		protected ICollection<uint> CreateEvenProxy(ICollection<uint> @event) => new CollectionProxy<uint, ICollection<uint>>(Owner, @event);
+		protected ICollection<IComponentProxy> CreateEvenProxy(ICollection<IComponentChild> @event) => new EventProxy(Owner, @event);
 	}
 }

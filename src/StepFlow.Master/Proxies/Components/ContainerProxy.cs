@@ -23,23 +23,10 @@ namespace StepFlow.Master.Proxies.Components
 			return component;
 		}
 
-		public IComponentProxy? GetComponent(string? name) => CreateProxy(Target.Components[name]);
-
-		[return: NotNullIfNotNull("component")]
-		private IComponentProxy? CreateProxy(IComponent? component)
-		{
-			if (component is IComponentProxy componentProxy)
-			{
-				return componentProxy;
-			}
-			else
-			{
-				return (IComponentProxy?)Owner.CreateProxy(component);
-			}
-		}
+		public IComponentProxy? GetComponent(string? name) => Owner.CreateComponentProxy(Target.Components[name]);
 
 		public IEnumerable<IComponentProxy> GetComponents()
-			=> Target.Components.OfType<IComponent>().Select(CreateProxy).OfType<IComponentProxy>();
+			=> Target.Components.OfType<IComponent>().Select(Owner.CreateComponentProxy).OfType<IComponentProxy>();
 
 		public bool RemoveComponent(string name)
 		{

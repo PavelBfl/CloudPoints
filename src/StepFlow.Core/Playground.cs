@@ -6,18 +6,18 @@ using StepFlow.Core.Components;
 
 namespace StepFlow.Core
 {
-	public class Playground : Container
+	public class Playground
 	{
 		public const string COLLIDED_NAME = nameof(Collided);
 		public const string STRENGTH_NAME = "Strength";
 		public const string SCHEDULER_NAME = "Scheduler";
 		public const string COLLISION_DAMAGE_NAME = "CollisionDamage";
 
-		private Dictionary<uint, IIdentity> objects = new Dictionary<uint, IIdentity>();
+		private Dictionary<uint, IChild> objects = new Dictionary<uint, IChild>();
 
-		public IReadOnlyDictionary<uint, IIdentity> Objects => objects;
+		public IReadOnlyDictionary<uint, IChild> Objects => objects;
 
-		public void Register(IIdentity identity)
+		public void Register(IChild identity)
 		{
 			if (identity is null)
 			{

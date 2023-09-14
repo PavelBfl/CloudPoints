@@ -58,11 +58,11 @@ namespace StepFlow.Master.Proxies
 			var strength = (IScaleProxy)subject.AddComponent(Playground.STRENGTH_NAME);
 			strength.Max = strengthValue;
 			strength.Value = strengthValue;
-			strength.ValueChange.Add(((IIdentity)subject.AddComponent(PlayMaster.SCALE_HANDLE)).Id);
+			strength.ValueChange.Add(subject.AddComponent(PlayMaster.SCALE_HANDLE));
 			subject.AddComponent(Playground.SCHEDULER_NAME);
 			var damage = (ICollisionDamageProxy)subject.AddComponent(Playground.COLLISION_DAMAGE_NAME);
 			damage.Damage = 1;
-			collided.Collision.Add(((IIdentity)subject.AddComponent(PlayMaster.COLLISION_HANDLE)).Id);
+			collided.Collision.Add(subject.AddComponent(PlayMaster.COLLISION_HANDLE));
 			Subjects.Add(subject);
 		}
 	}

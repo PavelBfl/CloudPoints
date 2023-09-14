@@ -1,10 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
 using StepFlow.Core;
+using StepFlow.Core.Components;
 
 namespace StepFlow.Master.Proxies.Components.Custom
 {
-	internal class ComponentMaster : Component, IComponentProxy, IIdentity
+	internal class ComponentMaster : Component, IComponentProxy, IComponentChild
 	{
 		public ComponentMaster(PlayMaster owner)
 		{
@@ -15,6 +16,8 @@ namespace StepFlow.Master.Proxies.Components.Custom
 		}
 
 		public PlayMaster Owner { get; }
+
+		Playground IChild.Owner => ((IChild)Container).Owner;
 
 		public uint Id { get; }
 

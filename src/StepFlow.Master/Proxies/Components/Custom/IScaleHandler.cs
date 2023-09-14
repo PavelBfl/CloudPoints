@@ -2,7 +2,7 @@
 
 namespace StepFlow.Master.Proxies.Components.Custom
 {
-	public interface IScaleHandler : IIdentity
+	public interface IScaleHandler : IChild
 	{
 		void ValueChange(IScaleProxy component, string name);
 	}

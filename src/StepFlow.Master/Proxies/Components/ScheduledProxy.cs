@@ -150,7 +150,7 @@ namespace StepFlow.Master.Proxies.Components
 
 					bordered.AddCell(projectileBorder);
 					collided.Current = bordered;
-					collided.Collision.Add(((IIdentity)subject.AddComponent(PlayMaster.COLLISION_HANDLE)).Id);
+					collided.Collision.Add(subject.AddComponent(PlayMaster.COLLISION_HANDLE));
 
 					var projectile = (ICollisionDamageProxy)subject.AddComponent(Playground.COLLISION_DAMAGE_NAME);
 					projectile.Damage = Damage;
@@ -158,7 +158,7 @@ namespace StepFlow.Master.Proxies.Components
 					var strength = (IScaleProxy)subject.AddComponent(Playground.STRENGTH_NAME);
 					strength.Max = 1;
 					strength.Value = 1;
-					strength.ValueChange.Add(((IIdentity)subject.AddComponent(PlayMaster.SCALE_HANDLE)).Id);
+					strength.ValueChange.Add(subject.AddComponent(PlayMaster.SCALE_HANDLE));
 
 					var scheduler = (IScheduledProxy)subject.AddComponent(Playground.SCHEDULER_NAME);
 					for (var i = 0; i < 100; i++)

@@ -38,6 +38,19 @@ namespace StepFlow.Master
 
 		public IPlaygroundProxy GetPlaygroundProxy() => CreateProxy(Playground);
 
+		[return: NotNullIfNotNull("component")]
+		internal IComponentProxy? CreateComponentProxy(IComponent? component)
+		{
+			if (component is IComponentProxy componentProxy)
+			{
+				return componentProxy;
+			}
+			else
+			{
+				return (IComponentProxy?)CreateProxy(component);
+			}
+		}
+
 		[return: NotNullIfNotNull("obj")]
 		internal object? CreateProxy(object? obj) => obj switch
 		{
@@ -102,9 +115,9 @@ namespace StepFlow.Master
 		private void CollisionHandle(ISubjectProxy main, ISubjectProxy other)
 		{
 			var collided = (ICollidedProxy)main.GetComponentRequired(Playground.COLLIDED_NAME);
-			foreach (var id in collided.Collision)
+			foreach (var handler in collided.Collision.Cast<ICollisionHandler>())
 			{
-				((ICollisionHandler)Playground.Objects[id]).Collision(main, other);
+				handler.Collision(main, other);
 			}
 		}
 

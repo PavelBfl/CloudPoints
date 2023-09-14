@@ -7,7 +7,7 @@ namespace StepFlow.Master.Proxies.Components
 		float Value { get; set; }
 
 		float Max { get; set; }
-		ICollection<uint> ValueChange { get; }
+		ICollection<IComponentProxy> ValueChange { get; }
 
 		void Add(float value);
 	}

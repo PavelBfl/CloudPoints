@@ -1,7 +1,9 @@
 ﻿namespace StepFlow.Core
 {
-	public interface IIdentity
+	public interface IChild
 	{
+		Playground Owner { get; }
+
 		uint Id { get; }
 	}
 }

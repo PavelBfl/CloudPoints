@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 
 namespace StepFlow.Core.Components
 {
@@ -7,6 +6,7 @@ namespace StepFlow.Core.Components
 	{
 		public Collided(Playground owner) : base(owner)
 		{
+			Collision = new Event(Owner);
 		}
 
 		public Bordered? Current { get; set; }
@@ -15,6 +15,6 @@ namespace StepFlow.Core.Components
 
 		public bool IsMoving { get; set; }
 
-		public ICollection<uint> Collision { get; } = new HashSet<uint>();
+		public ICollection<IComponentChild> Collision { get; }
 	}
 }

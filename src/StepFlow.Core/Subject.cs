@@ -4,7 +4,7 @@ using StepFlow.Core.Exceptions;
 
 namespace StepFlow.Core
 {
-	public class Subject : Container, IIdentity
+	public class Subject : Container, IChild
 	{
 		public Subject(Playground owner)
 		{

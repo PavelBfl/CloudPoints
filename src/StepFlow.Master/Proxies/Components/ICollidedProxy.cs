@@ -11,7 +11,7 @@ namespace StepFlow.Master.Proxies.Components
 		IBorderedProxy? Next { get; set; }
 
 		bool IsMoving { get; set; }
-		ICollection<uint> Collision { get; }
+		ICollection<IComponentProxy> Collision { get; }
 
 		void Break();
 

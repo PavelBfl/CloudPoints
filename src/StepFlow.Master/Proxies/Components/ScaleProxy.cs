@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using StepFlow.Core.Components;
-using StepFlow.Master.Proxies.Collections;
 using StepFlow.Master.Proxies.Components.Custom;
 
 namespace StepFlow.Master.Proxies.Components
@@ -17,9 +17,8 @@ namespace StepFlow.Master.Proxies.Components
 			set
 			{
 				SetValue(x => x.Value, value);
-				foreach (var id in ValueChange)
+				foreach (var handler in ValueChange.Cast<IScaleHandler>())
 				{
-					var handler = (IScaleHandler)Owner.Playground.Objects[id];
 					handler.ValueChange(this, Target.Site.Name);
 				}
 			}
@@ -27,7 +26,7 @@ namespace StepFlow.Master.Proxies.Components
 
 		public float Max { get => Target.Max; set => SetValue(x => x.Max, value); }
 
-		public ICollection<uint> ValueChange => CreateEvenProxy(Target.ValueChange);
+		public ICollection<IComponentProxy> ValueChange => CreateEvenProxy(Target.ValueChange);
 
 		public void Add(float value)
 		{
