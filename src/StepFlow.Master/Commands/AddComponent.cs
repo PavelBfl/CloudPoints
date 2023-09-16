@@ -6,18 +6,18 @@ namespace StepFlow.Master.Commands
 {
 	public sealed class AddComponent : ICommand
 	{
-		public AddComponent(Container container, IComponent component, string componentName)
+		public AddComponent(Container container, IComponent component, string? componentName)
 		{
 			Container = container ?? throw new ArgumentNullException(nameof(container));
 			Component = component ?? throw new ArgumentNullException(nameof(component));
-			ComponentName = componentName ?? throw new ArgumentNullException(nameof(componentName));
+			ComponentName = componentName;
 		}
 
 		public Container Container { get; }
 
 		public IComponent Component { get; }
 
-		public string ComponentName { get; }
+		public string? ComponentName { get; }
 
 		public void Execute() => Container.Add(Component, ComponentName);
 

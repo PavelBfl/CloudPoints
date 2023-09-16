@@ -5,9 +5,9 @@ namespace StepFlow.Master.Proxies.Components
 {
 	public interface IComponentController
 	{
-		IComponentProxy AddComponent(string name);
+		IComponentProxy AddComponent(string componentType, string? name = null);
 
-		bool RemoveComponent(string name);
+		void RemoveComponent(IComponentProxy component);
 
 		IEnumerable<IComponentProxy> GetComponents();
 

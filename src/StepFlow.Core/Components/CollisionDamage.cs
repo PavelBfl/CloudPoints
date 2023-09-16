@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
 
 namespace StepFlow.Core.Components
 {
@@ -9,5 +9,7 @@ namespace StepFlow.Core.Components
 		}
 
 		public float Damage { get; set; }
+
+		public ICollection<string> Kind { get; } = new HashSet<string>();
 	}
 }

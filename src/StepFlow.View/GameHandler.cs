@@ -87,7 +87,7 @@ namespace StepFlow.View
 			if (KeyboardService.IsKeyOnPress(Keys.Tab))
 			{
 				var subjects = PlayMaster.Playground.Subjects.ToArray();
-				var current = Array.FindIndex(subjects, x => x.Source.Components[Playground.STRENGTH_NAME] is not null);
+				var current = Array.FindIndex(subjects, x => x.Source.Components[Components.Names.STRENGTH] is not null);
 				if (current >= 0)
 				{
 					subjects[current].IsSelect = true;
@@ -145,8 +145,7 @@ namespace StepFlow.View
 			}
 
 			if (PlayMaster.Source.Playground.Subjects
-				.Select(x => x.Components[Playground.SCHEDULER_NAME])
-				.OfType<Scheduled>()
+				.SelectMany(x => x.Components.OfType<Scheduled>())
 				.Where(x => x.Queue.Any()).Any())
 			{
 				PlayMaster.TakeStep();
@@ -165,7 +164,7 @@ namespace StepFlow.View
 			if (current >= 0)
 			{
 				PlayMaster.Execute($@"
-						scheduler = playground.Subjects[{current}].GetComponent(""Scheduler"")
+						scheduler = playground.Subjects[{current}].GetComponent(""MainScheduler"")
 						if scheduler != null then
 							scheduler.SetCourse({(int)value}, 10)
 						end
@@ -180,7 +179,7 @@ namespace StepFlow.View
 			if (current >= 0)
 			{
 				PlayMaster.Execute($@"
-						scheduler = playground.Subjects[{current}].GetComponent(""Scheduler"")
+						scheduler = playground.Subjects[{current}].GetComponent(""MainScheduler"")
 						if scheduler != null then
 							scheduler.CreateProjectile({(int)course})
 						end
@@ -206,7 +205,7 @@ namespace StepFlow.View
 			Base.Childs.Clear();
 			foreach (var subject in PlayMaster.Playground.Subjects)
 			{
-				if (subject.Source.Components[Playground.COLLIDED_NAME] is Collided collided && collided.Current is not null)
+				if (subject.Source.Components[Components.Names.COLLIDED] is Collided collided && collided.Current is not null)
 				{
 					var color = subject.IsSelect ? Color.Green : Color.Red;
 					var polygon = new Polygon(Base.ServiceProvider)

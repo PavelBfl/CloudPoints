@@ -11,7 +11,11 @@ namespace StepFlow.Master.Proxies.Components
 		{
 		}
 
+		public string? Name => Target.Site?.Name;
+
 		public ISubjectProxy Subject => (ISubjectProxy)Owner.CreateProxy(Target.Container);
+
+		IComponent IProxyBase<IComponent>.Target => Target;
 
 		protected ICollection<IComponentProxy> CreateEvenProxy(ICollection<IComponentChild> @event) => new EventProxy(Owner, @event);
 	}

@@ -22,5 +22,9 @@ namespace StepFlow.Master.Proxies.Components.Custom
 		public uint Id { get; }
 
 		public ISubjectProxy Subject => (ISubjectProxy)Owner.CreateProxy(Container);
+
+		public string? Name => Site?.Name;
+
+		public IComponent Target => this;
 	}
 }

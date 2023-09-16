@@ -15,15 +15,39 @@ using StepFlow.TimeLine;
 
 namespace StepFlow.Master
 {
+	public static class Components
+	{
+		public static class Types
+		{
+			public const string COLLIDED = "CollidedType";
+			public const string SCALE = "ScaleType";
+			public const string SCHEDULER = "SchedulerType";
+			public const string COLLISION_DAMAGE= "CollisionDamageType";
+		}
+
+		public static class Handlers
+		{
+			public const string COLLISION = "CollisionHandler";
+			public const string SCALE = "ScaleHandler";
+			public const string COURSE = "CourseHandler";
+			public const string PROJECTILE_BUILDER = "ProjectileBuilder";
+		}
+
+		public static class Names
+		{
+			public const string STRENGTH = "Strength";
+			public const string COLLIDED = "Collided";
+			public const string DAMAGE = "Damage";
+			public const string MAIN_SCHEDULER = "MainScheduler";
+		}
+	}
+
 	public class PlayMaster
 	{
 		private const string TAKE_STEP_NAME = nameof(TakeStep);
 		private const string ENUMERATE_NAME = "Enumerate";
 
 		private const string TAKE_STEP_CALL = TAKE_STEP_NAME + "()";
-
-		public const string COLLISION_HANDLE = "CollisionHandle";
-		public const string SCALE_HANDLE = "ScaleHandle";
 
 		public PlayMaster()
 		{
@@ -90,22 +114,24 @@ namespace StepFlow.Master
 		[return: NotNullIfNotNull("obj")]
 		internal IScheduledProxy? CreateProxy(Scheduled? obj) => obj is null ? null : new ScheduledProxy(this, obj);
 
-		public IComponent CreateComponent(string componentName)
+		public IComponent CreateComponent(string componentType)
 		{
-			if (componentName is null)
+			if (componentType is null)
 			{
-				throw new ArgumentNullException(nameof(componentName));
+				throw new ArgumentNullException(nameof(componentType));
 			}
 
-			return componentName switch
+			return componentType switch
 			{
-				Playground.COLLIDED_NAME => new Collided(Playground),
-				Playground.STRENGTH_NAME => new Scale(Playground),
-				Playground.SCHEDULER_NAME => new Scheduled(Playground),
-				Playground.COLLISION_DAMAGE_NAME => new CollisionDamage(Playground),
+				Components.Types.COLLIDED => new Collided(Playground),
+				Components.Types.SCALE => new Scale(Playground),
+				Components.Types.SCHEDULER => new Scheduled(Playground),
+				Components.Types.COLLISION_DAMAGE => new CollisionDamage(Playground),
 
-				COLLISION_HANDLE => new CollisionHandler(this),
-				SCALE_HANDLE => new ScaleHandler(this),
+				Components.Handlers.COLLISION => new CollisionHandler(this),
+				Components.Handlers.SCALE => new ScaleHandler(this),
+				Components.Handlers.COURSE => new CourseHandler(this),
+				Components.Handlers.PROJECTILE_BUILDER => new ProjectileBuilderHandler(this),
 				_ => throw new InvalidOperationException(),
 			};
 		}
@@ -114,7 +140,7 @@ namespace StepFlow.Master
 
 		private void CollisionHandle(ISubjectProxy main, ISubjectProxy other)
 		{
-			var collided = (ICollidedProxy)main.GetComponentRequired(Playground.COLLIDED_NAME);
+			var collided = (ICollidedProxy)main.GetComponentRequired(Components.Names.COLLIDED);
 			foreach (var handler in collided.Collision.Cast<ICollisionHandler>())
 			{
 				handler.Collision(main, other);
@@ -133,7 +159,7 @@ namespace StepFlow.Master
 
 			foreach (var collided in playground.Subjects
 				.ToArray()
-				.Select(x => x.GetComponent(Playground.COLLIDED_NAME))
+				.Select(x => x.GetComponent(Components.Names.COLLIDED))
 				.OfType<ICollidedProxy>()
 			)
 			{
@@ -146,7 +172,6 @@ namespace StepFlow.Master
 				.ToArray()
 				.SelectMany(x => x.GetComponents())
 				.OfType<IScheduledProxy>()
-				.Where(x => !x.IsEmpty)
 			)
 			{
 				scheduler.TryDequeue();

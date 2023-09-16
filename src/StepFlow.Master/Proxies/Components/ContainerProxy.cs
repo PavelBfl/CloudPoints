@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using StepFlow.Master.Commands;
 using StepFlow.TimeLine;
@@ -15,12 +14,12 @@ namespace StepFlow.Master.Proxies.Components
 		{
 		}
 
-		public IComponentProxy AddComponent(string name)
+		public IComponentProxy AddComponent(string componentType, string? name = null)
 		{
-			Owner.TimeAxis.Add(new AddComponent(Target, Owner.CreateComponent(name), name));
+			var component = Owner.CreateComponent(componentType);
+			Owner.TimeAxis.Add(new AddComponent(Target, component, name));
 
-			var component = ((IComponentController)this).GetComponentRequired(name);
-			return component;
+			return Owner.CreateComponentProxy(component);
 		}
 
 		public IComponentProxy? GetComponent(string? name) => Owner.CreateComponentProxy(Target.Components[name]);
@@ -28,17 +27,9 @@ namespace StepFlow.Master.Proxies.Components
 		public IEnumerable<IComponentProxy> GetComponents()
 			=> Target.Components.OfType<IComponent>().Select(Owner.CreateComponentProxy).OfType<IComponentProxy>();
 
-		public bool RemoveComponent(string name)
+		public void RemoveComponent(IComponentProxy component)
 		{
-			if (Target.Components[name] is { } component)
-			{
-				Owner.TimeAxis.Add(new Reverse(new AddComponent(Target, component, name)));
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+			Owner.TimeAxis.Add(new Reverse(new AddComponent(Target, component.Target, component.Name)));
 		}
 	}
 }

@@ -1,6 +1,4 @@
-﻿using StepFlow.Core;
-
-namespace StepFlow.Master.Proxies.Components.Custom
+﻿namespace StepFlow.Master.Proxies.Components.Custom
 {
 	internal sealed class CollisionHandler : ComponentMaster, ICollisionHandler
 	{
@@ -10,13 +8,13 @@ namespace StepFlow.Master.Proxies.Components.Custom
 
 		public void Collision(ISubjectProxy main, ISubjectProxy other)
 		{
-			if (main.GetComponent(Playground.STRENGTH_NAME) is IScaleProxy scale &&
-				other.GetComponent(Playground.COLLISION_DAMAGE_NAME) is ICollisionDamageProxy damage)
+			if (main.GetComponent(Master.Components.Names.STRENGTH) is IScaleProxy scale &&
+				other.GetComponent(Master.Components.Names.DAMAGE) is ICollisionDamageProxy damage)
 			{
 				scale.Add(-damage.Damage);
-			}
 
-			((ICollidedProxy?)main.GetComponent(Playground.COLLIDED_NAME))?.Break();
+				((ICollidedProxy?)main.GetComponent(Master.Components.Names.COLLIDED))?.Break();
+			}
 		}
 	}
 }

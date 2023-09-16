@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using StepFlow.Core.Components;
 
@@ -8,11 +7,6 @@ namespace StepFlow.Core
 {
 	public class Playground
 	{
-		public const string COLLIDED_NAME = nameof(Collided);
-		public const string STRENGTH_NAME = "Strength";
-		public const string SCHEDULER_NAME = "Scheduler";
-		public const string COLLISION_DAMAGE_NAME = "CollisionDamage";
-
 		private Dictionary<uint, IChild> objects = new Dictionary<uint, IChild>();
 
 		public IReadOnlyDictionary<uint, IChild> Objects => objects;
@@ -35,9 +29,14 @@ namespace StepFlow.Core
 
 		public IList<Subject> Subjects { get; } = new List<Subject>();
 
-		public IEnumerable<(Subject, Subject)> GetCollision()
+		public IEnumerable<(Subject, Subject)> GetCollision(string name)
 		{
-			var instance = Subjects.Select(x => x.Components[COLLIDED_NAME]).OfType<Collided>().ToArray();
+			if (name is null)
+			{
+				throw new ArgumentNullException(nameof(name));
+			}
+
+			var instance = Subjects.Select(x => x.Components[name]).OfType<Collided>().ToArray();
 
 			for (var iFirst = 0; iFirst < instance.Length; iFirst++)
 			{
