@@ -2,9 +2,10 @@
 
 namespace StepFlow.Master.Proxies.Components
 {
-	public interface ICollisionDamageProxy : IComponentProxy
+	public interface IDamageProxy : IComponentProxy
 	{
-		float Damage { get; set; }
+		float Value { get; set; }
+
 		ICollection<string> Kind { get; }
 	}
 }

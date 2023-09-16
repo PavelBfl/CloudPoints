@@ -63,8 +63,9 @@ namespace StepFlow.Master.Proxies.Components.Custom
 				collided.Current = bordered;
 				collided.Collision.Add(subject.AddComponent(Master.Components.Handlers.COLLISION));
 
-				var projectile = (ICollisionDamageProxy)subject.AddComponent(Master.Components.Types.COLLISION_DAMAGE, Master.Components.Names.DAMAGE);
-				projectile.Damage = Damage;
+				var projectile = (IDamageProxy)subject.AddComponent(Master.Components.Types.DAMAGE, Master.Components.Names.DAMAGE);
+				projectile.Value = Damage;
+				projectile.Kind.Add(PlayMaster.POISON_DAMAGET);
 
 				var strength = (IScaleProxy)subject.AddComponent(Master.Components.Types.SCALE, Master.Components.Names.STRENGTH);
 				strength.Max = 1;

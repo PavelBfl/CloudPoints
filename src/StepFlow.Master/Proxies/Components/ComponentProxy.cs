@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 using StepFlow.Core.Components;
 
 namespace StepFlow.Master.Proxies.Components
 {
 	public class ComponentProxy<TComponent> : ProxyBase<TComponent>, IComponentProxy
-		where TComponent : Component
+		where TComponent : class, IComponentChild
 	{
 		public ComponentProxy(PlayMaster owner, TComponent target) : base(owner, target)
 		{
@@ -13,9 +12,9 @@ namespace StepFlow.Master.Proxies.Components
 
 		public string? Name => Target.Site?.Name;
 
-		public ISubjectProxy Subject => (ISubjectProxy)Owner.CreateProxy(Target.Container);
+		public ISubjectProxy Subject => (ISubjectProxy)Owner.CreateProxy(Target.Site.Container);
 
-		IComponent IProxyBase<IComponent>.Target => Target;
+		IComponentChild IProxyBase<IComponentChild>.Target => Target;
 
 		protected ICollection<IComponentProxy> CreateEvenProxy(ICollection<IComponentChild> @event) => new EventProxy(Owner, @event);
 	}

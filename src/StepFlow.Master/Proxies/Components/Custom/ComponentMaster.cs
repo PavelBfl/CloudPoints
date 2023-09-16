@@ -25,6 +25,6 @@ namespace StepFlow.Master.Proxies.Components.Custom
 
 		public string? Name => Site?.Name;
 
-		public IComponent Target => this;
+		public IComponentChild Target => this;
 	}
 }

@@ -60,8 +60,8 @@ namespace StepFlow.Master.Proxies
 			strength.Value = strengthValue;
 			strength.ValueChange.Add(subject.AddComponent(Master.Components.Handlers.SCALE));
 			subject.AddComponent(Master.Components.Types.SCHEDULER, Master.Components.Names.MAIN_SCHEDULER);
-			var damage = (ICollisionDamageProxy)subject.AddComponent(Master.Components.Types.COLLISION_DAMAGE, Master.Components.Names.DAMAGE);
-			damage.Damage = 1;
+			var damage = (IDamageProxy)subject.AddComponent(Master.Components.Types.DAMAGE, Master.Components.Names.DAMAGE);
+			damage.Value = 1;
 			collided.Collision.Add(subject.AddComponent(Master.Components.Handlers.COLLISION));
 			Subjects.Add(subject);
 		}

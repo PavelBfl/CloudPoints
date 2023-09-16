@@ -22,7 +22,7 @@ namespace StepFlow.Master
 			public const string COLLIDED = "CollidedType";
 			public const string SCALE = "ScaleType";
 			public const string SCHEDULER = "SchedulerType";
-			public const string COLLISION_DAMAGE= "CollisionDamageType";
+			public const string DAMAGE= "DamageType";
 		}
 
 		public static class Handlers
@@ -31,6 +31,9 @@ namespace StepFlow.Master
 			public const string SCALE = "ScaleHandler";
 			public const string COURSE = "CourseHandler";
 			public const string PROJECTILE_BUILDER = "ProjectileBuilder";
+			public const string REMOVE_SUBJECT = "RemoveSubject";
+			public const string REMOVE_COMPONENT = "RemoveComponent";
+			public const string SET_DAMAGE = "SetDamage";
 		}
 
 		public static class Names
@@ -48,6 +51,9 @@ namespace StepFlow.Master
 		private const string ENUMERATE_NAME = "Enumerate";
 
 		private const string TAKE_STEP_CALL = TAKE_STEP_NAME + "()";
+
+		public const string FIRE_DAMAGE = "Fire";
+		public const string POISON_DAMAGET = "Poison";
 
 		public PlayMaster()
 		{
@@ -81,7 +87,7 @@ namespace StepFlow.Master
 			Playground playground => CreateProxy(playground),
 			Subject subject => CreateProxy(subject),
 			Collided collided => CreateProxy(collided),
-			CollisionDamage projectile => CreateProxy(projectile),
+			Damage projectile => CreateProxy(projectile),
 			Scale scale => CreateProxy(scale),
 			Scheduled scheduled => CreateProxy(scheduled),
 			Cell cell => CreateProxy(cell),
@@ -106,7 +112,7 @@ namespace StepFlow.Master
 		internal ICollidedProxy? CreateProxy(Collided? obj) => obj is null ? null : new CollidedProxy(this, obj);
 
 		[return: NotNullIfNotNull("obj")]
-		internal ICollisionDamageProxy? CreateProxy(CollisionDamage? obj) => obj is null ? null : new CollisionDamageProxy(this, obj);
+		internal IDamageProxy? CreateProxy(Damage? obj) => obj is null ? null : new DamageProxy(this, obj);
 
 		[return: NotNullIfNotNull("obj")]
 		internal IScaleProxy? CreateProxy(Scale? obj) => obj is null ? null : new ScaleProxy(this, obj);
@@ -126,12 +132,15 @@ namespace StepFlow.Master
 				Components.Types.COLLIDED => new Collided(Playground),
 				Components.Types.SCALE => new Scale(Playground),
 				Components.Types.SCHEDULER => new Scheduled(Playground),
-				Components.Types.COLLISION_DAMAGE => new CollisionDamage(Playground),
+				Components.Types.DAMAGE => new Damage(Playground),
 
 				Components.Handlers.COLLISION => new CollisionHandler(this),
 				Components.Handlers.SCALE => new ScaleHandler(this),
 				Components.Handlers.COURSE => new CourseHandler(this),
 				Components.Handlers.PROJECTILE_BUILDER => new ProjectileBuilderHandler(this),
+				Components.Handlers.REMOVE_SUBJECT => new RemoveSubjectHandler(this),
+				Components.Handlers.REMOVE_COMPONENT => new RemoveComponentHandler(this),
+				Components.Handlers.SET_DAMAGE => new SetDamage(this),
 				_ => throw new InvalidOperationException(),
 			};
 		}
@@ -206,7 +215,7 @@ namespace StepFlow.Master
 			RegisterList<IPlaygroundProxy>();
 			RegisterList<ISubjectProxy>();
 			RegisterList<ICollidedProxy>();
-			RegisterList<ICollisionDamageProxy>();
+			RegisterList<IDamageProxy>();
 			RegisterList<IScaleProxy>();
 			RegisterList<IScheduledProxy>();
 		}
@@ -257,6 +266,11 @@ namespace StepFlow.Master
 				script.Globals["playground"] = GetPlaygroundProxy();
 
 				script.Globals[TAKE_STEP_NAME] = (Action)TakeStepInner;
+
+
+
+
+
 				script.Globals.Set(ENUMERATE_NAME, DynValue.NewCallback(Enumerate));
 				script.DoString(scriptText); 
 			}

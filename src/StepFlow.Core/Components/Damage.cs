@@ -2,13 +2,13 @@
 
 namespace StepFlow.Core.Components
 {
-	public sealed class CollisionDamage : ComponentBase
+	public sealed class Damage : ComponentBase
 	{
-		public CollisionDamage(Playground owner) : base(owner)
+		public Damage(Playground owner) : base(owner)
 		{
 		}
 
-		public float Damage { get; set; }
+		public float Value { get; set; }
 
 		public ICollection<string> Kind { get; } = new HashSet<string>();
 	}

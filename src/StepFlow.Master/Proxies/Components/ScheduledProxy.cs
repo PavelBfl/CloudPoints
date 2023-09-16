@@ -29,7 +29,7 @@ namespace StepFlow.Master.Proxies.Components
 			projectileBuilderHandler.Size = 10;
 			projectileBuilderHandler.Damage = 10;
 
-			Add(new Turn(1, projectileBuilderHandler));
+			Add(1, projectileBuilderHandler);
 		}
 
 		public void SetCourse(Course course, int stepTime = 1)
@@ -38,8 +38,10 @@ namespace StepFlow.Master.Proxies.Components
 			courseHandler.Disposable = true;
 			courseHandler.Course = course;
 
-			Add(new Turn(CourseHandler.GetFactor(course) * stepTime, courseHandler));
+			Add(CourseHandler.GetFactor(course) * stepTime, courseHandler);
 		}
+
+		public void Add(long duration, IHandler? handler) => Add(new Turn(duration, handler?.Target));
 
 		private void Add(Turn turn)
 		{
