@@ -2,7 +2,7 @@
 
 namespace StepFlow.Core.Components
 {
-	public struct Turn
+	public readonly struct Turn
 	{
 		public Turn(long duration, IComponentChild? executor = null)
 		{

@@ -23,6 +23,7 @@ namespace StepFlow.Master
 			public const string SCALE = "ScaleType";
 			public const string SCHEDULER = "SchedulerType";
 			public const string DAMAGE= "DamageType";
+			public const string PROJECTILE_SETTINGS = "ProjectileSettingsType";
 		}
 
 		public static class Handlers
@@ -42,6 +43,9 @@ namespace StepFlow.Master
 			public const string COLLIDED = "Collided";
 			public const string DAMAGE = "Damage";
 			public const string MAIN_SCHEDULER = "MainScheduler";
+
+			public const string PROJECTILE_SETTINGS = "ProjectileSettings";
+			public const string PROJECTILE_SETTINGS_SET = "ProjectileSettingsSet";
 		}
 	}
 
@@ -92,6 +96,7 @@ namespace StepFlow.Master
 			Scheduled scheduled => CreateProxy(scheduled),
 			Cell cell => CreateProxy(cell),
 			Bordered bordered => CreateProxy(bordered),
+			ProjectileSettings projectileSettings => CreateProxy(projectileSettings),
 			null => null,
 			_ => throw new InvalidOperationException(),
 		};
@@ -120,6 +125,9 @@ namespace StepFlow.Master
 		[return: NotNullIfNotNull("obj")]
 		internal IScheduledProxy? CreateProxy(Scheduled? obj) => obj is null ? null : new ScheduledProxy(this, obj);
 
+		[return: NotNullIfNotNull("obj")]
+		internal IProjectileSettingsProxy? CreateProxy(ProjectileSettings? obj) => obj is null ? null : new ProjectileSettingsProxy(this, obj);
+
 		public IComponent CreateComponent(string componentType)
 		{
 			if (componentType is null)
@@ -133,6 +141,7 @@ namespace StepFlow.Master
 				Components.Types.SCALE => new Scale(Playground),
 				Components.Types.SCHEDULER => new Scheduled(Playground),
 				Components.Types.DAMAGE => new Damage(Playground),
+				Components.Types.PROJECTILE_SETTINGS => new ProjectileSettings(Playground),
 
 				Components.Handlers.COLLISION => new CollisionHandler(this),
 				Components.Handlers.SCALE => new ScaleHandler(this),
@@ -150,9 +159,10 @@ namespace StepFlow.Master
 		private void CollisionHandle(ISubjectProxy main, ISubjectProxy other)
 		{
 			var collided = (ICollidedProxy)main.GetComponentRequired(Components.Names.COLLIDED);
-			foreach (var handler in collided.Collision.Cast<ICollisionHandler>())
+			var otherCollided = (ICollidedProxy)other.GetComponentRequired(Components.Names.COLLIDED);
+			foreach (var handler in collided.Collision.Cast<IHandler>())
 			{
-				handler.Collision(main, other);
+				handler.Handle(otherCollided);
 			}
 		}
 
@@ -218,6 +228,7 @@ namespace StepFlow.Master
 			RegisterList<IDamageProxy>();
 			RegisterList<IScaleProxy>();
 			RegisterList<IScheduledProxy>();
+			RegisterList<IProjectileSettingsProxy>();
 		}
 
 		public static DynValue Enumerate(ScriptExecutionContext context, CallbackArguments arguments)

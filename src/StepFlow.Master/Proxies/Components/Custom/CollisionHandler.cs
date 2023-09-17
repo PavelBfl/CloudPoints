@@ -2,16 +2,16 @@
 
 namespace StepFlow.Master.Proxies.Components.Custom
 {
-	internal sealed class CollisionHandler : ComponentMaster, ICollisionHandler
+	internal sealed class CollisionHandler : HandlerBase
 	{
 		public CollisionHandler(PlayMaster owner) : base(owner)
 		{
 		}
 
-		public void Collision(ISubjectProxy main, ISubjectProxy other)
+		protected override void HandleInner(IComponentProxy component)
 		{
-			if (main.GetComponent(Master.Components.Names.STRENGTH) is IScaleProxy scale &&
-				other.GetComponent(Master.Components.Names.DAMAGE) is IDamageProxy damage)
+			if (Subject.GetComponent(Master.Components.Names.STRENGTH) is IScaleProxy scale &&
+				component.Subject.GetComponent(Master.Components.Names.DAMAGE) is IDamageProxy damage)
 			{
 				if (!damage.Kind.Any())
 				{
@@ -45,7 +45,23 @@ namespace StepFlow.Master.Proxies.Components.Custom
 				}
 			}
 
-			((ICollidedProxy?)main.GetComponent(Master.Components.Names.COLLIDED))?.Break();
+			if (Subject.GetComponent(Master.Components.Names.COLLIDED) is ICollidedProxy mainCollided &&
+				component.Subject.GetComponent(Master.Components.Names.COLLIDED) is ICollidedProxy otherCollided)
+			{
+				if (otherCollided.IsRigid)
+				{
+					mainCollided.Break();
+				}
+			}
+
+			if (Subject.GetComponent(Master.Components.Names.PROJECTILE_SETTINGS) is IProjectileSettingsProxy mainSettings &&
+				component.Subject.GetComponent(Master.Components.Names.PROJECTILE_SETTINGS_SET) is IProjectileSettingsProxy otherSettings)
+			{
+				foreach (var kind in otherSettings.Kind)
+				{
+					mainSettings.Kind.Add(kind);
+				}
+			}
 		}
 	}
 }

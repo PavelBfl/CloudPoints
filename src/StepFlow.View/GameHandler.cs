@@ -61,16 +61,19 @@ namespace StepFlow.View
 		{
 			CreateRoom(new(0, 0, 400, 200), 10);
 
-			CreateItem(new(40, 40, 20, 20));
-			CreateItem(new(100, 40, 20, 20));
-			CreateItem(new(50, 100, 35, 35));
+			CreateCharacter(new(40, 40, 20, 20));
+			CreateCharacter(new(100, 40, 20, 20));
+			CreateCharacter(new(50, 100, 35, 35));
+
+			CreateItem(new(30, 30, 5, 5), Master.PlayMaster.FIRE_DAMAGE);
+			CreateItem(new(60, 30, 5, 5), Master.PlayMaster.POISON_DAMAGET);
 		}
 
-		private void CreateItem(Rectangle rectangle, int strength = 100)
+		private void CreateCharacter(Rectangle rectangle, int strength = 100)
 		{
 			PlayMaster.Execute(@$"
 				rectangle = playground.CreateRectangle({rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height})
-				playground.CreateItem(rectangle, {strength})
+				playground.CreateCharacter(rectangle, {strength})
 			");
 		}
 
@@ -79,6 +82,14 @@ namespace StepFlow.View
 			PlayMaster.Execute(@$"
 				rectangle = playground.CreateRectangle({rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height})
 				playground.CreateRoom(rectangle, {width})
+			");
+		}
+
+		private void CreateItem(Rectangle rectangle, string kind)
+		{
+			PlayMaster.Execute(@$"
+				rectangle = playground.CreateRectangle({rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height})
+				playground.CreateItem(rectangle, ""{kind}"")
 			");
 		}
 

@@ -14,6 +14,7 @@ namespace StepFlow.Master.Proxies
 		IEnumerable<(ISubjectProxy, ISubjectProxy)> GetCollision();
 
 		void CreateRoom(Rectangle rectangle, int width);
-		void CreateItem(Rectangle rectangle, int strengthValue);
+		void CreateCharacter(Rectangle rectangle, int strengthValue);
+		void CreateItem(Rectangle rectangle, string kind);
 	}
 }

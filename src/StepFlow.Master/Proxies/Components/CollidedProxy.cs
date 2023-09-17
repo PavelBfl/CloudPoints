@@ -17,6 +17,8 @@ namespace StepFlow.Master.Proxies.Components
 
 		public bool IsMoving { get => Target.IsMoving; set => SetValue(x => x.IsMoving, value); }
 
+		public bool IsRigid { get => Target.IsRigid; set => SetValue(x => x.IsRigid, value); }
+
 		public ICollection<IComponentProxy> Collision => CreateEvenProxy(Target.Collision);
 
 		public bool Offset(Point value)

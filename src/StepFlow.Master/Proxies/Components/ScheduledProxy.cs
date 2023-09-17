@@ -25,9 +25,8 @@ namespace StepFlow.Master.Proxies.Components
 		{
 			var projectileBuilderHandler = (ProjectileBuilderHandler)Subject.AddComponent(Master.Components.Handlers.PROJECTILE_BUILDER);
 			projectileBuilderHandler.Disposable = true;
-			projectileBuilderHandler.Course = course;
-			projectileBuilderHandler.Size = 10;
-			projectileBuilderHandler.Damage = 10;
+			var projectileSettings = (IProjectileSettingsProxy)Subject.GetComponentRequired(Master.Components.Names.PROJECTILE_SETTINGS);
+			projectileSettings.Course = course;
 
 			Add(1, projectileBuilderHandler);
 		}

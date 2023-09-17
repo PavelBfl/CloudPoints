@@ -36,17 +36,13 @@ namespace StepFlow.Master.Proxies.Components.Custom
 		{
 		}
 
-		public Course Course { get; set; }
-		
-		public int Size { get; set; }
-
-		public float Damage { get; set; }
-
 		protected override void HandleInner(IComponentProxy component)
 		{
-			var ownerCollided = component.Subject.GetComponent(Master.Components.Names.COLLIDED);
+			var ownerCollided = Subject.GetComponent(Master.Components.Names.COLLIDED);
 			if (ownerCollided is ICollidedProxy { Current: { } current })
 			{
+				var projectileSettings = (IProjectileSettingsProxy)Subject.GetComponentRequired(Master.Components.Names.PROJECTILE_SETTINGS);
+
 				var playground = Subject.Playground;
 
 				var subject = playground.CreateSubject();
@@ -55,27 +51,25 @@ namespace StepFlow.Master.Proxies.Components.Custom
 
 				var bordered = playground.CreateBordered();
 
-				var pivot = GetPivot(current.Target.Border, Course);
-				var projectileBorder = CreateRectangle(Course.Invert(), pivot, new Size(Size, Size));
-				projectileBorder.Offset(Course.ToOffset());
+				var pivot = GetPivot(current.Target.Border, projectileSettings.Course);
+				var projectileBorder = CreateRectangle(projectileSettings.Course.Invert(), pivot, new Size(projectileSettings.Size, projectileSettings.Size));
+				projectileBorder.Offset(projectileSettings.Course.ToOffset());
 
 				bordered.AddCell(projectileBorder);
 				collided.Current = bordered;
-				collided.Collision.Add(subject.AddComponent(Master.Components.Handlers.COLLISION));
+				collided.Collision.Add(subject.AddComponent(Master.Components.Handlers.REMOVE_SUBJECT));
 
 				var projectile = (IDamageProxy)subject.AddComponent(Master.Components.Types.DAMAGE, Master.Components.Names.DAMAGE);
-				projectile.Value = Damage;
-				projectile.Kind.Add(PlayMaster.POISON_DAMAGET);
-
-				var strength = (IScaleProxy)subject.AddComponent(Master.Components.Types.SCALE, Master.Components.Names.STRENGTH);
-				strength.Max = 1;
-				strength.Value = 1;
-				strength.ValueChange.Add(subject.AddComponent(Master.Components.Handlers.SCALE));
+				projectile.Value = projectileSettings.Damage;
+				foreach (var kind in projectileSettings.Kind)
+				{
+					projectile.Kind.Add(kind);
+				}
 
 				var scheduler = (IScheduledProxy)subject.AddComponent(Master.Components.Types.SCHEDULER);
 				for (var i = 0; i < 100; i++)
 				{
-					scheduler.SetCourse(Course);
+					scheduler.SetCourse(projectileSettings.Course);
 				}
 			}
 		}

@@ -1,14 +1,14 @@
 ﻿namespace StepFlow.Master.Proxies.Components.Custom
 {
-	internal class ScaleHandler : ComponentMaster, IScaleHandler
+	internal class ScaleHandler : HandlerBase
 	{
 		public ScaleHandler(PlayMaster owner) : base(owner)
 		{
 		}
 
-		public virtual void ValueChange(IScaleProxy component, string name)
+		protected override void HandleInner(IComponentProxy component)
 		{
-			if (component.Value <= 0)
+			if (((IScaleProxy)component).Value <= 0)
 			{
 				Subject.Playground.Subjects.Remove(Subject);
 			}

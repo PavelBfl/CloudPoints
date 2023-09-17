@@ -17,9 +17,9 @@ namespace StepFlow.Master.Proxies.Components
 			set
 			{
 				SetValue(x => x.Value, value);
-				foreach (var handler in ValueChange.Cast<IScaleHandler>())
+				foreach (var handler in ValueChange.Cast<IHandler>())
 				{
-					handler.ValueChange(this, Target.Site.Name);
+					handler.Handle(this);
 				}
 			}
 		}

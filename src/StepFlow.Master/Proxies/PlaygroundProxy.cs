@@ -34,6 +34,7 @@ namespace StepFlow.Master.Proxies
 		{
 			var subject = CreateSubject();
 			var collided = (ICollidedProxy)subject.AddComponent(Master.Components.Types.COLLIDED, Master.Components.Names.COLLIDED);
+			collided.IsRigid = true;
 			var bordered = Owner.CreateProxy(new Bordered());
 			bordered.AddCell(rectangle);
 			collided.Current = bordered;
@@ -48,10 +49,11 @@ namespace StepFlow.Master.Proxies
 			CreateWall(new Rectangle(rectangle.X, rectangle.Bottom - width, rectangle.Width, width));
 		}
 
-		public void CreateItem(Rectangle rectangle, int strengthValue)
+		public void CreateCharacter(Rectangle rectangle, int strengthValue)
 		{
 			var subject = CreateSubject();
 			var collided = (ICollidedProxy)subject.AddComponent(Master.Components.Types.COLLIDED, Master.Components.Names.COLLIDED);
+			collided.IsRigid = true;
 			var bordered = Owner.CreateProxy(new Bordered());
 			bordered.AddCell(rectangle);
 			collided.Current = bordered;
@@ -63,6 +65,23 @@ namespace StepFlow.Master.Proxies
 			var damage = (IDamageProxy)subject.AddComponent(Master.Components.Types.DAMAGE, Master.Components.Names.DAMAGE);
 			damage.Value = 1;
 			collided.Collision.Add(subject.AddComponent(Master.Components.Handlers.COLLISION));
+			var projectileSettings = (IProjectileSettingsProxy)subject.AddComponent(Master.Components.Types.PROJECTILE_SETTINGS, Master.Components.Names.PROJECTILE_SETTINGS);
+			projectileSettings.Damage = 10;
+			projectileSettings.Size = 10;
+			Subjects.Add(subject);
+		}
+
+		public void CreateItem(Rectangle rectangle, string kind)
+		{
+			var subject = CreateSubject();
+			var collided = (ICollidedProxy)subject.AddComponent(Master.Components.Types.COLLIDED, Master.Components.Names.COLLIDED);
+			var bordered = Owner.CreateProxy(new Bordered());
+			bordered.AddCell(rectangle);
+			collided.Current = bordered;
+			collided.Collision.Add(subject.AddComponent(Master.Components.Handlers.REMOVE_SUBJECT));
+			var projectileSettings = (IProjectileSettingsProxy)subject.AddComponent(Master.Components.Types.PROJECTILE_SETTINGS, Master.Components.Names.PROJECTILE_SETTINGS_SET);
+			projectileSettings.Kind.Add(kind);
+
 			Subjects.Add(subject);
 		}
 	}

@@ -15,6 +15,8 @@ namespace StepFlow.Core.Components
 
 		public bool IsMoving { get; set; }
 
+		public bool IsRigid { get; set; }
+
 		public ICollection<IComponentChild> Collision { get; }
 	}
 }
