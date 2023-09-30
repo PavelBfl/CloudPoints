@@ -3,7 +3,7 @@ using StepFlow.Core;
 
 namespace StepFlow.Master.Proxies.Components.Custom
 {
-	internal sealed class CourseHandler : HandlerBase
+	public sealed class CourseHandler : HandlerBase
 	{
 		public const long FLAT_FACTOR = 5;
 		public const long DIAGONAL_FACTOR = 7;

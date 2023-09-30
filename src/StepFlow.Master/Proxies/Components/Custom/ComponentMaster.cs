@@ -5,7 +5,7 @@ using StepFlow.Core.Components;
 
 namespace StepFlow.Master.Proxies.Components.Custom
 {
-	internal class ComponentMaster : Component, IComponentProxy, IComponentChild
+	public class ComponentMaster : Component, IComponentProxy, IComponentChild
 	{
 		public ComponentMaster(PlayMaster owner)
 		{

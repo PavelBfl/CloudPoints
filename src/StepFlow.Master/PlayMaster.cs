@@ -277,11 +277,6 @@ namespace StepFlow.Master
 				script.Globals["playground"] = GetPlaygroundProxy();
 
 				script.Globals[TAKE_STEP_NAME] = (Action)TakeStepInner;
-
-
-
-
-
 				script.Globals.Set(ENUMERATE_NAME, DynValue.NewCallback(Enumerate));
 				script.DoString(scriptText); 
 			}

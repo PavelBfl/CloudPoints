@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Input;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Master;
+using StepFlow.Master.Proxies.Components.Custom;
 using StepFlow.View.Controls;
 using StepFlow.View.Services;
 using StepFlow.View.Sketch;
@@ -105,35 +106,35 @@ namespace StepFlow.View
 				}
 			}
 
-			if (KeyboardService.IsKeyOnPress(Keys.Up) && KeyboardService.IsKeyOnPress(Keys.Right))
+			if (KeyboardService.IsKeyDown(Keys.Up) && KeyboardService.IsKeyDown(Keys.Right))
 			{
 				SetCourse(Course.RightTop);
 			}
-			else if (KeyboardService.IsKeyOnPress(Keys.Up) && KeyboardService.IsKeyOnPress(Keys.Left))
+			else if (KeyboardService.IsKeyDown(Keys.Up) && KeyboardService.IsKeyDown(Keys.Left))
 			{
 				SetCourse(Course.LeftTop);
 			}
-			else if (KeyboardService.IsKeyOnPress(Keys.Down) && KeyboardService.IsKeyOnPress(Keys.Right))
+			else if (KeyboardService.IsKeyDown(Keys.Down) && KeyboardService.IsKeyDown(Keys.Right))
 			{
 				SetCourse(Course.RightBottom);
 			}
-			else if (KeyboardService.IsKeyOnPress(Keys.Down) && KeyboardService.IsKeyOnPress(Keys.Left))
+			else if (KeyboardService.IsKeyDown(Keys.Down) && KeyboardService.IsKeyDown(Keys.Left))
 			{
 				SetCourse(Course.LeftBottom);
 			}
-			else if (KeyboardService.IsKeyOnPress(Keys.Up))
+			else if (KeyboardService.IsKeyDown(Keys.Up))
 			{
 				SetCourse(Course.Top);
 			}
-			else if (KeyboardService.IsKeyOnPress(Keys.Right))
+			else if (KeyboardService.IsKeyDown(Keys.Right))
 			{
 				SetCourse(Course.Right);
 			}
-			else if (KeyboardService.IsKeyOnPress(Keys.Down))
+			else if (KeyboardService.IsKeyDown(Keys.Down))
 			{
 				SetCourse(Course.Bottom);
 			}
-			else if (KeyboardService.IsKeyOnPress(Keys.Left))
+			else if (KeyboardService.IsKeyDown(Keys.Left))
 			{
 				SetCourse(Course.Left);
 			}
@@ -155,11 +156,14 @@ namespace StepFlow.View
 				CreateProjectile(Course.Bottom);
 			}
 
-			if (PlayMaster.Source.Playground.Subjects
-				.SelectMany(x => x.Components.OfType<Scheduled>())
-				.Where(x => x.Queue.Any()).Any())
+			for (int i = 0; i < 10; i++)
 			{
-				PlayMaster.TakeStep();
+				if (PlayMaster.Source.Playground.Subjects
+					.SelectMany(x => x.Components.OfType<Scheduled>())
+					.Where(x => x.Queue.Any()).Any())
+				{
+					PlayMaster.TakeStep();
+				}
 			}
 
 			Update(Base, gameTime);
@@ -174,12 +178,19 @@ namespace StepFlow.View
 			var current = Array.FindIndex(subjects, x => x.IsSelect);
 			if (current >= 0)
 			{
-				PlayMaster.Execute($@"
-						scheduler = playground.Subjects[{current}].GetComponent(""MainScheduler"")
-						if scheduler != null then
-							scheduler.SetCourse({(int)value}, 10)
-						end
-					");
+				if (subjects[current].Source.Components["MainScheduler"] is Scheduled scheduled)
+				{
+					if (scheduled.Queue.LastOrDefault().Executor is not CourseHandler)
+					{
+						PlayMaster.Execute($@"
+								scheduler = playground.Subjects[{current}].GetComponent(""MainScheduler"")
+								if scheduler != null then
+									scheduler.SetCourse({(int)value}, 10)
+								end
+							");
+					}
+				}
+
 			}
 		}
 

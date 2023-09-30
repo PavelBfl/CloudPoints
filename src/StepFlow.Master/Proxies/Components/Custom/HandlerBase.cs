@@ -1,6 +1,6 @@
 ﻿namespace StepFlow.Master.Proxies.Components.Custom
 {
-	internal abstract class HandlerBase : ComponentMaster, IHandler
+	public abstract class HandlerBase : ComponentMaster, IHandler
 	{
 		protected HandlerBase(PlayMaster owner) : base(owner)
 		{
