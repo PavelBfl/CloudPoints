@@ -71,6 +71,7 @@ namespace StepFlow.Master.Proxies.Components.Custom
 				{
 					scheduler.SetCourse(projectileSettings.Course);
 				}
+				scheduler.Add(0, (IHandler)subject.AddComponent(Master.Components.Handlers.REMOVE_SUBJECT));
 			}
 		}
 	}
