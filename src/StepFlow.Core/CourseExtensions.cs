@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Reflection;
 using StepFlow.Common.Exceptions;
 
 namespace StepFlow.Core
@@ -34,52 +33,108 @@ namespace StepFlow.Core
 			_ => throw EnumNotSupportedException.Create(course),
 		};
 
-		public static IEnumerable<Point> AllLine(Point first, Point second)
+		public static IEnumerable<Course> GetPath(Point begin, Point end)
 		{
-			if (first == second)
+			Point? prev = null;
+			foreach (var point in AllLine(begin, end))
 			{
-				yield return first;
+				if (prev is { })
+				{
+					if (prev.Value.Y < point.Y)
+					{
+						if (prev.Value.X < point.X)
+						{
+							yield return Course.RightTop;
+						}
+						else if (prev.Value.X > point.X)
+						{
+							yield return Course.LeftTop;
+						}
+						else
+						{
+							yield return Course.Top;
+						}
+					}
+					else if (prev.Value.Y > point.Y)
+					{
+						if (prev.Value.X < point.X)
+						{
+							yield return Course.RightBottom;
+						}
+						else if (prev.Value.X > point.X)
+						{
+							yield return Course.LeftBottom;
+						}
+						else
+						{
+							yield return Course.Bottom;
+						}
+					}
+					else
+					{
+						if (prev.Value.X < point.X)
+						{
+							yield return Course.Right;
+						}
+						else if (prev.Value.X > point.X)
+						{
+							yield return Course.Left;
+						}
+						else
+						{
+							throw new InvalidOperationException();
+						}
+					}
+				}
+
+				prev = point;
 			}
-			else if (Math.Abs(first.X - second.X) > Math.Abs(first.Y - second.Y))
+		}
+
+		public static IEnumerable<Point> AllLine(Point begin, Point end)
+		{
+			if (begin == end)
 			{
-				foreach (var point in Line(first, second))
+				yield return begin;
+			}
+			else if (Math.Abs(begin.X - end.X) > Math.Abs(begin.Y - end.Y))
+			{
+				foreach (var point in Line(begin, end))
 				{
 					yield return point;
 				}
 
-				yield return second;
+				yield return end;
 			}
 			else
 			{
-				foreach (var point in Line(Reflect(first), Reflect(second)))
+				foreach (var point in Line(Reflect(begin), Reflect(end)))
 				{
 					yield return Reflect(point);
 				}
 
-				yield return second;
+				yield return end;
 			}
 		}
 
 		private static Point Reflect(Point point) => new Point(point.Y, point.X);
 
-		private static IEnumerable<Point> Line(Point first, Point second)
+		private static IEnumerable<Point> Line(Point begin, Point end)
 		{
 			var delta = new Point(
-				Math.Abs(second.X - first.X),
-				Math.Abs(second.Y - first.Y)
+				Math.Abs(end.X - begin.X),
+				Math.Abs(end.Y - begin.Y)
 			);
 
 			var error = 0;
 			var deltaError = delta.Y;
-			var y = first.Y;
-			var step = Math.Sign(second.Y - first.Y);
+			var y = begin.Y;
+			var step = Math.Sign(end.Y - begin.Y);
 
-			var result = new List<Point>();
-
-			var stepX = Math.Sign(second.X - first.X);
-			for (var iX = first.X; iX != second.X; iX += stepX)
+			var stepX = Math.Sign(end.X - begin.X);
+			for (var iX = begin.X; iX != end.X; iX += stepX)
 			{
-				result.Add(new Point(iX, y));
+				yield return new Point(iX, y);
 				error += deltaError;
 
 				if (error >= delta.X)
@@ -88,7 +143,6 @@ namespace StepFlow.Core
 					error -= delta.X;
 				}
 			}
-			return result;
 		}
 	}
 }

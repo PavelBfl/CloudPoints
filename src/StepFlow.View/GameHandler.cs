@@ -68,6 +68,8 @@ namespace StepFlow.View
 
 			CreateItem(new(30, 30, 5, 5), Master.PlayMaster.FIRE_DAMAGE);
 			CreateItem(new(60, 30, 5, 5), Master.PlayMaster.POISON_DAMAGET);
+
+			CreateSentryGun(new(240, 80, 10, 10), 50);
 		}
 
 		private void CreateCharacter(Rectangle rectangle, int strength = 100)
@@ -91,6 +93,23 @@ namespace StepFlow.View
 			PlayMaster.Execute(@$"
 				rectangle = playground.CreateRectangle({rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height})
 				playground.CreateItem(rectangle, ""{kind}"")
+			");
+		}
+
+		private void CreateSentryGun(Rectangle size, int visionRadius)
+		{
+			var center = size.Center;
+			var vision = new Rectangle(
+				center.X - visionRadius,
+				center.Y - visionRadius,
+				visionRadius * 2,
+				visionRadius * 2
+			);
+
+			PlayMaster.Execute($@"
+				size = playground.CreateRectangle({size.X}, {size.Y}, {size.Width}, {size.Height})
+				vision = playground.CreateRectangle({vision.X}, {vision.Y}, {vision.Width}, {vision.Height})
+				playground.CreateSentryGun(size, vision)
 			");
 		}
 

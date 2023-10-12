@@ -24,6 +24,8 @@ namespace StepFlow.Master
 			public const string SCHEDULER = "SchedulerType";
 			public const string DAMAGE= "DamageType";
 			public const string PROJECTILE_SETTINGS = "ProjectileSettingsType";
+
+			public const string SENTRY_GUN = "SentryGunType";
 		}
 
 		public static class Handlers
@@ -97,6 +99,7 @@ namespace StepFlow.Master
 			Cell cell => CreateProxy(cell),
 			Bordered bordered => CreateProxy(bordered),
 			ProjectileSettings projectileSettings => CreateProxy(projectileSettings),
+			SentryGun sentryGun => new SentryGunProxy(this, sentryGun),
 			null => null,
 			_ => throw new InvalidOperationException(),
 		};
@@ -142,6 +145,7 @@ namespace StepFlow.Master
 				Components.Types.SCHEDULER => new Scheduled(Playground),
 				Components.Types.DAMAGE => new Damage(Playground),
 				Components.Types.PROJECTILE_SETTINGS => new ProjectileSettings(Playground),
+				Components.Types.SENTRY_GUN => new SentryGun(Playground),
 
 				Components.Handlers.COLLISION => new CollisionHandler(this),
 				Components.Handlers.SCALE => new ScaleHandler(this),
@@ -229,6 +233,7 @@ namespace StepFlow.Master
 			RegisterList<IScaleProxy>();
 			RegisterList<IScheduledProxy>();
 			RegisterList<IProjectileSettingsProxy>();
+			RegisterList<ISentryGunProxy>();
 		}
 
 		public static DynValue Enumerate(ScriptExecutionContext context, CallbackArguments arguments)

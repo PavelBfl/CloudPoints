@@ -71,6 +71,27 @@ namespace StepFlow.Master.Proxies
 			Subjects.Add(subject);
 		}
 
+		public void CreateSentryGun(Rectangle size, Rectangle vision)
+		{
+			var subject = CreateSubject();
+			var collided = (ICollidedProxy)subject.AddComponent(Master.Components.Types.COLLIDED, Master.Components.Names.COLLIDED);
+			collided.IsRigid = true;
+			var border = Owner.CreateProxy(new Bordered());
+			border.AddCell(size);
+			collided.Current = border;
+			var sentryGyn = (ISentryGunProxy)subject.AddComponent(Master.Components.Types.SENTRY_GUN);
+
+			var visionSubject = CreateSubject();
+			var visionCollided = (ICollidedProxy)visionSubject.AddComponent(Master.Components.Types.COLLIDED, Master.Components.Names.COLLIDED);
+			var visionBorder = Owner.CreateProxy(new Bordered());
+			visionBorder.AddCell(vision);
+			visionCollided.Current = visionBorder;
+
+			sentryGyn.Vision = visionCollided;
+			Subjects.Add(subject);
+			Subjects.Add(visionSubject);
+		}
+
 		public void CreateItem(Rectangle rectangle, string kind)
 		{
 			var subject = CreateSubject();
