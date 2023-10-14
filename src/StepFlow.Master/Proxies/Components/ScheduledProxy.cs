@@ -32,11 +32,14 @@ namespace StepFlow.Master.Proxies.Components
 
 		public void SetCourse(Course course, int stepTime = 1)
 		{
-			var courseHandler = (SetCourseProxy)Subject.AddComponent(Master.Components.Handlers.SET_COURSE);
-			courseHandler.Disposable = true;
+			var subject = Owner.GetPlaygroundProxy().CreateSubject();
+			var setCourseHandler = (IHandlerProxy)subject.AddComponent(Master.Components.Types.HANDLER);
+			setCourseHandler.Disposable = true;
+			setCourseHandler.Reference = PlayMaster.SET_COURSE_HANDLER;
+			var courseHandler = (ISetCourseProxy)subject.AddComponent(Master.Components.Handlers.SET_COURSE);
 			courseHandler.Course = course;
 
-			Add(course.GetFactor() * stepTime, courseHandler);
+			Add(course.GetFactor() * stepTime, setCourseHandler);
 		}
 
 		public void Add(long duration, IHandlerProxy? handler) => Add(new Turn(duration, handler?.Target));

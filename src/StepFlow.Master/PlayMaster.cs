@@ -261,7 +261,9 @@ namespace StepFlow.Master
 
 				bordered.AddCell(projectileBorder);
 				collided.Current = bordered;
-				collided.Collision.Add(subject.AddComponent(Master.Components.Handlers.REMOVE_SUBJECT));
+				var removeSubjectHandler = (IHandlerProxy)subject.AddComponent(Master.Components.Types.HANDLER);
+				removeSubjectHandler.Reference = PlayMaster.REMOVE_SUBJECT_HANDLER;
+				collided.Collision.Add(removeSubjectHandler);
 
 				var projectile = (IDamageProxy)subject.AddComponent(Master.Components.Types.DAMAGE, Master.Components.Names.DAMAGE);
 				projectile.Value = projectileSettings.Damage;

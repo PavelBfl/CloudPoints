@@ -60,11 +60,15 @@ namespace StepFlow.Master.Proxies
 			var strength = (IScaleProxy)subject.AddComponent(Master.Components.Types.SCALE, Master.Components.Names.STRENGTH);
 			strength.Max = strengthValue;
 			strength.Value = strengthValue;
-			strength.ValueChange.Add(subject.AddComponent(Master.Components.Handlers.SCALE));
+			var scaleHandler = (IHandlerProxy)subject.AddComponent(Master.Components.Types.HANDLER);
+			scaleHandler.Reference = PlayMaster.SCALE_EMPTY_HANDLER;
+			strength.ValueChange.Add(scaleHandler);
 			subject.AddComponent(Master.Components.Types.SCHEDULER, Master.Components.Names.MAIN_SCHEDULER);
 			var damage = (IDamageProxy)subject.AddComponent(Master.Components.Types.DAMAGE, Master.Components.Names.DAMAGE);
 			damage.Value = 1;
-			collided.Collision.Add(subject.AddComponent(Master.Components.Handlers.COLLISION));
+			var collisionHandler = (IHandlerProxy)subject.AddComponent(Master.Components.Types.HANDLER);
+			collisionHandler.Reference = PlayMaster.COLLISION_HANDLER;
+			collided.Collision.Add(collisionHandler);
 			var projectileSettings = (IProjectileSettingsProxy)subject.AddComponent(Master.Components.Types.PROJECTILE_SETTINGS, Master.Components.Names.PROJECTILE_SETTINGS);
 			projectileSettings.Damage = 10;
 			projectileSettings.Size = 10;
@@ -73,24 +77,7 @@ namespace StepFlow.Master.Proxies
 
 		public void CreateSentryGun(Rectangle size, Rectangle vision)
 		{
-			var subject = CreateSubject();
-			var collided = (ICollidedProxy)subject.AddComponent(Master.Components.Types.COLLIDED, Master.Components.Names.COLLIDED);
-			collided.IsRigid = true;
-			var border = Owner.CreateProxy(new Bordered());
-			border.AddCell(size);
-			collided.Current = border;
-			var sentryGyn = (ISentryGunProxy)subject.AddComponent(Master.Components.Types.SENTRY_GUN);
-
-			var visionSubject = CreateSubject();
-			var visionCollided = (ICollidedProxy)visionSubject.AddComponent(Master.Components.Types.COLLIDED, Master.Components.Names.COLLIDED);
-			var visionBorder = Owner.CreateProxy(new Bordered());
-			visionBorder.AddCell(vision);
-			visionCollided.Current = visionBorder;
-
-			sentryGyn.Vision = visionCollided;
-			visionCollided.Collision.Add(visionSubject.AddComponent(Master.Components.Handlers.SENTRY_HANDLER));
-			Subjects.Add(subject);
-			Subjects.Add(visionSubject);
+			
 		}
 
 		public void CreateItem(Rectangle rectangle, string kind)
@@ -100,7 +87,9 @@ namespace StepFlow.Master.Proxies
 			var bordered = Owner.CreateProxy(new Bordered());
 			bordered.AddCell(rectangle);
 			collided.Current = bordered;
-			collided.Collision.Add(subject.AddComponent(Master.Components.Handlers.REMOVE_SUBJECT));
+			var removeSubjectHandler = (IHandlerProxy)subject.AddComponent(Master.Components.Types.HANDLER);
+			removeSubjectHandler.Reference = PlayMaster.REMOVE_SUBJECT_HANDLER;
+			collided.Collision.Add(removeSubjectHandler);
 			var projectileSettings = (IProjectileSettingsProxy)subject.AddComponent(Master.Components.Types.PROJECTILE_SETTINGS, Master.Components.Names.PROJECTILE_SETTINGS_SET);
 			projectileSettings.Kind.Add(kind);
 
