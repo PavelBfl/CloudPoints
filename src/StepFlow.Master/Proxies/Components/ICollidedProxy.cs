@@ -12,7 +12,7 @@ namespace StepFlow.Master.Proxies.Components
 
 		bool IsMoving { get; set; }
 
-		ICollection<IComponentProxy> Collision { get; }
+		ICollection<IHandlerProxy> Collision { get; }
 		bool IsRigid { get; set; }
 
 		void Break();

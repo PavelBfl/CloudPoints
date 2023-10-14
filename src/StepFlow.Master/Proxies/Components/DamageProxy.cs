@@ -4,7 +4,7 @@ using StepFlow.Master.Proxies.Collections;
 
 namespace StepFlow.Master.Proxies.Components
 {
-	public sealed class DamageProxy : ComponentProxy<Damage>, IDamageProxy
+	internal sealed class DamageProxy : ComponentProxy<Damage>, IDamageProxy
 	{
 		public DamageProxy(PlayMaster owner, Damage target) : base(owner, target)
 		{

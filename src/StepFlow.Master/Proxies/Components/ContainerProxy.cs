@@ -6,7 +6,7 @@ using StepFlow.TimeLine;
 
 namespace StepFlow.Master.Proxies.Components
 {
-	public class ContainerProxy<TTarget> : ProxyBase<TTarget>, IComponentController
+	internal class ContainerProxy<TTarget> : ProxyBase<TTarget>, IComponentController
 		where TTarget : Container
 	{
 		public ContainerProxy(PlayMaster owner, TTarget target)
@@ -19,13 +19,13 @@ namespace StepFlow.Master.Proxies.Components
 			var component = Owner.CreateComponent(componentType);
 			Owner.TimeAxis.Add(new AddComponent(Target, component, name));
 
-			return Owner.CreateComponentProxy(component);
+			return (IComponentProxy)Owner.CreateProxy(component);
 		}
 
-		public IComponentProxy? GetComponent(string? name) => Owner.CreateComponentProxy(Target.Components[name]);
+		public IComponentProxy? GetComponent(string? name) => (IComponentProxy)Owner.CreateProxy(Target.Components[name]);
 
 		public IEnumerable<IComponentProxy> GetComponents()
-			=> Target.Components.OfType<IComponent>().Select(Owner.CreateComponentProxy).OfType<IComponentProxy>();
+			=> Target.Components.OfType<IComponent>().Select(Owner.CreateProxy).OfType<IComponentProxy>();
 
 		public void RemoveComponent(IComponentProxy component)
 		{

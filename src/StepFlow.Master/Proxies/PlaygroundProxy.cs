@@ -18,7 +18,7 @@ namespace StepFlow.Master.Proxies
 
 		public IEnumerable<(ISubjectProxy, ISubjectProxy)> GetCollision()
 		{
-			foreach (var collision in Target.GetCollision(Master.Components.Names.COLLIDED))
+			foreach (var collision in Target.GetCollision())
 			{
 				yield return (Owner.CreateProxy(collision.Item1), Owner.CreateProxy(collision.Item2));
 			}
@@ -88,6 +88,7 @@ namespace StepFlow.Master.Proxies
 			visionCollided.Current = visionBorder;
 
 			sentryGyn.Vision = visionCollided;
+			visionCollided.Collision.Add(visionSubject.AddComponent(Master.Components.Handlers.SENTRY_HANDLER));
 			Subjects.Add(subject);
 			Subjects.Add(visionSubject);
 		}

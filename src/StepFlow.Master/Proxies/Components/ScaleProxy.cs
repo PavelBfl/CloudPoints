@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using StepFlow.Core.Components;
-using StepFlow.Master.Proxies.Components.Custom;
 
 namespace StepFlow.Master.Proxies.Components
 {
-	public class ScaleProxy : ComponentProxy<Scale>, IScaleProxy
+	internal class ScaleProxy : ComponentProxy<Scale>, IScaleProxy
 	{
 		public ScaleProxy(PlayMaster owner, Scale target) : base(owner, target)
 		{
@@ -17,7 +16,7 @@ namespace StepFlow.Master.Proxies.Components
 			set
 			{
 				SetValue(x => x.Value, value);
-				foreach (var handler in ValueChange.Cast<IHandler>())
+				foreach (var handler in ValueChange.Cast<IHandlerProxy>())
 				{
 					handler.Handle(this);
 				}
@@ -26,7 +25,7 @@ namespace StepFlow.Master.Proxies.Components
 
 		public float Max { get => Target.Max; set => SetValue(x => x.Max, value); }
 
-		public ICollection<IComponentProxy> ValueChange => CreateEvenProxy(Target.ValueChange);
+		public ICollection<IHandlerProxy> ValueChange => CreateEvenProxy(Target.ValueChange);
 
 		public void Add(float value)
 		{

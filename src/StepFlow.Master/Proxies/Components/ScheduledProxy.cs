@@ -3,11 +3,10 @@ using System.Linq;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Master.Proxies.Collections;
-using StepFlow.Master.Proxies.Components.Custom;
 
 namespace StepFlow.Master.Proxies.Components
 {
-	public sealed class ScheduledProxy : ComponentProxy<Scheduled>, IScheduledProxy
+	internal sealed class ScheduledProxy : ComponentProxy<Scheduled>, IScheduledProxy
 	{
 		public ScheduledProxy(PlayMaster owner, Scheduled target) : base(owner, target)
 		{
@@ -17,13 +16,13 @@ namespace StepFlow.Master.Proxies.Components
 
 		private IList<Turn> Queue => new ListProxy<Turn, List<Turn>>(Owner, Target.Queue);
 
-		public ICollection<IComponentProxy> QueueComplete => CreateEvenProxy(Target.QueueComplete);
+		public ICollection<IHandlerProxy> QueueComplete => CreateEvenProxy(Target.QueueComplete);
 
 		public bool IsEmpty => !Queue.Any();
 
 		public void CreateProjectile(Course course)
 		{
-			var projectileBuilderHandler = (ProjectileBuilderHandler)Subject.AddComponent(Master.Components.Handlers.PROJECTILE_BUILDER);
+			var projectileBuilderHandler = (IHandlerProxy)Subject.AddComponent(PlayMaster.PROJECTILE_BUILDER_HANDLER);
 			projectileBuilderHandler.Disposable = true;
 			var projectileSettings = (IProjectileSettingsProxy)Subject.GetComponentRequired(Master.Components.Names.PROJECTILE_SETTINGS);
 			projectileSettings.Course = course;
@@ -33,14 +32,14 @@ namespace StepFlow.Master.Proxies.Components
 
 		public void SetCourse(Course course, int stepTime = 1)
 		{
-			var courseHandler = (CourseHandler)Subject.AddComponent(Master.Components.Handlers.COURSE);
+			var courseHandler = (SetCourseProxy)Subject.AddComponent(Master.Components.Handlers.SET_COURSE);
 			courseHandler.Disposable = true;
 			courseHandler.Course = course;
 
-			Add(CourseHandler.GetFactor(course) * stepTime, courseHandler);
+			Add(course.GetFactor() * stepTime, courseHandler);
 		}
 
-		public void Add(long duration, IHandler? handler) => Add(new Turn(duration, handler?.Target));
+		public void Add(long duration, IHandlerProxy? handler) => Add(new Turn(duration, handler?.Target));
 
 		private void Add(Turn turn)
 		{
@@ -77,11 +76,11 @@ namespace StepFlow.Master.Proxies.Components
 				{
 					queue.RemoveAt(0);
 					QueueBegin += turn.Duration;
-					((IHandler?)turn.Executor)?.Handle(this);
+					((IHandlerProxy?)turn.Executor)?.Handle(this);
 
 					if (IsEmpty)
 					{
-						foreach (var handler in QueueComplete.Cast<IHandler>())
+						foreach (var handler in QueueComplete.Cast<IHandlerProxy>())
 						{
 							handler.Handle(this);
 						}

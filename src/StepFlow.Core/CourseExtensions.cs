@@ -7,6 +7,22 @@ namespace StepFlow.Core
 {
 	public static class CourseExtensions
 	{
+		public const long FLAT_FACTOR = 5;
+		public const long DIAGONAL_FACTOR = 7;
+
+		public static long GetFactor(this Course course) => course switch
+		{
+			Course.Right => FLAT_FACTOR,
+			Course.Left => FLAT_FACTOR,
+			Course.Top => FLAT_FACTOR,
+			Course.Bottom => FLAT_FACTOR,
+			Course.RightTop => DIAGONAL_FACTOR,
+			Course.RightBottom => DIAGONAL_FACTOR,
+			Course.LeftTop => DIAGONAL_FACTOR,
+			Course.LeftBottom => DIAGONAL_FACTOR,
+			_ => throw EnumNotSupportedException.Create(course),
+		};
+
 		public static Point ToOffset(this Course course) => course switch
 		{
 			Course.Left => new Point(-1, 0),

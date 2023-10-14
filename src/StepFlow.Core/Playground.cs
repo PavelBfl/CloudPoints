@@ -29,14 +29,9 @@ namespace StepFlow.Core
 
 		public IList<Subject> Subjects { get; } = new List<Subject>();
 
-		public IEnumerable<(Subject, Subject)> GetCollision(string name)
+		public IEnumerable<(Subject, Subject)> GetCollision()
 		{
-			if (name is null)
-			{
-				throw new ArgumentNullException(nameof(name));
-			}
-
-			var instance = Subjects.Select(x => x.Components[name]).OfType<Collided>().ToArray();
+			var instance = Subjects.SelectMany(x => x.Components.OfType<Collided>()).ToArray();
 
 			for (var iFirst = 0; iFirst < instance.Length; iFirst++)
 			{

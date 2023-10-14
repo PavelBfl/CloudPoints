@@ -13,6 +13,6 @@ namespace StepFlow.Core.Components
 
 		public float Max { get; set; }
 
-		public ICollection<IComponentChild> ValueChange { get; }
+		public ICollection<Handler> ValueChange { get; }
 	}
 }

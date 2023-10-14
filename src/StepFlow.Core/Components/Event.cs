@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace StepFlow.Core.Components
 {
-	internal sealed class Event : ICollection<IComponentChild>
+	internal sealed class Event : ICollection<Handler>
 	{
 		public Event(Playground owner) => Owner = owner ?? throw new ArgumentNullException(nameof(owner));
 
@@ -14,19 +14,19 @@ namespace StepFlow.Core.Components
 
 		private Playground Owner { get; }
 
-		private HashSet<IComponentChild> Observers { get; } = new HashSet<IComponentChild>();
+		private HashSet<Handler> Observers { get; } = new HashSet<Handler>();
 
-		public void Add(IComponentChild item) => Observers.Add(item);
+		public void Add(Handler item) => Observers.Add(item);
 
 		public void Clear() => Observers.Clear();
 
-		public bool Contains(IComponentChild item) => Observers.Contains(item);
+		public bool Contains(Handler item) => Observers.Contains(item);
 
-		public void CopyTo(IComponentChild[] array, int arrayIndex) => Observers.CopyTo(array, arrayIndex);
+		public void CopyTo(Handler[] array, int arrayIndex) => Observers.CopyTo(array, arrayIndex);
 
-		public IEnumerator<IComponentChild> GetEnumerator() => Observers.GetEnumerator();
+		public IEnumerator<Handler> GetEnumerator() => Observers.GetEnumerator();
 
-		public bool Remove(IComponentChild item) => Observers.Remove(item);
+		public bool Remove(Handler item) => Observers.Remove(item);
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}

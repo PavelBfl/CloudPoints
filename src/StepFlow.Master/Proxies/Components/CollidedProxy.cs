@@ -5,7 +5,7 @@ using StepFlow.Core.Components;
 
 namespace StepFlow.Master.Proxies.Components
 {
-	public sealed class CollidedProxy : ComponentProxy<Collided>, ICollidedProxy
+	internal sealed class CollidedProxy : ComponentProxy<Collided>, ICollidedProxy
 	{
 		public CollidedProxy(PlayMaster owner, Collided target) : base(owner, target)
 		{
@@ -19,7 +19,7 @@ namespace StepFlow.Master.Proxies.Components
 
 		public bool IsRigid { get => Target.IsRigid; set => SetValue(x => x.IsRigid, value); }
 
-		public ICollection<IComponentProxy> Collision => CreateEvenProxy(Target.Collision);
+		public ICollection<IHandlerProxy> Collision => CreateEvenProxy(Target.Collision);
 
 		public bool Offset(Point value)
 		{

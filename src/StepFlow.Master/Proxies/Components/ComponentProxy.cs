@@ -3,7 +3,7 @@ using StepFlow.Core.Components;
 
 namespace StepFlow.Master.Proxies.Components
 {
-	public class ComponentProxy<TComponent> : ProxyBase<TComponent>, IComponentProxy
+	internal class ComponentProxy<TComponent> : ProxyBase<TComponent>, IComponentProxy
 		where TComponent : class, IComponentChild
 	{
 		public ComponentProxy(PlayMaster owner, TComponent target) : base(owner, target)
@@ -16,6 +16,6 @@ namespace StepFlow.Master.Proxies.Components
 
 		IComponentChild IProxyBase<IComponentChild>.Target => Target;
 
-		protected ICollection<IComponentProxy> CreateEvenProxy(ICollection<IComponentChild> @event) => new EventProxy(Owner, @event);
+		protected ICollection<IHandlerProxy> CreateEvenProxy(ICollection<Handler> @event) => new EventProxy(Owner, @event);
 	}
 }

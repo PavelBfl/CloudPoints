@@ -6,11 +6,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using MoonSharp.Interpreter;
+using StepFlow.Common.Exceptions;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Master.Proxies;
 using StepFlow.Master.Proxies.Components;
-using StepFlow.Master.Proxies.Components.Custom;
 using StepFlow.TimeLine;
 
 namespace StepFlow.Master
@@ -24,19 +24,19 @@ namespace StepFlow.Master
 			public const string SCHEDULER = "SchedulerType";
 			public const string DAMAGE= "DamageType";
 			public const string PROJECTILE_SETTINGS = "ProjectileSettingsType";
-
-			public const string SENTRY_GUN = "SentryGunType";
+			public const string HANDLER = "Handler";
 		}
 
 		public static class Handlers
 		{
 			public const string COLLISION = "CollisionHandler";
 			public const string SCALE = "ScaleHandler";
-			public const string COURSE = "CourseHandler";
+			public const string SET_COURSE = "CourseHandler";
 			public const string PROJECTILE_BUILDER = "ProjectileBuilder";
 			public const string REMOVE_SUBJECT = "RemoveSubject";
 			public const string REMOVE_COMPONENT = "RemoveComponent";
 			public const string SET_DAMAGE = "SetDamage";
+			public const string SENTRY_HANDLER = "SentryHandler";
 		}
 
 		public static class Names
@@ -72,20 +72,8 @@ namespace StepFlow.Master
 
 		public Playground Playground { get; } = new Playground();
 
+		#region Proxy
 		public IPlaygroundProxy GetPlaygroundProxy() => CreateProxy(Playground);
-
-		[return: NotNullIfNotNull("component")]
-		internal IComponentProxy? CreateComponentProxy(IComponent? component)
-		{
-			if (component is IComponentProxy componentProxy)
-			{
-				return componentProxy;
-			}
-			else
-			{
-				return (IComponentProxy?)CreateProxy(component);
-			}
-		}
 
 		[return: NotNullIfNotNull("obj")]
 		internal object? CreateProxy(object? obj) => obj switch
@@ -99,7 +87,7 @@ namespace StepFlow.Master
 			Cell cell => CreateProxy(cell),
 			Bordered bordered => CreateProxy(bordered),
 			ProjectileSettings projectileSettings => CreateProxy(projectileSettings),
-			SentryGun sentryGun => new SentryGunProxy(this, sentryGun),
+			Handler handler => new HandlerProxy(this, handler),
 			null => null,
 			_ => throw new InvalidOperationException(),
 		};
@@ -130,6 +118,204 @@ namespace StepFlow.Master
 
 		[return: NotNullIfNotNull("obj")]
 		internal IProjectileSettingsProxy? CreateProxy(ProjectileSettings? obj) => obj is null ? null : new ProjectileSettingsProxy(this, obj);
+		#endregion
+
+		#region Handlers
+		public const string COLLISION_HANDLER = "Collision";
+		public const string PROJECTILE_BUILDER_HANDLER = "ProjectileBuilder";
+		public const string REMOVE_COMPONENT_HANDLER = "RemoveComponent";
+		public const string REMOVE_SUBJECT_HANDLER = "RemoveSubject";
+		public const string SCALE_EMPTY_HANDLER = "ScaleEmptyHandler";
+		public const string SET_COURSE_HANDLER = "SetCourseHandler";
+		public const string SET_DAMAGE_HANDLER = "SetDamage";
+
+		public void CallHandler(string? reference, IComponentProxy main, IComponentProxy component)
+		{
+			switch (reference)
+			{
+				case COLLISION_HANDLER:
+					CollisionHandler(main, component);
+					break;
+				case PROJECTILE_BUILDER_HANDLER:
+					ProjectileBuilder(main, component);
+					break;
+				case REMOVE_COMPONENT_HANDLER:
+					RemoveComponent(main, component);
+					break;
+				case REMOVE_SUBJECT_HANDLER:
+					RemoveSubject(main, component);
+					break;
+				case SCALE_EMPTY_HANDLER:
+					ScaleEmptyHandler(main, component);
+					break;
+				case SET_COURSE_HANDLER:
+					SetCourse(main, component);
+					break;
+				case SET_DAMAGE_HANDLER:
+					SetDamage(main, component);
+					break;
+				default: throw new InvalidOperationException();
+			}
+		}
+
+		private static void CollisionHandler(IComponentProxy main, IComponentProxy component)
+		{
+			if (main.Subject.GetComponent(Master.Components.Names.STRENGTH) is IScaleProxy scale &&
+				component.Subject.GetComponent(Master.Components.Names.DAMAGE) is IDamageProxy damage)
+			{
+				if (!damage.Kind.Any())
+				{
+					scale.Add(-damage.Value);
+				}
+				else
+				{
+					if (damage.Kind.Contains(PlayMaster.FIRE_DAMAGE))
+					{
+						scale.Add(-damage.Value * 2);
+					}
+
+					if (damage.Kind.Contains(PlayMaster.POISON_DAMAGET))
+					{
+						var poisonSubject = main.Subject.Playground.CreateSubject();
+						var damageSubject = (IDamageProxy)poisonSubject.AddComponent(Master.Components.Types.DAMAGE, Master.Components.Names.DAMAGE);
+						damageSubject.Value = damage.Value / 2;
+						damageSubject.Kind.Add(PlayMaster.POISON_DAMAGET);
+						var setDamageHandler = (IHandlerProxy)poisonSubject.AddComponent(Master.Components.Handlers.SET_DAMAGE);
+						var removeSubjectHandler = (IHandlerProxy)poisonSubject.AddComponent(Master.Components.Handlers.REMOVE_SUBJECT);
+						var removeComponentHandler = (IHandlerProxy)poisonSubject.AddComponent(Master.Components.Handlers.REMOVE_COMPONENT);
+
+						var poisonScheduler = (IScheduledProxy)main.Subject.AddComponent(Master.Components.Types.SCHEDULER);
+						for (var i = 0; i < 5; i++)
+						{
+							poisonScheduler.Add(5, setDamageHandler);
+						}
+						poisonScheduler.Add(0, removeComponentHandler);
+						poisonScheduler.Add(0, removeSubjectHandler);
+					}
+				}
+			}
+
+			if (main.Subject.GetComponent(Master.Components.Names.COLLIDED) is ICollidedProxy mainCollided &&
+				component.Subject.GetComponent(Master.Components.Names.COLLIDED) is ICollidedProxy otherCollided)
+			{
+				if (otherCollided.IsRigid)
+				{
+					mainCollided.Break();
+				}
+			}
+
+			if (main.Subject.GetComponent(Master.Components.Names.PROJECTILE_SETTINGS) is IProjectileSettingsProxy mainSettings &&
+				component.Subject.GetComponent(Master.Components.Names.PROJECTILE_SETTINGS_SET) is IProjectileSettingsProxy otherSettings)
+			{
+				foreach (var kind in otherSettings.Kind)
+				{
+					mainSettings.Kind.Add(kind);
+				}
+			}
+		}
+
+		private static Point GetPivot(Rectangle rectangle, Course position) => position switch
+		{
+			Course.Left => new Point(rectangle.Left, rectangle.Top + rectangle.Height / 2),
+			Course.LeftTop => new Point(rectangle.Left, rectangle.Top),
+			Course.Top => new Point(rectangle.Left + rectangle.Width / 2, rectangle.Top),
+			Course.RightTop => new Point(rectangle.Right, rectangle.Top),
+			Course.Right => new Point(rectangle.Right, rectangle.Top + rectangle.Height / 2),
+			Course.RightBottom => new Point(rectangle.Right, rectangle.Bottom),
+			Course.Bottom => new Point(rectangle.Left + rectangle.Width / 2, rectangle.Bottom),
+			Course.LeftBottom => new Point(rectangle.Left, rectangle.Bottom),
+			_ => throw EnumNotSupportedException.Create(position),
+		};
+
+		private static Rectangle CreateRectangle(Course pivot, Point position, Size size) => pivot switch
+		{
+			Course.Left => new Rectangle(new Point(position.X, position.Y - size.Width / 2), size),
+			Course.LeftTop => new Rectangle(position, size),
+			Course.Top => new Rectangle(new Point(position.X - size.Width / 2, position.Y), size),
+			Course.RightTop => new Rectangle(new Point(position.X - size.Width, position.Y), size),
+			Course.Right => new Rectangle(new Point(position.X - size.Width, position.Y - size.Height / 2), size),
+			Course.RightBottom => new Rectangle(new Point(position.X - size.Width, position.Y - size.Height), size),
+			Course.Bottom => new Rectangle(new Point(position.X - size.Width / 2, position.Y - size.Height), size),
+			Course.LeftBottom => new Rectangle(new Point(position.X, position.Y - size.Height), size),
+			_ => throw EnumNotSupportedException.Create(pivot),
+		};
+
+		private static void ProjectileBuilder(IComponentProxy main, IComponentProxy component)
+		{
+			var ownerCollided = main.Subject.GetComponent(Master.Components.Names.COLLIDED);
+			if (ownerCollided is ICollidedProxy { Current: { } current })
+			{
+				var projectileSettings = (IProjectileSettingsProxy)main.Subject.GetComponentRequired(Master.Components.Names.PROJECTILE_SETTINGS);
+
+				var playground = main.Subject.Playground;
+
+				var subject = playground.CreateSubject();
+				playground.Subjects.Add(subject);
+				var collided = (ICollidedProxy)subject.AddComponent(Master.Components.Types.COLLIDED, Master.Components.Names.COLLIDED);
+
+				var bordered = playground.CreateBordered();
+
+				var pivot = GetPivot(current.Target.Border, projectileSettings.Course);
+				var projectileBorder = CreateRectangle(projectileSettings.Course.Invert(), pivot, new Size(projectileSettings.Size, projectileSettings.Size));
+				projectileBorder.Offset(projectileSettings.Course.ToOffset());
+
+				bordered.AddCell(projectileBorder);
+				collided.Current = bordered;
+				collided.Collision.Add(subject.AddComponent(Master.Components.Handlers.REMOVE_SUBJECT));
+
+				var projectile = (IDamageProxy)subject.AddComponent(Master.Components.Types.DAMAGE, Master.Components.Names.DAMAGE);
+				projectile.Value = projectileSettings.Damage;
+				foreach (var kind in projectileSettings.Kind)
+				{
+					projectile.Kind.Add(kind);
+				}
+
+				var scheduler = (IScheduledProxy)subject.AddComponent(Master.Components.Types.SCHEDULER);
+				for (var i = 0; i < 100; i++)
+				{
+					scheduler.SetCourse(projectileSettings.Course);
+				}
+				scheduler.Add(0, (IHandlerProxy)subject.AddComponent(Master.Components.Handlers.REMOVE_SUBJECT));
+			}
+		}
+
+		private static void RemoveComponent(IComponentProxy main, IComponentProxy component)
+		{
+			component.Subject.RemoveComponent(component);
+		}
+
+		private static void RemoveSubject(IComponentProxy main, IComponentProxy component)
+		{
+			main.Subject.Playground.Subjects.Remove(main.Subject);
+		}
+
+		private static void ScaleEmptyHandler(IComponentProxy main, IComponentProxy component)
+		{
+			if (((IScaleProxy)component).Value <= 0)
+			{
+				main.Subject.Playground.Subjects.Remove(main.Subject);
+			}
+		}
+
+		private static void SetCourse(IComponentProxy main, IComponentProxy component)
+		{
+			if (component.Subject.GetComponent(Master.Components.Names.COLLIDED) is ICollidedProxy collided)
+			{
+				var offset = ((ISetCourseProxy)main).Course.ToOffset();
+				collided.Offset(offset);
+			}
+		}
+
+		private static void SetDamage(IComponentProxy main, IComponentProxy component)
+		{
+			var damage = (IDamageProxy)main.Subject.GetComponentRequired(Master.Components.Names.DAMAGE);
+
+			if (component.Subject.GetComponent(Master.Components.Names.STRENGTH) is IScaleProxy scale)
+			{
+				scale.Add(-damage.Value);
+			}
+		}
+		#endregion
 
 		public IComponent CreateComponent(string componentType)
 		{
@@ -145,15 +331,8 @@ namespace StepFlow.Master
 				Components.Types.SCHEDULER => new Scheduled(Playground),
 				Components.Types.DAMAGE => new Damage(Playground),
 				Components.Types.PROJECTILE_SETTINGS => new ProjectileSettings(Playground),
-				Components.Types.SENTRY_GUN => new SentryGun(Playground),
-
-				Components.Handlers.COLLISION => new CollisionHandler(this),
-				Components.Handlers.SCALE => new ScaleHandler(this),
-				Components.Handlers.COURSE => new CourseHandler(this),
-				Components.Handlers.PROJECTILE_BUILDER => new ProjectileBuilderHandler(this),
-				Components.Handlers.REMOVE_SUBJECT => new RemoveSubjectHandler(this),
-				Components.Handlers.REMOVE_COMPONENT => new RemoveComponentHandler(this),
-				Components.Handlers.SET_DAMAGE => new SetDamage(this),
+				Components.Handlers.SET_COURSE => new SetCourse(Playground),
+				Components.Types.HANDLER => new Handler(Playground),
 				_ => throw new InvalidOperationException(),
 			};
 		}
@@ -164,7 +343,7 @@ namespace StepFlow.Master
 		{
 			var collided = (ICollidedProxy)main.GetComponentRequired(Components.Names.COLLIDED);
 			var otherCollided = (ICollidedProxy)other.GetComponentRequired(Components.Names.COLLIDED);
-			foreach (var handler in collided.Collision.Cast<IHandler>())
+			foreach (var handler in collided.Collision.Cast<IHandlerProxy>())
 			{
 				handler.Handle(otherCollided);
 			}
@@ -233,7 +412,6 @@ namespace StepFlow.Master
 			RegisterList<IScaleProxy>();
 			RegisterList<IScheduledProxy>();
 			RegisterList<IProjectileSettingsProxy>();
-			RegisterList<ISentryGunProxy>();
 		}
 
 		public static DynValue Enumerate(ScriptExecutionContext context, CallbackArguments arguments)

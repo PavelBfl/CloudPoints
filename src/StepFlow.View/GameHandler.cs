@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Input;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Master;
-using StepFlow.Master.Proxies.Components.Custom;
+using StepFlow.Master.Proxies.Components;
 using StepFlow.View.Controls;
 using StepFlow.View.Services;
 using StepFlow.View.Sketch;
@@ -16,7 +16,7 @@ using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.View
 {
-	public class GameHandler : ILayoutCanvas
+    public class GameHandler : ILayoutCanvas
 	{
 		public GameHandler(Game1 game, System.Drawing.RectangleF bounds)
 		{
@@ -199,7 +199,7 @@ namespace StepFlow.View
 			{
 				if (subjects[current].Source.Components["MainScheduler"] is Scheduled scheduled)
 				{
-					if (scheduled.Queue.LastOrDefault().Executor is not CourseHandler)
+					if (scheduled.Queue.LastOrDefault().Executor is not SetCourseProxy)
 					{
 						PlayMaster.Execute($@"
 								scheduler = playground.Subjects[{current}].GetComponent(""MainScheduler"")

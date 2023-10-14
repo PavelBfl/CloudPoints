@@ -6,9 +6,9 @@ using StepFlow.Master.Commands.Collections;
 
 namespace StepFlow.Master.Proxies.Components
 {
-	internal class EventProxy : ProxyBase<ICollection<IComponentChild>>, ICollection<IComponentProxy>
+	internal class EventProxy : ProxyBase<ICollection<Handler>>, ICollection<IHandlerProxy>
 	{
-		public EventProxy(PlayMaster owner, ICollection<IComponentChild> target) : base(owner, target)
+		public EventProxy(PlayMaster owner, ICollection<Handler> target) : base(owner, target)
 		{
 		}
 
@@ -16,26 +16,14 @@ namespace StepFlow.Master.Proxies.Components
 
 		public bool IsReadOnly => false;
 
-		private IComponentChild GetTargetComponent(IComponentProxy componentProxy)
-		{
-			if (componentProxy is IProxyBase<IComponentChild> componentTarget)
-			{
-				return componentTarget.Target;
-			}
-			else
-			{
-				return (IComponentChild)componentProxy;
-			}
-		}
+		public void Add(IHandlerProxy item)
+			=> Owner.TimeAxis.Add(new AddItemCommand<Handler>(Target, (Handler)item.Target));
 
-		public void Add(IComponentProxy item)
-			=> Owner.TimeAxis.Add(new AddItemCommand<IComponentChild>(Target, GetTargetComponent(item)));
+		public void Clear() => Owner.TimeAxis.Add(new ClearCommand<Handler>(Target));
 
-		public void Clear() => Owner.TimeAxis.Add(new ClearCommand<IComponentChild>(Target));
+		public bool Contains(IHandlerProxy item) => Target.Contains((Handler)item.Target);
 
-		public bool Contains(IComponentProxy item) => Target.Contains(GetTargetComponent(item));
-
-		public void CopyTo(IComponentProxy[] array, int arrayIndex)
+		public void CopyTo(IHandlerProxy[] array, int arrayIndex)
 		{
 			foreach (var component in this)
 			{
@@ -44,9 +32,9 @@ namespace StepFlow.Master.Proxies.Components
 			}
 		}
 
-		public IEnumerator<IComponentProxy> GetEnumerator() => Target.Select(x => Owner.CreateComponentProxy(x)).GetEnumerator();
+		public IEnumerator<IHandlerProxy> GetEnumerator() => Target.Select(x => (IHandlerProxy)Owner.CreateProxy(x)).GetEnumerator();
 
-		public bool Remove(IComponentProxy item) => Target.Remove(GetTargetComponent(item));
+		public bool Remove(IHandlerProxy item) => Target.Remove((Handler)item.Target);
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}

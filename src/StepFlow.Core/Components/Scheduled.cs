@@ -13,6 +13,6 @@ namespace StepFlow.Core.Components
 
 		public List<Turn> Queue { get; } = new List<Turn>();
 
-		public ICollection<IComponentChild> QueueComplete { get; }
+		public ICollection<Handler> QueueComplete { get; }
 	}
 }
