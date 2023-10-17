@@ -87,6 +87,7 @@ namespace StepFlow.Master
 			Cell cell => CreateProxy(cell),
 			Bordered bordered => CreateProxy(bordered),
 			ProjectileSettings projectileSettings => CreateProxy(projectileSettings),
+			SetCourse setCourse => new SetCourseProxy(this, setCourse),
 			Handler handler => new HandlerProxy(this, handler),
 			null => null,
 			_ => throw new InvalidOperationException(),
@@ -129,9 +130,9 @@ namespace StepFlow.Master
 		public const string SET_COURSE_HANDLER = "SetCourseHandler";
 		public const string SET_DAMAGE_HANDLER = "SetDamage";
 
-		public void CallHandler(string? reference, IComponentProxy main, IComponentProxy component)
+		public void CallHandler(IHandlerProxy main, IComponentProxy component)
 		{
-			switch (reference)
+			switch (main.Reference)
 			{
 				case COLLISION_HANDLER:
 					CollisionHandler(main, component);
@@ -180,16 +181,17 @@ namespace StepFlow.Master
 						var damageSubject = (IDamageProxy)poisonSubject.AddComponent(Master.Components.Types.DAMAGE, Master.Components.Names.DAMAGE);
 						damageSubject.Value = damage.Value / 2;
 						damageSubject.Kind.Add(PlayMaster.POISON_DAMAGET);
-						var setDamageHandler = (IHandlerProxy)poisonSubject.AddComponent(Master.Components.Handlers.SET_DAMAGE);
-						var removeSubjectHandler = (IHandlerProxy)poisonSubject.AddComponent(Master.Components.Handlers.REMOVE_SUBJECT);
-						var removeComponentHandler = (IHandlerProxy)poisonSubject.AddComponent(Master.Components.Handlers.REMOVE_COMPONENT);
+						var setDamageHandler = (IHandlerProxy)poisonSubject.AddComponent(Master.Components.Types.HANDLER);
+						setDamageHandler.Reference = PlayMaster.SET_DAMAGE_HANDLER;
+						var removeSubjectHandler = (IHandlerProxy)poisonSubject.AddComponent(Master.Components.Types.HANDLER);
+						removeSubjectHandler.Disposable = true;
+						removeSubjectHandler.Reference = PlayMaster.REMOVE_SUBJECT_HANDLER;
 
 						var poisonScheduler = (IScheduledProxy)main.Subject.AddComponent(Master.Components.Types.SCHEDULER);
 						for (var i = 0; i < 5; i++)
 						{
-							poisonScheduler.Add(5, setDamageHandler);
+							poisonScheduler.Add(60, setDamageHandler);
 						}
-						poisonScheduler.Add(0, removeComponentHandler);
 						poisonScheduler.Add(0, removeSubjectHandler);
 					}
 				}
@@ -277,7 +279,10 @@ namespace StepFlow.Master
 				{
 					scheduler.SetCourse(projectileSettings.Course);
 				}
-				scheduler.Add(0, (IHandlerProxy)subject.AddComponent(Master.Components.Handlers.REMOVE_SUBJECT));
+				var removeSubject = (IHandlerProxy)subject.AddComponent(Master.Components.Types.HANDLER);
+				removeSubject.Disposable = true;
+				removeSubject.Reference = PlayMaster.REMOVE_SUBJECT_HANDLER;
+				scheduler.Add(0, removeSubject);
 			}
 		}
 
@@ -303,7 +308,8 @@ namespace StepFlow.Master
 		{
 			if (component.Subject.GetComponent(Master.Components.Names.COLLIDED) is ICollidedProxy collided)
 			{
-				var offset = ((ISetCourseProxy)main).Course.ToOffset();
+				var setCourse = main.Subject.GetComponents().OfType<ISetCourseProxy>().Single();
+				var offset = setCourse.Course.ToOffset();
 				collided.Offset(offset);
 			}
 		}

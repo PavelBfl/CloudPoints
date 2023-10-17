@@ -22,8 +22,9 @@ namespace StepFlow.Master.Proxies.Components
 
 		public void CreateProjectile(Course course)
 		{
-			var projectileBuilderHandler = (IHandlerProxy)Subject.AddComponent(PlayMaster.PROJECTILE_BUILDER_HANDLER);
+			var projectileBuilderHandler = (IHandlerProxy)Subject.AddComponent(Master.Components.Types.HANDLER);
 			projectileBuilderHandler.Disposable = true;
+			projectileBuilderHandler.Reference = PlayMaster.PROJECTILE_BUILDER_HANDLER;
 			var projectileSettings = (IProjectileSettingsProxy)Subject.GetComponentRequired(Master.Components.Names.PROJECTILE_SETTINGS);
 			projectileSettings.Course = course;
 
@@ -42,7 +43,7 @@ namespace StepFlow.Master.Proxies.Components
 			Add(course.GetFactor() * stepTime, setCourseHandler);
 		}
 
-		public void Add(long duration, IHandlerProxy? handler) => Add(new Turn(duration, handler?.Target));
+		public void Add(long duration, IHandlerProxy? handler) => Add(new Turn(duration, (Handler?)handler?.Target));
 
 		private void Add(Turn turn)
 		{
@@ -79,7 +80,7 @@ namespace StepFlow.Master.Proxies.Components
 				{
 					queue.RemoveAt(0);
 					QueueBegin += turn.Duration;
-					((IHandlerProxy?)turn.Executor)?.Handle(this);
+					((IHandlerProxy?)Owner.CreateProxy(turn.Executor))?.Handle(this);
 
 					if (IsEmpty)
 					{

@@ -12,14 +12,12 @@
 
 		public void Handle(IComponentProxy component)
 		{
-			HandleInner(component);
+			Owner.CallHandler(this, component);
 
 			if (Disposable)
 			{
 				Subject.RemoveComponent(this);
 			}
 		}
-
-		private void HandleInner(IComponentProxy component) => Owner.CallHandler(Reference, this, component);
 	}
 }

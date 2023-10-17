@@ -4,7 +4,7 @@ namespace StepFlow.Core.Components
 {
 	public readonly struct Turn
 	{
-		public Turn(long duration, IComponentChild? executor = null)
+		public Turn(long duration, Handler? executor = null)
 		{
 			Duration = duration >= 0 ? duration : throw new ArgumentOutOfRangeException(nameof(duration));
 			Executor = executor;
@@ -12,6 +12,6 @@ namespace StepFlow.Core.Components
 
 		public long Duration { get; }
 
-		public IComponentChild? Executor { get; }
+		public Handler? Executor { get; }
 	}
 }

@@ -1,6 +1,6 @@
 ﻿namespace StepFlow.Core.Components
 {
-	public sealed class SetCourse : Handler
+	public sealed class SetCourse : ComponentBase
 	{
 		public SetCourse(Playground owner) : base(owner)
 		{
