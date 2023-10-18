@@ -25,18 +25,8 @@ namespace StepFlow.Master
 			public const string DAMAGE= "DamageType";
 			public const string PROJECTILE_SETTINGS = "ProjectileSettingsType";
 			public const string HANDLER = "Handler";
-		}
-
-		public static class Handlers
-		{
-			public const string COLLISION = "CollisionHandler";
-			public const string SCALE = "ScaleHandler";
 			public const string SET_COURSE = "CourseHandler";
-			public const string PROJECTILE_BUILDER = "ProjectileBuilder";
-			public const string REMOVE_SUBJECT = "RemoveSubject";
-			public const string REMOVE_COMPONENT = "RemoveComponent";
-			public const string SET_DAMAGE = "SetDamage";
-			public const string SENTRY_HANDLER = "SentryHandler";
+			public const string SENTRY_GUN = "SentryGun";
 		}
 
 		public static class Names
@@ -48,6 +38,8 @@ namespace StepFlow.Master
 
 			public const string PROJECTILE_SETTINGS = "ProjectileSettings";
 			public const string PROJECTILE_SETTINGS_SET = "ProjectileSettingsSet";
+
+			public const string VISION = "Vision";
 		}
 	}
 
@@ -89,6 +81,7 @@ namespace StepFlow.Master
 			ProjectileSettings projectileSettings => CreateProxy(projectileSettings),
 			SetCourse setCourse => new SetCourseProxy(this, setCourse),
 			Handler handler => new HandlerProxy(this, handler),
+			SentryGun sentryGun => new SentryGunProxy(this, sentryGun),
 			null => null,
 			_ => throw new InvalidOperationException(),
 		};
@@ -129,6 +122,7 @@ namespace StepFlow.Master
 		public const string SCALE_EMPTY_HANDLER = "ScaleEmptyHandler";
 		public const string SET_COURSE_HANDLER = "SetCourseHandler";
 		public const string SET_DAMAGE_HANDLER = "SetDamage";
+		public const string SENTRY_GUN_REACT_HANDLER = "SentryGunReact";
 
 		public void CallHandler(IHandlerProxy main, IComponentProxy component)
 		{
@@ -154,6 +148,9 @@ namespace StepFlow.Master
 					break;
 				case SET_DAMAGE_HANDLER:
 					SetDamage(main, component);
+					break;
+				case SENTRY_GUN_REACT_HANDLER:
+					SentryGunReact(main, component);
 					break;
 				default: throw new InvalidOperationException();
 			}
@@ -181,11 +178,8 @@ namespace StepFlow.Master
 						var damageSubject = (IDamageProxy)poisonSubject.AddComponent(Master.Components.Types.DAMAGE, Master.Components.Names.DAMAGE);
 						damageSubject.Value = damage.Value / 2;
 						damageSubject.Kind.Add(PlayMaster.POISON_DAMAGET);
-						var setDamageHandler = (IHandlerProxy)poisonSubject.AddComponent(Master.Components.Types.HANDLER);
-						setDamageHandler.Reference = PlayMaster.SET_DAMAGE_HANDLER;
-						var removeSubjectHandler = (IHandlerProxy)poisonSubject.AddComponent(Master.Components.Types.HANDLER);
-						removeSubjectHandler.Disposable = true;
-						removeSubjectHandler.Reference = PlayMaster.REMOVE_SUBJECT_HANDLER;
+						var setDamageHandler = poisonSubject.AddHandler(PlayMaster.SET_DAMAGE_HANDLER);
+						var removeSubjectHandler = poisonSubject.AddHandler(PlayMaster.REMOVE_SUBJECT_HANDLER, true);
 
 						var poisonScheduler = (IScheduledProxy)main.Subject.AddComponent(Master.Components.Types.SCHEDULER);
 						for (var i = 0; i < 5; i++)
@@ -253,7 +247,7 @@ namespace StepFlow.Master
 
 				var subject = playground.CreateSubject();
 				playground.Subjects.Add(subject);
-				var collided = (ICollidedProxy)subject.AddComponent(Master.Components.Types.COLLIDED, Master.Components.Names.COLLIDED);
+				var collided = (ICollidedProxy)subject.AddComponent(Components.Types.COLLIDED, Components.Names.COLLIDED);
 
 				var bordered = playground.CreateBordered();
 
@@ -263,8 +257,7 @@ namespace StepFlow.Master
 
 				bordered.AddCell(projectileBorder);
 				collided.Current = bordered;
-				var removeSubjectHandler = (IHandlerProxy)subject.AddComponent(Master.Components.Types.HANDLER);
-				removeSubjectHandler.Reference = PlayMaster.REMOVE_SUBJECT_HANDLER;
+				var removeSubjectHandler = subject.AddHandler(PlayMaster.REMOVE_SUBJECT_HANDLER);
 				collided.Collision.Add(removeSubjectHandler);
 
 				var projectile = (IDamageProxy)subject.AddComponent(Master.Components.Types.DAMAGE, Master.Components.Names.DAMAGE);
@@ -279,11 +272,15 @@ namespace StepFlow.Master
 				{
 					scheduler.SetCourse(projectileSettings.Course);
 				}
-				var removeSubject = (IHandlerProxy)subject.AddComponent(Master.Components.Types.HANDLER);
-				removeSubject.Disposable = true;
-				removeSubject.Reference = PlayMaster.REMOVE_SUBJECT_HANDLER;
+				var removeSubject = subject.AddHandler(PlayMaster.REMOVE_SUBJECT_HANDLER, true);
 				scheduler.Add(0, removeSubject);
 			}
+		}
+
+		private static ISubjectProxy CreateProjectile(ISubjectProxy owner)
+		{
+			var result = owner.Playground.CreateSubject();
+
 		}
 
 		private static void RemoveComponent(IComponentProxy main, IComponentProxy component)
@@ -323,6 +320,17 @@ namespace StepFlow.Master
 				scale.Add(-damage.Value);
 			}
 		}
+
+		private static void SentryGunReact(IComponentProxy main, IComponentProxy component)
+		{
+			if (main.Subject == component.Subject)
+			{
+				return;
+			}
+
+			var projectile = main.Subject.Playground.CreateSubject();
+
+		}
 		#endregion
 
 		public IComponent CreateComponent(string componentType)
@@ -339,8 +347,9 @@ namespace StepFlow.Master
 				Components.Types.SCHEDULER => new Scheduled(Playground),
 				Components.Types.DAMAGE => new Damage(Playground),
 				Components.Types.PROJECTILE_SETTINGS => new ProjectileSettings(Playground),
-				Components.Handlers.SET_COURSE => new SetCourse(Playground),
 				Components.Types.HANDLER => new Handler(Playground),
+				Components.Types.SET_COURSE => new SetCourse(Playground),
+				Components.Types.SENTRY_GUN => new SentryGun(Playground),
 				_ => throw new InvalidOperationException(),
 			};
 		}

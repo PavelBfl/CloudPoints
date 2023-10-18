@@ -60,14 +60,12 @@ namespace StepFlow.Master.Proxies
 			var strength = (IScaleProxy)subject.AddComponent(Master.Components.Types.SCALE, Master.Components.Names.STRENGTH);
 			strength.Max = strengthValue;
 			strength.Value = strengthValue;
-			var scaleHandler = (IHandlerProxy)subject.AddComponent(Master.Components.Types.HANDLER);
-			scaleHandler.Reference = PlayMaster.SCALE_EMPTY_HANDLER;
+			var scaleHandler = subject.AddHandler(PlayMaster.SCALE_EMPTY_HANDLER);
 			strength.ValueChange.Add(scaleHandler);
 			subject.AddComponent(Master.Components.Types.SCHEDULER, Master.Components.Names.MAIN_SCHEDULER);
 			var damage = (IDamageProxy)subject.AddComponent(Master.Components.Types.DAMAGE, Master.Components.Names.DAMAGE);
 			damage.Value = 1;
-			var collisionHandler = (IHandlerProxy)subject.AddComponent(Master.Components.Types.HANDLER);
-			collisionHandler.Reference = PlayMaster.COLLISION_HANDLER;
+			var collisionHandler = subject.AddHandler(PlayMaster.COLLISION_HANDLER);
 			collided.Collision.Add(collisionHandler);
 			var projectileSettings = (IProjectileSettingsProxy)subject.AddComponent(Master.Components.Types.PROJECTILE_SETTINGS, Master.Components.Names.PROJECTILE_SETTINGS);
 			projectileSettings.Damage = 10;
@@ -77,7 +75,10 @@ namespace StepFlow.Master.Proxies
 
 		public void CreateSentryGun(Rectangle size, Rectangle vision)
 		{
-			
+			var subject = CreateSubject();
+			var collidedComponent = subject.AddComponent(Master.Components.Types.COLLIDED, Master.Components.Names.COLLIDED);
+			var visionComponent = (ICollidedProxy)subject.AddComponent(Master.Components.Types.COLLIDED, Master.Components.Names.VISION);
+			visionComponent.Collision.Add(subject.AddHandler(PlayMaster.SET_DAMAGE_HANDLER));
 		}
 
 		public void CreateItem(Rectangle rectangle, string kind)
@@ -87,8 +88,7 @@ namespace StepFlow.Master.Proxies
 			var bordered = Owner.CreateProxy(new Bordered());
 			bordered.AddCell(rectangle);
 			collided.Current = bordered;
-			var removeSubjectHandler = (IHandlerProxy)subject.AddComponent(Master.Components.Types.HANDLER);
-			removeSubjectHandler.Reference = PlayMaster.REMOVE_SUBJECT_HANDLER;
+			var removeSubjectHandler = subject.AddHandler(PlayMaster.REMOVE_SUBJECT_HANDLER);
 			collided.Collision.Add(removeSubjectHandler);
 			var projectileSettings = (IProjectileSettingsProxy)subject.AddComponent(Master.Components.Types.PROJECTILE_SETTINGS, Master.Components.Names.PROJECTILE_SETTINGS_SET);
 			projectileSettings.Kind.Add(kind);

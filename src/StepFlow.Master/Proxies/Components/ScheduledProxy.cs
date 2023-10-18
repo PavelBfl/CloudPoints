@@ -22,9 +22,7 @@ namespace StepFlow.Master.Proxies.Components
 
 		public void CreateProjectile(Course course)
 		{
-			var projectileBuilderHandler = (IHandlerProxy)Subject.AddComponent(Master.Components.Types.HANDLER);
-			projectileBuilderHandler.Disposable = true;
-			projectileBuilderHandler.Reference = PlayMaster.PROJECTILE_BUILDER_HANDLER;
+			var projectileBuilderHandler = Subject.AddHandler(PlayMaster.PROJECTILE_BUILDER_HANDLER, true);
 			var projectileSettings = (IProjectileSettingsProxy)Subject.GetComponentRequired(Master.Components.Names.PROJECTILE_SETTINGS);
 			projectileSettings.Course = course;
 
@@ -34,10 +32,8 @@ namespace StepFlow.Master.Proxies.Components
 		public void SetCourse(Course course, int stepTime = 1)
 		{
 			var subject = Owner.GetPlaygroundProxy().CreateSubject();
-			var setCourseHandler = (IHandlerProxy)subject.AddComponent(Master.Components.Types.HANDLER);
-			setCourseHandler.Disposable = true;
-			setCourseHandler.Reference = PlayMaster.SET_COURSE_HANDLER;
-			var courseHandler = (ISetCourseProxy)subject.AddComponent(Master.Components.Handlers.SET_COURSE);
+			var setCourseHandler = subject.AddHandler(PlayMaster.SET_COURSE_HANDLER, true);
+			var courseHandler = (ISetCourseProxy)subject.AddComponent(Master.Components.Types.SET_COURSE);
 			courseHandler.Course = course;
 
 			Add(course.GetFactor() * stepTime, setCourseHandler);

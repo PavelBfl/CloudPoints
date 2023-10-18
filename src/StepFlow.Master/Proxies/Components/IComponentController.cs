@@ -7,6 +7,14 @@ namespace StepFlow.Master.Proxies.Components
 	{
 		IComponentProxy AddComponent(string componentType, string? name = null);
 
+		IHandlerProxy AddHandler(string reference, bool disposable = false)
+		{
+			var result = (IHandlerProxy)AddComponent(Master.Components.Types.HANDLER);
+			result.Reference = reference;
+			result.Disposable = disposable;
+			return result;
+		}
+
 		void RemoveComponent(IComponentProxy component);
 
 		IEnumerable<IComponentProxy> GetComponents();
