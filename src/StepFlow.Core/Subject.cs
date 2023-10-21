@@ -4,7 +4,7 @@ using StepFlow.Core.Exceptions;
 
 namespace StepFlow.Core
 {
-	public class Subject : Container, IChild
+	public sealed class Subject : Container, IChild
 	{
 		public Subject(Playground owner)
 		{
@@ -17,22 +17,6 @@ namespace StepFlow.Core
 
 		public uint Id { get; }
 
-		protected void CheckInteraction(Subject? other)
-		{
-			if (other is { } && Owner != other.Owner)
-			{
-				throw ExceptionBuilder.CreatePairParticlesCanNotInteraction();
-			}
-		}
-
-		protected void CheckInteractionRequired(Subject other)
-		{
-			if (other is null)
-			{
-				throw new ArgumentNullException(nameof(other));
-			}
-
-			CheckInteraction(other);
-		}
+		public string? Name { get; set; }
 	}
 }

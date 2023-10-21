@@ -5,5 +5,7 @@
 		public SentryGun(Playground owner) : base(owner)
 		{
 		}
+
+		public int Cooldown { get; set; }
 	}
 }

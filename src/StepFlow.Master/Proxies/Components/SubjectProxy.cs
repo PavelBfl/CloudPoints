@@ -8,6 +8,8 @@ namespace StepFlow.Master.Proxies.Components
 		{
 		}
 
+		public string? Name { get => Target.Name; set => SetValue(x => x.Name, value); }
+
 		public IPlaygroundProxy Playground => Owner.CreateProxy(Target.Owner);
 	}
 }

@@ -7,7 +7,6 @@ using Microsoft.Xna.Framework.Input;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Master;
-using StepFlow.Master.Proxies.Components;
 using StepFlow.View.Controls;
 using StepFlow.View.Services;
 using StepFlow.View.Sketch;
@@ -16,7 +15,7 @@ using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.View
 {
-    public class GameHandler : ILayoutCanvas
+	public class GameHandler : ILayoutCanvas
 	{
 		public GameHandler(Game1 game, System.Drawing.RectangleF bounds)
 		{
@@ -69,7 +68,7 @@ namespace StepFlow.View
 			CreateItem(new(30, 30, 5, 5), Master.PlayMaster.FIRE_DAMAGE);
 			CreateItem(new(60, 30, 5, 5), Master.PlayMaster.POISON_DAMAGET);
 
-			CreateSentryGun(new(240, 80, 10, 10), 50);
+			CreateSentryGun(new(170, 80, 10, 10), 50);
 		}
 
 		private void CreateCharacter(Rectangle rectangle, int strength = 100)
@@ -246,46 +245,8 @@ namespace StepFlow.View
 			Base.Childs.Clear();
 			foreach (var subject in PlayMaster.Playground.Subjects)
 			{
-				if (subject.Source.Components[Components.Names.COLLIDED] is Collided collided && collided.Current is not null)
-				{
-					var color = subject.IsSelect ? Color.Green : Color.Red;
-					var polygon = new Polygon(Base.ServiceProvider)
-					{
-						Color = color,
-						Vertices = new BoundsVertices()
-						{
-							Bounds = collided.Current.Border,
-						},
-					};
-
-					if (subject.Source.Components["Strength"] is Scale strength)
-					{
-						var border = collided.Current.Border;
-						var text = new Text(Base.ServiceProvider)
-						{
-							Color = color,
-							Font = Font,
-							Content = strength.Value.ToString(),
-							VerticalAlign = VerticalAlign.Center,
-							HorizontalAlign = HorizontalAlign.Center,
-							Layout = new Layout()
-							{
-								Canvas = this,
-								Margin = new()
-								{
-									Left = new Unit(border.X),
-									Top = new Unit(border.Y),
-									Right = new Unit(0, UnitKind.None),
-									Bottom = new Unit(0, UnitKind.None),
-								},
-								Size = new System.Drawing.SizeF(border.Width, border.Height),
-							}
-						};
-						polygon.Childs.Add(text);
-					}
-
-					Base.Childs.Add(polygon);
-				}
+				DrawBorder(subject, Components.Names.COLLIDED, subject.IsSelect ? Color.Green : Color.Red);
+				DrawBorder(subject, Components.Names.VISION, Color.Yellow);
 			}
 
 			SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
@@ -293,6 +254,49 @@ namespace StepFlow.View
 			Draw(Base, gameTime);
 
 			SpriteBatch.End();
+		}
+
+		private void DrawBorder(SubjectVm subject, string name, Color color)
+		{
+			if (subject.Source.Components[name] is Collided collided && collided.Current is not null)
+			{
+				var polygon = new Polygon(Base.ServiceProvider)
+				{
+					Color = color,
+					Vertices = new BoundsVertices()
+					{
+						Bounds = collided.Current.Border,
+					},
+				};
+
+				if (subject.Source.Components["Strength"] is Scale strength)
+				{
+					var border = collided.Current.Border;
+					var text = new Text(Base.ServiceProvider)
+					{
+						Color = color,
+						Font = Font,
+						Content = strength.Value.ToString(),
+						VerticalAlign = VerticalAlign.Center,
+						HorizontalAlign = HorizontalAlign.Center,
+						Layout = new Layout()
+						{
+							Canvas = this,
+							Margin = new()
+							{
+								Left = new Unit(border.X),
+								Top = new Unit(border.Y),
+								Right = new Unit(0, UnitKind.None),
+								Bottom = new Unit(0, UnitKind.None),
+							},
+							Size = new System.Drawing.SizeF(border.Width, border.Height),
+						}
+					};
+					polygon.Childs.Add(text);
+				}
+
+				Base.Childs.Add(polygon);
+			}
 		}
 
 		private static void Draw(Primitive primitive, GameTime gameTime)

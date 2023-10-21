@@ -16,12 +16,19 @@ namespace StepFlow.Master.Proxies
 
 		public ISubjectProxy CreateSubject() => Owner.CreateProxy(new Subject(Target));
 
-		public IEnumerable<(ISubjectProxy, ISubjectProxy)> GetCollision()
+		public IEnumerable<(ICollidedProxy, ICollidedProxy)> GetCollision()
 		{
 			foreach (var collision in Target.GetCollision())
 			{
 				yield return (Owner.CreateProxy(collision.Item1), Owner.CreateProxy(collision.Item2));
 			}
+		}
+
+		private IBorderedProxy CreateBorder(Rectangle rectangle)
+		{
+			var bordered = Owner.CreateProxy(new Bordered());
+			bordered.AddCell(rectangle);
+			return bordered;
 		}
 
 		public Rectangle CreateRectangle(int x, int y, int width, int height) => new Rectangle(x, y, width, height);
@@ -33,11 +40,10 @@ namespace StepFlow.Master.Proxies
 		private void CreateWall(Rectangle rectangle)
 		{
 			var subject = CreateSubject();
+			subject.Name = "Wall";
 			var collided = (ICollidedProxy)subject.AddComponent(Master.Components.Types.COLLIDED, Master.Components.Names.COLLIDED);
 			collided.IsRigid = true;
-			var bordered = Owner.CreateProxy(new Bordered());
-			bordered.AddCell(rectangle);
-			collided.Current = bordered;
+			collided.Current = CreateBorder(rectangle);
 			Subjects.Add(subject);
 		}
 
@@ -52,11 +58,10 @@ namespace StepFlow.Master.Proxies
 		public void CreateCharacter(Rectangle rectangle, int strengthValue)
 		{
 			var subject = CreateSubject();
+			subject.Name = "Character";
 			var collided = (ICollidedProxy)subject.AddComponent(Master.Components.Types.COLLIDED, Master.Components.Names.COLLIDED);
 			collided.IsRigid = true;
-			var bordered = Owner.CreateProxy(new Bordered());
-			bordered.AddCell(rectangle);
-			collided.Current = bordered;
+			collided.Current = CreateBorder(rectangle);
 			var strength = (IScaleProxy)subject.AddComponent(Master.Components.Types.SCALE, Master.Components.Names.STRENGTH);
 			strength.Max = strengthValue;
 			strength.Value = strengthValue;
@@ -76,18 +81,26 @@ namespace StepFlow.Master.Proxies
 		public void CreateSentryGun(Rectangle size, Rectangle vision)
 		{
 			var subject = CreateSubject();
-			var collidedComponent = subject.AddComponent(Master.Components.Types.COLLIDED, Master.Components.Names.COLLIDED);
+			subject.Name = "SentryGun";
+			Subjects.Add(subject);
+			subject.AddComponent(Master.Components.Types.SENTRY_GUN);
+			var collided = (ICollidedProxy)subject.AddComponent(Master.Components.Types.COLLIDED, Master.Components.Names.COLLIDED);
+			collided.IsRigid = true;
+			collided.Current = CreateBorder(size);
 			var visionComponent = (ICollidedProxy)subject.AddComponent(Master.Components.Types.COLLIDED, Master.Components.Names.VISION);
-			visionComponent.Collision.Add(subject.AddHandler(PlayMaster.SET_DAMAGE_HANDLER));
+			visionComponent.Current = CreateBorder(vision);
+			visionComponent.Collision.Add(subject.AddHandler(PlayMaster.SENTRY_GUN_REACT_HANDLER));
+
+			var system = (ISystemProxy)subject.AddComponent(Master.Components.Types.SYSTEM);
+			system.OnFrame.Add(subject.AddHandler(PlayMaster.SENTRY_GYN_ON_FRAME_HANDLER));
 		}
 
 		public void CreateItem(Rectangle rectangle, string kind)
 		{
 			var subject = CreateSubject();
+			subject.Name = "Item";
 			var collided = (ICollidedProxy)subject.AddComponent(Master.Components.Types.COLLIDED, Master.Components.Names.COLLIDED);
-			var bordered = Owner.CreateProxy(new Bordered());
-			bordered.AddCell(rectangle);
-			collided.Current = bordered;
+			collided.Current = CreateBorder(rectangle);
 			var removeSubjectHandler = subject.AddHandler(PlayMaster.REMOVE_SUBJECT_HANDLER);
 			collided.Collision.Add(removeSubjectHandler);
 			var projectileSettings = (IProjectileSettingsProxy)subject.AddComponent(Master.Components.Types.PROJECTILE_SETTINGS, Master.Components.Names.PROJECTILE_SETTINGS_SET);

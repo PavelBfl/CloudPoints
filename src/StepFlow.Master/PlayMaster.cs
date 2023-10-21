@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
+using System.Xml.Linq;
 using MoonSharp.Interpreter;
 using StepFlow.Common.Exceptions;
 using StepFlow.Core;
@@ -27,6 +28,7 @@ namespace StepFlow.Master
 			public const string HANDLER = "Handler";
 			public const string SET_COURSE = "CourseHandler";
 			public const string SENTRY_GUN = "SentryGun";
+			public const string SYSTEM = "System";
 		}
 
 		public static class Names
@@ -82,6 +84,7 @@ namespace StepFlow.Master
 			SetCourse setCourse => new SetCourseProxy(this, setCourse),
 			Handler handler => new HandlerProxy(this, handler),
 			SentryGun sentryGun => new SentryGunProxy(this, sentryGun),
+			Core.Components.System system => new SystemProxy(this, system),
 			null => null,
 			_ => throw new InvalidOperationException(),
 		};
@@ -123,6 +126,8 @@ namespace StepFlow.Master
 		public const string SET_COURSE_HANDLER = "SetCourseHandler";
 		public const string SET_DAMAGE_HANDLER = "SetDamage";
 		public const string SENTRY_GUN_REACT_HANDLER = "SentryGunReact";
+		public const string SENTRY_GYN_ON_FRAME_HANDLER = "SentryGunOnFrame";
+		public const string REMOVE_SUBJECT_IF_RIGID_HANDLER = "RemoveSubjectIfRigid";
 
 		public void CallHandler(IHandlerProxy main, IComponentProxy component)
 		{
@@ -151,6 +156,12 @@ namespace StepFlow.Master
 					break;
 				case SENTRY_GUN_REACT_HANDLER:
 					SentryGunReact(main, component);
+					break;
+				case SENTRY_GYN_ON_FRAME_HANDLER:
+					SentryGunOnFrame(main, component);
+					break;
+				case REMOVE_SUBJECT_IF_RIGID_HANDLER:
+					RemoveSubjectIfRigid(main, component);
 					break;
 				default: throw new InvalidOperationException();
 			}
@@ -192,7 +203,7 @@ namespace StepFlow.Master
 			}
 
 			if (main.Subject.GetComponent(Master.Components.Names.COLLIDED) is ICollidedProxy mainCollided &&
-				component.Subject.GetComponent(Master.Components.Names.COLLIDED) is ICollidedProxy otherCollided)
+				component is ICollidedProxy otherCollided)
 			{
 				if (otherCollided.IsRigid)
 				{
@@ -209,6 +220,11 @@ namespace StepFlow.Master
 				}
 			}
 		}
+
+		private static Point GetCenter(Rectangle rectangle) => new Point(
+			rectangle.X + rectangle.Width / 2,
+			rectangle.Y + rectangle.Height / 2
+		);
 
 		private static Point GetPivot(Rectangle rectangle, Course position) => position switch
 		{
@@ -238,49 +254,59 @@ namespace StepFlow.Master
 
 		private static void ProjectileBuilder(IComponentProxy main, IComponentProxy component)
 		{
-			var ownerCollided = main.Subject.GetComponent(Master.Components.Names.COLLIDED);
-			if (ownerCollided is ICollidedProxy { Current: { } current })
-			{
-				var projectileSettings = (IProjectileSettingsProxy)main.Subject.GetComponentRequired(Master.Components.Names.PROJECTILE_SETTINGS);
+			var ownerCollided = main.Subject.GetComponent(Components.Names.COLLIDED);
+			var projectileSettings = (IProjectileSettingsProxy)main.Subject.GetComponentRequired(Components.Names.PROJECTILE_SETTINGS);
 
-				var playground = main.Subject.Playground;
-
-				var subject = playground.CreateSubject();
-				playground.Subjects.Add(subject);
-				var collided = (ICollidedProxy)subject.AddComponent(Components.Types.COLLIDED, Components.Names.COLLIDED);
-
-				var bordered = playground.CreateBordered();
-
-				var pivot = GetPivot(current.Target.Border, projectileSettings.Course);
-				var projectileBorder = CreateRectangle(projectileSettings.Course.Invert(), pivot, new Size(projectileSettings.Size, projectileSettings.Size));
-				projectileBorder.Offset(projectileSettings.Course.ToOffset());
-
-				bordered.AddCell(projectileBorder);
-				collided.Current = bordered;
-				var removeSubjectHandler = subject.AddHandler(PlayMaster.REMOVE_SUBJECT_HANDLER);
-				collided.Collision.Add(removeSubjectHandler);
-
-				var projectile = (IDamageProxy)subject.AddComponent(Master.Components.Types.DAMAGE, Master.Components.Names.DAMAGE);
-				projectile.Value = projectileSettings.Damage;
-				foreach (var kind in projectileSettings.Kind)
-				{
-					projectile.Kind.Add(kind);
-				}
-
-				var scheduler = (IScheduledProxy)subject.AddComponent(Master.Components.Types.SCHEDULER);
-				for (var i = 0; i < 100; i++)
-				{
-					scheduler.SetCourse(projectileSettings.Course);
-				}
-				var removeSubject = subject.AddHandler(PlayMaster.REMOVE_SUBJECT_HANDLER, true);
-				scheduler.Add(0, removeSubject);
-			}
+			CreateProjectile(
+				main.Subject,
+				projectileSettings.Course,
+				projectileSettings.Size,
+				projectileSettings.Damage,
+				projectileSettings.Kind,
+				Enumerable.Range(0, 100).Select(_ => projectileSettings.Course)
+			);
 		}
 
-		private static ISubjectProxy CreateProjectile(ISubjectProxy owner)
+		private static ISubjectProxy CreateProjectile(
+			ISubjectProxy owner,
+			Course begin,
+			int size,
+			float damage,
+			IEnumerable<string> kinds,
+			IEnumerable<Course> path
+		)
 		{
 			var result = owner.Playground.CreateSubject();
+			owner.Playground.Subjects.Add(result);
+			var collided = (ICollidedProxy)result.AddComponent(Components.Types.COLLIDED, Components.Names.COLLIDED);
 
+			var bordered = owner.Playground.CreateBordered();
+
+			var current = ((ICollidedProxy)owner.GetComponent(Components.Names.COLLIDED)).Current;
+			var pivot = GetPivot(current.Target.Border, begin);
+			var projectileBorder = CreateRectangle(begin.Invert(), pivot, new Size(size, size));
+			projectileBorder.Offset(begin.ToOffset());
+
+			bordered.AddCell(projectileBorder);
+			collided.Current = bordered;
+			collided.Collision.Add(result.AddHandler(PlayMaster.REMOVE_SUBJECT_IF_RIGID_HANDLER));
+
+			var projectile = (IDamageProxy)result.AddComponent(Components.Types.DAMAGE, Components.Names.DAMAGE);
+			projectile.Value = damage;
+			foreach (var kind in kinds)
+			{
+				projectile.Kind.Add(kind);
+			}
+
+			var scheduler = (IScheduledProxy)result.AddComponent(Components.Types.SCHEDULER);
+			foreach (var step in path)
+			{
+				scheduler.SetCourse(step);
+			}
+			var removeSubject = result.AddHandler(PlayMaster.REMOVE_SUBJECT_HANDLER, true);
+			scheduler.Add(0, removeSubject);
+
+			return result;
 		}
 
 		private static void RemoveComponent(IComponentProxy main, IComponentProxy component)
@@ -323,13 +349,45 @@ namespace StepFlow.Master
 
 		private static void SentryGunReact(IComponentProxy main, IComponentProxy component)
 		{
-			if (main.Subject == component.Subject)
+			if (main.Subject.Target == component.Subject.Target)
 			{
 				return;
 			}
 
-			var projectile = main.Subject.Playground.CreateSubject();
+			var sentryGun = main.Subject.GetComponents().OfType<ISentryGunProxy>().Single();
+			if (sentryGun.Cooldown != 0)
+			{
+				return;
+			}
 
+			sentryGun.CooldownReset();
+
+			var beginCurrent = ((ICollidedProxy)main.Subject.GetComponent(Components.Names.COLLIDED)).Current;
+			var endCurrent = ((ICollidedProxy)component.Subject.GetComponent(Components.Names.COLLIDED)).Current;
+
+			var path = CourseExtensions.GetPath(GetCenter(beginCurrent.Target.Border), GetCenter(endCurrent.Target.Border)).ToArray();
+			CreateProjectile(
+				main.Subject,
+				path[0],
+				10,
+				10,
+				Enumerable.Empty<string>(),
+				path
+			);
+		}
+
+		private static void SentryGunOnFrame(IComponentProxy main, IComponentProxy component)
+		{
+			var sentryGun = main.Subject.GetComponents().OfType<ISentryGunProxy>().Single();
+			sentryGun.CooldownDecrement();
+		}
+
+		private static void RemoveSubjectIfRigid(IComponentProxy main, IComponentProxy component)
+		{
+			if (((ICollidedProxy?)component)?.IsRigid ?? false)
+			{
+				RemoveSubject(main, component);
+			}
 		}
 		#endregion
 
@@ -350,25 +408,32 @@ namespace StepFlow.Master
 				Components.Types.HANDLER => new Handler(Playground),
 				Components.Types.SET_COURSE => new SetCourse(Playground),
 				Components.Types.SENTRY_GUN => new SentryGun(Playground),
+				Components.Types.SYSTEM => new Core.Components.System(Playground),
 				_ => throw new InvalidOperationException(),
 			};
 		}
 
 		public void TakeStep() => Execute(TAKE_STEP_CALL);
 
-		private void CollisionHandle(ISubjectProxy main, ISubjectProxy other)
+		private void CollisionHandle(ICollidedProxy main, ICollidedProxy other)
 		{
-			var collided = (ICollidedProxy)main.GetComponentRequired(Components.Names.COLLIDED);
-			var otherCollided = (ICollidedProxy)other.GetComponentRequired(Components.Names.COLLIDED);
-			foreach (var handler in collided.Collision.Cast<IHandlerProxy>())
+			foreach (var handler in main.Collision)
 			{
-				handler.Handle(otherCollided);
+				handler.Handle(other);
 			}
 		}
 
 		private void TakeStepInner()
 		{
 			var playground = GetPlaygroundProxy();
+
+			foreach (var system in playground.Subjects.SelectMany(x => x.GetComponents()).OfType<ISystemProxy>())
+			{
+				foreach (var handler in system.OnFrame)
+				{
+					handler.Handle(null);
+				}
+			}
 
 			foreach (var collision in playground.GetCollision().ToArray())
 			{

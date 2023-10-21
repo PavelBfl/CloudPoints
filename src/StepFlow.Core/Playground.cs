@@ -29,7 +29,7 @@ namespace StepFlow.Core
 
 		public IList<Subject> Subjects { get; } = new List<Subject>();
 
-		public IEnumerable<(Subject, Subject)> GetCollision()
+		public IEnumerable<(Collided, Collided)> GetCollision()
 		{
 			var instance = Subjects.SelectMany(x => x.Components.OfType<Collided>()).ToArray();
 
@@ -45,7 +45,7 @@ namespace StepFlow.Core
 					{
 						if (firstBorder.IsCollision(secondBorder))
 						{
-							yield return ((Subject)instance[iFirst].Container, (Subject)instance[iSecond].Container);
+							yield return (instance[iFirst], instance[iSecond]);
 						}
 					}
 				}

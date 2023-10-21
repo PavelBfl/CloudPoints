@@ -11,7 +11,7 @@ namespace StepFlow.Master.Proxies
 		Point CreatePoint(int x, int y);
 		Rectangle CreateRectangle(int x, int y, int width, int height);
 		ISubjectProxy CreateSubject();
-		IEnumerable<(ISubjectProxy, ISubjectProxy)> GetCollision();
+		IEnumerable<(ICollidedProxy, ICollidedProxy)> GetCollision();
 
 		void CreateRoom(Rectangle rectangle, int width);
 		void CreateCharacter(Rectangle rectangle, int strengthValue);

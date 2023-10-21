@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using StepFlow.Core;
 
 namespace StepFlow.Master.Proxies.Components
 {
