@@ -198,7 +198,7 @@ namespace StepFlow.View
 			{
 				if (subjects[current].Source.Components["MainScheduler"] is Scheduled scheduled)
 				{
-					if (scheduled.Queue.LastOrDefault().Executor?.Reference != Master.PlayMaster.SET_COURSE_HANDLER)
+					if (scheduled.Queue.LastOrDefault().Executor?.Reference != nameof(Handlers.SetCourseHandler))
 					{
 						PlayMaster.Execute($@"
 								scheduler = playground.Subjects[{current}].GetComponent(""MainScheduler"")

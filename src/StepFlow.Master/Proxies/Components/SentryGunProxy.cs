@@ -19,7 +19,7 @@ namespace StepFlow.Master.Proxies.Components
 
 		public int Cooldown { get => Target.Cooldown; private set => SetValue(x => x.Cooldown, value); }
 
-		public void CooldownReset() => Cooldown = 100;
+		public void CooldownReset() => Cooldown = 500;
 
 		public void CooldownDecrement()
 		{

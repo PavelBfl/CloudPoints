@@ -12,7 +12,11 @@
 
 		public void Handle(IComponentProxy component)
 		{
-			Owner.CallHandler(this, component);
+			if (Reference is { })
+			{
+				var handler = Owner.Handlers[Reference];
+				handler(this, component);
+			}
 
 			if (Disposable)
 			{

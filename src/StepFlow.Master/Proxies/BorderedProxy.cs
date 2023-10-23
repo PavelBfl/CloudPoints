@@ -9,7 +9,7 @@ namespace StepFlow.Master.Proxies
 		{
 		}
 
-		public ICellProxy AddCell(Rectangle border) => Owner.CreateProxy(Target.AddCell(border));
+		public ICellProxy AddCell(Rectangle border) => (ICellProxy)Owner.CreateProxy(Target.AddCell(border));
 
 		public void Offset(Point value) => Target.Offset(value);
 	}

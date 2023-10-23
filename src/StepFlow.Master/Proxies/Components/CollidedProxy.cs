@@ -11,9 +11,9 @@ namespace StepFlow.Master.Proxies.Components
 		{
 		}
 
-		public IBorderedProxy? Current { get => Owner.CreateProxy(Target.Current); set => SetValue(x => x.Current, value?.Target); }
+		public IBorderedProxy? Current { get => (IBorderedProxy?)Owner.CreateProxy(Target.Current); set => SetValue(x => x.Current, value?.Target); }
 
-		public IBorderedProxy? Next { get => Owner.CreateProxy(Target.Next); set => SetValue(x => x.Next, value?.Target); }
+		public IBorderedProxy? Next { get => (IBorderedProxy?)Owner.CreateProxy(Target.Next); set => SetValue(x => x.Next, value?.Target); }
 
 		public bool IsMoving { get => Target.IsMoving; set => SetValue(x => x.IsMoving, value); }
 
@@ -27,7 +27,7 @@ namespace StepFlow.Master.Proxies.Components
 			{
 				var clone = (Bordered)current.Target.Clone(null);
 				clone.Offset(value);
-				Next = Owner.CreateProxy(clone);
+				Next = (IBorderedProxy)Owner.CreateProxy(clone);
 				IsMoving = true;
 				return true;
 			}

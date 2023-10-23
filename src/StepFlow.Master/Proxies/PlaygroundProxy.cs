@@ -14,19 +14,19 @@ namespace StepFlow.Master.Proxies
 
 		public IList<ISubjectProxy> Subjects => new ListItemsProxy<Subject, IList<Subject>, ISubjectProxy>(Owner, Target.Subjects);
 
-		public ISubjectProxy CreateSubject() => Owner.CreateProxy(new Subject(Target));
+		public ISubjectProxy CreateSubject() => (ISubjectProxy)Owner.CreateProxy(new Subject(Target));
 
 		public IEnumerable<(ICollidedProxy, ICollidedProxy)> GetCollision()
 		{
 			foreach (var collision in Target.GetCollision())
 			{
-				yield return (Owner.CreateProxy(collision.Item1), Owner.CreateProxy(collision.Item2));
+				yield return ((ICollidedProxy)Owner.CreateProxy(collision.Item1), (ICollidedProxy)Owner.CreateProxy(collision.Item2));
 			}
 		}
 
 		private IBorderedProxy CreateBorder(Rectangle rectangle)
 		{
-			var bordered = Owner.CreateProxy(new Bordered());
+			var bordered = (IBorderedProxy)Owner.CreateProxy(new Bordered());
 			bordered.AddCell(rectangle);
 			return bordered;
 		}
@@ -35,7 +35,7 @@ namespace StepFlow.Master.Proxies
 
 		public Point CreatePoint(int x, int y) => new Point(x, y);
 
-		public IBorderedProxy CreateBordered() => Owner.CreateProxy(new Bordered());
+		public IBorderedProxy CreateBordered() => (IBorderedProxy)Owner.CreateProxy(new Bordered());
 
 		private void CreateWall(Rectangle rectangle)
 		{
@@ -65,12 +65,12 @@ namespace StepFlow.Master.Proxies
 			var strength = (IScaleProxy)subject.AddComponent(Master.Components.Types.SCALE, Master.Components.Names.STRENGTH);
 			strength.Max = strengthValue;
 			strength.Value = strengthValue;
-			var scaleHandler = subject.AddHandler(PlayMaster.SCALE_EMPTY_HANDLER);
+			var scaleHandler = subject.AddHandler(nameof(Handlers.ScaleEmptyHandler));
 			strength.ValueChange.Add(scaleHandler);
 			subject.AddComponent(Master.Components.Types.SCHEDULER, Master.Components.Names.MAIN_SCHEDULER);
 			var damage = (IDamageProxy)subject.AddComponent(Master.Components.Types.DAMAGE, Master.Components.Names.DAMAGE);
 			damage.Value = 1;
-			var collisionHandler = subject.AddHandler(PlayMaster.COLLISION_HANDLER);
+			var collisionHandler = subject.AddHandler(nameof(Handlers.Collision));
 			collided.Collision.Add(collisionHandler);
 			var projectileSettings = (IProjectileSettingsProxy)subject.AddComponent(Master.Components.Types.PROJECTILE_SETTINGS, Master.Components.Names.PROJECTILE_SETTINGS);
 			projectileSettings.Damage = 10;
@@ -89,10 +89,10 @@ namespace StepFlow.Master.Proxies
 			collided.Current = CreateBorder(size);
 			var visionComponent = (ICollidedProxy)subject.AddComponent(Master.Components.Types.COLLIDED, Master.Components.Names.VISION);
 			visionComponent.Current = CreateBorder(vision);
-			visionComponent.Collision.Add(subject.AddHandler(PlayMaster.SENTRY_GUN_REACT_HANDLER));
+			visionComponent.Collision.Add(subject.AddHandler(nameof(Handlers.SentryGunReact)));
 
 			var system = (ISystemProxy)subject.AddComponent(Master.Components.Types.SYSTEM);
-			system.OnFrame.Add(subject.AddHandler(PlayMaster.SENTRY_GYN_ON_FRAME_HANDLER));
+			system.OnFrame.Add(subject.AddHandler(nameof(Handlers.SentryGunOnFrame)));
 		}
 
 		public void CreateItem(Rectangle rectangle, string kind)
@@ -101,7 +101,7 @@ namespace StepFlow.Master.Proxies
 			subject.Name = "Item";
 			var collided = (ICollidedProxy)subject.AddComponent(Master.Components.Types.COLLIDED, Master.Components.Names.COLLIDED);
 			collided.Current = CreateBorder(rectangle);
-			var removeSubjectHandler = subject.AddHandler(PlayMaster.REMOVE_SUBJECT_HANDLER);
+			var removeSubjectHandler = subject.AddHandler(nameof(Handlers.RemoveSubject));
 			collided.Collision.Add(removeSubjectHandler);
 			var projectileSettings = (IProjectileSettingsProxy)subject.AddComponent(Master.Components.Types.PROJECTILE_SETTINGS, Master.Components.Names.PROJECTILE_SETTINGS_SET);
 			projectileSettings.Kind.Add(kind);
