@@ -6,9 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
-using System.Xml.Linq;
 using MoonSharp.Interpreter;
-using StepFlow.Common.Exceptions;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Master.Proxies;
@@ -17,7 +15,7 @@ using StepFlow.TimeLine;
 
 namespace StepFlow.Master
 {
-	public static class Components
+    public static class Components
 	{
 		public static class Types
 		{
@@ -30,6 +28,7 @@ namespace StepFlow.Master
 			public const string SET_COURSE = "CourseHandler";
 			public const string SENTRY_GUN = "SentryGun";
 			public const string SYSTEM = "System";
+			public const string STATE = "State";
 		}
 
 		public static class Names
@@ -38,11 +37,10 @@ namespace StepFlow.Master
 			public const string COLLIDED = "Collided";
 			public const string DAMAGE = "Damage";
 			public const string MAIN_SCHEDULER = "MainScheduler";
-
 			public const string PROJECTILE_SETTINGS = "ProjectileSettings";
 			public const string PROJECTILE_SETTINGS_SET = "ProjectileSettingsSet";
-
 			public const string VISION = "Vision";
+			public const string STATE = "State";
 		}
 	}
 
@@ -85,6 +83,7 @@ namespace StepFlow.Master
 			Handler handler => new HandlerProxy(this, handler),
 			SentryGun sentryGun => new SentryGunProxy(this, sentryGun),
 			Core.Components.System system => new SystemProxy(this, system),
+			State state => new StateProxy(this, state),
 			null => null,
 			_ => throw new InvalidOperationException(),
 		};
@@ -124,6 +123,7 @@ namespace StepFlow.Master
 				Components.Types.SET_COURSE => new SetCourse(Playground),
 				Components.Types.SENTRY_GUN => new SentryGun(Playground),
 				Components.Types.SYSTEM => new Core.Components.System(Playground),
+				Components.Types.STATE => new State(Playground),
 				_ => throw new InvalidOperationException(),
 			};
 		}

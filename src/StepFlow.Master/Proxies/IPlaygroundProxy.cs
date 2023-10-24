@@ -16,6 +16,6 @@ namespace StepFlow.Master.Proxies
 		void CreateRoom(Rectangle rectangle, int width);
 		void CreateCharacter(Rectangle rectangle, int strengthValue);
 		void CreateItem(Rectangle rectangle, string kind);
-		void CreateSentryGun(Rectangle size, Rectangle vision);
+		void CreateSentryGun(Rectangle size, Rectangle vision, int strengthValue);
 	}
 }

@@ -78,15 +78,22 @@ namespace StepFlow.Master.Proxies
 			Subjects.Add(subject);
 		}
 
-		public void CreateSentryGun(Rectangle size, Rectangle vision)
+		public void CreateSentryGun(Rectangle size, Rectangle vision, int strengthValue)
 		{
 			var subject = CreateSubject();
 			subject.Name = "SentryGun";
 			Subjects.Add(subject);
+			var state = (IStateProxy)subject.AddComponent(Master.Components.Types.STATE, Master.Components.Names.STATE);
+			state.Team = 1;
+			var strength = (IScaleProxy)subject.AddComponent(Master.Components.Types.SCALE, Master.Components.Names.STRENGTH);
+			strength.Value = strengthValue;
+			strength.Max = strengthValue;
+			strength.ValueChange.Add(subject.AddHandler(nameof(Handlers.ScaleEmptyHandler)));
 			subject.AddComponent(Master.Components.Types.SENTRY_GUN);
 			var collided = (ICollidedProxy)subject.AddComponent(Master.Components.Types.COLLIDED, Master.Components.Names.COLLIDED);
 			collided.IsRigid = true;
 			collided.Current = CreateBorder(size);
+			collided.Collision.Add(subject.AddHandler(nameof(Handlers.Collision)));
 			var visionComponent = (ICollidedProxy)subject.AddComponent(Master.Components.Types.COLLIDED, Master.Components.Names.VISION);
 			visionComponent.Current = CreateBorder(vision);
 			visionComponent.Collision.Add(subject.AddHandler(nameof(Handlers.SentryGunReact)));

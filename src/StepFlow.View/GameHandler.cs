@@ -95,7 +95,7 @@ namespace StepFlow.View
 			");
 		}
 
-		private void CreateSentryGun(Rectangle size, int visionRadius)
+		private void CreateSentryGun(Rectangle size, int visionRadius, int strength = 50)
 		{
 			var center = size.Center;
 			var vision = new Rectangle(
@@ -108,7 +108,7 @@ namespace StepFlow.View
 			PlayMaster.Execute($@"
 				size = playground.CreateRectangle({size.X}, {size.Y}, {size.Width}, {size.Height})
 				vision = playground.CreateRectangle({vision.X}, {vision.Y}, {vision.Width}, {vision.Height})
-				playground.CreateSentryGun(size, vision)
+				playground.CreateSentryGun(size, vision, {strength})
 			");
 		}
 

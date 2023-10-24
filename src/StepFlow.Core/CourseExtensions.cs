@@ -60,21 +60,6 @@ namespace StepFlow.Core
 					{
 						if (prev.Value.X < point.X)
 						{
-							yield return Course.RightTop;
-						}
-						else if (prev.Value.X > point.X)
-						{
-							yield return Course.LeftTop;
-						}
-						else
-						{
-							yield return Course.Top;
-						}
-					}
-					else if (prev.Value.Y > point.Y)
-					{
-						if (prev.Value.X < point.X)
-						{
 							yield return Course.RightBottom;
 						}
 						else if (prev.Value.X > point.X)
@@ -84,6 +69,21 @@ namespace StepFlow.Core
 						else
 						{
 							yield return Course.Bottom;
+						}
+					}
+					else if (prev.Value.Y > point.Y)
+					{
+						if (prev.Value.X < point.X)
+						{
+							yield return Course.RightTop;
+						}
+						else if (prev.Value.X > point.X)
+						{
+							yield return Course.LeftTop;
+						}
+						else
+						{
+							yield return Course.Top;
 						}
 					}
 					else

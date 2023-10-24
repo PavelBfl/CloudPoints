@@ -129,20 +129,30 @@ namespace StepFlow.Master
 				return;
 			}
 
+			var otherState = (IStateProxy?)component.Subject.GetComponent(Components.Names.STATE);
+			var state = (IStateProxy)main.Subject.GetComponentRequired(Components.Names.STATE);
+			if (otherState?.Team == state.Team)
+			{
+				return;
+			}
+
 			sentryGun.CooldownReset();
 
 			var beginCurrent = ((ICollidedProxy)main.Subject.GetComponent(Components.Names.COLLIDED)).Current;
 			var endCurrent = ((ICollidedProxy)component.Subject.GetComponent(Components.Names.COLLIDED)).Current;
 
 			var path = CourseExtensions.GetPath(GetCenter(beginCurrent.Target.Border), GetCenter(endCurrent.Target.Border)).ToArray();
-			CreateProjectile(
+			var projectile = CreateProjectile(
 				main.Subject,
 				path[0],
 				10,
-				10,
+				1,
 				Enumerable.Empty<string>(),
 				path
 			);
+
+			var projectileState = (IStateProxy)projectile.AddComponent(Components.Types.STATE, Components.Names.STATE);
+			projectileState.Team = state.Team;
 		}
 
 		public static void SentryGunOnFrame(IHandlerProxy main, IComponentProxy component)
