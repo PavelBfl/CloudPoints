@@ -5,6 +5,17 @@ using StepFlow.Master.Proxies.Collections;
 
 namespace StepFlow.Master.Proxies.Components
 {
+	public interface IProjectileSettingsProxy
+	{
+		Course Course { get; set; }
+
+		int Size { get; set; }
+
+		float Damage { get; set; }
+
+		ICollection<string> Kind { get; }
+	}
+
 	internal sealed class ProjectileSettingsProxy : ComponentProxy<ProjectileSettings>, IProjectileSettingsProxy
 	{
 		public ProjectileSettingsProxy(PlayMaster owner, ProjectileSettings target) : base(owner, target)

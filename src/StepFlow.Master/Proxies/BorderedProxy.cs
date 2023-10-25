@@ -3,7 +3,7 @@ using StepFlow.Core;
 
 namespace StepFlow.Master.Proxies
 {
-	public sealed class BorderedProxy : ProxyBase<Bordered>, IBorderedProxy
+	internal sealed class BorderedProxy : ProxyBase<Bordered>, IBorderedProxy
 	{
 		public BorderedProxy(PlayMaster owner, Bordered target) : base(owner, target)
 		{

@@ -5,7 +5,7 @@ using StepFlow.TimeLine;
 
 namespace StepFlow.Master.Proxies.Collections
 {
-	public class CollectionProxy<TItem, TCollection> : ProxyBase<TCollection>, ICollection<TItem>
+	internal class CollectionProxy<TItem, TCollection> : ProxyBase<TCollection>, ICollection<TItem>
 		where TCollection : class, ICollection<TItem>
 	{
 		public CollectionProxy(PlayMaster owner, TCollection target) : base(owner, target)

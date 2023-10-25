@@ -4,6 +4,13 @@ using StepFlow.Master.Proxies.Collections;
 
 namespace StepFlow.Master.Proxies.Components
 {
+	public interface IDamageProxy : IComponentProxy
+	{
+		float Value { get; set; }
+
+		ICollection<string> Kind { get; }
+	}
+
 	internal sealed class DamageProxy : ComponentProxy<Damage>, IDamageProxy
 	{
 		public DamageProxy(PlayMaster owner, Damage target) : base(owner, target)

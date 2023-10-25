@@ -5,6 +5,24 @@ using StepFlow.Core.Components;
 
 namespace StepFlow.Master.Proxies.Components
 {
+	public interface ICollidedProxy : IComponentProxy
+	{
+		IBorderedProxy? Current { get; set; }
+
+		IBorderedProxy? Next { get; set; }
+
+		bool IsMoving { get; set; }
+
+		ICollection<IHandlerProxy> Collision { get; }
+		bool IsRigid { get; set; }
+
+		void Break();
+
+		void Move();
+
+		bool Offset(Point value);
+	}
+
 	internal sealed class CollidedProxy : ComponentProxy<Collided>, ICollidedProxy
 	{
 		public CollidedProxy(PlayMaster owner, Collided target) : base(owner, target)

@@ -195,11 +195,11 @@ namespace StepFlow.Master
 			UserData.RegisterType<Rectangle>();
 			UserData.RegisterType<Point>();
 
-			RegisterList<(Subject, Subject)>();
+			RegisterList<(ICollidedProxy, ICollidedProxy)>();
 			RegisterList<ICellProxy>();
 			RegisterList<IBorderedProxy>();
 
-			RegisterList<IComponentController>();
+			RegisterList<IContainerProxy>();
 			RegisterList<IComponentProxy>();
 
 			RegisterList<IPlaygroundProxy>();

@@ -4,6 +4,16 @@ using StepFlow.Core.Components;
 
 namespace StepFlow.Master.Proxies.Components
 {
+	public interface IScaleProxy : IComponentProxy
+	{
+		float Value { get; set; }
+
+		float Max { get; set; }
+		ICollection<IHandlerProxy> ValueChange { get; }
+
+		void Add(float value);
+	}
+
 	internal class ScaleProxy : ComponentProxy<Scale>, IScaleProxy
 	{
 		public ScaleProxy(PlayMaster owner, Scale target) : base(owner, target)

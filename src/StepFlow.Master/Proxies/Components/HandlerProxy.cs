@@ -1,5 +1,14 @@
 ﻿namespace StepFlow.Master.Proxies.Components
 {
+	public interface IHandlerProxy : IComponentProxy
+	{
+		bool Disposable { get; set; }
+
+		string? Reference { get; set; }
+
+		void Handle(IComponentProxy component);
+	}
+
 	internal sealed class HandlerProxy : ComponentProxy<Core.Components.Handler>, IHandlerProxy
 	{
 		public HandlerProxy(PlayMaster owner, Core.Components.Handler target) : base(owner, target)

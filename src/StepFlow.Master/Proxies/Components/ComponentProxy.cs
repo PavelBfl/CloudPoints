@@ -3,6 +3,13 @@ using StepFlow.Core.Components;
 
 namespace StepFlow.Master.Proxies.Components
 {
+	public interface IComponentProxy : IProxyBase<IComponentChild>
+	{
+		string? Name { get; }
+
+		ISubjectProxy Subject { get; }
+	}
+
 	internal class ComponentProxy<TComponent> : ProxyBase<TComponent>, IComponentProxy
 		where TComponent : class, IComponentChild
 	{

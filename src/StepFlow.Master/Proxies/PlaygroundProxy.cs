@@ -6,7 +6,7 @@ using StepFlow.Master.Proxies.Components;
 
 namespace StepFlow.Master.Proxies
 {
-	public sealed class PlaygroundProxy : ProxyBase<Playground>, IPlaygroundProxy
+	internal sealed class PlaygroundProxy : ProxyBase<Playground>, IPlaygroundProxy
 	{
 		public PlaygroundProxy(PlayMaster owner, Playground target) : base(owner, target)
 		{

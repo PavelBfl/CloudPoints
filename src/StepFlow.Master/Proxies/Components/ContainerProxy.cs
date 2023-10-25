@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using StepFlow.Master.Commands;
@@ -6,7 +7,28 @@ using StepFlow.TimeLine;
 
 namespace StepFlow.Master.Proxies.Components
 {
-	internal class ContainerProxy<TTarget> : ProxyBase<TTarget>, IComponentController
+	public interface IContainerProxy
+	{
+		IComponentProxy AddComponent(string componentType, string? name = null);
+
+		IHandlerProxy AddHandler(string reference, bool disposable = false)
+		{
+			var result = (IHandlerProxy)AddComponent(Master.Components.Types.HANDLER);
+			result.Reference = reference;
+			result.Disposable = disposable;
+			return result;
+		}
+
+		void RemoveComponent(IComponentProxy component);
+
+		IEnumerable<IComponentProxy> GetComponents();
+
+		IComponentProxy? GetComponent(string? name);
+
+		IComponentProxy GetComponentRequired(string name) => GetComponent(name) ?? throw new InvalidOperationException();
+	}
+
+	internal class ContainerProxy<TTarget> : ProxyBase<TTarget>, IContainerProxy
 		where TTarget : Container
 	{
 		public ContainerProxy(PlayMaster owner, TTarget target)

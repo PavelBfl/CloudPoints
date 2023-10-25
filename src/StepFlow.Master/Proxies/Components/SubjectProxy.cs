@@ -2,6 +2,13 @@
 
 namespace StepFlow.Master.Proxies.Components
 {
+	public interface ISubjectProxy : IContainerProxy, IProxyBase<Subject>
+	{
+		string? Name { get; set; }
+
+		IPlaygroundProxy Playground { get; }
+	}
+
 	internal class SubjectProxy : ContainerProxy<Subject>, ISubjectProxy
 	{
 		public SubjectProxy(PlayMaster owner, Subject target) : base(owner, target)

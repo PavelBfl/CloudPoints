@@ -6,7 +6,7 @@ using StepFlow.TimeLine;
 
 namespace StepFlow.Master.Proxies.Collections
 {
-	public class CollectionItemsProxy<TItem, TCollection, TItemProxy> : ProxyBase<TCollection>, ICollection<TItemProxy>
+	internal class CollectionItemsProxy<TItem, TCollection, TItemProxy> : ProxyBase<TCollection>, ICollection<TItemProxy>
 		where TItem : class
 		where TCollection : class, ICollection<TItem>
 		where TItemProxy : IProxyBase<TItem>
