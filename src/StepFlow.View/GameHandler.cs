@@ -15,13 +15,14 @@ using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.View
 {
-	public class GameHandler : ILayoutCanvas
+	public class GameHandler
 	{
 		public GameHandler(Game1 game, System.Drawing.RectangleF bounds)
 		{
 			SpriteBatch = new SpriteBatch(game.GraphicsDevice);
 
 			Font = game.Content.Load<SpriteFont>("DefaultFont");
+			Character = game.Content.Load<Texture2D>("Character");
 
 			Drawer = new Drawer(SpriteBatch, game.GraphicsDevice);
 
@@ -45,6 +46,8 @@ namespace StepFlow.View
 		private Primitive Base { get; }
 
 		private SpriteFont Font { get; }
+
+		private Texture2D Character { get; }
 
 		private SpriteBatch SpriteBatch { get; }
 
@@ -251,6 +254,17 @@ namespace StepFlow.View
 
 			SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
 
+			//SpriteBatch.Draw(
+			//	Character,
+			//	Vector2.Zero,
+			//	new Rectangle(0, 0, Character.Width / 4, Character.Height / 4),
+			//	Color.White,
+			//	0,
+			//	Vector2.Zero,
+			//	0.25f,
+			//	SpriteEffects.None,
+			//	0
+			//);
 			Draw(Base, gameTime);
 
 			SpriteBatch.End();
@@ -281,15 +295,15 @@ namespace StepFlow.View
 						HorizontalAlign = HorizontalAlign.Center,
 						Layout = new Layout()
 						{
-							Canvas = this,
+							Owner = Place,
 							Margin = new()
 							{
-								Left = new Unit(border.X),
-								Top = new Unit(border.Y),
-								Right = new Unit(0, UnitKind.None),
-								Bottom = new Unit(0, UnitKind.None),
+								Left = border.X,
+								Top = border.Y,
+								Right = UnitKind.None,
+								Bottom = UnitKind.None,
 							},
-							Size = new System.Drawing.SizeF(border.Width, border.Height),
+							Size = new(border.Width, border.Height),
 						}
 					};
 					polygon.Childs.Add(text);

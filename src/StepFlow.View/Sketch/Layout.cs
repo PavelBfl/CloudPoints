@@ -2,18 +2,18 @@
 
 namespace StepFlow.View.Sketch
 {
-	public class Layout : ILayoutCanvas
+	public class Layout
 	{
-		private ILayoutCanvas? canvas;
+		private RectangleF owner;
 
-		public ILayoutCanvas? Canvas
+		public RectangleF Owner
 		{
-			get => canvas;
+			get => owner;
 			set
 			{
-				if (Canvas != value)
+				if (Owner != value)
 				{
-					canvas = value;
+					owner = value;
 					place = null;
 				}
 			}
@@ -25,13 +25,6 @@ namespace StepFlow.View.Sketch
 
 		private RectangleF? place;
 
-		public RectangleF Place => place ??= Canvas?.Place.Offset(Margin, Size) ?? RectangleF.Empty;
-
-		public Layout CreateChild(Thickness thickness, SizeF size) => new()
-		{
-			Canvas = this,
-			Margin = thickness,
-			Size = size
-		};
+		public RectangleF Place => place ??= Owner.Offset(Margin, Size);
 	}
 }

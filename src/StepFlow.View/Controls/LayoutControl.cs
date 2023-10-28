@@ -5,7 +5,7 @@ using StepFlow.View.Sketch;
 
 namespace StepFlow.View.Controls
 {
-	public class LayoutControl : Primitive, ILayoutCanvas
+	public class LayoutControl : Primitive
 	{
 		public LayoutControl(IServiceProvider serviceProvider)
 			: base(serviceProvider)
@@ -24,11 +24,9 @@ namespace StepFlow.View.Controls
 
 		public Layout? Layout { get; set; }
 
-		public RectangleF Place => Layout?.Place ?? RectangleF.Empty;
-
 		public override void Draw(GameTime gameTime)
 		{
-			vertices.Bounds = Place;
+			vertices.Bounds = Layout?.Place ?? RectangleF.Empty;
 
 			Bounds.Draw(gameTime);
 			base.Draw(gameTime);

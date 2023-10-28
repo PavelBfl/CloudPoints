@@ -87,19 +87,20 @@ namespace StepFlow.View.Controls
 			{
 				if (contentPosition is null)
 				{
+					var place = Layout?.Place ?? System.Drawing.RectangleF.Empty;
 					var x = HorizontalAlign switch
 					{
-						HorizontalAlign.Left => Place.Left,
-						HorizontalAlign.Center => Place.Left + (Place.Width - ContentSize.X) / 2,
-						HorizontalAlign.Right => Place.Right - ContentSize.X,
+						HorizontalAlign.Left => place.Left,
+						HorizontalAlign.Center => place.Left + (place.Width - ContentSize.X) / 2,
+						HorizontalAlign.Right => place.Right - ContentSize.X,
 						_ => throw EnumNotSupportedException.Create(HorizontalAlign),
 					};
 
 					var y = VerticalAlign switch
 					{
-						VerticalAlign.Top => Place.Top,
-						VerticalAlign.Center => Place.Top + (Place.Height - ContentSize.Y) / 2,
-						VerticalAlign.Bottom => Place.Bottom - ContentSize.Y,
+						VerticalAlign.Top => place.Top,
+						VerticalAlign.Center => place.Top + (place.Height - ContentSize.Y) / 2,
+						VerticalAlign.Bottom => place.Bottom - ContentSize.Y,
 						_ => throw EnumNotSupportedException.Create(VerticalAlign),
 					};
 
