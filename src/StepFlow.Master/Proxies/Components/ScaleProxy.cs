@@ -4,6 +4,7 @@ using StepFlow.Core.Components;
 
 namespace StepFlow.Master.Proxies.Components
 {
+	[ComponentProxy(typeof(Scale), typeof(ScaleProxy), "ScaleType")]
 	public interface IScaleProxy : IComponentProxy
 	{
 		float Value { get; set; }

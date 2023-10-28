@@ -2,6 +2,7 @@
 
 namespace StepFlow.Master.Proxies.Components
 {
+	[ComponentProxy(typeof(State), typeof(StateProxy), "State")]
 	public interface IStateProxy
 	{
 		int Team { get; set; }

@@ -2,6 +2,7 @@
 
 namespace StepFlow.Master.Proxies.Components
 {
+	[ComponentProxy(typeof(SentryGun), typeof(SentryGunProxy), "SentryGun")]
 	public interface ISentryGunProxy
 	{
 		int Cooldown { get; }

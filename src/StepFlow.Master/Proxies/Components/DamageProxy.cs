@@ -4,6 +4,7 @@ using StepFlow.Master.Proxies.Collections;
 
 namespace StepFlow.Master.Proxies.Components
 {
+	[ComponentProxy(typeof(Damage), typeof(DamageProxy), "DamageType")]
 	public interface IDamageProxy : IComponentProxy
 	{
 		float Value { get; set; }

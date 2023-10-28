@@ -6,6 +6,7 @@ using StepFlow.Master.Proxies.Collections;
 
 namespace StepFlow.Master.Proxies.Components
 {
+	[ComponentProxy(typeof(Scheduled), typeof(ScheduledProxy), "SchedulerType")]
 	public interface IScheduledProxy : IComponentProxy
 	{
 		long QueueBegin { get; set; }

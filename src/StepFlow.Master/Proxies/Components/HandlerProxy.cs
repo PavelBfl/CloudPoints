@@ -1,5 +1,6 @@
 ﻿namespace StepFlow.Master.Proxies.Components
 {
+	[ComponentProxy(typeof(Core.Components.Handler), typeof(HandlerProxy), "Handler")]
 	public interface IHandlerProxy : IComponentProxy
 	{
 		bool Disposable { get; set; }

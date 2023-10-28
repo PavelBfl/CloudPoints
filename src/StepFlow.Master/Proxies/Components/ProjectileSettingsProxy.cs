@@ -5,6 +5,7 @@ using StepFlow.Master.Proxies.Collections;
 
 namespace StepFlow.Master.Proxies.Components
 {
+	[ComponentProxy(typeof(ProjectileSettings), typeof(ProjectileSettingsProxy), "ProjectileSettingsType")]
 	public interface IProjectileSettingsProxy
 	{
 		Course Course { get; set; }

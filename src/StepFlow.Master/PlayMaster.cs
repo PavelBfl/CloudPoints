@@ -8,14 +8,13 @@ using System.Linq;
 using System.Reflection;
 using MoonSharp.Interpreter;
 using StepFlow.Core;
-using StepFlow.Core.Components;
 using StepFlow.Master.Proxies;
 using StepFlow.Master.Proxies.Components;
 using StepFlow.TimeLine;
 
 namespace StepFlow.Master
 {
-    public static class Components
+	public static class Components
 	{
 		public static class Types
 		{
@@ -68,25 +67,50 @@ namespace StepFlow.Master
 		public IPlaygroundProxy GetPlaygroundProxy() => (IPlaygroundProxy)CreateProxy(Playground);
 
 		[return: NotNullIfNotNull("obj")]
-		internal object? CreateProxy(object? obj) => obj switch
+		internal object? CreateProxy(object? obj)
 		{
-			Playground playground => new PlaygroundProxy(this, playground),
-			Subject subject => new SubjectProxy(this, subject),
-			Collided collided => new CollidedProxy(this, collided),
-			Damage projectile => new DamageProxy(this, projectile),
-			Scale scale => new ScaleProxy(this, scale),
-			Scheduled scheduled => new ScheduledProxy(this, scheduled),
-			Cell cell => new CellProxy(this, cell),
-			Bordered bordered => new BorderedProxy(this, bordered),
-			ProjectileSettings projectileSettings => new ProjectileSettingsProxy(this, projectileSettings),
-			SetCourse setCourse => new SetCourseProxy(this, setCourse),
-			Handler handler => new HandlerProxy(this, handler),
-			SentryGun sentryGun => new SentryGunProxy(this, sentryGun),
-			Core.Components.System system => new SystemProxy(this, system),
-			State state => new StateProxy(this, state),
-			null => null,
-			_ => throw new InvalidOperationException(),
-		};
+			if (obj is null)
+			{
+				return null;
+			}
+
+			foreach (var (key, constructor) in Proxies)
+			{
+				if (key.IsAssignableFrom(obj.GetType()))
+				{
+					return constructor.Invoke(new object[] { this, obj });
+				}
+			}
+
+			throw new InvalidOperationException();
+		}
+
+		private void RegisterProxy(Type target, Type proxy)
+		{
+			var constructorInfo = proxy.GetConstructor(new Type[] { typeof(PlayMaster), target });
+			Proxies.Add(target, constructorInfo);
+		}
+
+		private Dictionary<Type, ConstructorInfo> Proxies { get; } = new Dictionary<Type, ConstructorInfo>();
+
+
+		private void RegisterComponent(Type proxy)
+		{
+			var attribute = proxy.GetCustomAttribute<ComponentProxyAttribute>();
+
+			var name = attribute.Name ?? attribute.Target.Name;
+			RegisterComponent(name, attribute.Target, attribute.Proxy);
+		}
+
+		private void RegisterComponent(string name, Type target, Type proxy)
+		{
+			RegisterProxy(target, proxy);
+
+			var constructorInfo = target.GetConstructor(new Type[] { typeof(Playground) });
+			Components.Add(name, constructorInfo);
+		}
+
+		private Dictionary<string, ConstructorInfo> Components { get; } = new Dictionary<string, ConstructorInfo>();
 
 		private static IEnumerable<KeyValuePair<string, Action<IHandlerProxy, IComponentProxy>>> GetHandlers(Type container)
 		{
@@ -112,20 +136,7 @@ namespace StepFlow.Master
 				throw new ArgumentNullException(nameof(componentType));
 			}
 
-			return componentType switch
-			{
-				Components.Types.COLLIDED => new Collided(Playground),
-				Components.Types.SCALE => new Scale(Playground),
-				Components.Types.SCHEDULER => new Scheduled(Playground),
-				Components.Types.DAMAGE => new Damage(Playground),
-				Components.Types.PROJECTILE_SETTINGS => new ProjectileSettings(Playground),
-				Components.Types.HANDLER => new Handler(Playground),
-				Components.Types.SET_COURSE => new SetCourse(Playground),
-				Components.Types.SENTRY_GUN => new SentryGun(Playground),
-				Components.Types.SYSTEM => new Core.Components.System(Playground),
-				Components.Types.STATE => new State(Playground),
-				_ => throw new InvalidOperationException(),
-			};
+			return (IComponent)Components[componentType].Invoke(new object[] { Playground });
 		}
 
 		public void TakeStep() => Execute(TAKE_STEP_CALL);
@@ -158,7 +169,7 @@ namespace StepFlow.Master
 
 			foreach (var collided in playground.Subjects
 				.ToArray()
-				.Select(x => x.GetComponent(Components.Names.COLLIDED))
+				.Select(x => x.GetComponent(Master.Components.Names.COLLIDED))
 				.OfType<ICollidedProxy>()
 			)
 			{
@@ -209,6 +220,22 @@ namespace StepFlow.Master
 			RegisterList<IScaleProxy>();
 			RegisterList<IScheduledProxy>();
 			RegisterList<IProjectileSettingsProxy>();
+
+			RegisterProxy(typeof(Playground), typeof(PlaygroundProxy));
+			RegisterProxy(typeof(Subject), typeof(SubjectProxy));
+			RegisterProxy(typeof(Cell), typeof(CellProxy));
+			RegisterProxy(typeof(Bordered), typeof(BorderedProxy));
+
+			RegisterComponent(typeof(ICollidedProxy));
+			RegisterComponent(typeof(IDamageProxy));
+			RegisterComponent(typeof(IScaleProxy));
+			RegisterComponent(typeof(IScheduledProxy));
+			RegisterComponent(typeof(IProjectileSettingsProxy));
+			RegisterComponent(typeof(ISetCourseProxy));
+			RegisterComponent(typeof(IHandlerProxy));
+			RegisterComponent(typeof(ISentryGunProxy));
+			RegisterComponent(typeof(ISystemProxy));
+			RegisterComponent(typeof(IStateProxy));
 		}
 
 		public static DynValue Enumerate(ScriptExecutionContext context, CallbackArguments arguments)

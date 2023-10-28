@@ -3,6 +3,7 @@ using StepFlow.Core.Components;
 
 namespace StepFlow.Master.Proxies.Components
 {
+	[ComponentProxy(typeof(SetCourse), typeof(SetCourseProxy), "CourseHandler")]
 	public interface ISetCourseProxy
 	{
 		Course Course { get; set; }

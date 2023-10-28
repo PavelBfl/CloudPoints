@@ -2,6 +2,7 @@
 
 namespace StepFlow.Master.Proxies.Components
 {
+	[ComponentProxy(typeof(Core.Components.System), typeof(SystemProxy), "System")]
 	public interface ISystemProxy
 	{
 		ICollection<IHandlerProxy> OnFrame { get; }
