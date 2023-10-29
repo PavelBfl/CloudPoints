@@ -6,6 +6,8 @@ namespace StepFlow.Master.Proxies.Components
 	public interface IStateProxy
 	{
 		int Team { get; set; }
+
+		SubjectKind Kind { get; set; }
 	}
 
 	internal sealed class StateProxy : ComponentProxy<State>, IStateProxy
@@ -15,5 +17,7 @@ namespace StepFlow.Master.Proxies.Components
 		}
 
 		public int Team { get => Target.Team; set => SetValue(x => x.Team, value); }
+
+		public SubjectKind Kind { get => Target.Kind; set => SetValue(x => x.Kind, value); }
 	}
 }

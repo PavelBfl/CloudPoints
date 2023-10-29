@@ -55,7 +55,7 @@ namespace StepFlow.Master.Proxies
 			CreateWall(new Rectangle(rectangle.X, rectangle.Bottom - width, rectangle.Width, width));
 		}
 
-		public void CreateCharacter(Rectangle rectangle, int strengthValue)
+		public void CreateCharacter(Rectangle rectangle, int strengthValue, bool player)
 		{
 			var subject = CreateSubject();
 			subject.Name = "Character";
@@ -75,6 +75,12 @@ namespace StepFlow.Master.Proxies
 			var projectileSettings = (IProjectileSettingsProxy)subject.AddComponent(Master.Components.Types.PROJECTILE_SETTINGS, Master.Components.Names.PROJECTILE_SETTINGS);
 			projectileSettings.Damage = 10;
 			projectileSettings.Size = 10;
+			if (player)
+			{
+				var state = (IStateProxy)subject.AddComponent(Master.Components.Types.STATE, Master.Components.Names.STATE);
+				state.Team = 0;
+				state.Kind = Core.Components.SubjectKind.PlayerCharacter; 
+			}
 			Subjects.Add(subject);
 		}
 

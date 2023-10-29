@@ -1,4 +1,5 @@
 ﻿using StepFlow.Core;
+using StepFlow.Core.Components;
 using StepFlow.ViewModel.Collector;
 
 namespace StepFlow.ViewModel
@@ -9,6 +10,14 @@ namespace StepFlow.ViewModel
 		{
 		}
 
-		public bool IsSelect { get; set; }
+		public bool IsSelect
+		{
+			get
+			{
+				var state = (State?)Source.Components[Master.Components.Names.STATE];
+
+				return ((state?.Kind ?? SubjectKind.None) & SubjectKind.PlayerCharacter) != 0;
+			}
+		}
 	}
 }

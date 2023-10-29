@@ -131,7 +131,7 @@ namespace StepFlow.Master
 
 			var otherState = (IStateProxy?)component.Subject.GetComponent(Components.Names.STATE);
 			var state = (IStateProxy)main.Subject.GetComponentRequired(Components.Names.STATE);
-			if (otherState?.Team == state.Team)
+			if (otherState?.Team == state.Team || ((otherState?.Kind ?? Core.Components.SubjectKind.None) & Core.Components.SubjectKind.Projectile) != 0)
 			{
 				return;
 			}
@@ -151,7 +151,7 @@ namespace StepFlow.Master
 				path
 			);
 
-			var projectileState = (IStateProxy)projectile.AddComponent(Components.Types.STATE, Components.Names.STATE);
+			var projectileState = (IStateProxy)projectile.GetComponentRequired(Components.Names.STATE);
 			projectileState.Team = state.Team;
 		}
 
@@ -211,6 +211,9 @@ namespace StepFlow.Master
 		{
 			var result = owner.Playground.CreateSubject();
 			owner.Playground.Subjects.Add(result);
+			var state = (IStateProxy)result.AddComponent(Master.Components.Types.STATE, Master.Components.Names.STATE);
+			state.Kind = Core.Components.SubjectKind.Projectile;
+
 			var collided = (ICollidedProxy)result.AddComponent(Components.Types.COLLIDED, Components.Names.COLLIDED);
 
 			var bordered = owner.Playground.CreateBordered();

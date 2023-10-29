@@ -64,9 +64,9 @@ namespace StepFlow.View
 		{
 			CreateRoom(new(0, 0, 400, 200), 10);
 
-			CreateCharacter(new(40, 40, 20, 20));
-			CreateCharacter(new(100, 40, 20, 20));
-			CreateCharacter(new(50, 100, 35, 35));
+			CreateCharacter(new(40, 40, 20, 20), true);
+			CreateCharacter(new(100, 40, 20, 20), false);
+			CreateCharacter(new(50, 100, 35, 35), false);
 
 			CreateItem(new(30, 30, 5, 5), Master.PlayMaster.FIRE_DAMAGE);
 			CreateItem(new(60, 30, 5, 5), Master.PlayMaster.POISON_DAMAGET);
@@ -74,11 +74,11 @@ namespace StepFlow.View
 			CreateSentryGun(new(170, 80, 10, 10), 50);
 		}
 
-		private void CreateCharacter(Rectangle rectangle, int strength = 100)
+		private void CreateCharacter(Rectangle rectangle, bool player, int strength = 100)
 		{
 			PlayMaster.Execute(@$"
 				rectangle = playground.CreateRectangle({rectangle.X}, {rectangle.Y}, {rectangle.Width}, {rectangle.Height})
-				playground.CreateCharacter(rectangle, {strength})
+				playground.CreateCharacter(rectangle, {strength}, {player.ToString().ToLower()})
 			");
 		}
 
@@ -117,16 +117,6 @@ namespace StepFlow.View
 
 		public void Update(GameTime gameTime)
 		{
-			if (KeyboardService.IsKeyOnPress(Keys.Tab))
-			{
-				var subjects = PlayMaster.Playground.Subjects.ToArray();
-				var current = Array.FindIndex(subjects, x => x.Source.Components[Components.Names.STRENGTH] is not null);
-				if (current >= 0)
-				{
-					subjects[current].IsSelect = true;
-				}
-			}
-
 			if (KeyboardService.IsKeyDown(Keys.Up) && KeyboardService.IsKeyDown(Keys.Right))
 			{
 				SetCourse(Course.RightTop);
