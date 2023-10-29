@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace StepFlow.View.Services
 {
 	public sealed class Drawer : IDrawer
 	{
-		public Drawer(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice)
+		public Drawer(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, ContentManager content)
 		{
 			SpriteBatch = spriteBatch ?? throw new ArgumentNullException(nameof(spriteBatch));
 			GraphicsDevice = graphicsDevice ?? throw new ArgumentNullException(nameof(graphicsDevice));
+			Content = content ?? throw new ArgumentNullException(nameof(content));
 
 			Pixel = new(graphicsDevice, 1, 1);
 			Pixel.SetData(new[] { Color.White });
@@ -21,6 +23,8 @@ namespace StepFlow.View.Services
 		public SpriteBatch SpriteBatch { get; }
 
 		public GraphicsDevice GraphicsDevice { get; }
+
+		public ContentManager Content { get; }
 
 		public void Line(Vector2 start, Vector2 end, Color color, float thickness = 2f)
 		{

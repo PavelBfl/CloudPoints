@@ -24,7 +24,7 @@ namespace StepFlow.View
 			Font = game.Content.Load<SpriteFont>("DefaultFont");
 			Character = game.Content.Load<Texture2D>("Character");
 
-			Drawer = new Drawer(SpriteBatch, game.GraphicsDevice);
+			Drawer = new Drawer(SpriteBatch, game.GraphicsDevice, game.Content);
 
 			game.Services.AddService<IMouseService>(MouseService);
 			game.Services.AddService<IKeyboardService>(KeyboardService);
@@ -248,32 +248,22 @@ namespace StepFlow.View
 			Base.Childs.Clear();
 			foreach (var subject in PlayMaster.Playground.Subjects)
 			{
-				DrawBorder(subject, Components.Names.COLLIDED, subject.IsSelect ? Color.Green : Color.Red);
-				DrawBorder(subject, Components.Names.VISION, Color.Yellow);
+				DrawBorder(subject, Components.Names.COLLIDED, subject.IsSelect ? Color.Green : Color.Red, subject.IsSelect);
+				DrawBorder(subject, Components.Names.VISION, Color.Yellow, false);
 			}
 
 			SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
 
-			//SpriteBatch.Draw(
-			//	Character,
-			//	Vector2.Zero,
-			//	new Rectangle(0, 0, Character.Width / 4, Character.Height / 4),
-			//	Color.White,
-			//	0,
-			//	Vector2.Zero,
-			//	0.25f,
-			//	SpriteEffects.None,
-			//	0
-			//);
 			Draw(Base, gameTime);
 
 			SpriteBatch.End();
 		}
 
-		private void DrawBorder(SubjectVm subject, string name, Color color)
+		private void DrawBorder(SubjectVm subject, string name, Color color, bool isCharacter)
 		{
 			if (subject.Source.Components[name] is Collided collided && collided.Current is not null)
 			{
+				var border = collided.Current.Border;
 				var polygon = new Polygon(Base.ServiceProvider)
 				{
 					Color = color,
@@ -283,9 +273,17 @@ namespace StepFlow.View
 					},
 				};
 
+				if (isCharacter)
+				{
+					polygon.Childs.Add(new Controls.Texture(Base.ServiceProvider)
+					{
+						Texture2D = Character,
+						Rectangle = new(border.X, border.Y, border.Width, border.Height),
+					}); 
+				}
+
 				if (subject.Source.Components["Strength"] is Scale strength)
 				{
-					var border = collided.Current.Border;
 					var text = new Text(Base.ServiceProvider)
 					{
 						Color = color,
@@ -295,15 +293,7 @@ namespace StepFlow.View
 						HorizontalAlign = HorizontalAlign.Center,
 						Layout = new Layout()
 						{
-							Owner = Place,
-							Margin = new()
-							{
-								Left = border.X,
-								Top = border.Y,
-								Right = UnitKind.None,
-								Bottom = UnitKind.None,
-							},
-							Size = new(border.Width, border.Height),
+							Owner = border,
 						}
 					};
 					polygon.Childs.Add(text);
