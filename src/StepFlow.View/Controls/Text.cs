@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using StepFlow.Common.Exceptions;
 using StepFlow.View.Services;
 
@@ -13,114 +12,25 @@ namespace StepFlow.View.Controls
 
 		private IDrawer Drawer { get; }
 
-		private string? content;
-
-		public string? Content
-		{
-			get => content;
-			set
-			{
-				if (Content != value)
-				{
-					content = value;
-					contentSize = null;
-				}
-			}
-		}
-
-		private SpriteFont? font;
-
-		public SpriteFont? Font
-		{
-			get => font;
-			set
-			{
-				if (Font != value)
-				{
-					font = value;
-					contentSize = null;
-				}
-			}
-		}
-
-		private Vector2? contentSize;
-
-		public Vector2 ContentSize => contentSize ??= Font?.MeasureString(Content) ?? Vector2.Zero;
+		public string? Content { get; set; }
 
 		public Color Color { get; set; }
 
-		private HorizontalAlign horizontalAlign;
+		public HorizontalAlign HorizontalAlign { get; set; }
 
-		public HorizontalAlign HorizontalAlign
-		{
-			get => horizontalAlign;
-			set
-			{
-				if (HorizontalAlign != value)
-				{
-					horizontalAlign = value;
-					contentPosition = null;
-				}
-			}
-		}
-
-		private VerticalAlign verticalAlign;
-
-		public VerticalAlign VerticalAlign
-		{
-			get => verticalAlign;
-			set
-			{
-				if (VerticalAlign != value)
-				{
-					verticalAlign = value;
-					contentPosition = null;
-				}
-			}
-		}
-
-		private Vector2? contentPosition;
-
-		public Vector2 ContentPosition
-		{
-			get
-			{
-				if (contentPosition is null)
-				{
-					var place = Layout?.Place ?? System.Drawing.RectangleF.Empty;
-					var x = HorizontalAlign switch
-					{
-						HorizontalAlign.Left => place.Left,
-						HorizontalAlign.Center => place.Left + (place.Width - ContentSize.X) / 2,
-						HorizontalAlign.Right => place.Right - ContentSize.X,
-						_ => throw EnumNotSupportedException.Create(HorizontalAlign),
-					};
-
-					var y = VerticalAlign switch
-					{
-						VerticalAlign.Top => place.Top,
-						VerticalAlign.Center => place.Top + (place.Height - ContentSize.Y) / 2,
-						VerticalAlign.Bottom => place.Bottom - ContentSize.Y,
-						_ => throw EnumNotSupportedException.Create(VerticalAlign),
-					};
-
-					contentPosition = new(x, y);
-				}
-
-				return contentPosition.Value;
-			}
-		}
+		public VerticalAlign VerticalAlign { get; set; }
 
 		public override void Draw(GameTime gameTime)
 		{
 			base.Draw(gameTime);
 
-			if (!string.IsNullOrWhiteSpace(Content) && Font is { })
+			if (!string.IsNullOrWhiteSpace(Content) && Layout?.Place is { } place)
 			{
-				Drawer.SpriteBatch.DrawString(
-					Font,
+				Drawer.DrawString(
 					Content,
-					ContentPosition,
+					place,
+					HorizontalAlign,
+					VerticalAlign,
 					Color
 				);
 			}

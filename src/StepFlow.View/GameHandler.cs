@@ -21,7 +21,6 @@ namespace StepFlow.View
 		{
 			SpriteBatch = new SpriteBatch(game.GraphicsDevice);
 
-			Font = game.Content.Load<SpriteFont>("DefaultFont");
 			Character = game.Content.Load<Texture2D>("Character");
 
 			Drawer = new Drawer(SpriteBatch, game.GraphicsDevice, game.Content);
@@ -44,8 +43,6 @@ namespace StepFlow.View
 		private PlayMasterVm PlayMaster { get; }
 
 		private Primitive Base { get; }
-
-		private SpriteFont Font { get; }
 
 		private Texture2D Character { get; }
 
@@ -277,7 +274,6 @@ namespace StepFlow.View
 					var text = new Text(Base.ServiceProvider)
 					{
 						Color = color,
-						Font = Font,
 						Content = strength.Value.ToString(),
 						VerticalAlign = VerticalAlign.Center,
 						HorizontalAlign = HorizontalAlign.Center,

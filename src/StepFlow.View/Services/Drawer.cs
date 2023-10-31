@@ -3,20 +3,29 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using StepFlow.Common.Exceptions;
+using StepFlow.View.Controls;
+using StepFlow.View.Sketch;
 
 namespace StepFlow.View.Services
 {
 	public sealed class Drawer : IDrawer
 	{
+		private const string DEFAULT_FONT_KEY = "DefaultFont";
+
 		public Drawer(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, ContentManager content)
 		{
 			SpriteBatch = spriteBatch ?? throw new ArgumentNullException(nameof(spriteBatch));
 			GraphicsDevice = graphicsDevice ?? throw new ArgumentNullException(nameof(graphicsDevice));
 			Content = content ?? throw new ArgumentNullException(nameof(content));
 
+			DefaultFont = content.Load<SpriteFont>(DEFAULT_FONT_KEY);
+
 			Pixel = new(graphicsDevice, 1, 1);
 			Pixel.SetData(new[] { Color.White });
 		}
+
+		private SpriteFont DefaultFont { get; }
 
 		private Texture2D Pixel { get; }
 
@@ -66,5 +75,32 @@ namespace StepFlow.View.Services
 				prevIndex = i;
 			}
 		}
+
+		public void DrawString(string text, Vector2 position, Color color)
+			=> SpriteBatch.DrawString(DefaultFont, text, position, color);
+
+		public void DrawString(string text, System.Drawing.RectangleF bounds, HorizontalAlign horizontalAlign, VerticalAlign verticalAlign, Color color)
+		{
+			var contentSize = MeasureString(text);
+			var x = horizontalAlign switch
+			{
+				HorizontalAlign.Left => bounds.Left,
+				HorizontalAlign.Center => bounds.Left + (bounds.Width - contentSize.X) / 2,
+				HorizontalAlign.Right => bounds.Right - contentSize.X,
+				_ => throw EnumNotSupportedException.Create(horizontalAlign),
+			};
+
+			var y = verticalAlign switch
+			{
+				VerticalAlign.Top => bounds.Top,
+				VerticalAlign.Center => bounds.Top + (bounds.Height - contentSize.Y) / 2,
+				VerticalAlign.Bottom => bounds.Bottom - contentSize.Y,
+				_ => throw EnumNotSupportedException.Create(verticalAlign),
+			};
+
+			DrawString(text, new Vector2(x, y), color);
+		}
+
+		public Vector2 MeasureString(string text) => DefaultFont.MeasureString(text);
 	}
 }
