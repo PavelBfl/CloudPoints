@@ -17,7 +17,7 @@ namespace StepFlow.View.Controls
 
 		private IDrawer Drawer { get; }
 
-		public Color Color { get; set; } = Color.Red;
+		public Color Color { get; set; }
 
 		public float thickness = 1;
 

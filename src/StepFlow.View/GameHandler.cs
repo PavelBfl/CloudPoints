@@ -21,8 +21,6 @@ namespace StepFlow.View
 		{
 			SpriteBatch = new SpriteBatch(game.GraphicsDevice);
 
-			Character = game.Content.Load<Texture2D>("Character");
-
 			Drawer = new Drawer(SpriteBatch, game.GraphicsDevice, game.Content);
 
 			game.Services.AddService<IMouseService>(MouseService);
@@ -43,8 +41,6 @@ namespace StepFlow.View
 		private PlayMasterVm PlayMaster { get; }
 
 		private Primitive Base { get; }
-
-		private Texture2D Character { get; }
 
 		private SpriteBatch SpriteBatch { get; }
 
@@ -235,18 +231,52 @@ namespace StepFlow.View
 			Base.Childs.Clear();
 			foreach (var subject in PlayMaster.Playground.Subjects)
 			{
-				DrawBorder(subject, Components.Names.COLLIDED, subject.IsSelect ? Color.Green : Color.Red, subject.IsSelect);
-				DrawBorder(subject, Components.Names.VISION, Color.Yellow, false);
+				string? texture = null;
+
+				var state = ((State?)subject.Source.Components[Components.Names.STATE])?.Kind ?? SubjectKind.None;
+				if (state.HasFlag(SubjectKind.PlayerCharacter))
+				{
+					texture = "Character";
+				}
+				else if (state.HasFlag(SubjectKind.Projectile))
+				{
+					var kind = ((Damage?)subject.Source.Components[Components.Names.DAMAGE])?.Kind ?? Enumerable.Empty<string>();
+					var isFire = kind.Contains(Master.PlayMaster.FIRE_DAMAGE);
+					var isPoison = kind.Contains(Master.PlayMaster.POISON_DAMAGET);
+					if (isFire && isPoison)
+					{
+						texture = "ProjectileAll";
+					}
+					else if (isFire)
+					{
+						texture = "ProjectileFire";
+					}
+					else if (isPoison)
+					{
+						texture = "ProjectilePoison";
+					}
+					else
+					{
+						texture = "Projectile";
+					}
+				}
+				else if (subject.Source.Components[Components.Names.STRENGTH] is not null)
+				{
+					texture = "Enemy";
+				}
+
+				DrawBorder(subject, Components.Names.COLLIDED, subject.IsSelect ? Color.Green : Color.Red, texture);
+				DrawBorder(subject, Components.Names.VISION, Color.Yellow, null);
 			}
 
-			SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
+			SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, transformMatrix: Matrix.CreateScale(2));
 
 			Draw(Base, gameTime);
 
 			SpriteBatch.End();
 		}
 
-		private void DrawBorder(SubjectVm subject, string name, Color color, bool isCharacter)
+		private void DrawBorder(SubjectVm subject, string name, Color color, string? texture)
 		{
 			if (subject.Source.Components[name] is Collided collided && collided.Current is not null)
 			{
@@ -256,17 +286,20 @@ namespace StepFlow.View
 					Color = color,
 					Vertices = new BoundsVertices()
 					{
-						Bounds = collided.Current.Border,
+						Bounds = border,
 					},
 				};
 
-				if (isCharacter)
+				if (texture is not null)
 				{
-					polygon.Childs.Add(new Controls.Texture(Base.ServiceProvider)
+					polygon.Childs.Add(new TextureLayout(Base.ServiceProvider)
 					{
-						Texture2D = Character,
-						Rectangle = new(border.X, border.Y, border.Width, border.Height),
-					}); 
+						Texture = texture,
+						Layout = new()
+						{
+							Owner = border,
+						},
+					});
 				}
 
 				if (subject.Source.Components["Strength"] is Scale strength)

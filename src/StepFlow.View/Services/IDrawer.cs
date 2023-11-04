@@ -19,5 +19,7 @@ namespace StepFlow.View.Services
 		void Line(Vector2 start, Vector2 end, Color color, float thickness = 2);
 
 		void Polygon(IReadOnlyList<Vector2> vertices, Color color, float thickness = 2);
+
+		void Draw(string texture, Rectangle rectangle, Color? color = null);
 	}
 }
