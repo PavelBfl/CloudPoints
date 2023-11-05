@@ -1,4 +1,4 @@
-﻿using StepFlow.Core;
+﻿using StepFlow.Core.Border;
 
 namespace StepFlow.Master.Proxies
 {

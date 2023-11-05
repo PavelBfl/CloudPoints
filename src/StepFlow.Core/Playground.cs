@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using StepFlow.Core.Border;
 using StepFlow.Core.Components;
 
 namespace StepFlow.Core
 {
-	public class Playground
+    public class Playground
 	{
 		private Dictionary<uint, IChild> objects = new Dictionary<uint, IChild>();
 

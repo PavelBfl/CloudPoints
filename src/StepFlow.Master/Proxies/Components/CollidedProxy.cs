@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using StepFlow.Core;
+using StepFlow.Core.Border;
 using StepFlow.Core.Components;
 
 namespace StepFlow.Master.Proxies.Components
 {
-	[ComponentProxy(typeof(Collided), typeof(CollidedProxy), "CollidedType")]
+    [ComponentProxy(typeof(Collided), typeof(CollidedProxy), "CollidedType")]
 	public interface ICollidedProxy : IComponentProxy
 	{
 		IBorderedProxy? Current { get; set; }
@@ -44,7 +44,7 @@ namespace StepFlow.Master.Proxies.Components
 		{
 			if (Current is { } current)
 			{
-				var clone = (Bordered)current.Target.Clone(null);
+				var clone = (Bordered)current.Target.Clone();
 				clone.Offset(value);
 				Next = (IBorderedProxy)Owner.CreateProxy(clone);
 				IsMoving = true;

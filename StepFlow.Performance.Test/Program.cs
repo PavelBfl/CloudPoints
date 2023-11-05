@@ -1,6 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
-using StepFlow.Core;
+using StepFlow.Core.Border;
 
 public class Program
 {
@@ -24,10 +24,13 @@ public class Program
 
 	private static Bordered CreateBordered(int diameter)
 	{
-		var bordered = new StepFlow.Core.Bordered();
+		var bordered = new Bordered();
 		foreach (var point in Create(diameter))
 		{
-			bordered.AddCell(new(point, new System.Drawing.Size(1, 1)));
+			bordered.Childs.Add(new Cell()
+			{
+				Border = new(point, new System.Drawing.Size(1, 1)),
+			});
 		}
 		return bordered;
 	}

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace StepFlow.Core
+namespace StepFlow.Core.Border
 {
 	public static class BorderedExtensions
 	{
@@ -26,7 +26,7 @@ namespace StepFlow.Core
 
 				foreach (var child in mainChilds)
 				{
-					if (IsCollision(child, other))
+					if (child.IsCollision(other))
 					{
 						return true;
 					}
@@ -43,7 +43,7 @@ namespace StepFlow.Core
 
 				foreach (var child in otherChilds)
 				{
-					if (IsCollision(main, child))
+					if (main.IsCollision(child))
 					{
 						return true;
 					}

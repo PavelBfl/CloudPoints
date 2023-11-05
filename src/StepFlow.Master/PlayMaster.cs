@@ -8,13 +8,14 @@ using System.Linq;
 using System.Reflection;
 using MoonSharp.Interpreter;
 using StepFlow.Core;
+using StepFlow.Core.Border;
 using StepFlow.Master.Proxies;
 using StepFlow.Master.Proxies.Components;
 using StepFlow.TimeLine;
 
 namespace StepFlow.Master
 {
-	public static class Components
+    public static class Components
 	{
 		public static class Types
 		{
