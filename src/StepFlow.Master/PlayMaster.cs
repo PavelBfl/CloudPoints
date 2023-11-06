@@ -16,7 +16,7 @@ using StepFlow.TimeLine;
 
 namespace StepFlow.Master
 {
-    public static class Components
+	public static class Components
 	{
 		public static class Types
 		{

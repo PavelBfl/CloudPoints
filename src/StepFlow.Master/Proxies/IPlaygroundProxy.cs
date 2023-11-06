@@ -5,7 +5,7 @@ using StepFlow.Master.Proxies.Components;
 
 namespace StepFlow.Master.Proxies
 {
-    public interface IPlaygroundProxy
+	public interface IPlaygroundProxy
 	{
 		IList<ISubjectProxy> Subjects { get; }
 		IBorderedProxy CreateBordered();

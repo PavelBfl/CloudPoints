@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using StepFlow.Core.Exceptions;
 
 namespace StepFlow.Core
 {

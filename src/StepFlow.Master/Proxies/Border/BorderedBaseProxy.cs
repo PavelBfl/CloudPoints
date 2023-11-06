@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using StepFlow.Core.Border;
-using StepFlow.Master.Proxies.Collections;
 
 namespace StepFlow.Master.Proxies.Border
 {

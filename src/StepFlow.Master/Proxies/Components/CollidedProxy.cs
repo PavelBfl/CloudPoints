@@ -6,7 +6,7 @@ using StepFlow.Master.Proxies.Border;
 
 namespace StepFlow.Master.Proxies.Components
 {
-    [ComponentProxy(typeof(Collided), typeof(CollidedProxy), "CollidedType")]
+	[ComponentProxy(typeof(Collided), typeof(CollidedProxy), "CollidedType")]
 	public interface ICollidedProxy : IComponentProxy
 	{
 		IBorderedProxy? Current { get; set; }

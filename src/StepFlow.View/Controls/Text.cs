@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework;
-using StepFlow.Common.Exceptions;
 using StepFlow.View.Services;
 
 namespace StepFlow.View.Controls

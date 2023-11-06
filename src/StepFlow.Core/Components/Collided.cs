@@ -3,7 +3,7 @@ using StepFlow.Core.Border;
 
 namespace StepFlow.Core.Components
 {
-    public sealed class Collided : ComponentBase
+	public sealed class Collided : ComponentBase
 	{
 		public Collided(Playground owner) : base(owner)
 		{
