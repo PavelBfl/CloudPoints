@@ -2,6 +2,7 @@
 using System.Drawing;
 using StepFlow.Core.Border;
 using StepFlow.Core.Components;
+using StepFlow.Master.Proxies.Border;
 
 namespace StepFlow.Master.Proxies.Components
 {
