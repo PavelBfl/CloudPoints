@@ -55,7 +55,7 @@ namespace StepFlow.View
 
 		public void Init()
 		{
-			CreateRoom(new(0, 0, 400, 200), 10);
+			CreateRoom(new(0, 0, 30, 20), 10);
 
 			CreateCharacter(new(40, 40, 20, 20), true);
 			CreateCharacter(new(100, 40, 20, 20), false);
@@ -259,6 +259,10 @@ namespace StepFlow.View
 					{
 						texture = "Projectile";
 					}
+				}
+				else if (state.HasFlag(SubjectKind.Wall))
+				{
+					texture = "Wall";
 				}
 				else if (subject.Source.Components[Components.Names.STRENGTH] is not null)
 				{

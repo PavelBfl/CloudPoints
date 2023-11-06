@@ -46,15 +46,32 @@ namespace StepFlow.Master.Proxies
 			var collided = (ICollidedProxy)subject.AddComponent(Master.Components.Types.COLLIDED, Master.Components.Names.COLLIDED);
 			collided.IsRigid = true;
 			collided.Current = CreateBorder(rectangle);
+			var state = (IStateProxy)subject.AddComponent(Master.Components.Types.STATE, Master.Components.Names.STATE);
+			state.Kind = Core.Components.SubjectKind.Wall;
 			Subjects.Add(subject);
 		}
 
 		public void CreateRoom(Rectangle rectangle, int width)
 		{
-			CreateWall(new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, width));
-			CreateWall(new Rectangle(rectangle.X, rectangle.Y, width, rectangle.Height));
-			CreateWall(new Rectangle(rectangle.Right - width, rectangle.Y, width, rectangle.Height));
-			CreateWall(new Rectangle(rectangle.X, rectangle.Bottom - width, rectangle.Width, width));
+			for (var x = rectangle.Left; x < rectangle.Right; x++)
+			{
+				CreateWall(new Rectangle(x * width, rectangle.Top * width, width, width));
+			}
+
+			for (var y = rectangle.Bottom; y > rectangle.Top; y--)
+			{
+				CreateWall(new Rectangle(rectangle.Left * width, y * width, width, width));
+			}
+
+			for (var x = rectangle.Right; x > rectangle.Left; x--)
+			{
+				CreateWall(new Rectangle(x * width, rectangle.Bottom * width, width, width));
+			}
+
+			for (var y = rectangle.Top; y < rectangle.Bottom; y++)
+			{
+				CreateWall(new Rectangle(rectangle.Right * width, y * width, width, width));
+			}
 		}
 
 		public void CreateCharacter(Rectangle rectangle, int strengthValue, bool player)

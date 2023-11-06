@@ -8,6 +8,7 @@ namespace StepFlow.Core.Components
 		None = 0,
 		PlayerCharacter = 1,
 		Projectile = 2,
+		Wall = 4,
 	}
 
 	public sealed class State : ComponentBase
