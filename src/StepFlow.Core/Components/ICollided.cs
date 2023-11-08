@@ -7,5 +7,7 @@ namespace StepFlow.Core.Components
 		Bordered? Current { get; set; }
 
 		Bordered? Next { get; set; }
+
+		bool IsMove { get; set; }
 	}
 }

@@ -14,6 +14,8 @@ namespace StepFlow.Core.Elements
 
 		public Bordered? Next { get; set; }
 
+		public bool IsMove { get; set; }
+
 		public long QueueBegin { get; set; }
 
 		public IList<Turn> Queue { get; } = new List<Turn>();

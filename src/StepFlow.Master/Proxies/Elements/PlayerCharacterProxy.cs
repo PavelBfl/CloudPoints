@@ -26,6 +26,8 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public IBorderedProxy? Next { get => collidedProxy.Next; set => collidedProxy.Next = value; }
 
+		public bool IsMove { get => collidedProxy.IsMove; set => collidedProxy.IsMove = value; }
+
 		private IScheduledProxy scheduledProxy;
 
 		public long QueueBegin { get => scheduledProxy.QueueBegin; set => scheduledProxy.QueueBegin = value; }

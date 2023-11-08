@@ -8,6 +8,8 @@ namespace StepFlow.Master.Proxies.Components
 		IBorderedProxy? Current { get; set; }
 
 		IBorderedProxy? Next { get; set; }
+
+		bool IsMove { get; set; }
 	}
 
 	internal sealed class CollidedProxy : ProxyBase<ICollided>, ICollidedProxy
@@ -19,5 +21,7 @@ namespace StepFlow.Master.Proxies.Components
 		public IBorderedProxy? Current { get => (IBorderedProxy?)Owner.CreateProxy(Target.Current); set => SetValue(x => x.Current, value?.Target); }
 
 		public IBorderedProxy? Next { get => (IBorderedProxy?)Owner.CreateProxy(Target.Next); set => SetValue(x => x.Next, value?.Target); }
+
+		public bool IsMove { get => Target.IsMove; set => Target.IsMove = value; }
 	}
 }
