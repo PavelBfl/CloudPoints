@@ -1,23 +1,11 @@
-﻿using System.Collections.Generic;
-using StepFlow.Core.Border;
+﻿using StepFlow.Core.Border;
 
 namespace StepFlow.Core.Components
 {
-	public sealed class Collided : ComponentBase
+	public interface ICollided
 	{
-		public Collided(Playground owner) : base(owner)
-		{
-			Collision = new Event(Owner);
-		}
+		Bordered? Current { get; set; }
 
-		public Bordered? Current { get; set; }
-
-		public Bordered? Next { get; set; }
-
-		public bool IsMoving { get; set; }
-
-		public bool IsRigid { get; set; }
-
-		public ICollection<Handler> Collision { get; }
+		Bordered? Next { get; set; }
 	}
 }

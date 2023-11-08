@@ -1,38 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using StepFlow.Core.Border;
 using StepFlow.Core.Components;
+using StepFlow.Core.Elements;
 
 namespace StepFlow.Core
 {
-	public class Playground
+	public sealed class Playground : Subject
 	{
-		private Dictionary<uint, IChild> objects = new Dictionary<uint, IChild>();
-
-		public IReadOnlyDictionary<uint, IChild> Objects => objects;
-
-		public void Register(IChild identity)
+		public Playground(Context owner) : base(owner)
 		{
-			if (identity is null)
-			{
-				throw new ArgumentNullException(nameof(identity));
-			}
-
-			objects.Add(identity.Id, identity);
 		}
 
-		public bool Unregister(uint id) => objects.Remove(id);
-
-		private uint currentId = 0;
-
-		public uint GenerateId() => currentId++;
-
-		public IList<Subject> Subjects { get; } = new List<Subject>();
-
-		public IEnumerable<(Collided, Collided)> GetCollision()
+		public static IEnumerable<(ICollided, ICollided)> GetCollision(IEnumerable<ICollided> collideds)
 		{
-			var instance = Subjects.SelectMany(x => x.Components.OfType<Collided>()).ToArray();
+			var instance = collideds.ToArray();
 
 			for (var iFirst = 0; iFirst < instance.Length; iFirst++)
 			{
@@ -49,6 +31,34 @@ namespace StepFlow.Core
 							yield return (instance[iFirst], instance[iSecond]);
 						}
 					}
+				}
+			}
+		}
+
+		public PlayerCharacter? PlayerCharacter { get; set; }
+
+		public IEnumerable<Subject> GetAllContent()
+		{
+			var subjects = new List<Subject>();
+
+			if (PlayerCharacter is { })
+			{
+				subjects.Add(PlayerCharacter);
+			}
+
+			var cache = new HashSet<Subject>();
+			GetContent(subjects, cache);
+
+			return cache;
+		}
+
+		private void GetContent(IEnumerable<Subject> subjects, HashSet<Subject> cache)
+		{
+			foreach (var subject in subjects)
+			{
+				if (cache.Add(subject))
+				{
+					GetContent(subject.GetContent(), cache);
 				}
 			}
 		}

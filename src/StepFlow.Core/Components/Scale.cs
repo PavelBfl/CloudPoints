@@ -1,18 +1,9 @@
-﻿using System.Collections.Generic;
-
-namespace StepFlow.Core.Components
+﻿namespace StepFlow.Core.Components
 {
-	public sealed class Scale : ComponentBase
+	public interface IScale
 	{
-		public Scale(Playground owner) : base(owner)
-		{
-			ValueChange = new Event(Owner);
-		}
+		float Value { get; set; }
 
-		public float Value { get; set; }
-
-		public float Max { get; set; }
-
-		public ICollection<Handler> ValueChange { get; }
+		float Max { get; set; }
 	}
 }

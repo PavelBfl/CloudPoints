@@ -1,42 +1,25 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using StepFlow.Core.Components;
+﻿using StepFlow.Core.Components;
 
 namespace StepFlow.Master.Proxies.Components
 {
-	[ComponentProxy(typeof(Scale), typeof(ScaleProxy), "ScaleType")]
-	public interface IScaleProxy : IComponentProxy
+	public interface IScaleProxy : IProxyBase<IScale>
 	{
 		float Value { get; set; }
 
 		float Max { get; set; }
-		ICollection<IHandlerProxy> ValueChange { get; }
 
 		void Add(float value);
 	}
 
-	internal class ScaleProxy : ComponentProxy<Scale>, IScaleProxy
+	internal sealed class ScaleProxy : ProxyBase<IScale>, IScaleProxy
 	{
-		public ScaleProxy(PlayMaster owner, Scale target) : base(owner, target)
+		public ScaleProxy(PlayMaster owner, IScale target) : base(owner, target)
 		{
 		}
 
-		public float Value
-		{
-			get => Target.Value;
-			set
-			{
-				SetValue(x => x.Value, value);
-				foreach (var handler in ValueChange.Cast<IHandlerProxy>())
-				{
-					handler.Handle(this);
-				}
-			}
-		}
+		public float Value { get => Target.Value; set => SetValue(x => x.Value, value); }
 
 		public float Max { get => Target.Max; set => SetValue(x => x.Max, value); }
-
-		public ICollection<IHandlerProxy> ValueChange => CreateEvenProxy(Target.ValueChange);
 
 		public void Add(float value)
 		{

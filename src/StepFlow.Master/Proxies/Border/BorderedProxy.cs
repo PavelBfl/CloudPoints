@@ -24,8 +24,10 @@ namespace StepFlow.Master.Proxies.Border
 
 		public void AddCell(Rectangle rectangle)
 		{
-			var cell = (ICellProxy)Owner.CreateProxy(new Cell());
-			cell.Border = rectangle;
+			var cell = new CellProxy(Owner, new Cell()
+			{
+				Border = rectangle
+			});
 			Childs.Add(cell);
 		}
 

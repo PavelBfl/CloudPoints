@@ -1,10 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using StepFlow.Core;
-using StepFlow.Core.Components;
-using StepFlow.Master;
-using StepFlow.ViewModel.Components;
 
 namespace StepFlow.ViewModel.Collector
 {
@@ -50,10 +46,6 @@ namespace StepFlow.ViewModel.Collector
 			{
 				result = model switch
 				{
-					Scale scale => new ScaleVm(this, scale),
-					PlayMaster playMaster => new PlayMasterVm(this, playMaster),
-					Playground playground => new PlaygroundVm(this, playground),
-					Subject subject => new SubjectVm(this, subject),
 					_ => throw Exceptions.Builder.CreateUnknownModel(),
 				};
 

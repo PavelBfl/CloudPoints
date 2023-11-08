@@ -1,21 +1,22 @@
 ﻿using System;
-using System.ComponentModel;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace StepFlow.Core
 {
-	public sealed class Subject : Container, IChild
+	public class Subject
 	{
-		public Subject(Playground owner)
+		public Subject(Context owner)
 		{
-			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
-			Id = Owner.GenerateId();
-			Owner.Register(this);
+			Context = owner ?? throw new ArgumentNullException(nameof(owner));
 		}
 
-		public Playground Owner { get; }
-
-		public uint Id { get; }
+		public Context Context { get; }
 
 		public string? Name { get; set; }
+
+		public bool Lock { get; set; }
+
+		public virtual IEnumerable<Subject> GetContent() => Enumerable.Empty<Subject>();
 	}
 }
