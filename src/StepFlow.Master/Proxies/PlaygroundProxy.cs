@@ -1,8 +1,10 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using StepFlow.Core;
 using StepFlow.Core.Border;
 using StepFlow.Core.Elements;
 using StepFlow.Master.Proxies.Border;
+using StepFlow.Master.Proxies.Collections;
 using StepFlow.Master.Proxies.Elements;
 
 namespace StepFlow.Master.Proxies
@@ -14,6 +16,8 @@ namespace StepFlow.Master.Proxies
 		}
 
 		public IPlayerCharacterProxy? PlayerCharacter { get => (IPlayerCharacterProxy?)Owner.CreateProxy(Target.PlayerCharacter); set => SetValue(x => x.PlayerCharacter, ((IProxyBase<PlayerCharacter>?)value)?.Target); }
+
+		public IList<IProxyBase<Subject>> Barriers => new ListItemsProxy<Subject, IList<Subject>, IProxyBase<Subject>>(Owner, Target.Barriers);
 
 		public Rectangle CreateRectangle(int x, int y, int width, int height) => new Rectangle(x, y, width, height);
 
@@ -35,6 +39,26 @@ namespace StepFlow.Master.Proxies
 			PlayerCharacter.Current = CreateCell(bounds);
 			PlayerCharacter.Value = strength;
 			PlayerCharacter.Max = strength;
+		}
+
+		public void CreateBarrier(Rectangle bounds, float? strength)
+		{
+			var barrier = (IObstructionProxy)Owner.CreateProxy(new Obstruction(Target.Context));
+			barrier.Current = CreateCell(bounds);
+
+			if (strength is { })
+			{
+				barrier.Value = strength.Value;
+				barrier.Max = strength.Value;
+			}
+			else
+			{
+				barrier.Value = 1;
+				barrier.Max = 1;
+				barrier.Freeze = true;
+			}
+
+			Barriers.Add(barrier);
 		}
 	}
 }

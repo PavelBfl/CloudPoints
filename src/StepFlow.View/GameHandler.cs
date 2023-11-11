@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Metrics;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Xml.Linq;
 using Microsoft.Xna.Framework;
@@ -6,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StepFlow.Core.Components;
 using StepFlow.Master;
 using StepFlow.Master.Proxies;
+using StepFlow.Master.Proxies.Components;
 using StepFlow.Master.Proxies.Elements;
 using StepFlow.View.Controls;
 using StepFlow.View.Services;
@@ -53,12 +55,24 @@ namespace StepFlow.View
 		public void Init()
 		{
 			CreatePlayerCharacter(new(100, 100, 20, 20), 100);
+
+			CreateBarrier(new(10, 10, 30, 30), 1);
 		}
 
 		private void CreatePlayerCharacter(System.Drawing.Rectangle bounds, float strength)
 		{
 			PlayMaster.Execute(@$"
 				playground.CreatePlayerCharacter(
+					playground.CreateRectangle({bounds.X}, {bounds.Y}, {bounds.Width}, {bounds.Height}),
+					{strength}
+				);
+			");
+		}
+
+		private void CreateBarrier(System.Drawing.Rectangle bounds, float? strength)
+		{
+			PlayMaster.Execute(@$"
+				playground.CreateBarrier(
 					playground.CreateRectangle({bounds.X}, {bounds.Y}, {bounds.Width}, {bounds.Height}),
 					{strength}
 				);
@@ -95,6 +109,14 @@ namespace StepFlow.View
 			if (CreateTexture(playground.PlayerCharacter, "Character") is { } playerCharacter)
 			{
 				Base.Childs.Add(playerCharacter);
+			}
+
+			foreach (var barrier in playground.Barriers.OfType<ICollidedProxy>())
+			{
+				if (CreateTexture(barrier, "Wall") is { } wall)
+				{
+					Base.Childs.Add(wall);
+				}
 			}
 
 			SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);

@@ -37,17 +37,12 @@ namespace StepFlow.Core
 
 		public PlayerCharacter? PlayerCharacter { get; set; }
 
+		public IList<Subject> Barriers { get; } = new List<Subject>();
+
 		public IEnumerable<Subject> GetAllContent()
 		{
-			var subjects = new List<Subject>();
-
-			if (PlayerCharacter is { })
-			{
-				subjects.Add(PlayerCharacter);
-			}
-
 			var cache = new HashSet<Subject>();
-			GetContent(subjects, cache);
+			GetContent(GetContent(), cache);
 
 			return cache;
 		}
@@ -68,6 +63,11 @@ namespace StepFlow.Core
 			if (PlayerCharacter is { })
 			{
 				yield return PlayerCharacter;
+			}
+
+			foreach (var barrier in Barriers)
+			{
+				yield return barrier;
 			}
 		}
 	}
