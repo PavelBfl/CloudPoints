@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using Microsoft.Xna.Framework;
 using StepFlow.View.Sketch;
 
@@ -12,6 +11,8 @@ namespace StepFlow.View.Controls
 		{
 			Bounds = new Polygon(serviceProvider)
 			{
+				Thickness = 1,
+				Color = Color.Red,
 				Vertices = Vertices,
 			};
 		}
@@ -26,7 +27,7 @@ namespace StepFlow.View.Controls
 
 		public override void Draw(GameTime gameTime)
 		{
-			vertices.Bounds = Layout?.Place ?? RectangleF.Empty;
+			vertices.Bounds = Layout?.Place ?? System.Drawing.RectangleF.Empty;
 
 			Bounds.Draw(gameTime);
 			base.Draw(gameTime);

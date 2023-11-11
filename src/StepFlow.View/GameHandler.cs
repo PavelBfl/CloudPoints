@@ -1,7 +1,12 @@
 ﻿using System.Diagnostics.Metrics;
+using System.Linq.Expressions;
+using System.Xml.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StepFlow.Core.Components;
 using StepFlow.Master;
+using StepFlow.Master.Proxies;
+using StepFlow.Master.Proxies.Elements;
 using StepFlow.View.Controls;
 using StepFlow.View.Services;
 using StepFlow.View.Sketch;
@@ -85,34 +90,11 @@ namespace StepFlow.View
 		{
 			Base.Childs.Clear();
 
-			if (PlayMaster.GetPlaygroundProxy().PlayerCharacter is { Current: { } current } playerCharacter)
-			{
-				var border = current.Border;
-				Base.Childs.Add(new Polygon(Base.ServiceProvider)
-				{
-					Color = Color.Red,
-					Vertices = new BoundsVertices()
-					{
-						Bounds = border,
-					},
-				});
+			var playground = PlayMaster.GetPlaygroundProxy();
 
-				Base.Childs.Add(new TextureLayout(Base.ServiceProvider)
-				{
-					Name = "Character",
-					Layout = new Layout()
-					{
-						Owner = Place,
-						Margin = new Thickness()
-						{
-							Left = border.Left,
-							Top = border.Top,
-							Right = UnitKind.None,
-							Bottom = UnitKind.None,
-						},
-						Size = new(border.Width, border.Height),
-					}
-				});
+			if (CreateTexture(playground.PlayerCharacter, "Character") is { } playerCharacter)
+			{
+				Base.Childs.Add(playerCharacter);
 			}
 
 			SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
@@ -120,6 +102,49 @@ namespace StepFlow.View
 			Draw(Base, gameTime);
 
 			SpriteBatch.End();
+		}
+
+		private Primitive? CreateTexture(IProxyBase<ICollided>? collided, string textureName)
+		{
+			if (collided?.Target is { Current: { } current })
+			{
+				var root = new Primitive(Base.ServiceProvider);
+				var layout = new Layout()
+				{
+					Owner = Place,
+					Margin = new()
+					{
+						Left = current.Border.Left,
+						Top = current.Border.Top,
+						Right = UnitKind.None,
+						Bottom = UnitKind.None,
+					},
+					Size = new(current.Border.Width, current.Border.Height),
+				};
+
+				root.Childs.Add(new LayoutControl(Base.ServiceProvider)
+				{
+					Layout = new Layout()
+					{
+						Owner = layout.Place,
+					},
+				});
+
+				root.Childs.Add(new TextureLayout(Base.ServiceProvider)
+				{
+					Name = textureName,
+					Layout = new Layout()
+					{
+						Owner = layout.Place,
+					},
+				});
+
+				return root;
+			}
+			else
+			{
+				return null;
+			}
 		}
 
 		private static void Draw(Primitive primitive, GameTime gameTime)

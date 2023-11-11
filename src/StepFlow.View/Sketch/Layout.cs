@@ -2,7 +2,7 @@
 
 namespace StepFlow.View.Sketch
 {
-	public class Layout
+	public sealed class Layout
 	{
 		private RectangleF owner;
 
