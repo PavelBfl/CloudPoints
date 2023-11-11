@@ -1,14 +1,8 @@
-﻿using MoonSharp.Interpreter;
-
-namespace StepFlow.Master.Proxies
+﻿namespace StepFlow.Master.Proxies
 {
-	public interface IProxyBase<out TTarget>
+	public interface IProxyBase<out TTarget> : IReadOnlyProxyBase<TTarget>
 		where TTarget : class
 	{
-		[MoonSharpHidden]
-		PlayMaster Owner { get; }
-
-		[MoonSharpHidden]
-		TTarget Target { get; }
+		
 	}
 }

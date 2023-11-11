@@ -5,5 +5,7 @@
 		float Value { get; set; }
 
 		float Max { get; set; }
+
+		bool Freeze { get; set; }
 	}
 }

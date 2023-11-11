@@ -3,8 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Linq;
 using MoonSharp.Interpreter;
 using StepFlow.Core;
+using StepFlow.Core.Border;
+using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Master.Proxies;
 using StepFlow.Master.Proxies.Border;
@@ -41,6 +44,8 @@ namespace StepFlow.Master
 			{
 				Playground instance => new PlaygroundProxy(this, instance),
 				PlayerCharacter instance => new PlayerCharacterProxy(this, instance),
+				Obstruction instance => new ObstructionProxy(this, instance),
+				Cell instance => new CellProxy(this, instance),
 				null => null,
 				_ => throw new InvalidOperationException(),
 			};
@@ -50,9 +55,36 @@ namespace StepFlow.Master
 
 		private void TakeStepInner()
 		{
-			
+			var collideds = Playground.GetAllContent().OfType<ICollided>();
+
+			foreach (var collision in Playground.GetCollision(collideds).ToArray())
+			{
+				var collided1Proxy = (ICollidedProxy)CreateProxy(collision.Item1);
+				var collided2Proxy = (ICollidedProxy)CreateProxy(collision.Item2);
+
+				collided1Proxy.Collision(collided2Proxy);
+				collided2Proxy.Collision(collided1Proxy);
+			}
+
+			foreach (var collision in Playground.GetAllContent()
+				.OfType<ICollided>()
+				.Select(x => (ICollidedProxy)CreateProxy(x))
+				.ToArray()
+			)
+			{
+				collision.Move();
+			}
 
 			Time++;
+
+			foreach (var collision in Playground.GetAllContent()
+				.OfType<IScheduled>()
+				.Select(x => (IScheduledProxy)CreateProxy(x))
+				.ToArray()
+			)
+			{
+				collision.Dequeue();
+			}
 		}
 
 		private static void RegisterList<T>()
@@ -81,7 +113,9 @@ namespace StepFlow.Master
 			RegisterList<ICollidedProxy>();
 			RegisterList<IScaleProxy>();
 			RegisterList<IScheduledProxy>();
+
 			RegisterList<IPlayerCharacterProxy>();
+			RegisterList<IObstructionProxy>();
 		}
 
 		public static DynValue Enumerate(ScriptExecutionContext context, CallbackArguments arguments)

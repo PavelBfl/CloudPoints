@@ -62,5 +62,13 @@ namespace StepFlow.Core
 				}
 			}
 		}
+
+		public override IEnumerable<Subject> GetContent()
+		{
+			if (PlayerCharacter is { })
+			{
+				yield return PlayerCharacter;
+			}
+		}
 	}
 }

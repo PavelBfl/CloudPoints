@@ -21,7 +21,8 @@ namespace StepFlow.Core.Commands.Accessors
 
 			if (propInfo.ReflectedType != null && typeof(TTarget) != propInfo.ReflectedType && !typeof(TTarget).IsSubclassOf(propInfo.ReflectedType))
 			{
-				throw new InvalidOperationException();
+				// TODO перестроить условие на IsAssignableFrom
+				//throw new InvalidOperationException();
 			}
 
 			return propInfo;

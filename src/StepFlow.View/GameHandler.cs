@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StepFlow.Master;
+using StepFlow.View.Controls;
 using StepFlow.View.Services;
 using StepFlow.View.Sketch;
 
@@ -46,7 +47,17 @@ namespace StepFlow.View
 
 		public void Init()
 		{
-			
+			CreatePlayerCharacter(new(100, 100, 20, 20), 100);
+		}
+
+		private void CreatePlayerCharacter(System.Drawing.Rectangle bounds, float strength)
+		{
+			PlayMaster.Execute(@$"
+				playground.CreatePlayerCharacter(
+					playground.CreateRectangle({bounds.X}, {bounds.Y}, {bounds.Width}, {bounds.Height}),
+					{strength}
+				);
+			");
 		}
 
 		public void Update(GameTime gameTime)
@@ -72,6 +83,38 @@ namespace StepFlow.View
 
 		public void Draw(GameTime gameTime)
 		{
+			Base.Childs.Clear();
+
+			if (PlayMaster.GetPlaygroundProxy().PlayerCharacter is { Current: { } current } playerCharacter)
+			{
+				var border = current.Border;
+				Base.Childs.Add(new Polygon(Base.ServiceProvider)
+				{
+					Color = Color.Red,
+					Vertices = new BoundsVertices()
+					{
+						Bounds = border,
+					},
+				});
+
+				Base.Childs.Add(new TextureLayout(Base.ServiceProvider)
+				{
+					Name = "Character",
+					Layout = new Layout()
+					{
+						Owner = Place,
+						Margin = new Thickness()
+						{
+							Left = border.Left,
+							Top = border.Top,
+							Right = UnitKind.None,
+							Bottom = UnitKind.None,
+						},
+						Size = new(border.Width, border.Height),
+					}
+				});
+			}
+
 			SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
 
 			Draw(Base, gameTime);

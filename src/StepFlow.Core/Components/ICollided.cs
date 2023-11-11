@@ -4,9 +4,9 @@ namespace StepFlow.Core.Components
 {
 	public interface ICollided
 	{
-		Bordered? Current { get; set; }
+		IBordered? Current { get; set; }
 
-		Bordered? Next { get; set; }
+		IBordered? Next { get; set; }
 
 		bool IsMove { get; set; }
 	}

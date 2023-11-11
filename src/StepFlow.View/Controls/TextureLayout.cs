@@ -12,11 +12,11 @@ namespace StepFlow.View.Controls
 
 		private IDrawer Drawer { get; }
 
-		public string? Texture { get; set; }
+		public string? Name { get; set; }
 
 		public override void Draw(GameTime gameTime)
 		{
-			if (Texture is not null && Layout is not null)
+			if (Name is not null && Layout is not null)
 			{
 				var rectangle = new Rectangle(
 					(int)Layout.Place.X,
@@ -24,7 +24,7 @@ namespace StepFlow.View.Controls
 					(int)Layout.Place.Width,
 					(int)Layout.Place.Height
 				);
-				Drawer.Draw(Texture, rectangle);
+				Drawer.Draw(Name, rectangle);
 			}
 
 			base.Draw(gameTime);
