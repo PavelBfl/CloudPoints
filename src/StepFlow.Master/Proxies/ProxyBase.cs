@@ -15,10 +15,18 @@ namespace StepFlow.Master.Proxies
 		{
 		}
 
-		protected void SetValue<TValue>(Expression<Func<TTarget, TValue>> expression, TValue newValue, [CallerMemberName] string? propertyName = null)
+		protected bool SetValue<TValue>(Expression<Func<TTarget, TValue>> expression, TValue newValue, [CallerMemberName] string? propertyName = null)
 		{
-			var command = Target.CreatePropertyCommand(expression, newValue);
-			Owner.TimeAxis.Add(command);
+			var accessor = AccessorsExtensions.CreatePropertyAccessor(expression);
+
+			var change = !EqualityComparer<TValue>.Default.Equals(accessor.GetValue(Target), newValue);
+			if (change)
+			{
+				var command = new ValueAccessorCommand<TTarget, TValue>(Target, accessor, newValue);
+				Owner.TimeAxis.Add(command);
+			}
+
+			return change;
 		}
 
 		protected IList<T> CreateListProxy<T>(IList<T> target) => new ListProxy<T, IList<T>>(Owner, target);

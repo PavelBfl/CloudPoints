@@ -4,21 +4,30 @@ using System.Linq;
 using StepFlow.Core;
 using StepFlow.Core.Border;
 using StepFlow.Core.Components;
+using StepFlow.Core.Elements;
 using StepFlow.Master.Proxies.Border;
 using StepFlow.Master.Proxies.Collections;
 using StepFlow.Master.Proxies.Components;
 
 namespace StepFlow.Master.Proxies.Elements
 {
-	public interface IMaterialProxy : ICollidedProxy, IScheduledProxy, IScaleProxy
+	public interface IMaterialProxy : ICollidedProxy, IScheduledProxy
 	{
-		
+		IScaleProxy? Strength { get; }
+
+		void OnTick();
 	}
 
 	internal class MaterialProxy<TTarget> : ProxyBase<TTarget>, IMaterialProxy
-		where TTarget : Subject, ICollided, IScheduled, IScale
+		where TTarget : Material, ICollided, IScheduled
 	{
 		public MaterialProxy(PlayMaster owner, TTarget target) : base(owner, target)
+		{
+		}
+
+		public IScaleProxy? Strength { get => (IScaleProxy?)Owner.CreateProxy(Target.Strength); protected set => SetValue(x => x.Strength, value?.Target); }
+
+		public virtual void OnTick()
 		{
 		}
 
@@ -38,6 +47,7 @@ namespace StepFlow.Master.Proxies.Elements
 		public bool IsMove { get => Target.IsMove; set => SetValue(x => x.IsMove, value); }
 		public virtual void Collision(ICollidedProxy other)
 		{
+			Break();
 		}
 
 		public void Move()
@@ -119,40 +129,6 @@ namespace StepFlow.Master.Proxies.Elements
 		}
 
 		IScheduled IReadOnlyProxyBase<IScheduled>.Target => Target;
-		#endregion
-
-		#region IScaleProxy
-		public float Value { get => Target.Value; set => SetValue(x => x.Value, value); }
-
-		public float Max { get => Target.Max; set => SetValue(x => x.Max, value); }
-
-		public bool Freeze { get => Target.Freeze; set => SetValue(x => x.Freeze, value); }
-
-		public bool Add(float value)
-		{
-			var oldValue = Value;
-			if (!Freeze)
-			{
-				var newValue = Value + value;
-				if (newValue < 0)
-				{
-					Value = 0;
-				}
-				else if (newValue > Max)
-				{
-					Value = Max;
-				}
-				else
-				{
-					Value = newValue;
-				}
-			}
-
-			return oldValue != Value;
-		}
-
-		IScale IReadOnlyProxyBase<IScale>.Target => Target;
-
 		#endregion
 	}
 }

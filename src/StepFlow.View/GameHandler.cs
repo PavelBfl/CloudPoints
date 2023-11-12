@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Metrics;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -53,7 +54,7 @@ namespace StepFlow.View
 		{
 			CreatePlayerCharacter(new(100, 100, 20, 20), 100);
 
-			CreateRoom(new(5, 5), new(40, 20), 10);
+			CreateRoom(new(5, 5), new(40, 20), 15);
 		}
 
 		private void CreatePlayerCharacter(System.Drawing.Rectangle bounds, float strength)
@@ -108,9 +109,12 @@ namespace StepFlow.View
 
 		private void PlayerCharacterSetCourse(Course course)
 		{
-			PlayMaster.Execute($@"
-				playground.PlayerCharacter.SetCourse({(int)course});
-			");
+			if (PlayMaster.Playground.PlayerCharacter is { } playerCharacter && playerCharacter.Queue.LastOrDefault().Executor is not SetCourse)
+			{
+				PlayMaster.Execute($@"
+					playground.PlayerCharacter.SetCourse({(int)course});
+				");
+			}
 		}
 
 		public void Update(GameTime gameTime)
@@ -134,7 +138,13 @@ namespace StepFlow.View
 
 			Update(Base, gameTime);
 
-			PlayMaster.TakeStep();
+			for (var i = 0; i < 10; i++)
+			{
+				if (PlayMaster.Playground.GetAllContent().OfType<IScheduled>().Any(x => x.Queue.Any()))
+				{
+					PlayMaster.TakeStep();
+				} 
+			}
 
 			KeyboardService.Update();
 			MouseService.Update();

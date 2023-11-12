@@ -4,11 +4,13 @@ using StepFlow.Core.Components;
 
 namespace StepFlow.Core.Elements
 {
-	public class Material : Subject, ICollided, IScheduled, IScale
+	public class Material : Subject, ICollided, IScheduled
 	{
 		public Material(Context owner) : base(owner)
 		{
 		}
+
+		public IScale? Strength { get; set; }
 
 		public IBordered? Current { get; set; }
 
@@ -19,10 +21,5 @@ namespace StepFlow.Core.Elements
 		public long QueueBegin { get; set; }
 
 		public IList<Turn> Queue { get; } = new List<Turn>();
-
-		public float Value { get; set; }
-
-		public float Max { get; set; }
-		public bool Freeze { get; set; }
 	}
 }

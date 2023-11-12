@@ -3,7 +3,7 @@ using StepFlow.TimeLine;
 
 namespace StepFlow.Core.Commands.Accessors
 {
-	internal class ValueAccessorCommand<TTarget, TValue> : ICommand
+	internal sealed class ValueAccessorCommand<TTarget, TValue> : ICommand
 	{
 		public ValueAccessorCommand(TTarget target, IValueAccessor<TTarget, TValue> accessor, TValue newValue)
 		{

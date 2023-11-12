@@ -2,9 +2,11 @@
 using System.Drawing;
 using StepFlow.Core;
 using StepFlow.Core.Border;
+using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Master.Proxies.Border;
 using StepFlow.Master.Proxies.Collections;
+using StepFlow.Master.Proxies.Components;
 using StepFlow.Master.Proxies.Elements;
 
 namespace StepFlow.Master.Proxies
@@ -18,6 +20,8 @@ namespace StepFlow.Master.Proxies
 		public IPlayerCharacterProxy? PlayerCharacter { get => (IPlayerCharacterProxy?)Owner.CreateProxy(Target.PlayerCharacter); set => SetValue(x => x.PlayerCharacter, ((IProxyBase<PlayerCharacter>?)value)?.Target); }
 
 		public IList<IObstructionProxy> Obstructions => new ListItemsProxy<Obstruction, IList<Obstruction>, IObstructionProxy>(Owner, Target.Obstructions);
+
+		public IList<IProjectileProxy> Projectiles => new ListItemsProxy<Projectile, IList<Projectile>, IProjectileProxy>(Owner, Target.Projectiles);
 
 		public Rectangle CreateRectangle(int x, int y, int width, int height) => new Rectangle(x, y, width, height);
 
@@ -33,32 +37,47 @@ namespace StepFlow.Master.Proxies
 			});
 		}
 
-		public void CreatePlayerCharacter(Rectangle bounds, float strength)
+		public void CreatePlayerCharacter(Rectangle bounds, int strength)
 		{
 			PlayerCharacter = (IPlayerCharacterProxy)Owner.CreateProxy(new PlayerCharacter(Target.Context));
 			PlayerCharacter.Current = CreateCell(bounds);
-			PlayerCharacter.Value = strength;
-			PlayerCharacter.Max = strength;
+			PlayerCharacter.Strength.Value = strength;
+			PlayerCharacter.Strength.Max = strength;
 		}
 
-		public void CreateObstruction(Rectangle bounds, float? strength)
+		public void CreateObstruction(Rectangle bounds, int? strength)
 		{
 			var barrier = (IObstructionProxy)Owner.CreateProxy(new Obstruction(Target.Context));
 			barrier.Current = CreateCell(bounds);
 
 			if (strength is { })
 			{
-				barrier.Value = strength.Value;
-				barrier.Max = strength.Value;
-			}
-			else
-			{
-				barrier.Value = 1;
-				barrier.Max = 1;
-				barrier.Freeze = true;
+				barrier.Strength = (IScaleProxy)Owner.CreateProxy(new Scale(Target.Context)
+				{
+					Value = strength.Value,
+					Max = strength.Value,
+				});
 			}
 
 			Obstructions.Add(barrier);
+		}
+
+		public void CreateProjectile(Rectangle bounds, int value, DamageKind kind)
+		{
+			var projectile = (IProjectileProxy)Owner.CreateProxy(new Projectile(Target.Context)
+			{
+				Current = new Cell()
+				{
+					Border = bounds,
+				},
+				Damage = new Damage(Target.Context)
+				{
+					Value = value,
+					Kind = kind,
+				},
+			});
+
+			Projectiles.Add(projectile);
 		}
 	}
 }

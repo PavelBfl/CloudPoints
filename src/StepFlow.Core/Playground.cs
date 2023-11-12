@@ -39,6 +39,8 @@ namespace StepFlow.Core
 
 		public IList<Obstruction> Obstructions { get; } = new List<Obstruction>();
 
+		public IList<Projectile> Projectiles { get; } = new List<Projectile>();
+
 		public IEnumerable<Subject> GetAllContent()
 		{
 			var cache = new HashSet<Subject>();
@@ -68,6 +70,11 @@ namespace StepFlow.Core
 			foreach (var barrier in Obstructions)
 			{
 				yield return barrier;
+			}
+
+			foreach (var projectile in Projectiles)
+			{
+				yield return projectile;
 			}
 		}
 	}
