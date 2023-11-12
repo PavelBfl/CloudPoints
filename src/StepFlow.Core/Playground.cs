@@ -37,7 +37,7 @@ namespace StepFlow.Core
 
 		public PlayerCharacter? PlayerCharacter { get; set; }
 
-		public IList<Subject> Barriers { get; } = new List<Subject>();
+		public IList<Obstruction> Obstructions { get; } = new List<Obstruction>();
 
 		public IEnumerable<Subject> GetAllContent()
 		{
@@ -65,7 +65,7 @@ namespace StepFlow.Core
 				yield return PlayerCharacter;
 			}
 
-			foreach (var barrier in Barriers)
+			foreach (var barrier in Obstructions)
 			{
 				yield return barrier;
 			}

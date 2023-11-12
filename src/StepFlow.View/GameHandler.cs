@@ -1,14 +1,11 @@
 ﻿using System.Diagnostics.Metrics;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Xml.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Master;
 using StepFlow.Master.Proxies;
-using StepFlow.Master.Proxies.Components;
-using StepFlow.Master.Proxies.Elements;
 using StepFlow.View.Controls;
 using StepFlow.View.Services;
 using StepFlow.View.Sketch;
@@ -56,7 +53,7 @@ namespace StepFlow.View
 		{
 			CreatePlayerCharacter(new(100, 100, 20, 20), 100);
 
-			CreateBarrier(new(10, 10, 30, 30), 1);
+			CreateRoom(new(5, 5), new(40, 20), 10);
 		}
 
 		private void CreatePlayerCharacter(System.Drawing.Rectangle bounds, float strength)
@@ -69,19 +66,75 @@ namespace StepFlow.View
 			");
 		}
 
-		private void CreateBarrier(System.Drawing.Rectangle bounds, float? strength)
+		private void CreateRoom(System.Drawing.Point location, System.Drawing.Size size, int width)
+		{
+			for (var iX = 0; iX < size.Width; iX++)
+			{
+				CreateBounds(new(iX, 0));
+			}
+
+			for (var iY = 0; iY < size.Height; iY++)
+			{
+				CreateBounds(new(size.Width, iY));
+			}
+
+			for (var iX = size.Width; iX > 0; iX--)
+			{
+				CreateBounds(new(iX, size.Height));
+			}
+
+			for (var iY = size.Height; iY > 0; iY--)
+			{
+				CreateBounds(new(0, iY));
+			}
+
+			void CreateBounds(System.Drawing.Point index)
+			{
+				var tileLocation = new System.Drawing.Point(index.X * width + location.X, index.Y * width + location.Y);
+				var bounds = new System.Drawing.Rectangle(tileLocation.X, tileLocation.Y, width, width);
+				CreateObstruction(bounds, null);
+			}
+		}
+
+		private void CreateObstruction(System.Drawing.Rectangle bounds, float? strength)
 		{
 			PlayMaster.Execute(@$"
-				playground.CreateBarrier(
+				playground.CreateObstruction(
 					playground.CreateRectangle({bounds.X}, {bounds.Y}, {bounds.Width}, {bounds.Height}),
-					{strength}
+					{strength?.ToString() ?? "null"}
 				);
+			");
+		}
+
+		private void PlayerCharacterSetCourse(Course course)
+		{
+			PlayMaster.Execute($@"
+				playground.PlayerCharacter.SetCourse({(int)course});
 			");
 		}
 
 		public void Update(GameTime gameTime)
 		{
+			if (KeyboardService.IsKeyDown(Keys.Left))
+			{
+				PlayerCharacterSetCourse(Course.Left);
+			}
+			else if (KeyboardService.IsKeyDown(Keys.Up))
+			{
+				PlayerCharacterSetCourse(Course.Top);
+			}
+			else if (KeyboardService.IsKeyDown(Keys.Right))
+			{
+				PlayerCharacterSetCourse(Course.Right);
+			}
+			else if (KeyboardService.IsKeyDown(Keys.Down))
+			{
+				PlayerCharacterSetCourse(Course.Bottom);
+			}
+
 			Update(Base, gameTime);
+
+			PlayMaster.TakeStep();
 
 			KeyboardService.Update();
 			MouseService.Update();
@@ -111,7 +164,7 @@ namespace StepFlow.View
 				Base.Childs.Add(playerCharacter);
 			}
 
-			foreach (var barrier in playground.Barriers.OfType<ICollidedProxy>())
+			foreach (var barrier in playground.Obstructions)
 			{
 				if (CreateTexture(barrier, "Wall") is { } wall)
 				{

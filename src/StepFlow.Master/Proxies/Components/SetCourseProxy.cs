@@ -35,6 +35,6 @@ namespace StepFlow.Master.Proxies.Components
 			}
 		}
 
-		Subject IReadOnlyProxyBase<Subject>.Target => throw new System.NotImplementedException();
+		Subject IReadOnlyProxyBase<Subject>.Target => Target;
 	}
 }

@@ -17,7 +17,7 @@ namespace StepFlow.Master.Proxies
 
 		public IPlayerCharacterProxy? PlayerCharacter { get => (IPlayerCharacterProxy?)Owner.CreateProxy(Target.PlayerCharacter); set => SetValue(x => x.PlayerCharacter, ((IProxyBase<PlayerCharacter>?)value)?.Target); }
 
-		public IList<IProxyBase<Subject>> Barriers => new ListItemsProxy<Subject, IList<Subject>, IProxyBase<Subject>>(Owner, Target.Barriers);
+		public IList<IObstructionProxy> Obstructions => new ListItemsProxy<Obstruction, IList<Obstruction>, IObstructionProxy>(Owner, Target.Obstructions);
 
 		public Rectangle CreateRectangle(int x, int y, int width, int height) => new Rectangle(x, y, width, height);
 
@@ -41,7 +41,7 @@ namespace StepFlow.Master.Proxies
 			PlayerCharacter.Max = strength;
 		}
 
-		public void CreateBarrier(Rectangle bounds, float? strength)
+		public void CreateObstruction(Rectangle bounds, float? strength)
 		{
 			var barrier = (IObstructionProxy)Owner.CreateProxy(new Obstruction(Target.Context));
 			barrier.Current = CreateCell(bounds);
@@ -58,7 +58,7 @@ namespace StepFlow.Master.Proxies
 				barrier.Freeze = true;
 			}
 
-			Barriers.Add(barrier);
+			Obstructions.Add(barrier);
 		}
 	}
 }

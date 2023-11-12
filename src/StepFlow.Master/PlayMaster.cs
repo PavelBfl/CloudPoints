@@ -46,6 +46,8 @@ namespace StepFlow.Master
 				PlayerCharacter instance => new PlayerCharacterProxy(this, instance),
 				Obstruction instance => new ObstructionProxy(this, instance),
 				Cell instance => new CellProxy(this, instance),
+				SetCourse instance => new SetCourseProxy(this, instance),
+				Turn instance => new TurnProxy(this, instance),
 				null => null,
 				_ => throw new InvalidOperationException(),
 			};

@@ -86,7 +86,13 @@ namespace StepFlow.Master.Proxies.Elements
 
 			var turnProxy = (ITurnProxy)Owner.CreateProxy(new Turn(duration, turn?.Target));
 
-			Queue.Add(turnProxy);
+			var queue = Queue;
+			if (!queue.Any())
+			{
+				QueueBegin = Owner.Time;
+			}
+
+			queue.Add(turnProxy);
 		}
 
 		public void Dequeue()
@@ -102,6 +108,7 @@ namespace StepFlow.Master.Proxies.Elements
 			{
 				Queue.RemoveAt(0);
 				first.Executor?.Execute();
+				QueueBegin = Owner.Time;
 
 				return true;
 			}
