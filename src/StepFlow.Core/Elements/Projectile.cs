@@ -8,6 +8,8 @@ namespace StepFlow.Core.Elements
 		{
 		}
 
+		public Subject? Creator { get; set; }
+
 		public IDamage? Damage { get; set; }
 	}
 }

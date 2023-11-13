@@ -1,4 +1,5 @@
-﻿using StepFlow.Core.Elements;
+﻿using StepFlow.Core;
+using StepFlow.Core.Elements;
 using StepFlow.Master.Proxies.Components;
 
 namespace StepFlow.Master.Proxies.Elements
@@ -14,6 +15,12 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 		}
 
+		public IProxyBase<Subject>? Creator
+		{
+			get => (IProxyBase<Subject>?)Owner.CreateProxy(Target.Creator);
+			set => SetValue(x => x.Creator, value?.Target);
+		}
+
 		public IDamageProxy? Damage
 		{
 			get => (IDamageProxy?)Owner.CreateProxy(Target.Damage);
@@ -22,11 +29,14 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public override void Collision(ICollidedProxy other)
 		{
-			base.Collision(other);
-
-			if (other is IMaterialProxy { Strength: { } strength } && Damage is { } damage)
+			if (Creator?.Target != other.Target)
 			{
-				strength.Add(-damage.Value);
+				if (other is IMaterialProxy { Strength: { } strength } && Damage is { } damage)
+				{
+					strength.Add(-damage.Value);
+				}
+
+				Owner.GetPlaygroundProxy().Projectiles.Remove(this); 
 			}
 		}
 	}

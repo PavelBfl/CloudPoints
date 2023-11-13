@@ -117,6 +117,13 @@ namespace StepFlow.View
 			}
 		}
 
+		private void CreateProjectile(Course course)
+		{
+			PlayMaster.Execute($@"
+				playground.PlayerCharacter.CreateProjectile({(int)course});
+			");
+		}
+
 		public void Update(GameTime gameTime)
 		{
 			if (KeyboardService.IsKeyDown(Keys.Left))
@@ -134,6 +141,23 @@ namespace StepFlow.View
 			else if (KeyboardService.IsKeyDown(Keys.Down))
 			{
 				PlayerCharacterSetCourse(Course.Bottom);
+			}
+
+			if (KeyboardService.IsKeyDown(Keys.A))
+			{
+				CreateProjectile(Course.Left);
+			}
+			else if (KeyboardService.IsKeyDown(Keys.W))
+			{
+				CreateProjectile(Course.Top);
+			}
+			else if (KeyboardService.IsKeyDown(Keys.D))
+			{
+				CreateProjectile(Course.Right);
+			}
+			else if (KeyboardService.IsKeyDown(Keys.S))
+			{
+				CreateProjectile(Course.Bottom);
 			}
 
 			Update(Base, gameTime);
@@ -179,6 +203,14 @@ namespace StepFlow.View
 				if (CreateTexture(barrier, "Wall") is { } wall)
 				{
 					Base.Childs.Add(wall);
+				}
+			}
+
+			foreach (var projectile in playground.Projectiles)
+			{
+				if (CreateTexture(projectile, "Projectile") is { } instance)
+				{
+					Base.Childs.Add(instance);
 				}
 			}
 

@@ -48,6 +48,9 @@ namespace StepFlow.Master
 				Cell instance => new CellProxy(this, instance),
 				SetCourse instance => new SetCourseProxy(this, instance),
 				Turn instance => new TurnProxy(this, instance),
+				Scale instance => new ScaleProxy(this, instance),
+				Projectile instance => new ProjectileProxy(this, instance),
+				Damage instance => new DamageProxy(this, instance),
 				null => null,
 				_ => throw new InvalidOperationException(),
 			};
