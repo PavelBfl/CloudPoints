@@ -60,6 +60,15 @@ namespace StepFlow.Master
 
 		private void TakeStepInner()
 		{
+			foreach (var collision in Playground.GetAllContent()
+				.OfType<Material>()
+				.Select(x => (IMaterialProxy)CreateProxy(x))
+				.ToArray()
+			)
+			{
+				collision.OnTick();
+			}
+
 			var collideds = Playground.GetAllContent().OfType<ICollided>();
 
 			foreach (var collision in Playground.GetCollision(collideds).ToArray())

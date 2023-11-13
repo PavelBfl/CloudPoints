@@ -1,4 +1,5 @@
-﻿using StepFlow.Core;
+﻿using System.Linq;
+using StepFlow.Core;
 using StepFlow.Core.Elements;
 using StepFlow.Master.Proxies.Components;
 
@@ -27,6 +28,14 @@ namespace StepFlow.Master.Proxies.Elements
 			set => SetValue(x => x.Damage, value?.Target);
 		}
 
+		public override void OnTick()
+		{
+			if (!Queue.Any())
+			{
+				Owner.GetPlaygroundProxy().Projectiles.Remove(this);
+			}
+		}
+
 		public override void Collision(ICollidedProxy other)
 		{
 			if (Creator?.Target != other.Target)
@@ -36,7 +45,7 @@ namespace StepFlow.Master.Proxies.Elements
 					strength.Add(-damage.Value);
 				}
 
-				Owner.GetPlaygroundProxy().Projectiles.Remove(this); 
+				Owner.GetPlaygroundProxy().Projectiles.Remove(this);
 			}
 		}
 	}
