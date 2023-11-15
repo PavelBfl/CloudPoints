@@ -7,6 +7,7 @@ using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Master;
 using StepFlow.Master.Proxies;
+using StepFlow.Master.Proxies.Components;
 using StepFlow.View.Controls;
 using StepFlow.View.Services;
 using StepFlow.View.Sketch;
@@ -52,9 +53,11 @@ namespace StepFlow.View
 
 		public void Init()
 		{
+			CreateRoom(new(5, 5), new(40, 20), 15);
+
 			CreatePlayerCharacter(new(100, 100, 20, 20), 100);
 
-			CreateRoom(new(5, 5), new(40, 20), 15);
+			CreateObstruction(new(50, 50, 40, 40), 150);
 		}
 
 		private void CreatePlayerCharacter(System.Drawing.Rectangle bounds, float strength)
@@ -164,7 +167,7 @@ namespace StepFlow.View
 
 			for (var i = 0; i < 10; i++)
 			{
-				if (PlayMaster.Playground.GetAllContent().OfType<IScheduled>().Any(x => x.Queue.Any()))
+				//if (PlayMaster.Playground.GetAllContent().OfType<IScheduled>().Any(x => x.Queue.Any()))
 				{
 					PlayMaster.TakeStep();
 				} 
@@ -193,14 +196,14 @@ namespace StepFlow.View
 
 			var playground = PlayMaster.GetPlaygroundProxy();
 
-			if (CreateTexture(playground.PlayerCharacter, "Character") is { } playerCharacter)
+			if (CreateTexture(playground.PlayerCharacter, "Character", null) is { } playerCharacter)
 			{
 				Base.Childs.Add(playerCharacter);
 			}
 
 			foreach (var barrier in playground.Obstructions)
 			{
-				if (CreateTexture(barrier, "Wall") is { } wall)
+				if (CreateTexture(barrier, "Wall", barrier.Strength) is { } wall)
 				{
 					Base.Childs.Add(wall);
 				}
@@ -208,7 +211,7 @@ namespace StepFlow.View
 
 			foreach (var projectile in playground.Projectiles)
 			{
-				if (CreateTexture(projectile, "Projectile") is { } instance)
+				if (CreateTexture(projectile, "Projectile", null) is { } instance)
 				{
 					Base.Childs.Add(instance);
 				}
@@ -221,7 +224,7 @@ namespace StepFlow.View
 			SpriteBatch.End();
 		}
 
-		private Primitive? CreateTexture(IProxyBase<ICollided>? collided, string textureName)
+		private Primitive? CreateTexture(IProxyBase<ICollided>? collided, string textureName, IScaleProxy? strength)
 		{
 			if (collided?.Target is { Current: { } current })
 			{
@@ -255,6 +258,21 @@ namespace StepFlow.View
 						Owner = layout.Place,
 					},
 				});
+
+				if (strength is not null)
+				{
+					root.Childs.Add(new Text(Base.ServiceProvider)
+					{
+						Layout = new Layout()
+						{
+							Owner = layout.Place
+						},
+						HorizontalAlign = HorizontalAlign.Center,
+						VerticalAlign = VerticalAlign.Center,
+						Content = strength.Value.ToString(),
+						Color = Color.Red,
+					}); 
+				}
 
 				return root;
 			}

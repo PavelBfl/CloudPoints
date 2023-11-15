@@ -20,14 +20,11 @@ namespace StepFlow.Master.Proxies.Elements
 	{
 		public PlayerCharacterProxy(PlayMaster owner, PlayerCharacter target) : base(owner, target)
 		{
-			base.Strength = (IScaleProxy)Owner.CreateProxy(new Scale(Target.Context)
-			{
-				Value = 1,
-				Max = 1,
-			});
 		}
 
 		public new IScaleProxy Strength => base.Strength ?? throw new InvalidOperationException();
+
+		public IScaleProxy Cooldown { get => (IScaleProxy)Owner.CreateProxy(Target.Cooldown); }
 
 		public override void OnTick()
 		{
@@ -37,42 +34,50 @@ namespace StepFlow.Master.Proxies.Elements
 			{
 				Owner.GetPlaygroundProxy().PlayerCharacter = null;
 			}
+			else
+			{
+				Cooldown.Decrement();
+			}
 		}
 
 		public void CreateProjectile(Course course)
 		{
 			const int SIZE = 10;
 
-			var border = Current.Border;
-			var center = new Point(
-				border.X + border.Width / 2,
-				border.Y + border.Height / 2
-			);
-
-			var projectile = (IProjectileProxy)Owner.CreateProxy(new Projectile(Target.Context)
+			if (Cooldown.Value == 0)
 			{
-				Creator = Target,
-				Current = new Cell()
-				{
-					Border = new Rectangle(
-						center.X - SIZE / 2,
-						center.Y - SIZE / 2,
-						SIZE,
-						SIZE
-					),
-				},
-				Damage = new Damage(Target.Context)
-				{
-					Value = 10,
-				},
-			});
+				var border = Current.Border;
+				var center = new Point(
+					border.X + border.Width / 2,
+					border.Y + border.Height / 2
+				);
 
-			for (var i = 0; i < 100; i++)
-			{
-				projectile.SetCourse(course);
+				var projectile = (IProjectileProxy)Owner.CreateProxy(new Projectile(Target.Context)
+				{
+					Creator = Target,
+					Current = new Cell()
+					{
+						Border = new Rectangle(
+							center.X - SIZE / 2,
+							center.Y - SIZE / 2,
+							SIZE,
+							SIZE
+						),
+					},
+					Damage = new Damage(Target.Context)
+					{
+						Value = 10,
+					},
+				});
+
+				for (var i = 0; i < 100; i++)
+				{
+					projectile.SetCourse(course);
+				}
+
+				Owner.GetPlaygroundProxy().Projectiles.Add(projectile);
+				Cooldown.SetMax();
 			}
-
-			Owner.GetPlaygroundProxy().Projectiles.Add(projectile);
 		}
 	}
 }

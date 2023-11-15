@@ -39,7 +39,19 @@ namespace StepFlow.Master.Proxies
 
 		public void CreatePlayerCharacter(Rectangle bounds, int strength)
 		{
-			PlayerCharacter = (IPlayerCharacterProxy)Owner.CreateProxy(new PlayerCharacter(Target.Context));
+			PlayerCharacter = (IPlayerCharacterProxy)Owner.CreateProxy(new PlayerCharacter(Target.Context)
+			{
+				Strength = new Scale(Target.Context)
+				{
+					Max = 1,
+					Value = 1,
+				},
+				Cooldown = new Scale(Target.Context)
+				{
+					Max = 100,
+					Value = 100,
+				},
+			});
 			PlayerCharacter.Current = CreateCell(bounds);
 			PlayerCharacter.Strength.Value = strength;
 			PlayerCharacter.Strength.Max = strength;

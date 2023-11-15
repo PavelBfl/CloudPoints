@@ -11,6 +11,14 @@ namespace StepFlow.Master.Proxies.Components
 		bool Freeze { get; set; }
 
 		bool Add(int value);
+
+		void SetMax() => Value = Max;
+
+		void SetMin() => Value = 0;
+
+		void Increment() => Add(1);
+
+		void Decrement() => Add(-1);
 	}
 
 	internal sealed class ScaleProxy : ProxyBase<Scale>, IScaleProxy
