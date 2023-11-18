@@ -29,6 +29,9 @@ namespace StepFlow.View.Services
 			Sprites.Add("ProjectileAll", new(DefaultTiles, new(147, 256, 20, 19)));
 			Sprites.Add("Enemy", new(DefaultTiles, new(662, 22, 56, 81)));
 			Sprites.Add("Wall", new(DefaultTiles, new(454, 690, 32, 32)));
+			Sprites.Add("ItemPoison", new(DefaultTiles, new(523, 827, 22, 21)));
+			Sprites.Add("ItemFire", new(DefaultTiles, new(552, 833, 29, 16)));
+			Sprites.Add("ItemUnknown", new(DefaultTiles, new(517, 561, 13, 13)));
 
 			Pixel = new(graphicsDevice, 1, 1);
 			Pixel.SetData(new[] { Color.White });

@@ -51,6 +51,7 @@ namespace StepFlow.Master
 				Scale instance => new ScaleProxy(this, instance),
 				Projectile instance => new ProjectileProxy(this, instance),
 				Damage instance => new DamageProxy(this, instance),
+				Item instance => new ItemProxy(this, instance),
 				null => null,
 				_ => throw new InvalidOperationException(),
 			};
@@ -60,6 +61,15 @@ namespace StepFlow.Master
 
 		private void TakeStepInner()
 		{
+			foreach (var collision in Playground.GetAllContent()
+				.OfType<IScheduled>()
+				.Select(x => (IScheduledProxy)CreateProxy(x))
+				.ToArray()
+			)
+			{
+				collision.Dequeue();
+			}
+
 			foreach (var collision in Playground.GetAllContent()
 				.OfType<Material>()
 				.Select(x => (IMaterialProxy)CreateProxy(x))
@@ -90,15 +100,6 @@ namespace StepFlow.Master
 			}
 
 			Time++;
-
-			foreach (var collision in Playground.GetAllContent()
-				.OfType<IScheduled>()
-				.Select(x => (IScheduledProxy)CreateProxy(x))
-				.ToArray()
-			)
-			{
-				collision.Dequeue();
-			}
 		}
 
 		private static void RegisterList<T>()

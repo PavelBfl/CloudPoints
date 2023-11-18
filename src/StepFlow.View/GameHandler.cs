@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StepFlow.Core;
 using StepFlow.Core.Components;
+using StepFlow.Core.Elements;
 using StepFlow.Master;
 using StepFlow.Master.Proxies;
 using StepFlow.Master.Proxies.Components;
@@ -55,9 +56,12 @@ namespace StepFlow.View
 		{
 			CreateRoom(new(5, 5), new(40, 20), 15);
 
-			CreatePlayerCharacter(new(100, 100, 20, 20), 100);
+			CreateItem(new(130, 50, 15, 15), 10, DamageKind.Fire);
+			CreateItem(new(200, 50, 15, 15), 10, DamageKind.Poison);
 
 			CreateObstruction(new(50, 50, 40, 40), 150);
+
+			CreatePlayerCharacter(new(100, 100, 20, 20), 100);
 		}
 
 		private void CreatePlayerCharacter(System.Drawing.Rectangle bounds, float strength)
@@ -127,6 +131,17 @@ namespace StepFlow.View
 			");
 		}
 
+		private void CreateItem(System.Drawing.Rectangle bounds, int value, DamageKind kind)
+		{
+			PlayMaster.Execute($@"
+				playground.CreateItem(
+					playground.CreateRectangle({bounds.X}, {bounds.Y}, {bounds.Width}, {bounds.Height}),
+					{value},
+					{(int)kind}
+				);
+			");
+		}
+
 		public void Update(GameTime gameTime)
 		{
 			if (KeyboardService.IsKeyDown(Keys.Left))
@@ -167,10 +182,7 @@ namespace StepFlow.View
 
 			for (var i = 0; i < 10; i++)
 			{
-				//if (PlayMaster.Playground.GetAllContent().OfType<IScheduled>().Any(x => x.Queue.Any()))
-				{
-					PlayMaster.TakeStep();
-				} 
+				PlayMaster.TakeStep();
 			}
 
 			KeyboardService.Update();
@@ -211,7 +223,31 @@ namespace StepFlow.View
 
 			foreach (var projectile in playground.Projectiles)
 			{
-				if (CreateTexture(projectile, "Projectile", null) is { } instance)
+				var textureName = projectile.Damage?.Kind switch
+				{
+					DamageKind.None => "Projectile",
+					DamageKind.Fire => "ProjectileFire",
+					DamageKind.Poison => "ProjectilePoison",
+					DamageKind.Fire | DamageKind.Poison => "ProjectileAll",
+					_ => "Projectile",
+				};
+
+				if (CreateTexture(projectile, textureName, null) is { } instance)
+				{
+					Base.Childs.Add(instance);
+				}
+			}
+
+			foreach (var item in playground.Items)
+			{
+				var textureName = item.Kind switch
+				{
+					DamageKind.Fire => "ItemFire",
+					DamageKind.Poison => "ItemPoison",
+					_ => "ItemUnknown",
+				};
+
+				if (CreateTexture(item, textureName, null) is { } instance)
 				{
 					Base.Childs.Add(instance);
 				}

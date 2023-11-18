@@ -23,6 +23,8 @@ namespace StepFlow.Master.Proxies
 
 		public IList<IProjectileProxy> Projectiles => new ListItemsProxy<Projectile, IList<Projectile>, IProjectileProxy>(Owner, Target.Projectiles);
 
+		public IList<IItemProxy> Items => CreateListItemProxy<Item, IItemProxy>(Target.Items);
+
 		public Rectangle CreateRectangle(int x, int y, int width, int height) => new Rectangle(x, y, width, height);
 
 		public Point CreatePoint(int x, int y) => new Point(x, y);
@@ -90,6 +92,21 @@ namespace StepFlow.Master.Proxies
 			});
 
 			Projectiles.Add(projectile);
+		}
+
+		public void CreateItem(Rectangle bounds, int value, DamageKind kind)
+		{
+			var item = (IItemProxy)Owner.CreateProxy(new Item(Target.Context)
+			{
+				Current = new Cell()
+				{
+					Border = bounds,
+				},
+				Value = value,
+				Kind = kind,
+			});
+
+			Items.Add(item);
 		}
 	}
 }

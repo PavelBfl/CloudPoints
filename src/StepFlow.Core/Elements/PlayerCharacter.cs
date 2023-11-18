@@ -1,4 +1,5 @@
-﻿using StepFlow.Core.Components;
+﻿using System.Collections.Generic;
+using StepFlow.Core.Components;
 
 namespace StepFlow.Core.Elements
 {
@@ -10,5 +11,7 @@ namespace StepFlow.Core.Elements
 		}
 
 		public IScale? Cooldown { get; set; }
+
+		public IList<Item> Items { get; } = new List<Item>();
 	}
 }

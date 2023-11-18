@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using StepFlow.Core;
 using StepFlow.Core.Border;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Master.Proxies.Border;
+using StepFlow.Master.Proxies.Collections;
 using StepFlow.Master.Proxies.Components;
 
 namespace StepFlow.Master.Proxies.Elements
@@ -24,7 +26,9 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public new IScaleProxy Strength => base.Strength ?? throw new InvalidOperationException();
 
-		public IScaleProxy Cooldown { get => (IScaleProxy)Owner.CreateProxy(Target.Cooldown); }
+		public IScaleProxy Cooldown => (IScaleProxy)Owner.CreateProxy(Target.Cooldown);
+
+		public IList<IItemProxy> Items => new ListItemsProxy<Item, IList<Item>, IItemProxy>(Owner, Target.Items);
 
 		public override void OnTick()
 		{
@@ -37,6 +41,19 @@ namespace StepFlow.Master.Proxies.Elements
 			else
 			{
 				Cooldown.Decrement();
+			}
+		}
+
+		public override void Collision(ICollidedProxy other)
+		{
+			if (other is IItemProxy itemProxy)
+			{
+				Owner.GetPlaygroundProxy().Items.Remove(itemProxy);
+				Items.Add(itemProxy);
+			}
+			else if ((other as IProjectileProxy)?.Creator?.Target != Target)
+			{
+				base.Collision(other);
 			}
 		}
 
@@ -64,10 +81,7 @@ namespace StepFlow.Master.Proxies.Elements
 							SIZE
 						),
 					},
-					Damage = new Damage(Target.Context)
-					{
-						Value = 10,
-					},
+					Damage = AggregateDamage(10),
 				});
 
 				for (var i = 0; i < 100; i++)
@@ -78,6 +92,21 @@ namespace StepFlow.Master.Proxies.Elements
 				Owner.GetPlaygroundProxy().Projectiles.Add(projectile);
 				Cooldown.SetMax();
 			}
+		}
+
+		private Damage AggregateDamage(int value = 0, DamageKind kind = DamageKind.None)
+		{
+			foreach (var item in Items)
+			{
+				value += item.Value;
+				kind |= item.Kind;
+			}
+
+			return new Damage(Target.Context)
+			{
+				Value = value,
+				Kind = kind,
+			};
 		}
 	}
 }

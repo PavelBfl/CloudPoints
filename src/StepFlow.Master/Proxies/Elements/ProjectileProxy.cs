@@ -7,6 +7,8 @@ namespace StepFlow.Master.Proxies.Elements
 {
 	public interface IProjectileProxy : IProxyBase<Projectile>, IMaterialProxy
 	{
+		IProxyBase<Subject>? Creator { get; set; }
+
 		IDamageProxy? Damage { get; set; }
 	}
 
