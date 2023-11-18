@@ -69,7 +69,7 @@ namespace StepFlow.Master.Proxies.Elements
 					border.Y + border.Height / 2
 				);
 
-				var projectile = (IProjectileProxy)Owner.CreateProxy(new Projectile(Target.Context)
+				var projectile = (IProjectileProxy)Owner.CreateProxy(new Projectile()
 				{
 					Creator = Target,
 					Current = new Cell()
@@ -102,7 +102,7 @@ namespace StepFlow.Master.Proxies.Elements
 				kind |= item.Kind;
 			}
 
-			return new Damage(Target.Context)
+			return new Damage()
 			{
 				Value = value,
 				Kind = kind,

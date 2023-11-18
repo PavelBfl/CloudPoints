@@ -16,10 +16,6 @@
 
 	public sealed class Damage : Subject, IDamage
 	{
-		public Damage(Context owner) : base(owner)
-		{
-		}
-
 		public int Value { get; set; }
 
 		public DamageKind Kind { get; set; }

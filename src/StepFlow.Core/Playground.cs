@@ -8,10 +8,6 @@ namespace StepFlow.Core
 {
 	public sealed class Playground : Subject
 	{
-		public Playground(Context owner) : base(owner)
-		{
-		}
-
 		public static IEnumerable<(ICollided, ICollided)> GetCollision(IEnumerable<ICollided> collideds)
 		{
 			var instance = collideds.ToArray();

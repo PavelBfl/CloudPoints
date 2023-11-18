@@ -43,14 +43,14 @@ namespace StepFlow.Master.Proxies
 
 		public void CreatePlayerCharacter(Rectangle bounds, int strength)
 		{
-			PlayerCharacter = (IPlayerCharacterProxy)Owner.CreateProxy(new PlayerCharacter(Target.Context)
+			PlayerCharacter = (IPlayerCharacterProxy)Owner.CreateProxy(new PlayerCharacter()
 			{
-				Strength = new Scale(Target.Context)
+				Strength = new Scale()
 				{
 					Max = 1,
 					Value = 1,
 				},
-				Cooldown = new Scale(Target.Context)
+				Cooldown = new Scale()
 				{
 					Max = 100,
 					Value = 100,
@@ -63,12 +63,12 @@ namespace StepFlow.Master.Proxies
 
 		public void CreateObstruction(Rectangle bounds, int? strength)
 		{
-			var barrier = (IObstructionProxy)Owner.CreateProxy(new Obstruction(Target.Context));
+			var barrier = (IObstructionProxy)Owner.CreateProxy(new Obstruction());
 			barrier.Current = CreateCell(bounds);
 
 			if (strength is { })
 			{
-				barrier.Strength = (IScaleProxy)Owner.CreateProxy(new Scale(Target.Context)
+				barrier.Strength = (IScaleProxy)Owner.CreateProxy(new Scale()
 				{
 					Value = strength.Value,
 					Max = strength.Value,
@@ -80,13 +80,13 @@ namespace StepFlow.Master.Proxies
 
 		public void CreateProjectile(Rectangle bounds, int value, DamageKind kind)
 		{
-			var projectile = (IProjectileProxy)Owner.CreateProxy(new Projectile(Target.Context)
+			var projectile = (IProjectileProxy)Owner.CreateProxy(new Projectile()
 			{
 				Current = new Cell()
 				{
 					Border = bounds,
 				},
-				Damage = new Damage(Target.Context)
+				Damage = new Damage()
 				{
 					Value = value,
 					Kind = kind,
@@ -98,7 +98,7 @@ namespace StepFlow.Master.Proxies
 
 		public void CreateItem(Rectangle bounds, int value, DamageKind kind)
 		{
-			var item = (IItemProxy)Owner.CreateProxy(new Item(Target.Context)
+			var item = (IItemProxy)Owner.CreateProxy(new Item()
 			{
 				Current = new Cell()
 				{
@@ -113,20 +113,20 @@ namespace StepFlow.Master.Proxies
 
 		public void CreateEnemy(Rectangle bounds, Rectangle vision)
 		{
-			var enemy = (IEnemyProxy)Owner.CreateProxy(new Enemy(Target.Context)
+			var enemy = (IEnemyProxy)Owner.CreateProxy(new Enemy()
 			{
 				Current = new Cell()
 				{
 					Border = bounds,
 				},
-				Vision = new Collided(Target.Context)
+				Vision = new Collided()
 				{
 					Current = new Cell()
 					{
 						Border = vision,
 					},
 				},
-				Cooldown = new Scale(Target.Context)
+				Cooldown = new Scale()
 				{
 					Value = 100,
 					Max = 100,

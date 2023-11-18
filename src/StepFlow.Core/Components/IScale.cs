@@ -11,10 +11,6 @@
 
 	public sealed class Scale : Subject, IScale
 	{
-		public Scale(Context owner) : base(owner)
-		{
-		}
-
 		public int Value { get; set; }
 
 		public int Max { get; set; }

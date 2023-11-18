@@ -5,10 +5,6 @@ namespace StepFlow.Core.Elements
 {
 	public sealed class Enemy : Material
 	{
-		public Enemy(Context owner) : base(owner)
-		{
-		}
-
 		public ICollided? Vision { get; set; }
 
 		public IScale? Cooldown { get; set; }

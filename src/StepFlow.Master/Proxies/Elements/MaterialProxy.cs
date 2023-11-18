@@ -63,7 +63,7 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			var factor = course.GetFactor();
 
-			var setCourse = (ISetCourseProxy)Owner.CreateProxy(new SetCourse(Target.Context)
+			var setCourse = (ISetCourseProxy)Owner.CreateProxy(new SetCourse()
 			{
 				Collided = Target,
 				Course = course,

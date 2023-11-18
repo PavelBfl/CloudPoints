@@ -6,10 +6,6 @@ namespace StepFlow.Core.Elements
 {
 	public class Material : Subject, ICollided, IScheduled
 	{
-		public Material(Context owner) : base(owner)
-		{
-		}
-
 		public IScale? Strength { get; set; }
 
 		public IBordered? Current { get; set; }

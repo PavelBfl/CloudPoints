@@ -5,10 +5,6 @@ namespace StepFlow.Core.Elements
 {
 	public sealed class PlayerCharacter : Material
 	{
-		public PlayerCharacter(Context context) : base(context)
-		{
-		}
-
 		public IScale? Cooldown { get; set; }
 
 		public IList<Item> Items { get; } = new List<Item>();

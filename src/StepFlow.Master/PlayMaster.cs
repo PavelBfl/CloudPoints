@@ -33,7 +33,7 @@ namespace StepFlow.Master
 
 		public long Time { get; private set; }
 
-		public Playground Playground { get; } = new Playground(new Context());
+		public Playground Playground { get; } = new Playground();
 
 		public IPlaygroundProxy GetPlaygroundProxy() => new PlaygroundProxy(this, Playground);
 
