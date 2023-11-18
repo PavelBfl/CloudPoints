@@ -73,7 +73,7 @@ namespace StepFlow.Master
 
 			foreach (var collision in Playground.GetAllContent()
 				.OfType<Material>()
-				.Select(x => (IMaterialProxy)CreateProxy(x))
+				.Select(x => (IMaterialProxy<Material>)CreateProxy(x))
 				.ToArray()
 			)
 			{

@@ -2,7 +2,7 @@
 
 namespace StepFlow.Master.Proxies.Components
 {
-	public interface IScaleProxy : IProxyBase<IScale>
+	public interface IScaleProxy : IProxyBase<Scale>
 	{
 		int Value { get; set; }
 
@@ -32,8 +32,6 @@ namespace StepFlow.Master.Proxies.Components
 		public int Max { get => Target.Max; set => SetValue(x => x.Max, value); }
 
 		public bool Freeze { get => Target.Freeze; set => SetValue(x => x.Freeze, value); }
-
-		IScale IReadOnlyProxyBase<IScale>.Target => Target;
 
 		public bool Add(int value)
 		{

@@ -5,7 +5,7 @@ using StepFlow.Master.Proxies.Components;
 
 namespace StepFlow.Master.Proxies.Elements
 {
-	public interface IProjectileProxy : IProxyBase<Projectile>, IMaterialProxy
+	public interface IProjectileProxy : IMaterialProxy<Projectile>
 	{
 		IProxyBase<Subject>? Creator { get; set; }
 
@@ -32,7 +32,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public override void OnTick()
 		{
-			if (!Queue.Any())
+			if (!Scheduler.Queue.Any())
 			{
 				Owner.GetPlaygroundProxy().Projectiles.Remove(this);
 			}

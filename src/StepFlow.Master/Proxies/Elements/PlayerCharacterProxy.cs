@@ -11,7 +11,7 @@ using StepFlow.Master.Proxies.Components;
 
 namespace StepFlow.Master.Proxies.Elements
 {
-	public interface IPlayerCharacterProxy : IProxyBase<PlayerCharacter>, IMaterialProxy
+	public interface IPlayerCharacterProxy : IMaterialProxy<PlayerCharacter>
 	{
 		new IScaleProxy Strength { get; }
 
@@ -63,7 +63,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 			if (Cooldown.Value == 0)
 			{
-				var border = Current.Border;
+				var border = Body.Current.Border;
 				var center = new Point(
 					border.X + border.Width / 2,
 					border.Y + border.Height / 2
@@ -72,14 +72,17 @@ namespace StepFlow.Master.Proxies.Elements
 				var projectile = (IProjectileProxy)Owner.CreateProxy(new Projectile()
 				{
 					Creator = Target,
-					Current = new Cell()
+					Body = new Collided()
 					{
-						Border = new Rectangle(
-							center.X - SIZE / 2,
-							center.Y - SIZE / 2,
-							SIZE,
-							SIZE
-						),
+						Current = new Cell()
+						{
+							Border = new Rectangle(
+								center.X - SIZE / 2,
+								center.Y - SIZE / 2,
+								SIZE,
+								SIZE
+							),
+						},
 					},
 					Damage = AggregateDamage(10),
 				});

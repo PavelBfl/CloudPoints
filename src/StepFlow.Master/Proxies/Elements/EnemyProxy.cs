@@ -1,15 +1,13 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using StepFlow.Core;
 using StepFlow.Core.Border;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
-using StepFlow.Master.Proxies.Border;
 using StepFlow.Master.Proxies.Components;
 
 namespace StepFlow.Master.Proxies.Elements
 {
-	public interface IEnemyProxy : IProxyBase<Enemy>, IMaterialProxy
+	public interface IEnemyProxy : IMaterialProxy<Enemy>
 	{
 		ICollidedProxy Vision { get; }
 	}
@@ -20,7 +18,7 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 		}
 
-		public ICollidedProxy Vision => new VisionProxy(Owner, Target.Vision, this);
+		public ICollidedProxy Vision => (ICollidedProxy)Owner.CreateProxy(Target.Vision);
 
 		public IScaleProxy Cooldown => (IScaleProxy)Owner.CreateProxy(Target.Cooldown);
 
@@ -35,7 +33,7 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			if (Cooldown.Value == 0)
 			{
-				var border = Current.Border;
+				var border = Body.Current.Border;
 				var center = new Point(
 					border.X + border.Width / 2,
 					border.Y + border.Height / 2
@@ -51,14 +49,17 @@ namespace StepFlow.Master.Proxies.Elements
 				var projectile = (IProjectileProxy)Owner.CreateProxy(new Projectile()
 				{
 					Creator = Target,
-					Current = new Cell()
+					Body = new Collided()
 					{
-						Border = new Rectangle(
+						Current = new Cell()
+						{
+							Border = new Rectangle(
 								center.X - SIZE / 2,
 								center.Y - SIZE / 2,
 								SIZE,
 								SIZE
 							),
+						},
 					},
 					Damage = new Damage()
 					{
@@ -74,31 +75,6 @@ namespace StepFlow.Master.Proxies.Elements
 				Owner.GetPlaygroundProxy().Projectiles.Add(projectile);
 				Cooldown.SetMax();
 			}
-		}
-
-		private sealed class VisionProxy : ProxyBase<ICollided>, ICollidedProxy
-		{
-			public VisionProxy(PlayMaster owner, ICollided target, EnemyProxy enemy) : base(owner, target)
-			{
-				Enemy = enemy ?? throw new ArgumentNullException(nameof(enemy));
-			}
-
-			public EnemyProxy Enemy { get; }
-
-			public IBorderedBaseProxy<IBordered>? Current
-			{
-				get => (IBorderedBaseProxy<IBordered>?)Owner.CreateProxy(Target.Current);
-				set => SetValue(x => x.Current, value?.Target);
-			}
-
-			public IBorderedBaseProxy<IBordered>? Next
-			{
-				get => (IBorderedBaseProxy<IBordered>?)Owner.CreateProxy(Target.Next);
-				set => SetValue(x => x.Next, value?.Target);
-			}
-			public bool IsMove { get => Target.IsMove; set => SetValue(x => x.IsMove, value); }
-
-			public void Collision(ICollidedProxy other) => Enemy.VisionCollision(other);
 		}
 	}
 }

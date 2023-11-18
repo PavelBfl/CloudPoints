@@ -21,5 +21,18 @@ namespace StepFlow.Core.Elements
 				yield return (Subject)Vision;
 			}
 		}
+
+		public override IEnumerable<ICollided> GetCollideds()
+		{
+			foreach (var item in base.GetCollideds())
+			{
+				yield return item;
+			}
+
+			if (Vision is { })
+			{
+				yield return Vision;
+			}
+		}
 	}
 }

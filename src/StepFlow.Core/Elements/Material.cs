@@ -1,21 +1,23 @@
-﻿using System.Collections.Generic;
-using StepFlow.Core.Border;
+﻿using System.Collections;
+using System.Collections.Generic;
 using StepFlow.Core.Components;
 
 namespace StepFlow.Core.Elements
 {
-	public class Material : Subject, ICollided, IScheduled
+	public class Material : Subject
 	{
 		public IScale? Strength { get; set; }
 
-		public IBordered? Current { get; set; }
+		public ICollided? Body { get; set; }
 
-		public IBordered? Next { get; set; }
+		public IScheduled? Scheduler { get; set; }
 
-		public bool IsMove { get; set; }
-
-		public long QueueBegin { get; set; }
-
-		public IList<Turn> Queue { get; } = new List<Turn>();
+		public virtual IEnumerable<ICollided> GetCollideds()
+		{
+			if (Body is { })
+			{
+				yield return Body;
+			}
+		}
 	}
 }
