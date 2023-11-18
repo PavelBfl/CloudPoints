@@ -14,8 +14,19 @@ namespace StepFlow.Master.Proxies.Components
 
 		void Collision(ICollidedProxy other);
 
-		void Move();
+		void Move()
+		{
+			if (IsMove)
+			{
+				Current = Next;
+				Break();
+			}
+		}
 
-		void Break();
+		void Break()
+		{
+			Next = null;
+			IsMove = false;
+		}
 	}
 }

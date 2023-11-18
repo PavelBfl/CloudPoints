@@ -59,6 +59,9 @@ namespace StepFlow.View
 			CreateItem(new(130, 50, 15, 15), 10, DamageKind.Fire);
 			CreateItem(new(200, 50, 15, 15), 10, DamageKind.Poison);
 
+			CreateEnemy(new(50, 180, 20, 20), 50);
+			CreateEnemy(new(200, 180, 20, 20), 50);
+
 			CreateObstruction(new(50, 50, 40, 40), 150);
 
 			CreatePlayerCharacter(new(100, 100, 20, 20), 100);
@@ -142,6 +145,23 @@ namespace StepFlow.View
 			");
 		}
 
+		private void CreateEnemy(System.Drawing.Rectangle bounds, int visionSize)
+		{
+			var vision = System.Drawing.Rectangle.FromLTRB(
+				bounds.Left - visionSize,
+				bounds.Top - visionSize,
+				bounds.Right + visionSize,
+				bounds.Bottom + visionSize
+			);
+
+			PlayMaster.Execute($@"
+				playground.CreateEnemy(
+					playground.CreateRectangle({bounds.X}, {bounds.Y}, {bounds.Width}, {bounds.Height}),
+					playground.CreateRectangle({vision.X}, {vision.Y}, {vision.Width}, {vision.Height})
+				);
+			");
+		}
+
 		public void Update(GameTime gameTime)
 		{
 			if (KeyboardService.IsKeyDown(Keys.Left))
@@ -180,9 +200,20 @@ namespace StepFlow.View
 
 			Update(Base, gameTime);
 
-			for (var i = 0; i < 10; i++)
+			const int TICKS_COUNT = 10;
+			if (KeyboardService.IsKeyDown(Keys.LeftShift))
 			{
-				PlayMaster.TakeStep();
+				for (var i = 0; i < TICKS_COUNT; i++)
+				{
+					PlayMaster.TimeAxis.Revert();
+				}
+			}
+			else
+			{
+				for (var i = 0; i < TICKS_COUNT; i++)
+				{
+					PlayMaster.TakeStep();
+				}
 			}
 
 			KeyboardService.Update();
@@ -249,6 +280,32 @@ namespace StepFlow.View
 
 				if (CreateTexture(item, textureName, null) is { } instance)
 				{
+					Base.Childs.Add(instance);
+				}
+			}
+
+			foreach (var enemy in playground.Enemies)
+			{
+				if (CreateTexture(enemy, "Enemy", null) is { } instance)
+				{
+					var border = enemy.Vision.Current.Border;
+					instance.Childs.Add(new LayoutControl(Base.ServiceProvider)
+					{
+						BoundsColor = Color.Yellow,
+						Layout = new Layout()
+						{
+							Owner = Place,
+							Margin = new()
+							{
+								Left = border.Left,
+								Top = border.Top,
+								Right = UnitKind.None,
+								Bottom = UnitKind.None,
+							},
+							Size = new(border.Width, border.Height),
+						},
+					});
+
 					Base.Childs.Add(instance);
 				}
 			}

@@ -13,6 +13,7 @@ namespace StepFlow.Master.Proxies
 		IList<IObstructionProxy> Obstructions { get; }
 		IList<IProjectileProxy> Projectiles { get; }
 		IList<IItemProxy> Items { get; }
+		IList<IEnemyProxy> Enemies { get; }
 
 		void CreateObstruction(Rectangle bounds, int? strength);
 		IBorderedProxy CreateBordered();
@@ -21,5 +22,6 @@ namespace StepFlow.Master.Proxies
 		Point CreatePoint(int x, int y);
 		Rectangle CreateRectangle(int x, int y, int width, int height);
 		void CreateItem(Rectangle bounds, int value, DamageKind kind);
+		void CreateEnemy(Rectangle bounds, Rectangle vision);
 	}
 }

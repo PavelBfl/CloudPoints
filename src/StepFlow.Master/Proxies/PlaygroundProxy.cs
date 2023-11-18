@@ -25,6 +25,8 @@ namespace StepFlow.Master.Proxies
 
 		public IList<IItemProxy> Items => CreateListItemProxy<Item, IItemProxy>(Target.Items);
 
+		public IList<IEnemyProxy> Enemies => CreateListItemProxy<Enemy, IEnemyProxy>(Target.Enemies);
+
 		public Rectangle CreateRectangle(int x, int y, int width, int height) => new Rectangle(x, y, width, height);
 
 		public Point CreatePoint(int x, int y) => new Point(x, y);
@@ -107,6 +109,31 @@ namespace StepFlow.Master.Proxies
 			});
 
 			Items.Add(item);
+		}
+
+		public void CreateEnemy(Rectangle bounds, Rectangle vision)
+		{
+			var enemy = (IEnemyProxy)Owner.CreateProxy(new Enemy(Target.Context)
+			{
+				Current = new Cell()
+				{
+					Border = bounds,
+				},
+				Vision = new Collided(Target.Context)
+				{
+					Current = new Cell()
+					{
+						Border = vision,
+					},
+				},
+				Cooldown = new Scale(Target.Context)
+				{
+					Value = 100,
+					Max = 100,
+				}
+			});
+
+			Enemies.Add(enemy);
 		}
 	}
 }

@@ -23,6 +23,8 @@ namespace StepFlow.View.Controls
 
 		public IReadOnlyVertices Vertices => vertices;
 
+		public Color BoundsColor { get => Bounds.Color; set => Bounds.Color = value; }
+
 		public Layout? Layout { get; set; }
 
 		public override void Draw(GameTime gameTime)

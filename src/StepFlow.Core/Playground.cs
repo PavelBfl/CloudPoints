@@ -43,6 +43,8 @@ namespace StepFlow.Core
 
 		public IList<Item> Items { get; } = new List<Item>();
 
+		public IList<Enemy> Enemies { get; } = new List<Enemy>();
+
 		public IEnumerable<Subject> GetAllContent()
 		{
 			var cache = new HashSet<Subject>();
@@ -64,25 +66,11 @@ namespace StepFlow.Core
 
 		public override IEnumerable<Subject> GetContent()
 		{
-			if (PlayerCharacter is { })
-			{
-				yield return PlayerCharacter;
-			}
-
-			foreach (var barrier in Obstructions)
-			{
-				yield return barrier;
-			}
-
-			foreach (var projectile in Projectiles)
-			{
-				yield return projectile;
-			}
-
-			foreach (var item in Items)
-			{
-				yield return item;
-			}
+			return (PlayerCharacter is null ? Enumerable.Empty<Subject>() : new Subject[] { PlayerCharacter })
+				.Concat(Obstructions)
+				.Concat(Projectiles)
+				.Concat(Items)
+				.Concat(Enemies);
 		}
 	}
 }

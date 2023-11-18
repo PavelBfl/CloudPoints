@@ -6,5 +6,7 @@ namespace StepFlow.TimeLine
 		where TCommand : notnull, ICommand
 	{
 		void Add(TCommand command, bool isCompleted = false);
+		bool Execute();
+		bool Revert();
 	}
 }

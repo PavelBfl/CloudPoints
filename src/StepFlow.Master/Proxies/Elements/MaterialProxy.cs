@@ -47,22 +47,7 @@ namespace StepFlow.Master.Proxies.Elements
 		public bool IsMove { get => Target.IsMove; set => SetValue(x => x.IsMove, value); }
 		public virtual void Collision(ICollidedProxy other)
 		{
-			Break();
-		}
-
-		public void Move()
-		{
-			if (IsMove)
-			{
-				Current = Next;
-				Break();
-			}
-		}
-
-		public void Break()
-		{
-			Next = null;
-			IsMove = false;
+			((ICollidedProxy)this).Break();
 		}
 
 		ICollided IReadOnlyProxyBase<ICollided>.Target => Target;

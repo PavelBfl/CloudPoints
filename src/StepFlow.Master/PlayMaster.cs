@@ -52,6 +52,7 @@ namespace StepFlow.Master
 				Projectile instance => new ProjectileProxy(this, instance),
 				Damage instance => new DamageProxy(this, instance),
 				Item instance => new ItemProxy(this, instance),
+				Enemy instance => new EnemyProxy(this, instance),
 				null => null,
 				_ => throw new InvalidOperationException(),
 			};
