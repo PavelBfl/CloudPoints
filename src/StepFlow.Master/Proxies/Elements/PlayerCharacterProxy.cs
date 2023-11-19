@@ -85,6 +85,7 @@ namespace StepFlow.Master.Proxies.Elements
 						},
 					},
 					Damage = AggregateDamage(10),
+					Scheduler = new Scheduled(),
 				});
 
 				for (var i = 0; i < 100; i++)

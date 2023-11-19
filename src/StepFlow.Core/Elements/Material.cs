@@ -9,7 +9,7 @@ namespace StepFlow.Core.Elements
 
 		public Collided? Body { get; set; }
 
-		public IScheduled? Scheduler { get; set; }
+		public Scheduled? Scheduler { get; set; }
 
 		public virtual IEnumerable<Collided> GetCollideds()
 		{

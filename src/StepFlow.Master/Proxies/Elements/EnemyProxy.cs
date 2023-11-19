@@ -65,6 +65,7 @@ namespace StepFlow.Master.Proxies.Elements
 					{
 						Value = 10,
 					},
+					Scheduler = new Scheduled(),
 				});
 
 				foreach (var course in CourseExtensions.GetPath(center, otherCenter))

@@ -1,4 +1,7 @@
-﻿using System.Diagnostics.Metrics;
+﻿using System;
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using System.Diagnostics.SymbolStore;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -30,10 +33,19 @@ namespace StepFlow.View
 			Base = new Primitive(game.Services);
 
 			Meter.CreateObservableGauge("Time", () => PlayMaster.Time);
+			Meter.CreateObservableGauge("FPS", () => Fps);
+			Meter.CreateObservableGauge("Slow", () => Slow);
+			Meter.CreateObservableGauge("Mpf", () => Mpf);
 			Init();
 		}
 
 		private Meter Meter { get; } = new Meter("Game.Gameplay");
+
+		private double Fps { get; set; }
+
+		private int Slow { get; set; }
+
+		private double Mpf { get; set; }
 
 		private PlayMaster PlayMaster { get; } = new PlayMaster();
 
@@ -162,6 +174,8 @@ namespace StepFlow.View
 
 		public void Update(GameTime gameTime)
 		{
+			var sw = Stopwatch.StartNew();
+
 			if (KeyboardService.IsKeyDown(Keys.Left))
 			{
 				PlayerCharacterSetCourse(Course.Left);
@@ -216,6 +230,10 @@ namespace StepFlow.View
 
 			KeyboardService.Update();
 			MouseService.Update();
+
+			Fps = TimeSpan.FromSeconds(1) / gameTime.ElapsedGameTime;
+			Slow = ((IConvertible)gameTime.IsRunningSlowly).ToInt32(null);
+			Mpf = sw.Elapsed.TotalMilliseconds;
 		}
 
 		private static void Update(Primitive primitive, GameTime gameTime)

@@ -66,7 +66,7 @@ namespace StepFlow.Master
 		{
 			foreach (var collision in Playground.GetMaterials()
 				.Select(x => x.Scheduler)
-				.OfType<IScheduled>()
+				.OfType<Scheduled>()
 				.Select(x => (IScheduledProxy)CreateProxy(x))
 				.ToArray()
 			)
@@ -127,12 +127,16 @@ namespace StepFlow.Master
 			RegisterList<ICellProxy>();
 			RegisterList<IBorderedProxy>();
 
-			RegisterList<IPlaygroundProxy>();
+			RegisterList<IDamageProxy>();
 			RegisterList<ICollidedProxy>();
 			RegisterList<IScaleProxy>();
 			RegisterList<IScheduledProxy>();
+			RegisterList<ITurnProxy>();
+			RegisterList<ISetCourseProxy>();
 
+			RegisterList<IPlaygroundProxy>();
 			RegisterList<IPlayerCharacterProxy>();
+			RegisterList<IMaterialProxy<PlayerCharacter>>();
 			RegisterList<IObstructionProxy>();
 		}
 

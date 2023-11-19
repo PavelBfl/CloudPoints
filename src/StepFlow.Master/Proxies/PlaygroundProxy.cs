@@ -83,6 +83,7 @@ namespace StepFlow.Master.Proxies
 						Value = strength.Value,
 					} :
 					null,
+				Scheduler = new Scheduled(),
 			});
 
 			Obstructions.Add(barrier);
@@ -104,6 +105,7 @@ namespace StepFlow.Master.Proxies
 					Value = value,
 					Kind = kind,
 				},
+				Scheduler = new Scheduled(),
 			});
 
 			Projectiles.Add(projectile);
