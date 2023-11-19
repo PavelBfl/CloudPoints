@@ -17,14 +17,16 @@ namespace StepFlow.Core
 
 		public IList<Enemy> Enemies { get; } = new List<Enemy>();
 
-		public IEnumerable<(CollisionPair, CollisionPair)> GetCollision()
-		{
-			var materials = (PlayerCharacter is null ? Enumerable.Empty<Material>() : new Material[] { PlayerCharacter })
+		public IEnumerable<Material> GetMaterials()
+			=> (PlayerCharacter is null ? Enumerable.Empty<Material>() : new Material[] { PlayerCharacter })
 				.Concat(Obstructions)
 				.Concat(Projectiles)
 				.Concat(Items)
-				.Concat(Enemies)
-				.ToArray();
+				.Concat(Enemies);
+
+		public IEnumerable<(CollisionPair, CollisionPair)> GetCollision()
+		{
+			var materials = GetMaterials().ToArray();
 
 			for (var iFirst = 0; iFirst < materials.Length; iFirst++)
 			{

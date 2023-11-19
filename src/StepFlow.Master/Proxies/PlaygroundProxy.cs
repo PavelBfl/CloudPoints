@@ -6,7 +6,6 @@ using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Master.Proxies.Border;
 using StepFlow.Master.Proxies.Collections;
-using StepFlow.Master.Proxies.Components;
 using StepFlow.Master.Proxies.Elements;
 
 namespace StepFlow.Master.Proxies
@@ -47,33 +46,44 @@ namespace StepFlow.Master.Proxies
 			{
 				Strength = new Scale()
 				{
-					Max = 1,
-					Value = 1,
+					Max = strength,
+					Value = strength,
 				},
 				Cooldown = new Scale()
 				{
 					Max = 100,
 					Value = 100,
 				},
+				Body = new Collided()
+				{
+					Current = new Cell()
+					{
+						Border = bounds,
+					}
+				},
+				Scheduler = new Scheduled(),
 			});
-			PlayerCharacter.Current = CreateCell(bounds);
-			PlayerCharacter.Strength.Value = strength;
-			PlayerCharacter.Strength.Max = strength;
 		}
 
 		public void CreateObstruction(Rectangle bounds, int? strength)
 		{
-			var barrier = (IObstructionProxy)Owner.CreateProxy(new Obstruction());
-			barrier.Current = CreateCell(bounds);
-
-			if (strength is { })
+			var barrier = (IObstructionProxy)Owner.CreateProxy(new Obstruction()
 			{
-				barrier.Strength = (IScaleProxy)Owner.CreateProxy(new Scale()
+				Body = new Collided()
 				{
-					Value = strength.Value,
-					Max = strength.Value,
-				});
-			}
+					Current = new Cell()
+					{
+						Border = bounds,
+					},
+				},
+				Strength = strength is { } ?
+					new Scale()
+					{
+						Max = strength.Value,
+						Value = strength.Value,
+					} :
+					null,
+			});
 
 			Obstructions.Add(barrier);
 		}
@@ -82,9 +92,12 @@ namespace StepFlow.Master.Proxies
 		{
 			var projectile = (IProjectileProxy)Owner.CreateProxy(new Projectile()
 			{
-				Current = new Cell()
+				Body = new Collided()
 				{
-					Border = bounds,
+					Current = new Cell()
+					{
+						Border = bounds,
+					},
 				},
 				Damage = new Damage()
 				{
@@ -100,12 +113,18 @@ namespace StepFlow.Master.Proxies
 		{
 			var item = (IItemProxy)Owner.CreateProxy(new Item()
 			{
-				Current = new Cell()
+				Body = new Collided()
 				{
-					Border = bounds,
+					Current = new Cell()
+					{
+						Border = bounds,
+					},
 				},
-				Value = value,
-				Kind = kind,
+				DamageSetting = new Damage()
+				{
+					Value = value,
+					Kind = kind,
+				},
 			});
 
 			Items.Add(item);
@@ -115,9 +134,12 @@ namespace StepFlow.Master.Proxies
 		{
 			var enemy = (IEnemyProxy)Owner.CreateProxy(new Enemy()
 			{
-				Current = new Cell()
+				Body = new Collided()
 				{
-					Border = bounds,
+					Current = new Cell()
+					{
+						Border = bounds,
+					},
 				},
 				Vision = new Collided()
 				{

@@ -3,7 +3,7 @@ using StepFlow.Master.Proxies.Components;
 
 namespace StepFlow.Master.Proxies.Elements
 {
-	public interface IObstructionProxy : IProxyBase<Obstruction>, IMaterialProxy
+	public interface IObstructionProxy : IMaterialProxy<Obstruction>
 	{
 		new IScaleProxy? Strength { get; set; }
 	}

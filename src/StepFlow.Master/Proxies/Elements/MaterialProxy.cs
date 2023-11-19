@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using StepFlow.Core;
-using StepFlow.Core.Border;
+﻿using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
-using StepFlow.Master.Proxies.Border;
-using StepFlow.Master.Proxies.Collections;
 using StepFlow.Master.Proxies.Components;
 
 namespace StepFlow.Master.Proxies.Elements
@@ -16,9 +10,15 @@ namespace StepFlow.Master.Proxies.Elements
 	{
 		IScaleProxy? Strength { get; }
 
+		ICollidedProxy Body { get; }
+
+		IScheduledProxy Scheduler { get; }
+
 		void OnTick();
 
 		void SetCourse(Course course);
+
+		void Collision(ICollidedProxy thisCollided, IMaterialProxy<Material> otherMaterial, ICollidedProxy otherCollided);
 	}
 
 	internal class MaterialProxy<TTarget> : ProxyBase<TTarget>, IMaterialProxy<TTarget>
@@ -38,9 +38,9 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 		}
 
-		public virtual void Collision(ICollidedProxy other)
+		public virtual void Collision(ICollidedProxy thisCollided, IMaterialProxy<Material> otherMaterial, ICollidedProxy otherCollided)
 		{
-			((ICollidedProxy)this).Break();
+			Body.Break();
 		}
 
 		public void SetCourse(Course course)

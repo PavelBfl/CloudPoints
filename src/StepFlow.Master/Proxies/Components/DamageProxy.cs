@@ -2,7 +2,7 @@
 
 namespace StepFlow.Master.Proxies.Components
 {
-	public interface IDamageProxy : IProxyBase<IDamage>
+	public interface IDamageProxy : IProxyBase<Damage>
 	{
 		int Value { get; set; }
 
@@ -18,7 +18,5 @@ namespace StepFlow.Master.Proxies.Components
 		public int Value { get => Target.Value; set => SetValue(x => x.Value, value); }
 
 		public DamageKind Kind { get => Target.Kind; set => SetValue(x => x.Kind, value); }
-
-		IDamage IReadOnlyProxyBase<IDamage>.Target => Target;
 	}
 }

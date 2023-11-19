@@ -53,6 +53,8 @@ namespace StepFlow.Master
 				Damage instance => new DamageProxy(this, instance),
 				Item instance => new ItemProxy(this, instance),
 				Enemy instance => new EnemyProxy(this, instance),
+				Collided instance => new CollidedProxy(this, instance),
+				Scheduled instance => new ScheduledProxy(this, instance),
 				null => null,
 				_ => throw new InvalidOperationException(),
 			};
@@ -62,7 +64,8 @@ namespace StepFlow.Master
 
 		private void TakeStepInner()
 		{
-			foreach (var collision in Playground.GetAllContent()
+			foreach (var collision in Playground.GetMaterials()
+				.Select(x => x.Scheduler)
 				.OfType<IScheduled>()
 				.Select(x => (IScheduledProxy)CreateProxy(x))
 				.ToArray()
@@ -71,8 +74,7 @@ namespace StepFlow.Master
 				collision.Dequeue();
 			}
 
-			foreach (var collision in Playground.GetAllContent()
-				.OfType<Material>()
+			foreach (var collision in Playground.GetMaterials()
 				.Select(x => (IMaterialProxy<Material>)CreateProxy(x))
 				.ToArray()
 			)
@@ -80,19 +82,20 @@ namespace StepFlow.Master
 				collision.OnTick();
 			}
 
-			var collideds = Playground.GetAllContent().OfType<ICollided>();
-
-			foreach (var collision in Playground.GetCollision(collideds).ToArray())
+			foreach (var collision in Playground.GetCollision().ToArray())
 			{
-				var collided1Proxy = (ICollidedProxy)CreateProxy(collision.Item1);
-				var collided2Proxy = (ICollidedProxy)CreateProxy(collision.Item2);
+				var firstMaterialProxy = (IMaterialProxy<Material>)CreateProxy(collision.Item1.Element);
+				var firstCollidedProxy = (ICollidedProxy)CreateProxy(collision.Item1.Component);
+				var secondMaterialProxy = (IMaterialProxy<Material>)CreateProxy(collision.Item2.Element);
+				var secondCollidedProxy = (ICollidedProxy)CreateProxy(collision.Item2.Component);
 
-				collided1Proxy.Collision(collided2Proxy);
-				collided2Proxy.Collision(collided1Proxy);
+				firstMaterialProxy.Collision(firstCollidedProxy, secondMaterialProxy, secondCollidedProxy);
+				secondMaterialProxy.Collision(secondCollidedProxy, firstMaterialProxy, firstCollidedProxy);
 			}
 
-			foreach (var collision in Playground.GetAllContent()
-				.OfType<ICollided>()
+			foreach (var collision in Playground.GetMaterials()
+				.Select(x => x.Body)
+				.OfType<Collided>()
 				.Select(x => (ICollidedProxy)CreateProxy(x))
 				.ToArray()
 			)
@@ -121,7 +124,6 @@ namespace StepFlow.Master
 			UserData.RegisterType<Rectangle>();
 			UserData.RegisterType<Point>();
 
-			RegisterList<(ICollidedProxy, ICollidedProxy)>();
 			RegisterList<ICellProxy>();
 			RegisterList<IBorderedProxy>();
 

@@ -7,14 +7,7 @@
 		Poison = 2,
 	}
 
-	public interface IDamage
-	{
-		int Value { get; set; }
-
-		DamageKind Kind { get; set; }
-	}
-
-	public sealed class Damage : Subject, IDamage
+	public sealed class Damage : Subject
 	{
 		public int Value { get; set; }
 

@@ -1,18 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using StepFlow.Core.Components;
 
 namespace StepFlow.Core.Elements
 {
 	public class Material : Subject
 	{
-		public IScale? Strength { get; set; }
+		public Scale? Strength { get; set; }
 
-		public ICollided? Body { get; set; }
+		public Collided? Body { get; set; }
 
 		public IScheduled? Scheduler { get; set; }
 
-		public virtual IEnumerable<ICollided> GetCollideds()
+		public virtual IEnumerable<Collided> GetCollideds()
 		{
 			if (Body is { })
 			{

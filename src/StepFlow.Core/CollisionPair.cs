@@ -6,7 +6,7 @@ namespace StepFlow.Core
 {
 	public readonly struct CollisionPair
 	{
-		public CollisionPair(Material element, ICollided component)
+		public CollisionPair(Material element, Collided component)
 		{
 			Element = element ?? throw new ArgumentNullException(nameof(element));
 			Component = component ?? throw new ArgumentNullException(nameof(component));
@@ -14,6 +14,6 @@ namespace StepFlow.Core
 
 		public Material Element { get; }
 
-		public ICollided Component { get; }
+		public Collided Component { get; }
 	}
 }

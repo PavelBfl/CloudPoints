@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace StepFlow.Core
+﻿namespace StepFlow.Core
 {
 	public class Subject
 	{
@@ -10,9 +7,5 @@ namespace StepFlow.Core
 		}
 
 		public string? Name { get; set; }
-
-		public bool Lock { get; set; }
-
-		public virtual IEnumerable<Subject> GetContent() => Enumerable.Empty<Subject>();
 	}
 }

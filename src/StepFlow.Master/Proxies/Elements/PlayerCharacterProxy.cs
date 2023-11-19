@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using StepFlow.Core;
 using StepFlow.Core.Border;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
-using StepFlow.Master.Proxies.Border;
 using StepFlow.Master.Proxies.Collections;
 using StepFlow.Master.Proxies.Components;
 
@@ -44,16 +44,16 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 		}
 
-		public override void Collision(ICollidedProxy other)
+		public override void Collision(ICollidedProxy thisCollided, IMaterialProxy<Material> otherMaterial, ICollidedProxy otherCollided)
 		{
-			if (other is IItemProxy itemProxy)
+			if (otherMaterial is IItemProxy itemProxy)
 			{
 				Owner.GetPlaygroundProxy().Items.Remove(itemProxy);
 				Items.Add(itemProxy);
 			}
-			else if ((other as IProjectileProxy)?.Creator?.Target != Target)
+			else if ((otherMaterial as IProjectileProxy)?.Creator?.Target != Target)
 			{
-				base.Collision(other);
+				base.Collision(thisCollided, otherMaterial, otherCollided);
 			}
 		}
 
@@ -99,10 +99,10 @@ namespace StepFlow.Master.Proxies.Elements
 
 		private Damage AggregateDamage(int value = 0, DamageKind kind = DamageKind.None)
 		{
-			foreach (var item in Items)
+			foreach (var settings in Items.Select(x => x.DamageSettings))
 			{
-				value += item.Value;
-				kind |= item.Kind;
+				value += settings.Value;
+				kind |= settings.Kind;
 			}
 
 			return new Damage()

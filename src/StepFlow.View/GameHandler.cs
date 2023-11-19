@@ -5,9 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StepFlow.Core;
 using StepFlow.Core.Components;
-using StepFlow.Core.Elements;
 using StepFlow.Master;
-using StepFlow.Master.Proxies;
 using StepFlow.Master.Proxies.Components;
 using StepFlow.View.Controls;
 using StepFlow.View.Services;
@@ -119,7 +117,7 @@ namespace StepFlow.View
 
 		private void PlayerCharacterSetCourse(Course course)
 		{
-			if (PlayMaster.Playground.PlayerCharacter is { } playerCharacter && playerCharacter.Queue.LastOrDefault().Executor is not SetCourse)
+			if (PlayMaster.Playground.PlayerCharacter is { } playerCharacter && playerCharacter.Scheduler.Queue.LastOrDefault().Executor is not SetCourse)
 			{
 				PlayMaster.Execute($@"
 					playground.PlayerCharacter.SetCourse({(int)course});
@@ -239,14 +237,14 @@ namespace StepFlow.View
 
 			var playground = PlayMaster.GetPlaygroundProxy();
 
-			if (CreateTexture(playground.PlayerCharacter, "Character", null) is { } playerCharacter)
+			if (CreateTexture(playground.PlayerCharacter.Body, "Character", null) is { } playerCharacter)
 			{
 				Base.Childs.Add(playerCharacter);
 			}
 
 			foreach (var barrier in playground.Obstructions)
 			{
-				if (CreateTexture(barrier, "Wall", barrier.Strength) is { } wall)
+				if (CreateTexture(barrier.Body, "Wall", barrier.Strength) is { } wall)
 				{
 					Base.Childs.Add(wall);
 				}
@@ -263,7 +261,7 @@ namespace StepFlow.View
 					_ => "Projectile",
 				};
 
-				if (CreateTexture(projectile, textureName, null) is { } instance)
+				if (CreateTexture(projectile.Body, textureName, null) is { } instance)
 				{
 					Base.Childs.Add(instance);
 				}
@@ -271,14 +269,14 @@ namespace StepFlow.View
 
 			foreach (var item in playground.Items)
 			{
-				var textureName = item.Kind switch
+				var textureName = item.DamageSettings.Kind switch
 				{
 					DamageKind.Fire => "ItemFire",
 					DamageKind.Poison => "ItemPoison",
 					_ => "ItemUnknown",
 				};
 
-				if (CreateTexture(item, textureName, null) is { } instance)
+				if (CreateTexture(item.Body, textureName, null) is { } instance)
 				{
 					Base.Childs.Add(instance);
 				}
@@ -286,7 +284,7 @@ namespace StepFlow.View
 
 			foreach (var enemy in playground.Enemies)
 			{
-				if (CreateTexture(enemy, "Enemy", null) is { } instance)
+				if (CreateTexture(enemy.Body, "Enemy", null) is { } instance)
 				{
 					var border = enemy.Vision.Current.Border;
 					instance.Childs.Add(new LayoutControl(Base.ServiceProvider)
@@ -317,7 +315,7 @@ namespace StepFlow.View
 			SpriteBatch.End();
 		}
 
-		private Primitive? CreateTexture(IProxyBase<ICollided>? collided, string textureName, IScaleProxy? strength)
+		private Primitive? CreateTexture(ICollidedProxy? collided, string textureName, IScaleProxy? strength)
 		{
 			if (collided?.Target is { Current: { } current })
 			{

@@ -1,12 +1,11 @@
-﻿using StepFlow.Core.Components;
-using StepFlow.Core.Elements;
+﻿using StepFlow.Core.Elements;
 using StepFlow.Master.Proxies.Components;
 
 namespace StepFlow.Master.Proxies.Elements
 {
-	public interface IItemProxy : IProxyBase<Item>, IDamageProxy
+	public interface IItemProxy : IMaterialProxy<Item>
 	{
-		
+		IDamageProxy? DamageSettings { get; set; }
 	}
 
 	internal class ItemProxy : MaterialProxy<Item>, IItemProxy
@@ -15,10 +14,10 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 		}
 
-		public int Value { get => Target.Value; set => SetValue(x => x.Value, value); }
-
-		public DamageKind Kind { get => Target.Kind; set => SetValue(x => x.Kind, value); }
-
-		IDamage IReadOnlyProxyBase<IDamage>.Target => Target;
+		public IDamageProxy? DamageSettings
+		{
+			get => (IDamageProxy?)Owner.CreateProxy(Target.DamageSetting);
+			set => SetValue(x => x.DamageSetting, value?.Target);
+		}
 	}
 }

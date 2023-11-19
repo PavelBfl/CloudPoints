@@ -38,13 +38,13 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 		}
 
-		public override void Collision(ICollidedProxy other)
+		public override void Collision(ICollidedProxy thisCollided, IMaterialProxy<Material> otherMaterial, ICollidedProxy otherCollided)
 		{
-			if (Creator?.Target != other.Target)
+			if (Creator?.Target != otherMaterial.Target)
 			{
-				if (other is IMaterialProxy { Strength: { } strength } && Damage is { } damage)
+				if (otherMaterial.Strength is { } strength)
 				{
-					strength.Add(-damage.Value);
+					strength.Add(-Damage.Value);
 				}
 
 				Owner.GetPlaygroundProxy().Projectiles.Remove(this);
