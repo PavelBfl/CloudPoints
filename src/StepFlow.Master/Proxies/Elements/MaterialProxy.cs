@@ -40,7 +40,10 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public virtual void Collision(ICollidedProxy thisCollided, IMaterialProxy<Material> otherMaterial, ICollidedProxy otherCollided)
 		{
-			Body.Break();
+			if (otherCollided.IsRigid)
+			{
+				Body.Break(); 
+			}
 		}
 
 		public void SetCourse(Course course)

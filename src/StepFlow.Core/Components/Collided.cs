@@ -9,5 +9,7 @@ namespace StepFlow.Core.Components
 		public IBordered? Next { get; set; }
 
 		public bool IsMove { get; set; }
+
+		public bool IsRigid { get; set; }
 	}
 }

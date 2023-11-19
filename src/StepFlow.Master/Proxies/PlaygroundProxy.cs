@@ -59,7 +59,8 @@ namespace StepFlow.Master.Proxies
 					Current = new Cell()
 					{
 						Border = bounds,
-					}
+					},
+					IsRigid = true,
 				},
 				Scheduler = new Scheduled(),
 			});
@@ -75,6 +76,7 @@ namespace StepFlow.Master.Proxies
 					{
 						Border = bounds,
 					},
+					IsRigid = true,
 				},
 				Strength = strength is { } ?
 					new Scale()
@@ -99,6 +101,7 @@ namespace StepFlow.Master.Proxies
 					{
 						Border = bounds,
 					},
+					IsRigid = true,
 				},
 				Damage = new Damage()
 				{
@@ -121,6 +124,7 @@ namespace StepFlow.Master.Proxies
 					{
 						Border = bounds,
 					},
+					IsRigid = true,
 				},
 				DamageSetting = new Damage()
 				{
@@ -142,6 +146,7 @@ namespace StepFlow.Master.Proxies
 					{
 						Border = bounds,
 					},
+					IsRigid = true,
 				},
 				Vision = new Collided()
 				{

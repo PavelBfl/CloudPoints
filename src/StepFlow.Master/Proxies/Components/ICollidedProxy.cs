@@ -11,6 +11,7 @@ namespace StepFlow.Master.Proxies.Components
 		IBorderedBaseProxy<IBordered>? Next { get; set; }
 
 		bool IsMove { get; set; }
+		bool IsRigid { get; set; }
 
 		void Move()
 		{
@@ -47,5 +48,7 @@ namespace StepFlow.Master.Proxies.Components
 		}
 
 		public bool IsMove { get => Target.IsMove; set => SetValue(x => x.IsMove, value); }
+
+		public bool IsRigid { get => Target.IsRigid; set => SetValue(x => x.IsRigid, value); }
 	}
 }
