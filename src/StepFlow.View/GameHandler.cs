@@ -253,9 +253,35 @@ namespace StepFlow.View
 		{
 			Base.Childs.Clear();
 
+			var floorTileSize = new Vector2(40);
+			for (var iX = 0f; iX < Place.Width; iX += floorTileSize.X)
+			{
+				for (var iY = 0f; iY < Place.Height; iY += floorTileSize.Y)
+				{
+					var tile = new TextureLayout(Base.ServiceProvider)
+					{
+						Name = "Floor",
+						Layout = new Layout()
+						{
+							Owner = Place,
+							Margin = new Thickness()
+							{
+								Left = iX,
+								Top = iY,
+								Right = UnitKind.None,
+								Bottom = UnitKind.None,
+							},
+							Size = new(floorTileSize.X, floorTileSize.Y),
+						},
+					};
+
+					Base.Childs.Add(tile);
+				}
+			}
+
 			var playground = PlayMaster.GetPlaygroundProxy();
 
-			if (CreateTexture(playground.PlayerCharacter.Body, "Character", null) is { } playerCharacter)
+			if (CreateTexture(playground.PlayerCharacter?.Body, "Character", null) is { } playerCharacter)
 			{
 				Base.Childs.Add(playerCharacter);
 			}
@@ -326,7 +352,7 @@ namespace StepFlow.View
 				}
 			}
 
-			SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
+			SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
 
 			Draw(Base, gameTime);
 

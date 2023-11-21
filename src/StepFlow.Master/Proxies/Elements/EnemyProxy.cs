@@ -24,12 +24,25 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public override void OnTick()
 		{
-			base.OnTick();
-
-			Cooldown.Decrement();
+			if (Strength?.Value == 0)
+			{
+				Owner.GetPlaygroundProxy().Enemies.Remove(this);
+			}
+			else
+			{
+				Cooldown.Decrement(); 
+			}
 		}
 
-		private void VisionCollision(ICollidedProxy other)
+		public override void Collision(ICollidedProxy thisCollided, IMaterialProxy<Material> otherMaterial, ICollidedProxy otherCollided)
+		{
+			if (thisCollided.Target == Vision.Target && otherMaterial.Target == Owner.Playground.PlayerCharacter)
+			{
+				CreateProjectile(otherMaterial);
+			}
+		}
+
+		private void CreateProjectile(IMaterialProxy<Material> other)
 		{
 			if (Cooldown.Value == 0)
 			{
@@ -39,7 +52,7 @@ namespace StepFlow.Master.Proxies.Elements
 					border.Y + border.Height / 2
 				);
 
-				var otherBorder = other.Current.Border;
+				var otherBorder = other.Body.Current.Border;
 				var otherCenter = new Point(
 					otherBorder.X + otherBorder.Width / 2,
 					otherBorder.Y + otherBorder.Height / 2

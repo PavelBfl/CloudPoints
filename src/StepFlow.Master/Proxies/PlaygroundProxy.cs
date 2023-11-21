@@ -159,7 +159,12 @@ namespace StepFlow.Master.Proxies
 				{
 					Value = 100,
 					Max = 100,
-				}
+				},
+				Strength = new Scale()
+				{
+					Value = 100,
+					Max = 100,
+				},
 			});
 
 			Enemies.Add(enemy);

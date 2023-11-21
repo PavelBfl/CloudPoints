@@ -40,7 +40,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public override void Collision(ICollidedProxy thisCollided, IMaterialProxy<Material> otherMaterial, ICollidedProxy otherCollided)
 		{
-			if (Creator?.Target != otherMaterial.Target)
+			if (Creator?.Target != otherMaterial.Target && otherCollided.IsRigid)
 			{
 				if (otherMaterial.Strength is { } strength)
 				{
