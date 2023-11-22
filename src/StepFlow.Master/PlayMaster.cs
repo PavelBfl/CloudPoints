@@ -45,6 +45,7 @@ namespace StepFlow.Master
 				Playground instance => new PlaygroundProxy(this, instance),
 				PlayerCharacter instance => new PlayerCharacterProxy(this, instance),
 				Obstruction instance => new ObstructionProxy(this, instance),
+				Bordered instance => new BorderedProxy(this, instance),
 				Cell instance => new CellProxy(this, instance),
 				SetCourse instance => new SetCourseProxy(this, instance),
 				Turn instance => new TurnProxy(this, instance),

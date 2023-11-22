@@ -90,6 +90,7 @@ namespace StepFlow.Core.Border
 			{
 				if (Items.Add(item))
 				{
+					Owner.Refresh();
 					item.BorderChange += ChildBorderChange;
 				}
 			}
@@ -102,6 +103,8 @@ namespace StepFlow.Core.Border
 				}
 
 				Items.Clear();
+
+				Owner.Refresh();
 			}
 
 			public bool Contains(IBordered item) => Items.Contains(item);
@@ -116,6 +119,8 @@ namespace StepFlow.Core.Border
 				if (removed)
 				{
 					item.BorderChange -= ChildBorderChange;
+
+					Owner.Refresh();
 				}
 
 				return removed;

@@ -6,6 +6,31 @@ namespace StepFlow.Core.Border
 {
 	public sealed class BitTable
 	{
+		public static BitTable CreateCircle(int radius)
+		{
+			if (radius < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(radius));
+			}
+
+			var result = new BitTable(new Size(radius * 2 + 1, radius * 2 + 1));
+
+			var sqrRadius = radius * radius;
+			for (var iX = -radius; iX <= radius; iX++)
+			{
+				for (var iY = -radius; iY <= radius; iY++)
+				{
+					var sqrDistance = (iX * iX) + (iY * iY);
+					if (sqrDistance < sqrRadius)
+					{
+						result[iX + radius, iY + radius] = true;
+					}
+				}
+			}
+
+			return result;
+		}
+
 		public BitTable(Size size)
 		{
 			Points = new BitArray[size.Width];
@@ -15,12 +40,18 @@ namespace StepFlow.Core.Border
 			}
 		}
 
+		public bool this[int x, int y]
+		{
+			get => Points[x][y];
+			set => Points[x][y] = value;
+		}
+
 		private BitArray[] Points { get; set; } = Array.Empty<BitArray>();
 
-		private Size Size
+		public Size Size
 		{
 			get => new Size(Points.Length, Points.Length > 0 ? Points[0].Length : 0);
-			set
+			private set
 			{
 				var oldSize = Size;
 				if (oldSize != value)
@@ -69,7 +100,8 @@ namespace StepFlow.Core.Border
 
 					if (
 						(!GetSafeFlag(prevLeft) || result.Contains(prevLeft)) && 
-						(!GetSafeFlag(prevTop) || result.Contains(prevTop))
+						(!GetSafeFlag(prevTop) || result.Contains(prevTop)) &&
+						GetSafeFlag(new Point(iX, iY))
 					)
 					{
 						var cell = new Cell()
@@ -87,11 +119,11 @@ namespace StepFlow.Core.Border
 		private Rectangle ExpandFromLeft(Point begin)
 		{
 			var top = begin.Y;
-			for (var i = begin.Y; i >= 0; i--)
+			for (var iY = begin.Y; iY >= 0; iY--)
 			{
-				if (Points[begin.X][i])
+				if (Points[begin.X][iY])
 				{
-					top = i;
+					top = iY;
 				}
 				else
 				{
@@ -100,11 +132,11 @@ namespace StepFlow.Core.Border
 			}
 
 			var bottom = begin.Y;
-			for (var i = begin.Y; i < Size.Height; i++)
+			for (var iY = begin.Y; iY < Size.Height; iY++)
 			{
-				if (Points[begin.X][i])
+				if (Points[begin.X][iY])
 				{
-					bottom = i;
+					bottom = iY;
 				}
 				else
 				{
@@ -130,7 +162,7 @@ namespace StepFlow.Core.Border
 			{
 				if (ContainsVertical(top, bottom, iX))
 				{
-					right = iX;
+					left = iX;
 				}
 				else
 				{
@@ -138,7 +170,7 @@ namespace StepFlow.Core.Border
 				}
 			}
 
-			return Rectangle.FromLTRB(left, top, right, bottom);
+			return Rectangle.FromLTRB(left, top, right + 1, bottom + 1);
 		}
 
 		private bool ContainsVertical(int beginY, int endY, int x)

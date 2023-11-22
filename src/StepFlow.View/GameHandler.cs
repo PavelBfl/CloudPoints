@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StepFlow.Core;
+using StepFlow.Core.Border;
 using StepFlow.Core.Components;
 using StepFlow.Master;
 using StepFlow.Master.Proxies.Components;
@@ -384,6 +385,25 @@ namespace StepFlow.View
 						Owner = layout.Place,
 					},
 				});
+
+				foreach (var child in current.Childs ?? Enumerable.Empty<Core.Border.IBordered>())
+				{
+					root.Childs.Add(new LayoutControl(Base.ServiceProvider)
+					{
+						Layout = new Layout()
+						{
+							Owner = Place,
+							Margin = new Thickness()
+							{
+								Left = child.Border.Left,
+								Top = child.Border.Top,
+								Right = UnitKind.None,
+								Bottom = UnitKind.None,
+							},
+							Size = new(child.Border.Width, child.Border.Height),
+						},
+					});
+				}
 
 				root.Childs.Add(new TextureLayout(Base.ServiceProvider)
 				{

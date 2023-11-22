@@ -42,6 +42,10 @@ namespace StepFlow.Master.Proxies
 
 		public void CreatePlayerCharacter(Rectangle bounds, int strength)
 		{
+			var bitTable = BitTable.CreateCircle(bounds.Width);
+			var bordered = bitTable.CreateBordered();
+			bordered.Offset(new Point(bounds.X, bounds.Y));
+
 			PlayerCharacter = (IPlayerCharacterProxy)Owner.CreateProxy(new PlayerCharacter()
 			{
 				Strength = new Scale()
@@ -56,10 +60,7 @@ namespace StepFlow.Master.Proxies
 				},
 				Body = new Collided()
 				{
-					Current = new Cell()
-					{
-						Border = bounds,
-					},
+					Current = bordered,
 					IsRigid = true,
 				},
 				Scheduler = new Scheduled(),
