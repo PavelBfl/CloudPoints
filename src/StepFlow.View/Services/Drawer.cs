@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using StepFlow.Common.Exceptions;
+using StepFlow.Markup.Services;
 using StepFlow.View.Controls;
 
 namespace StepFlow.View.Services
@@ -22,17 +23,17 @@ namespace StepFlow.View.Services
 			DefaultFont = content.Load<SpriteFont>(DEFAULT_FONT_KEY);
 
 			DefaultTiles = content.Load<Texture2D>(DEFAULT_TILES_KEY);
-			Sprites.Add("Character", new(DefaultTiles, new(414, 53, 44, 59)));
-			Sprites.Add("Projectile", new(DefaultTiles, new(243, 256, 20, 19)));
-			Sprites.Add("ProjectileFire", new(DefaultTiles, new(211, 256, 20, 19)));
-			Sprites.Add("ProjectilePoison", new(DefaultTiles, new(51, 256, 20, 19)));
-			Sprites.Add("ProjectileAll", new(DefaultTiles, new(147, 256, 20, 19)));
-			Sprites.Add("Enemy", new(DefaultTiles, new(662, 22, 56, 81)));
-			Sprites.Add("Wall", new(DefaultTiles, new(454, 690, 32, 32)));
-			Sprites.Add("ItemPoison", new(DefaultTiles, new(523, 827, 22, 21)));
-			Sprites.Add("ItemFire", new(DefaultTiles, new(552, 833, 29, 16)));
-			Sprites.Add("ItemUnknown", new(DefaultTiles, new(517, 561, 13, 13)));
-			Sprites.Add("Floor", new(DefaultTiles, new(550, 658, 32, 32)));
+			Sprites.Add(Markup.Services.Texture.Character, new(DefaultTiles, new(414, 53, 44, 59)));
+			Sprites.Add(Markup.Services.Texture.Projectile, new(DefaultTiles, new(243, 256, 20, 19)));
+			Sprites.Add(Markup.Services.Texture.ProjectileFire, new(DefaultTiles, new(211, 256, 20, 19)));
+			Sprites.Add(Markup.Services.Texture.ProjectilePoison, new(DefaultTiles, new(51, 256, 20, 19)));
+			Sprites.Add(Markup.Services.Texture.ProjectileAll, new(DefaultTiles, new(147, 256, 20, 19)));
+			Sprites.Add(Markup.Services.Texture.Enemy, new(DefaultTiles, new(662, 22, 56, 81)));
+			Sprites.Add(Markup.Services.Texture.Wall, new(DefaultTiles, new(454, 690, 32, 32)));
+			Sprites.Add(Markup.Services.Texture.ItemPoison, new(DefaultTiles, new(523, 827, 22, 21)));
+			Sprites.Add(Markup.Services.Texture.ItemFire, new(DefaultTiles, new(552, 833, 29, 16)));
+			Sprites.Add(Markup.Services.Texture.ItemUnknown, new(DefaultTiles, new(517, 561, 13, 13)));
+			Sprites.Add(Markup.Services.Texture.Floor, new(DefaultTiles, new(550, 658, 32, 32)));
 
 			Pixel = new(graphicsDevice, 1, 1);
 			Pixel.SetData(new[] { Color.White });
@@ -42,7 +43,7 @@ namespace StepFlow.View.Services
 
 		private Texture2D DefaultTiles { get; }
 
-		private Dictionary<string, Sprite> Sprites { get; } = new();
+		private Dictionary<Markup.Services.Texture, Sprite> Sprites { get; } = new();
 
 		private Texture2D Pixel { get; }
 
@@ -52,19 +53,18 @@ namespace StepFlow.View.Services
 
 		public ContentManager Content { get; }
 
-		public void Line(Vector2 start, Vector2 end, Color color, float thickness = 2f)
-		{
-			if (thickness < 0)
-			{
-				throw new ArgumentOutOfRangeException(nameof(thickness));
-			}
+		private static Color ToMonoColor(System.Drawing.Color color) => new(color.R, color.G, color.B, color.A);
 
-			Vector2 delta = end - start;
+		public void Line(System.Drawing.PointF start, System.Drawing.PointF end, System.Drawing.Color color, float thickness = 2f)
+		{
+			ArgumentOutOfRangeException.ThrowIfNegative(thickness);
+
+			Vector2 delta = ((System.Numerics.Vector2)end) - ((System.Numerics.Vector2)start);
 			SpriteBatch.Draw(
 				Pixel,
-				start,
+				new(start.X, start.Y),
 				null,
-				color,
+				ToMonoColor(color),
 				Utils.ToAngle(delta),
 				new Vector2(0, 0.5f),
 				new Vector2(delta.Length(), thickness),
@@ -73,17 +73,10 @@ namespace StepFlow.View.Services
 			);
 		}
 
-		public void Polygon(IReadOnlyList<Vector2> vertices, Color color, float thickness = 2f)
+		public void Polygon(IReadOnlyList<System.Drawing.PointF> vertices, System.Drawing.Color color, float thickness = 2f)
 		{
-			if (vertices is null)
-			{
-				throw new ArgumentNullException(nameof(vertices));
-			}
-
-			if (thickness < 0)
-			{
-				throw new ArgumentOutOfRangeException(nameof(thickness));
-			}
+			ArgumentNullException.ThrowIfNull(vertices);
+			ArgumentOutOfRangeException.ThrowIfNegative(thickness);
 
 			var prevIndex = vertices.Count - 1;
 			for (var i = 0; i < vertices.Count; i++)
@@ -93,10 +86,15 @@ namespace StepFlow.View.Services
 			}
 		}
 
-		public void DrawString(string text, Vector2 position, Color color)
-			=> SpriteBatch.DrawString(DefaultFont, text, position, color);
+		public void DrawString(string text, System.Drawing.PointF position, System.Drawing.Color color)
+			=> SpriteBatch.DrawString(
+				DefaultFont,
+				text,
+				new Vector2(position.X, position.Y),
+				ToMonoColor(color)
+			);
 
-		public void DrawString(string text, System.Drawing.RectangleF bounds, HorizontalAlign horizontalAlign, VerticalAlign verticalAlign, Color color)
+		public void DrawString(string text, System.Drawing.RectangleF bounds, HorizontalAlign horizontalAlign, VerticalAlign verticalAlign, System.Drawing.Color color)
 		{
 			var contentSize = MeasureString(text);
 			var x = horizontalAlign switch
@@ -115,20 +113,20 @@ namespace StepFlow.View.Services
 				_ => throw EnumNotSupportedException.Create(verticalAlign),
 			};
 
-			DrawString(text, new Vector2(x, y), color);
+			DrawString(text, new(x, y), color);
 		}
 
 		public Vector2 MeasureString(string text) => DefaultFont.MeasureString(text);
 
-		public void Draw(string texture, Rectangle rectangle, Color? color)
+		public void Draw(Markup.Services.Texture texture, System.Drawing.Rectangle rectangle, System.Drawing.Color? color)
 		{
-			if (string.IsNullOrWhiteSpace(texture))
-			{
-				throw new ArgumentException($"\"{nameof(texture)}\" не может быть пустым или содержать только пробел.", nameof(texture));
-			}
-
 			var sprite = Sprites[texture];
-			SpriteBatch.Draw(sprite.Texture, rectangle, sprite.SourceRectangle, color ?? Color.White);
+			SpriteBatch.Draw(
+				sprite.Texture,
+				new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height),
+				sprite.SourceRectangle,
+				ToMonoColor(color ?? System.Drawing.Color.White)
+			);
 		}
 
 		private readonly struct Sprite

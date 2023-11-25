@@ -1,6 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using StepFlow.View.Services;
 
 namespace StepFlow.View
 {
@@ -8,7 +10,7 @@ namespace StepFlow.View
 	{
 		private GraphicsDeviceManager Graphics { get; }
 
-		private GameHandler? GameHandler { get; set; }
+		private GameRunner? Runner { get; set; }
 
 		public Game1()
 		{
@@ -19,9 +21,20 @@ namespace StepFlow.View
 
 		protected override void LoadContent()
 		{
-			GameHandler = new GameHandler(
-				this,
-				new System.Drawing.RectangleF(0, 0, Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight)
+			var spriteBatch = new SpriteBatch(GraphicsDevice);
+			var keyboard = new KeyboardService();
+			var mouse = new MouseService();
+			var drawer = new Drawer(spriteBatch, GraphicsDevice, Content);
+			Runner = new(
+				spriteBatch,
+				keyboard,
+				mouse,
+				new(
+					new System.Drawing.RectangleF(0, 0, Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight),
+					drawer,
+					keyboard,
+					mouse
+				)
 			);
 
 			base.LoadContent();
@@ -34,14 +47,50 @@ namespace StepFlow.View
 				Exit();
 			}
 
-			GameHandler?.Update(gameTime);
+			Runner?.Update();
 		}
 
 		protected override void Draw(GameTime gameTime)
 		{
 			GraphicsDevice.Clear(Color.Black);
 
-			GameHandler?.Draw(gameTime);
+			Runner?.Draw();
+		}
+
+		private sealed class GameRunner
+		{
+			public GameRunner(SpriteBatch spriteBatch, KeyboardService keyboardService, MouseService mouseService, Markup.GameHandler handler)
+			{
+				SpriteBatch = spriteBatch ?? throw new ArgumentNullException(nameof(spriteBatch));
+				KeyboardService = keyboardService ?? throw new ArgumentNullException(nameof(keyboardService));
+				MouseService = mouseService ?? throw new ArgumentNullException(nameof(mouseService));
+				Handler = handler ?? throw new ArgumentNullException(nameof(handler));
+			}
+
+			public SpriteBatch SpriteBatch { get; }
+
+			public KeyboardService KeyboardService { get; }
+
+			public MouseService MouseService { get; }
+
+			public Markup.GameHandler Handler { get; }
+
+			public void Update()
+			{
+				Handler.Update();
+
+				KeyboardService.Update();
+				MouseService.Update();
+			}
+
+			public void Draw()
+			{
+				SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
+
+				Handler.Draw();
+
+				SpriteBatch.End();
+			}
 		}
 	}
 }

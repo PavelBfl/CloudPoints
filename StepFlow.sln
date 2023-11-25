@@ -29,7 +29,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StepFlow.Test", "test\StepF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StepFlow.Core.Test", "test\StepFlow.Core.Test\StepFlow.Core.Test.csproj", "{F1040937-265B-4C7D-9D7D-DAE3D5BD3196}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StepFlow.Performance.Test", "StepFlow.Performance.Test\StepFlow.Performance.Test.csproj", "{8D5BDE21-2B1B-4CC4-BDC6-ECD466789F0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StepFlow.Performance.Test", "StepFlow.Performance.Test\StepFlow.Performance.Test.csproj", "{8D5BDE21-2B1B-4CC4-BDC6-ECD466789F0D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StepFlow.Markup", "src\StepFlow.Markup\StepFlow.Markup.csproj", "{918AADD2-8F0D-4ECC-B148-100549B8D687}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -85,6 +87,10 @@ Global
 		{8D5BDE21-2B1B-4CC4-BDC6-ECD466789F0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D5BDE21-2B1B-4CC4-BDC6-ECD466789F0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D5BDE21-2B1B-4CC4-BDC6-ECD466789F0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{918AADD2-8F0D-4ECC-B148-100549B8D687}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{918AADD2-8F0D-4ECC-B148-100549B8D687}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{918AADD2-8F0D-4ECC-B148-100549B8D687}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{918AADD2-8F0D-4ECC-B148-100549B8D687}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -102,6 +108,7 @@ Global
 		{766CB723-BD0A-4EF2-9898-8CAB7C133B6F} = {02A612D4-2756-4509-8A1A-02FB900E5C4E}
 		{F1040937-265B-4C7D-9D7D-DAE3D5BD3196} = {02A612D4-2756-4509-8A1A-02FB900E5C4E}
 		{8D5BDE21-2B1B-4CC4-BDC6-ECD466789F0D} = {02A612D4-2756-4509-8A1A-02FB900E5C4E}
+		{918AADD2-8F0D-4ECC-B148-100549B8D687} = {1F837992-33AA-4744-B791-90BB3FDC2D4E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {52553761-5033-48FA-B06E-D149C927B957}
