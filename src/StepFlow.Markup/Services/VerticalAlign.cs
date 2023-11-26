@@ -1,4 +1,4 @@
-﻿namespace StepFlow.View.Controls
+﻿namespace StepFlow.Markup.Services
 {
 	public enum VerticalAlign
 	{

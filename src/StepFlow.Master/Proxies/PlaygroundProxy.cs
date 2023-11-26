@@ -43,8 +43,12 @@ namespace StepFlow.Master.Proxies
 		public void CreatePlayerCharacter(Rectangle bounds, int strength)
 		{
 			var bitTable = BitTable.CreateCircle(bounds.Width);
-			var bordered = bitTable.CreateBordered();
-			bordered.Offset(new Point(bounds.X, bounds.Y));
+			//var bordered = bitTable.CreateBordered();
+			//bordered.Offset(new Point(bounds.X, bounds.Y));
+			var bordered = new Cell()
+			{
+				Border = bounds,
+			};
 
 			PlayerCharacter = (IPlayerCharacterProxy)Owner.CreateProxy(new PlayerCharacter()
 			{

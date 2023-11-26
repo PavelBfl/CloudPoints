@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using StepFlow.Common.Exceptions;
 using StepFlow.Markup.Services;
-using StepFlow.View.Controls;
 
 namespace StepFlow.View.Services
 {

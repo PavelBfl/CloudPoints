@@ -5,7 +5,6 @@ using StepFlow.Core.Components;
 using StepFlow.Markup.Services;
 using StepFlow.Master;
 using StepFlow.Master.Proxies.Components;
-using StepFlow.View.Controls;
 
 namespace StepFlow.Markup
 {
@@ -24,6 +23,7 @@ namespace StepFlow.Markup
 			Place = placeBounds;
 
 			Meter.CreateObservableGauge("Time", () => PlayMaster.Time);
+			Meter.CreateObservableGauge("Commands", () => PlayMaster.TimeAxis.Count);
 			Init();
 		}
 
@@ -192,7 +192,7 @@ namespace StepFlow.Markup
 			var playground = PlayMaster.GetPlaygroundProxy();
 
 			CreateTexture(playground.PlayerCharacter?.Body, Texture.Character, null);
-			
+			CreateBorder(playground.PlayerCharacter?.Body, Color.Red);
 
 			foreach (var barrier in playground.Obstructions)
 			{
@@ -228,6 +228,8 @@ namespace StepFlow.Markup
 			foreach (var enemy in playground.Enemies)
 			{
 				CreateTexture(enemy.Body, Texture.Enemy, null);
+				CreateBorder(enemy.Body, Color.Red);
+				CreateBorder(enemy.Vision, Color.Yellow);
 			}
 		}
 
@@ -246,6 +248,23 @@ namespace StepFlow.Markup
 						Color.Red
 					);
 				}
+			}
+		}
+
+		private void CreateBorder(ICollidedProxy? collided, Color color)
+		{
+			if (collided?.Target is { Current: { } current })
+			{
+				Drawer.Polygon(
+					new PointF[]
+					{
+						new(current.Border.Left, current.Border.Top),
+						new(current.Border.Right, current.Border.Top),
+						new(current.Border.Right, current.Border.Bottom),
+						new(current.Border.Left, current.Border.Bottom),
+					},
+					color
+				);
 			}
 		}
 	}
