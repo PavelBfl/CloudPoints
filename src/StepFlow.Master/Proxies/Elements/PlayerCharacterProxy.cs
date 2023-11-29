@@ -50,6 +50,8 @@ namespace StepFlow.Master.Proxies.Elements
 			{
 				Owner.GetPlaygroundProxy().Items.Remove(itemProxy);
 				Items.Add(itemProxy);
+
+				Speed -= itemProxy.Speed;
 			}
 			else if ((otherMaterial as IProjectileProxy)?.Creator?.Target != Target)
 			{
@@ -86,6 +88,7 @@ namespace StepFlow.Master.Proxies.Elements
 					},
 					Damage = AggregateDamage(10),
 					Scheduler = new Scheduled(),
+					Speed = 5,
 				});
 
 				for (var i = 0; i < 100; i++)
@@ -102,8 +105,11 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			foreach (var settings in Items.Select(x => x.DamageSettings))
 			{
-				value += settings.Value;
-				kind |= settings.Kind;
+				if (settings is { })
+				{
+					value += settings.Value;
+					kind |= settings.Kind;
+				}
 			}
 
 			return new Damage()

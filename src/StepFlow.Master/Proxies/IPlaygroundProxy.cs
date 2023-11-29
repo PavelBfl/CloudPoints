@@ -21,7 +21,8 @@ namespace StepFlow.Master.Proxies
 		void CreatePlayerCharacter(Rectangle bounds, int strength);
 		Point CreatePoint(int x, int y);
 		Rectangle CreateRectangle(int x, int y, int width, int height);
-		void CreateItem(Rectangle bounds, int value, DamageKind kind);
+		void CreateDamageItem(Rectangle bounds, int value, DamageKind kind);
 		void CreateEnemy(Rectangle bounds, Rectangle vision);
+		void CreateSpeedItem(Rectangle bounds, int speed);
 	}
 }

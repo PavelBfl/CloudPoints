@@ -14,6 +14,8 @@ namespace StepFlow.Master.Proxies.Elements
 
 		IScheduledProxy Scheduler { get; }
 
+		int Speed { get; set; }
+
 		void OnTick();
 
 		void SetCourse(Course course);
@@ -57,7 +59,9 @@ namespace StepFlow.Master.Proxies.Elements
 			});
 
 
-			Scheduler.Enqueue(factor, setCourse);
+			Scheduler.Enqueue(factor * Speed, setCourse);
 		}
+
+		public int Speed { get => Target.Speed; set => SetValue(x => x.Speed, value); }
 	}
 }

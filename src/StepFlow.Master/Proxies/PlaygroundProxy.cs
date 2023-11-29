@@ -59,8 +59,8 @@ namespace StepFlow.Master.Proxies
 				},
 				Cooldown = new Scale()
 				{
-					Max = 100,
-					Value = 100,
+					Max = 1000,
+					Value = 1000,
 				},
 				Body = new Collided()
 				{
@@ -68,6 +68,7 @@ namespace StepFlow.Master.Proxies
 					IsRigid = true,
 				},
 				Scheduler = new Scheduled(),
+				Speed = 10,
 			});
 		}
 
@@ -114,15 +115,22 @@ namespace StepFlow.Master.Proxies
 					Kind = kind,
 				},
 				Scheduler = new Scheduled(),
+				Speed = 5,
 			});
 
 			Projectiles.Add(projectile);
 		}
 
-		public void CreateItem(Rectangle bounds, int value, DamageKind kind)
+		public void CreateDamageItem(Rectangle bounds, int value, DamageKind kind)
 		{
 			var item = (IItemProxy)Owner.CreateProxy(new Item()
 			{
+				Kind = kind switch
+				{
+					DamageKind.Fire => ItemKind.Fire,
+					DamageKind.Poison => ItemKind.Poison,
+					_ => ItemKind.None,
+				},
 				Body = new Collided()
 				{
 					Current = new Cell()
@@ -136,6 +144,25 @@ namespace StepFlow.Master.Proxies
 					Value = value,
 					Kind = kind,
 				},
+			});
+
+			Items.Add(item);
+		}
+
+		public void CreateSpeedItem(Rectangle bounds, int speed)
+		{
+			var item = (IItemProxy)Owner.CreateProxy(new Item()
+			{
+				Kind = ItemKind.Speed,
+				Body = new Collided()
+				{
+					Current = new Cell()
+					{
+						Border = bounds,
+					},
+					IsRigid = true,
+				},
+				Speed = speed,
 			});
 
 			Items.Add(item);
@@ -162,8 +189,8 @@ namespace StepFlow.Master.Proxies
 				},
 				Cooldown = new Scale()
 				{
-					Value = 100,
-					Max = 100,
+					Value = 1000,
+					Max = 1000,
 				},
 				Strength = new Scale()
 				{

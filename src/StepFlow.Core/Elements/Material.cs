@@ -11,6 +11,8 @@ namespace StepFlow.Core.Elements
 
 		public Scheduled? Scheduler { get; set; }
 
+		public int Speed { get; set; }
+
 		public virtual IEnumerable<Collided> GetCollideds()
 		{
 			if (Body is { })

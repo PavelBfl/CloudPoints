@@ -5,6 +5,8 @@ namespace StepFlow.Master.Proxies.Elements
 {
 	public interface IItemProxy : IMaterialProxy<Item>
 	{
+		ItemKind Kind { get; set; }
+
 		IDamageProxy? DamageSettings { get; set; }
 	}
 
@@ -13,6 +15,8 @@ namespace StepFlow.Master.Proxies.Elements
 		public ItemProxy(PlayMaster owner, Item target) : base(owner, target)
 		{
 		}
+
+		public ItemKind Kind { get => Target.Kind; set => SetValue(x => x.Kind, value); }
 
 		public IDamageProxy? DamageSettings
 		{

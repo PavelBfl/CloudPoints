@@ -13,5 +13,6 @@
 		ItemFire,
 		ItemUnknown,
 		Floor,
+		ItemSpeed,
 	};
 }

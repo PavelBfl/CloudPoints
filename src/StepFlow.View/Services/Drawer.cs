@@ -33,6 +33,7 @@ namespace StepFlow.View.Services
 			Sprites.Add(Markup.Services.Texture.ItemFire, new(DefaultTiles, new(552, 833, 29, 16)));
 			Sprites.Add(Markup.Services.Texture.ItemUnknown, new(DefaultTiles, new(517, 561, 13, 13)));
 			Sprites.Add(Markup.Services.Texture.Floor, new(DefaultTiles, new(550, 658, 32, 32)));
+			Sprites.Add(Markup.Services.Texture.ItemSpeed, new(DefaultTiles, new(20, 158, 18, 22)));
 
 			Pixel = new(graphicsDevice, 1, 1);
 			Pixel.SetData(new[] { Color.White });

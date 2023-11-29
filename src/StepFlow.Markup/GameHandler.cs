@@ -2,6 +2,7 @@
 using System.Drawing;
 using StepFlow.Core;
 using StepFlow.Core.Components;
+using StepFlow.Core.Elements;
 using StepFlow.Markup.Services;
 using StepFlow.Master;
 using StepFlow.Master.Proxies.Components;
@@ -43,8 +44,9 @@ namespace StepFlow.Markup
 		{
 			CreateRoom(new(5, 5), new(40, 20), 15);
 
-			CreateItem(new(130, 50, 15, 15), 10, DamageKind.Fire);
-			CreateItem(new(200, 50, 15, 15), 10, DamageKind.Poison);
+			CreateDamageItem(new(130, 50, 15, 15), 10, DamageKind.Fire);
+			CreateDamageItem(new(200, 50, 15, 15), 10, DamageKind.Poison);
+			CreateSpeedItem(new(270, 50, 15, 15), 5);
 
 			CreateEnemy(new(50, 180, 20, 20), 50);
 			CreateEnemy(new(200, 180, 20, 20), 50);
@@ -121,13 +123,23 @@ namespace StepFlow.Markup
 			");
 		}
 
-		private void CreateItem(Rectangle bounds, int value, DamageKind kind)
+		private void CreateDamageItem(Rectangle bounds, int value, DamageKind kind)
 		{
 			PlayMaster.Execute($@"
-				playground.CreateItem(
+				playground.CreateDamageItem(
 					playground.CreateRectangle({bounds.X}, {bounds.Y}, {bounds.Width}, {bounds.Height}),
 					{value},
 					{(int)kind}
+				);
+			");
+		}
+
+		private void CreateSpeedItem(Rectangle bounds, int speed)
+		{
+			PlayMaster.Execute($@"
+				playground.CreateSpeedItem(
+					playground.CreateRectangle({bounds.X}, {bounds.Y}, {bounds.Width}, {bounds.Height}),
+					{speed}
 				);
 			");
 		}
@@ -215,10 +227,11 @@ namespace StepFlow.Markup
 
 			foreach (var item in playground.Items)
 			{
-				var textureName = item.DamageSettings.Kind switch
+				var textureName = item.Kind switch
 				{
-					DamageKind.Fire => Texture.ItemFire,
-					DamageKind.Poison => Texture.ItemPoison,
+					ItemKind.Fire => Texture.ItemFire,
+					ItemKind.Poison => Texture.ItemPoison,
+					ItemKind.Speed => Texture.ItemSpeed,
 					_ => Texture.ItemUnknown,
 				};
 
