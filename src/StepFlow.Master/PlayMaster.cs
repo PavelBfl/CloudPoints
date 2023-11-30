@@ -75,34 +75,34 @@ namespace StepFlow.Master
 				collision.Dequeue();
 			}
 
-			foreach (var collision in Playground.GetMaterials()
-				.Select(x => (IMaterialProxy<Material>)CreateProxy(x))
-				.ToArray()
-			)
-			{
-				collision.OnTick();
-			}
+			//foreach (var collision in Playground.GetMaterials()
+			//	.Select(x => (IMaterialProxy<Material>)CreateProxy(x))
+			//	.ToArray()
+			//)
+			//{
+			//	collision.OnTick();
+			//}
 
-			foreach (var collision in Playground.GetCollision().ToArray())
-			{
-				var firstMaterialProxy = (IMaterialProxy<Material>)CreateProxy(collision.Item1.Element);
-				var firstCollidedProxy = (ICollidedProxy)CreateProxy(collision.Item1.Component);
-				var secondMaterialProxy = (IMaterialProxy<Material>)CreateProxy(collision.Item2.Element);
-				var secondCollidedProxy = (ICollidedProxy)CreateProxy(collision.Item2.Component);
+			//foreach (var collision in Playground.GetCollision().ToArray())
+			//{
+			//	var firstMaterialProxy = (IMaterialProxy<Material>)CreateProxy(collision.Item1.Element);
+			//	var firstCollidedProxy = (ICollidedProxy)CreateProxy(collision.Item1.Component);
+			//	var secondMaterialProxy = (IMaterialProxy<Material>)CreateProxy(collision.Item2.Element);
+			//	var secondCollidedProxy = (ICollidedProxy)CreateProxy(collision.Item2.Component);
 
-				firstMaterialProxy.Collision(firstCollidedProxy, secondMaterialProxy, secondCollidedProxy);
-				secondMaterialProxy.Collision(secondCollidedProxy, firstMaterialProxy, firstCollidedProxy);
-			}
+			//	firstMaterialProxy.Collision(firstCollidedProxy, secondMaterialProxy, secondCollidedProxy);
+			//	secondMaterialProxy.Collision(secondCollidedProxy, firstMaterialProxy, firstCollidedProxy);
+			//}
 
-			foreach (var collision in Playground.GetMaterials()
-				.Select(x => x.Body)
-				.OfType<Collided>()
-				.Select(x => (ICollidedProxy)CreateProxy(x))
-				.ToArray()
-			)
-			{
-				collision.Move();
-			}
+			//foreach (var collision in Playground.GetMaterials()
+			//	.Select(x => x.Body)
+			//	.OfType<Collided>()
+			//	.Select(x => (ICollidedProxy)CreateProxy(x))
+			//	.ToArray()
+			//)
+			//{
+			//	collision.Move();
+			//}
 
 			Time++;
 		}

@@ -14,13 +14,11 @@ namespace StepFlow.Markup
 		public GameHandler(
 			RectangleF placeBounds,
 			IDrawer drawer,
-			IKeyboard keyboard,
-			IMouse mouse
+			IKeyboard keyboard
 		)
 		{
 			Drawer = drawer ?? throw new ArgumentNullException(nameof(drawer));
 			Keyboard = keyboard ?? throw new ArgumentNullException(nameof(keyboard));
-			Mouse = mouse ?? throw new ArgumentNullException(nameof(mouse));
 			Place = placeBounds;
 
 			Meter.CreateObservableGauge("Time", () => PlayMaster.Time);
@@ -31,8 +29,6 @@ namespace StepFlow.Markup
 		private Meter Meter { get; } = new Meter("Game.Gameplay");
 
 		private PlayMaster PlayMaster { get; } = new PlayMaster();
-
-		private IMouse Mouse { get; }
 
 		private IKeyboard Keyboard { get; }
 
@@ -163,17 +159,7 @@ namespace StepFlow.Markup
 
 		public void Update()
 		{
-			if (Keyboard.GetPlayerCourse() is { } playerCourse)
-			{
-				PlayerCharacterSetCourse(playerCourse);
-			}
-
-			if (Keyboard.GetPlayerShot() is { } playerShot)
-			{
-				CreateProjectile(playerShot);
-			}
-
-			const int TICKS_COUNT = 10;
+			const int TICKS_COUNT = 250;
 			if (Keyboard.IsUndo())
 			{
 				for (var i = 0; i < TICKS_COUNT; i++)
@@ -185,6 +171,16 @@ namespace StepFlow.Markup
 			{
 				for (var i = 0; i < TICKS_COUNT; i++)
 				{
+					if (Keyboard.GetPlayerCourse() is { } playerCourse)
+					{
+						PlayerCharacterSetCourse(playerCourse);
+					}
+
+					if (Keyboard.GetPlayerShot() is { } playerShot)
+					{
+						CreateProjectile(playerShot);
+					}
+
 					PlayMaster.TakeStep();
 				}
 			}

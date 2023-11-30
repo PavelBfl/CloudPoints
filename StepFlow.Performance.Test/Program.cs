@@ -1,90 +1,64 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿using System.Diagnostics;
+using System.Drawing;
+using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
-using StepFlow.Core.Border;
+using StepFlow.Core;
+using StepFlow.Markup;
+using StepFlow.Markup.Services;
 
 public class Program
 {
 	private static void Main(string[] args)
 	{
-		BenchmarkRunner.Run<Test>();
+		var handler = new GameHandler(
+			new(0, 0, 800, 480),
+			new Drawer(),
+			new Keyboard()
+		);
+
+		var sw = Stopwatch.StartNew();
+		handler.Update();
+
+		const int COUNT = 100;
+		for (var i = 0; i < COUNT; i++)
+		{
+			handler.Update();
+		}
+
+		Console.WriteLine(sw.Elapsed / COUNT);
 	}
 
-	private static IEnumerable<Bordered> CreateBorders(int xCount, int yCount, int offset, int diameter)
+	private sealed class Drawer : IDrawer
 	{
-		for (var iX = 0; iX < xCount; iX++)
+		public void Draw(Texture texture, Rectangle rectangle, Color? color = null)
 		{
-			for (var iY = 0; iY < yCount; iY++)
-			{
-				var border = CreateBordered(diameter);
-				border.Offset(new(iX * offset, iY * offset));
-				yield return border;
-			}
 		}
-	}
 
-	private static Bordered CreateBordered(int diameter)
-	{
-		var bordered = new Bordered();
-		foreach (var point in Create(diameter))
+		public void DrawString(string text, PointF position, Color color)
 		{
-			bordered.Childs.Add(new Cell()
-			{
-				Border = new(point, new System.Drawing.Size(1, 1)),
-			});
 		}
-		return bordered;
-	}
 
-	private static IEnumerable<System.Drawing.Point> Create(int diameter)
-	{
-		if (diameter == 0)
+		public void DrawString(string text, RectangleF bounds, HorizontalAlign horizontalAlign, VerticalAlign verticalAlign, Color color)
 		{
-			yield return System.Drawing.Point.Empty;
 		}
-		else
+
+		public void Line(PointF start, PointF end, Color color, float thickness = 2)
 		{
-			var begin = diameter / 2;
-			var radius = diameter / 2f;
-			var radiusD = radius * radius;
-			for (var iX = -begin; iX < diameter; iX++)
-			{
-				for (var iY = -begin; iY < diameter; iY++)
-				{
-					if ((iY * iY) + (iX * iX) <= radiusD)
-					{
-						yield return new(iX, iY);
-					}
-				}
-			}
+		}
+
+		public void Polygon(IReadOnlyList<PointF> vertices, Color color, float thickness = 2)
+		{
 		}
 	}
 
-	public class Test
+	private sealed class Keyboard : IKeyboard
 	{
-		private static Bordered[] Bordereds25 { get; } = CreateBorders(5, 5, 5, 10).ToArray();
-		private static Bordered[] Bordereds100 { get; } = CreateBorders(10, 10, 5, 10).ToArray();
+		private ulong counter = 0;
 
-		private int CollisionCount(Bordered[] bordereds)
-		{
-			var result = 0;
-			foreach (var first in bordereds)
-			{
-				foreach (var second in bordereds)
-				{
-					if (first.IsCollision(second))
-					{
-						result++;
-					}
-				}
-			}
+		public Course? GetPlayerCourse() => (Course)(counter++ % 8);
 
-			return result;
-		}
+		public Course? GetPlayerShot() => null;
 
-		[Benchmark]
-		public int CollisionCount25() => CollisionCount(Bordereds25);
-
-		[Benchmark]
-		public int CollisionCount100() => CollisionCount(Bordereds100);
+		public bool IsUndo() => false;
 	}
 }

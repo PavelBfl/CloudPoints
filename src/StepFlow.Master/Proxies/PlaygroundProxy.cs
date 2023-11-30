@@ -68,7 +68,7 @@ namespace StepFlow.Master.Proxies
 					IsRigid = true,
 				},
 				Scheduler = new Scheduled(),
-				Speed = 10,
+				Speed = 1,
 			});
 		}
 
