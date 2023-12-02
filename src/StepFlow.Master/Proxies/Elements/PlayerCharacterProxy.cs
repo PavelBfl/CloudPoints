@@ -88,11 +88,12 @@ namespace StepFlow.Master.Proxies.Elements
 					},
 					Damage = AggregateDamage(10),
 					Speed = 5,
+					CurrentPathIndex = 0,
 				});
 
 				for (var i = 0; i < 100; i++)
 				{
-					projectile.SetCourse(course);
+					projectile.Path.Add(course);
 				}
 
 				Owner.GetPlaygroundProxy().Projectiles.Add(projectile);

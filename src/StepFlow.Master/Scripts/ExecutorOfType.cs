@@ -20,13 +20,13 @@ namespace StepFlow.Master.Scripts
 				throw new ArgumentNullException(nameof(parameters));
 			}
 
-			var typedParameters = new TParameters();
+			object typedParameters = new TParameters();
 			foreach (var propertyInfo in typeof(TParameters).GetProperties())
 			{
 				propertyInfo.SetValue(typedParameters, parameters[propertyInfo.Name]);
 			}
 
-			Execute(typedParameters);
+			Execute((TParameters)typedParameters);
 		}
 
 		public abstract void Execute(TParameters parameters);

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using StepFlow.Core;
 using StepFlow.Core.Elements;
 using StepFlow.Master.Proxies.Components;
@@ -11,6 +10,10 @@ namespace StepFlow.Master.Proxies.Elements
 		IProxyBase<Subject>? Creator { get; set; }
 
 		IDamageProxy? Damage { get; set; }
+
+		int CurrentPathIndex { get; set; }
+
+		IList<Course> Path { get; }
 	}
 
 	internal sealed class ProjectileProxy : MaterialProxy<Projectile>, IProjectileProxy

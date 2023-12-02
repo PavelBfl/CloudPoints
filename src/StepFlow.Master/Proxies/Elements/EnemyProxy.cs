@@ -81,11 +81,12 @@ namespace StepFlow.Master.Proxies.Elements
 						Value = 10,
 					},
 					Speed = 5,
+					CurrentPathIndex = 0,
 				});
 
 				foreach (var course in CourseExtensions.GetPath(center, otherCenter))
 				{
-					projectile.SetCourse(course);
+					projectile.Path.Add(course);
 				}
 
 				Owner.GetPlaygroundProxy().Projectiles.Add(projectile);
