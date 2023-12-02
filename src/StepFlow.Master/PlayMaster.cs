@@ -23,6 +23,7 @@ namespace StepFlow.Master
 		private const string ENUMERATE_NAME = "Enumerate";
 
 		private const string TAKE_STEP_CALL = TAKE_STEP_NAME + "()";
+		public const string PLAYER_CHARACTER_SET_COURSE = "PlayerCharacterSetCourse";
 
 		public PlayMaster()
 		{
@@ -56,32 +57,23 @@ namespace StepFlow.Master
 				Enemy instance => new EnemyProxy(this, instance),
 				Collided instance => new CollidedProxy(this, instance),
 				Scheduled instance => new ScheduledProxy(this, instance),
+				Core.Components.Action instance => new ActionProxy(this, instance),
 				null => null,
 				_ => throw new InvalidOperationException(),
 			};
 		}
 
-		public void TakeStep() => Execute(TAKE_STEP_CALL);
+		public void TakeStep() => Execute(TAKE_STEP_CALL, Course.Left);
 
 		private void TakeStepInner()
 		{
 			foreach (var collision in Playground.GetMaterials()
-				.Select(x => x.Scheduler)
-				.OfType<Scheduled>()
-				.Select(x => (IScheduledProxy)CreateProxy(x))
+				.Select(x => (IMaterialProxy<Material>)CreateProxy(x))
 				.ToArray()
 			)
 			{
-				collision.Dequeue();
+				//collision.OnTick();
 			}
-
-			//foreach (var collision in Playground.GetMaterials()
-			//	.Select(x => (IMaterialProxy<Material>)CreateProxy(x))
-			//	.ToArray()
-			//)
-			//{
-			//	collision.OnTick();
-			//}
 
 			//foreach (var collision in Playground.GetCollision().ToArray())
 			//{
@@ -94,15 +86,15 @@ namespace StepFlow.Master
 			//	secondMaterialProxy.Collision(secondCollidedProxy, firstMaterialProxy, firstCollidedProxy);
 			//}
 
-			//foreach (var collision in Playground.GetMaterials()
-			//	.Select(x => x.Body)
-			//	.OfType<Collided>()
-			//	.Select(x => (ICollidedProxy)CreateProxy(x))
-			//	.ToArray()
-			//)
-			//{
-			//	collision.Move();
-			//}
+			foreach (var collision in Playground.GetMaterials()
+				.Select(x => x.Body)
+				.OfType<Collided>()
+				.Select(x => (ICollidedProxy)CreateProxy(x))
+				.ToArray()
+			)
+			{
+				//collision.Move();
+			}
 
 			Time++;
 		}
@@ -174,11 +166,15 @@ namespace StepFlow.Master
 			}
 		}
 
-		public void Execute(string scriptText)
+		public void Execute(string scriptText, Course course)
 		{
 			if (scriptText == TAKE_STEP_CALL)
 			{
 				TakeStepInner();
+			}
+			else if (scriptText == PLAYER_CHARACTER_SET_COURSE)
+			{
+				GetPlaygroundProxy().PlayerCharacter?.SetCourse(course);
 			}
 			else
 			{
@@ -186,9 +182,9 @@ namespace StepFlow.Master
 
 				script.Globals["playground"] = GetPlaygroundProxy();
 
-				script.Globals[TAKE_STEP_NAME] = (Action)TakeStepInner;
+				script.Globals[TAKE_STEP_NAME] = (System.Action)TakeStepInner;
 				script.Globals.Set(ENUMERATE_NAME, DynValue.NewCallback(Enumerate));
-				script.DoString(scriptText); 
+				script.DoString(scriptText);
 			}
 		}
 	}

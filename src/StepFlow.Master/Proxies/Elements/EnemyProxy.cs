@@ -24,13 +24,15 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public override void OnTick()
 		{
+			base.OnTick();
+
 			if (Strength?.Value == 0)
 			{
 				Owner.GetPlaygroundProxy().Enemies.Remove(this);
 			}
 			else
 			{
-				Cooldown.Decrement(); 
+				Cooldown.Decrement();
 			}
 		}
 
@@ -78,7 +80,6 @@ namespace StepFlow.Master.Proxies.Elements
 					{
 						Value = 10,
 					},
-					Scheduler = new Scheduled(),
 					Speed = 5,
 				});
 

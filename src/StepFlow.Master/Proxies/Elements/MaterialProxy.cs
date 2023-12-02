@@ -12,9 +12,9 @@ namespace StepFlow.Master.Proxies.Elements
 
 		ICollidedProxy Body { get; }
 
-		IScheduledProxy Scheduler { get; }
-
 		int Speed { get; set; }
+
+		IActionProxy? CurrentAction { get; set; }
 
 		void OnTick();
 
@@ -34,10 +34,18 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public ICollidedProxy Body { get => (ICollidedProxy)Owner.CreateProxy(Target.Body); }
 
-		public IScheduledProxy Scheduler { get => (IScheduledProxy)Owner.CreateProxy(Target.Scheduler); }
+		public IActionProxy? CurrentAction { get => (IActionProxy?)Owner.CreateProxy(Target.CurrentAction); set => SetValue(x => x.CurrentAction, value?.Target); }
 
 		public virtual void OnTick()
 		{
+			if (CurrentAction is { } currentAction)
+			{
+				if (Owner.Time == (currentAction.Begin + currentAction.Duration))
+				{
+					currentAction.Executor?.Execute();
+					CurrentAction = null;
+				}
+			}
 		}
 
 		public virtual void Collision(ICollidedProxy thisCollided, IMaterialProxy<Material> otherMaterial, ICollidedProxy otherCollided)
@@ -52,14 +60,16 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			var factor = course.GetFactor();
 
-			var setCourse = (ISetCourseProxy)Owner.CreateProxy(new SetCourse()
+			CurrentAction = (IActionProxy)Owner.CreateProxy(new Action()
 			{
-				Collided = Body.Target,
-				Course = course,
+				Begin = Owner.Time,
+				Duration = factor * Speed,
+				Executor = new SetCourse()
+				{
+					Collided = Body.Target,
+					Course = course,
+				},
 			});
-
-
-			Scheduler.Enqueue(factor * Speed, setCourse);
 		}
 
 		public int Speed { get => Target.Speed; set => SetValue(x => x.Speed, value); }

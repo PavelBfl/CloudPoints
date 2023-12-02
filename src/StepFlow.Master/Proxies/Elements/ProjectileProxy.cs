@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using StepFlow.Core;
 using StepFlow.Core.Elements;
 using StepFlow.Master.Proxies.Components;
@@ -30,12 +31,24 @@ namespace StepFlow.Master.Proxies.Elements
 			set => SetValue(x => x.Damage, value?.Target);
 		}
 
+		public int CurrentPathIndex { get => Target.CurrentPathIndex; set => SetValue(x => x.CurrentPathIndex, value); }
+
+		public IList<Course> Path => CreateListProxy(Target.Path);
+
 		public override void OnTick()
 		{
-			if (!Scheduler.Queue.Any())
+			base.OnTick();
+
+			if (CurrentPathIndex >= Path.Count)
 			{
 				Owner.GetPlaygroundProxy().Projectiles.Remove(this);
 			}
+			else if (CurrentAction is null)
+			{
+				SetCourse(Path[CurrentPathIndex]);
+				CurrentPathIndex++;
+			}
+			
 		}
 
 		public override void Collision(ICollidedProxy thisCollided, IMaterialProxy<Material> otherMaterial, ICollidedProxy otherCollided)

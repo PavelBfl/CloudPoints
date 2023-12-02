@@ -1,4 +1,5 @@
-﻿using StepFlow.Core.Components;
+﻿using System.Collections.Generic;
+using StepFlow.Core.Components;
 
 namespace StepFlow.Core.Elements
 {
@@ -11,5 +12,9 @@ namespace StepFlow.Core.Elements
 		public Subject? Creator { get; set; }
 
 		public Damage? Damage { get; set; }
+
+		public int CurrentPathIndex { get; set; }
+
+		public IList<Course> Path { get; } = new List<Course>();
 	}
 }

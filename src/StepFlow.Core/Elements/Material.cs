@@ -9,7 +9,7 @@ namespace StepFlow.Core.Elements
 
 		public Collided? Body { get; set; }
 
-		public Scheduled? Scheduler { get; set; }
+		public Action? CurrentAction { get; set; }
 
 		public int Speed { get; set; }
 

@@ -32,8 +32,7 @@ namespace StepFlow.View
 				new(
 					new System.Drawing.RectangleF(0, 0, Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight),
 					drawer,
-					keyboard,
-					mouse
+					keyboard
 				)
 			);
 

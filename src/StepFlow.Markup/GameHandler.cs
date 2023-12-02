@@ -59,7 +59,7 @@ namespace StepFlow.Markup
 					playground.CreateRectangle({bounds.X}, {bounds.Y}, {bounds.Width}, {bounds.Height}),
 					{strength}
 				);
-			");
+			", Course.Left);
 		}
 
 		private void CreateRoom(Point location, Size size, int width)
@@ -99,16 +99,14 @@ namespace StepFlow.Markup
 					playground.CreateRectangle({bounds.X}, {bounds.Y}, {bounds.Width}, {bounds.Height}),
 					{strength?.ToString() ?? "null"}
 				);
-			");
+			", Course.Left);
 		}
 
 		private void PlayerCharacterSetCourse(Course course)
 		{
-			if (PlayMaster.Playground.PlayerCharacter is { } playerCharacter && playerCharacter.Scheduler.Queue.LastOrDefault().Executor is not SetCourse)
+			if (PlayMaster.Playground.PlayerCharacter is { CurrentAction: null })
 			{
-				PlayMaster.Execute($@"
-					playground.PlayerCharacter.SetCourse({(int)course});
-				");
+				PlayMaster.Execute(PlayMaster.PLAYER_CHARACTER_SET_COURSE, course);
 			}
 		}
 
@@ -116,7 +114,7 @@ namespace StepFlow.Markup
 		{
 			PlayMaster.Execute($@"
 				playground.PlayerCharacter.CreateProjectile({(int)course});
-			");
+			", Course.Left);
 		}
 
 		private void CreateDamageItem(Rectangle bounds, int value, DamageKind kind)
@@ -127,7 +125,7 @@ namespace StepFlow.Markup
 					{value},
 					{(int)kind}
 				);
-			");
+			", Course.Left);
 		}
 
 		private void CreateSpeedItem(Rectangle bounds, int speed)
@@ -137,7 +135,7 @@ namespace StepFlow.Markup
 					playground.CreateRectangle({bounds.X}, {bounds.Y}, {bounds.Width}, {bounds.Height}),
 					{speed}
 				);
-			");
+			", Course.Left);
 		}
 
 		private void CreateEnemy(Rectangle bounds, int visionSize)
@@ -154,7 +152,7 @@ namespace StepFlow.Markup
 					playground.CreateRectangle({bounds.X}, {bounds.Y}, {bounds.Width}, {bounds.Height}),
 					playground.CreateRectangle({vision.X}, {vision.Y}, {vision.Width}, {vision.Height})
 				);
-			");
+			", Course.Left);
 		}
 
 		public void Update()

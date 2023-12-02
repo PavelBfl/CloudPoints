@@ -67,7 +67,6 @@ namespace StepFlow.Master.Proxies
 					Current = bordered,
 					IsRigid = true,
 				},
-				Scheduler = new Scheduled(),
 				Speed = 1,
 			});
 		}
@@ -91,7 +90,6 @@ namespace StepFlow.Master.Proxies
 						Value = strength.Value,
 					} :
 					null,
-				Scheduler = new Scheduled(),
 			});
 
 			Obstructions.Add(barrier);
@@ -114,7 +112,6 @@ namespace StepFlow.Master.Proxies
 					Value = value,
 					Kind = kind,
 				},
-				Scheduler = new Scheduled(),
 				Speed = 5,
 			});
 
