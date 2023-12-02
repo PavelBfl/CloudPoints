@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
-using MoonSharp.Interpreter;
 using StepFlow.Core;
 using StepFlow.Core.Border;
 using StepFlow.Core.Components;
@@ -13,22 +11,49 @@ using StepFlow.Master.Proxies;
 using StepFlow.Master.Proxies.Border;
 using StepFlow.Master.Proxies.Components;
 using StepFlow.Master.Proxies.Elements;
+using StepFlow.Master.Scripts;
 using StepFlow.TimeLine;
 
 namespace StepFlow.Master
 {
 	public class PlayMaster
 	{
-		private const string TAKE_STEP_NAME = nameof(TakeStep);
-		private const string ENUMERATE_NAME = "Enumerate";
-
-		private const string TAKE_STEP_CALL = TAKE_STEP_NAME + "()";
-		public const string PLAYER_CHARACTER_SET_COURSE = "PlayerCharacterSetCourse";
+		public const string TAKE_STEP_CALL = "TakeStep";
 
 		public PlayMaster()
 		{
-			InitLua();
+			AddExecutor(TakeStep = new EmptyExecutor(TAKE_STEP_CALL, TakeStepInner));
+			AddExecutor(PlayerCharacterCreate = new PlayerCharacterCreate(this));
+			AddExecutor(PlayerCharacterSetCourse = new PlayerCharacterSetCourse(this));
+			AddExecutor(CreateObstruction = new CreateObstruction(this));
+			AddExecutor(CreateProjectile = new CreateProjectile(this));
+			AddExecutor(CreateDamageItem = new CreateDamageItem(this));
+			AddExecutor(CreateSpeedItem = new CreateSpeedItem(this));
+			AddExecutor(CreateEnemy = new CreateEnemy(this));
 		}
+
+		private readonly Dictionary<string, Executor> executors = new Dictionary<string, Executor>();
+
+		private void AddExecutor(Executor executor) => executors.Add(executor.Name, executor);
+
+		public IReadOnlyDictionary<string, Executor> Executors => executors;
+
+		public Executor TakeStep { get; }
+
+		public PlayerCharacterCreate PlayerCharacterCreate { get; }
+
+		public PlayerCharacterSetCourse PlayerCharacterSetCourse { get; }
+
+		public CreateObstruction CreateObstruction { get; }
+
+		public CreateProjectile CreateProjectile { get; }
+
+		public CreateDamageItem CreateDamageItem { get; }
+
+		public CreateSpeedItem CreateSpeedItem { get; }
+
+		public CreateEnemy CreateEnemy { get; }
+
 
 		public IAxis<ICommand> TimeAxis { get; } = new Axis<ICommand>();
 
@@ -63,8 +88,6 @@ namespace StepFlow.Master
 			};
 		}
 
-		public void TakeStep() => Execute(TAKE_STEP_CALL, Course.Left);
-
 		private void TakeStepInner()
 		{
 			foreach (var collision in Playground.GetMaterials()
@@ -72,19 +95,19 @@ namespace StepFlow.Master
 				.ToArray()
 			)
 			{
-				//collision.OnTick();
+				collision.OnTick();
 			}
 
-			//foreach (var collision in Playground.GetCollision().ToArray())
-			//{
-			//	var firstMaterialProxy = (IMaterialProxy<Material>)CreateProxy(collision.Item1.Element);
-			//	var firstCollidedProxy = (ICollidedProxy)CreateProxy(collision.Item1.Component);
-			//	var secondMaterialProxy = (IMaterialProxy<Material>)CreateProxy(collision.Item2.Element);
-			//	var secondCollidedProxy = (ICollidedProxy)CreateProxy(collision.Item2.Component);
+			foreach (var collision in Playground.GetCollision().ToArray())
+			{
+				var firstMaterialProxy = (IMaterialProxy<Material>)CreateProxy(collision.Item1.Element);
+				var firstCollidedProxy = (ICollidedProxy)CreateProxy(collision.Item1.Component);
+				var secondMaterialProxy = (IMaterialProxy<Material>)CreateProxy(collision.Item2.Element);
+				var secondCollidedProxy = (ICollidedProxy)CreateProxy(collision.Item2.Component);
 
-			//	firstMaterialProxy.Collision(firstCollidedProxy, secondMaterialProxy, secondCollidedProxy);
-			//	secondMaterialProxy.Collision(secondCollidedProxy, firstMaterialProxy, firstCollidedProxy);
-			//}
+				firstMaterialProxy.Collision(firstCollidedProxy, secondMaterialProxy, secondCollidedProxy);
+				secondMaterialProxy.Collision(secondCollidedProxy, firstMaterialProxy, firstCollidedProxy);
+			}
 
 			foreach (var collision in Playground.GetMaterials()
 				.Select(x => x.Body)
@@ -93,99 +116,13 @@ namespace StepFlow.Master
 				.ToArray()
 			)
 			{
-				//collision.Move();
+				collision.Move();
 			}
 
 			Time++;
 		}
 
-		private static void RegisterList<T>()
-		{
-			UserData.RegisterType<T>();
-
-			UserData.RegisterType<IEnumerable<T>>();
-			UserData.RegisterType<IEnumerator<T>>();
-			UserData.RegisterType<IReadOnlyList<T>>();
-			UserData.RegisterType<IReadOnlyCollection<T>>();
-			UserData.RegisterType<IList<T>>();
-			UserData.RegisterType<ICollection<T>>();
-		}
-
-		private void InitLua()
-		{
-			UserData.RegisterType<IEnumerator>();
-			UserData.RegisterType<Rectangle>();
-			UserData.RegisterType<Point>();
-
-			RegisterList<ICellProxy>();
-			RegisterList<IBorderedProxy>();
-
-			RegisterList<IDamageProxy>();
-			RegisterList<ICollidedProxy>();
-			RegisterList<IScaleProxy>();
-			RegisterList<IScheduledProxy>();
-			RegisterList<ITurnProxy>();
-			RegisterList<ISetCourseProxy>();
-
-			RegisterList<IPlaygroundProxy>();
-			RegisterList<IPlayerCharacterProxy>();
-			RegisterList<IMaterialProxy<PlayerCharacter>>();
-			RegisterList<IObstructionProxy>();
-		}
-
-		public static DynValue Enumerate(ScriptExecutionContext context, CallbackArguments arguments)
-		{
-			var dynEnumerable = arguments[0];
-			var enumerable = (IEnumerable)dynEnumerable.UserData.Object;
-
-			return DynValue.NewTuple(
-				DynValue.NewCallback(EnumerateIteration),
-				dynEnumerable,
-				DynValue.FromObject(context.GetScript(), enumerable.GetEnumerator())
-			);
-
-			DynValue EnumerateIteration(ScriptExecutionContext context, CallbackArguments arguments)
-			{
-				var dynEnumerable = arguments[0];
-				var enumerable = (IEnumerable)dynEnumerable.UserData.Object;
-
-				var dynEnumerator = arguments[1];
-				var enumerator = (IEnumerator)dynEnumerator.UserData.Object;
-
-				if (enumerator.MoveNext())
-				{
-					return DynValue.NewTuple(
-						dynEnumerator,
-						DynValue.FromObject(context.GetScript(), enumerator.Current)
-					);
-				}
-				else
-				{
-					return DynValue.Nil;
-				}
-			}
-		}
-
-		public void Execute(string scriptText, Course course)
-		{
-			if (scriptText == TAKE_STEP_CALL)
-			{
-				TakeStepInner();
-			}
-			else if (scriptText == PLAYER_CHARACTER_SET_COURSE)
-			{
-				GetPlaygroundProxy().PlayerCharacter?.SetCourse(course);
-			}
-			else
-			{
-				var script = new Script();
-
-				script.Globals["playground"] = GetPlaygroundProxy();
-
-				script.Globals[TAKE_STEP_NAME] = (System.Action)TakeStepInner;
-				script.Globals.Set(ENUMERATE_NAME, DynValue.NewCallback(Enumerate));
-				script.DoString(scriptText);
-			}
-		}
+		public void Execute(string commandName, IReadOnlyDictionary<string, object>? parameters = null)
+			=> Executors[commandName].Execute(parameters);
 	}
 }

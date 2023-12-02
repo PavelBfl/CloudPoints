@@ -52,14 +52,16 @@ namespace StepFlow.Markup
 			CreatePlayerCharacter(new(100, 100, 20, 20), 100);
 		}
 
-		private void CreatePlayerCharacter(Rectangle bounds, float strength)
+		private void CreatePlayerCharacter(Rectangle bounds, int strength)
 		{
-			PlayMaster.Execute(@$"
-				playground.CreatePlayerCharacter(
-					playground.CreateRectangle({bounds.X}, {bounds.Y}, {bounds.Width}, {bounds.Height}),
-					{strength}
-				);
-			", Course.Left);
+			PlayMaster.PlayerCharacterCreate.Execute(new()
+			{
+				X = bounds.X,
+				Y = bounds.Y,
+				Width = bounds.Width,
+				Height = bounds.Height,
+				Strength = strength,
+			});
 		}
 
 		private void CreateRoom(Point location, Size size, int width)
@@ -92,50 +94,54 @@ namespace StepFlow.Markup
 			}
 		}
 
-		private void CreateObstruction(Rectangle bounds, float? strength)
+		private void CreateObstruction(Rectangle bounds, int? strength)
 		{
-			PlayMaster.Execute(@$"
-				playground.CreateObstruction(
-					playground.CreateRectangle({bounds.X}, {bounds.Y}, {bounds.Width}, {bounds.Height}),
-					{strength?.ToString() ?? "null"}
-				);
-			", Course.Left);
+			PlayMaster.CreateObstruction.Execute(new()
+			{
+				X = bounds.X,
+				Y = bounds.Y,
+				Width = bounds.Width,
+				Height = bounds.Height,
+				Strength = strength,
+			});
 		}
 
 		private void PlayerCharacterSetCourse(Course course)
 		{
 			if (PlayMaster.Playground.PlayerCharacter is { CurrentAction: null })
 			{
-				PlayMaster.Execute(PlayMaster.PLAYER_CHARACTER_SET_COURSE, course);
+				PlayMaster.PlayerCharacterSetCourse.Execute(new() { Course = course, });
 			}
 		}
 
 		private void CreateProjectile(Course course)
 		{
-			PlayMaster.Execute($@"
-				playground.PlayerCharacter.CreateProjectile({(int)course});
-			", Course.Left);
+			PlayMaster.CreateProjectile.Execute(new() { Course = course, });
 		}
 
 		private void CreateDamageItem(Rectangle bounds, int value, DamageKind kind)
 		{
-			PlayMaster.Execute($@"
-				playground.CreateDamageItem(
-					playground.CreateRectangle({bounds.X}, {bounds.Y}, {bounds.Width}, {bounds.Height}),
-					{value},
-					{(int)kind}
-				);
-			", Course.Left);
+			PlayMaster.CreateDamageItem.Execute(new()
+			{
+				X = bounds.X,
+				Y = bounds.Y,
+				Width = bounds.Width,
+				Height = bounds.Height,
+				Value = value,
+				Kind = kind
+			});
 		}
 
 		private void CreateSpeedItem(Rectangle bounds, int speed)
 		{
-			PlayMaster.Execute($@"
-				playground.CreateSpeedItem(
-					playground.CreateRectangle({bounds.X}, {bounds.Y}, {bounds.Width}, {bounds.Height}),
-					{speed}
-				);
-			", Course.Left);
+			PlayMaster.CreateSpeedItem.Execute(new()
+			{
+				X = bounds.X,
+				Y = bounds.Y,
+				Width = bounds.Width,
+				Height = bounds.Height,
+				Speed = speed,
+			});
 		}
 
 		private void CreateEnemy(Rectangle bounds, int visionSize)
@@ -147,17 +153,22 @@ namespace StepFlow.Markup
 				bounds.Bottom + visionSize
 			);
 
-			PlayMaster.Execute($@"
-				playground.CreateEnemy(
-					playground.CreateRectangle({bounds.X}, {bounds.Y}, {bounds.Width}, {bounds.Height}),
-					playground.CreateRectangle({vision.X}, {vision.Y}, {vision.Width}, {vision.Height})
-				);
-			", Course.Left);
+			PlayMaster.CreateEnemy.Execute(new()
+			{
+				X = bounds.X,
+				Y = bounds.Y,
+				Width = bounds.Width,
+				Height = bounds.Height,
+				VisionX = vision.X,
+				VisionY = vision.Y,
+				VisionWidth = vision.Width,
+				VisionHeight = vision.Height,
+			});
 		}
 
 		public void Update()
 		{
-			const int TICKS_COUNT = 250;
+			const int TICKS_COUNT = 10;
 			if (Keyboard.IsUndo())
 			{
 				for (var i = 0; i < TICKS_COUNT; i++)
@@ -179,7 +190,7 @@ namespace StepFlow.Markup
 						CreateProjectile(playerShot);
 					}
 
-					PlayMaster.TakeStep();
+					PlayMaster.TakeStep.Execute(null);
 				}
 			}
 		}
