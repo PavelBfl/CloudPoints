@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using StepFlow.Core;
-using StepFlow.Core.Border;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
-using StepFlow.Master.Proxies.Border;
+using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Collections;
 using StepFlow.Master.Proxies.Elements;
+using StepFlow.Master.Proxies.Intersection;
 
 namespace StepFlow.Master.Proxies
 {
@@ -15,6 +16,8 @@ namespace StepFlow.Master.Proxies
 		public PlaygroundProxy(PlayMaster owner, Playground target) : base(owner, target)
 		{
 		}
+
+		public IContextProxy Context => (IContextProxy)Owner.CreateProxy(Context);
 
 		public IPlayerCharacterProxy? PlayerCharacter { get => (IPlayerCharacterProxy?)Owner.CreateProxy(Target.PlayerCharacter); set => SetValue(x => x.PlayerCharacter, ((IProxyBase<PlayerCharacter>?)value)?.Target); }
 
@@ -30,26 +33,25 @@ namespace StepFlow.Master.Proxies
 
 		public Point CreatePoint(int x, int y) => new Point(x, y);
 
-		public IBorderedProxy CreateBordered() => (IBorderedProxy)Owner.CreateProxy(new Bordered());
+		public IShapeContainerProxy CreateShapeContainer(params Rectangle[] rectangles)
+			=> CreateShapeContainer(rectangles.AsEnumerable());
 
-		public ICellProxy CreateCell(Rectangle border)
+		public IShapeContainerProxy CreateShapeContainer(IEnumerable<Rectangle> subRectangles)
 		{
-			return (ICellProxy)Owner.CreateProxy(new Cell()
-			{
-				Border = border,
-			});
+			var shape = (IShapeContainerProxy)Owner.CreateProxy(new ShapeContainer(subRectangles));
+			Context.Add(shape);
+			return shape;
+		}
+
+		public IShapeCellProxy CreateCell(Rectangle border)
+		{
+			var shape = (IShapeCellProxy)Owner.CreateProxy(new ShapeCell(border));
+			Context.Add(shape);
+			return shape;
 		}
 
 		public void CreatePlayerCharacter(Rectangle bounds, int strength)
 		{
-			var bitTable = BitTable.CreateCircle(bounds.Width);
-			//var bordered = bitTable.CreateBordered();
-			//bordered.Offset(new Point(bounds.X, bounds.Y));
-			var bordered = new Cell()
-			{
-				Border = bounds,
-			};
-
 			PlayerCharacter = (IPlayerCharacterProxy)Owner.CreateProxy(new PlayerCharacter()
 			{
 				Strength = new Scale()
@@ -64,7 +66,7 @@ namespace StepFlow.Master.Proxies
 				},
 				Body = new Collided()
 				{
-					Current = bordered,
+					Current = CreateCell(bounds).Target,
 					IsRigid = true,
 				},
 				Speed = 1,
@@ -77,10 +79,7 @@ namespace StepFlow.Master.Proxies
 			{
 				Body = new Collided()
 				{
-					Current = new Cell()
-					{
-						Border = bounds,
-					},
+					Current = CreateCell(bounds).Target,
 					IsRigid = true,
 				},
 				Strength = strength is { } ?
@@ -101,10 +100,7 @@ namespace StepFlow.Master.Proxies
 			{
 				Body = new Collided()
 				{
-					Current = new Cell()
-					{
-						Border = bounds,
-					},
+					Current = CreateCell(bounds).Target,
 					IsRigid = true,
 				},
 				Damage = new Damage()

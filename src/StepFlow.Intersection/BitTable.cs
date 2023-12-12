@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Drawing;
 
-namespace StepFlow.Core.Border
+namespace StepFlow.Intersection
 {
 	public sealed class BitTable
 	{
@@ -87,9 +87,9 @@ namespace StepFlow.Core.Border
 			}
 		}
 
-		public Bordered CreateBordered()
+		public ShapeContainer CreateBordered()
 		{
-			var result = new Bordered();
+			var result = new ShapeContainer();
 
 			for (var iX = 0; iX < Size.Width; iX++)
 			{
@@ -98,18 +98,19 @@ namespace StepFlow.Core.Border
 					var prevLeft = new Point(iX - 1, iY);
 					var prevTop = new Point(iX, iY - 1);
 
-					if (
-						(!GetSafeFlag(prevLeft) || result.Contains(prevLeft)) && 
-						(!GetSafeFlag(prevTop) || result.Contains(prevTop)) &&
-						GetSafeFlag(new Point(iX, iY))
-					)
-					{
-						var cell = new Cell()
-						{
-							Border = ExpandFromLeft(new Point(iX, iY)),
-						};
-						result.Childs.Add(cell);
-					}
+					// TODO Доделать
+					//if (
+					//	(!GetSafeFlag(prevLeft) || result.Contains(prevLeft)) &&
+					//	(!GetSafeFlag(prevTop) || result.Contains(prevTop)) &&
+					//	GetSafeFlag(new Point(iX, iY))
+					//)
+					//{
+					//	var cell = new Cell()
+					//	{
+					//		Border = ExpandFromLeft(new Point(iX, iY)),
+					//	};
+					//	result.Childs.Add(cell);
+					//}
 				}
 			}
 

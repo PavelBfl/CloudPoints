@@ -11,9 +11,4 @@
     <PackageReference Include="BenchmarkDotNet" Version="0.13.7" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\src\StepFlow.Core\StepFlow.Core.csproj" />
-    <ProjectReference Include="..\src\StepFlow.Markup\StepFlow.Markup.csproj" />
-  </ItemGroup>
-
 </Project>

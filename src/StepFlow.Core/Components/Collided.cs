@@ -1,12 +1,12 @@
-﻿using StepFlow.Core.Border;
+﻿using StepFlow.Intersection;
 
 namespace StepFlow.Core.Components
 {
 	public sealed class Collided : Subject
 	{
-		public IBordered? Current { get; set; }
+		public ShapeBase? Current { get; set; }
 
-		public IBordered? Next { get; set; }
+		public ShapeBase? Next { get; set; }
 
 		public bool IsMove { get; set; }
 

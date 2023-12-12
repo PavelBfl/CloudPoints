@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using StepFlow.Core.Border;
 using StepFlow.Core.Elements;
 
 namespace StepFlow.Core
 {
 	public sealed class Playground : Subject
 	{
+		public Intersection.Context IntersectionContext { get; } = new Intersection.Context();
+
 		public PlayerCharacter? PlayerCharacter { get; set; }
 
 		public IList<Obstruction> Obstructions { get; } = new List<Obstruction>();
@@ -23,39 +24,5 @@ namespace StepFlow.Core
 				.Concat(Projectiles)
 				.Concat(Items)
 				.Concat(Enemies);
-
-		public IEnumerable<(CollisionPair, CollisionPair)> GetCollision()
-		{
-			var materials = GetMaterials()
-				.Select(x => (Material: x, Collideds: x.GetCollideds().ToArray()))
-				.ToArray();
-
-			for (var iFirst = 0; iFirst < materials.Length; iFirst++)
-			{
-				for (var iSecond = iFirst + 1; iSecond < materials.Length; iSecond++)
-				{
-					var first = materials[iFirst];
-					var second = materials[iSecond];
-
-					foreach (var firstCollided in first.Collideds)
-					{
-						var firstBorder = firstCollided.Next ?? firstCollided.Current;
-
-						foreach (var secondCollided in second.Collideds)
-						{
-							var secondBorder = secondCollided.Next ?? secondCollided.Current;
-
-							if (firstBorder is { } && secondBorder is { } && firstBorder.IsCollision(secondBorder))
-							{
-								yield return (
-									new CollisionPair(first.Material, firstCollided),
-									new CollisionPair(second.Material, secondCollided)
-								);
-							}
-						}
-					}
-				}
-			}
-		}
 	}
 }

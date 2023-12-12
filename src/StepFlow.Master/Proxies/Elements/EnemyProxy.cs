@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using StepFlow.Core;
-using StepFlow.Core.Border;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Master.Proxies.Components;

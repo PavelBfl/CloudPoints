@@ -1,14 +1,14 @@
-﻿using StepFlow.Core.Border;
-using StepFlow.Core.Components;
-using StepFlow.Master.Proxies.Border;
+﻿using StepFlow.Core.Components;
+using StepFlow.Intersection;
+using StepFlow.Master.Proxies.Intersection;
 
 namespace StepFlow.Master.Proxies.Components
 {
 	public interface ICollidedProxy : IProxyBase<Collided>
 	{
-		IBorderedBaseProxy<IBordered>? Current { get; set; }
+		IShapeBaseProxy<ShapeBase>? Current { get; set; }
 
-		IBorderedBaseProxy<IBordered>? Next { get; set; }
+		IShapeBaseProxy<ShapeBase>? Next { get; set; }
 
 		bool IsMove { get; set; }
 		bool IsRigid { get; set; }
@@ -35,15 +35,15 @@ namespace StepFlow.Master.Proxies.Components
 		{
 		}
 
-		public IBorderedBaseProxy<IBordered>? Current
+		public IShapeBaseProxy<ShapeBase>? Current
 		{
-			get => (IBorderedBaseProxy<IBordered>?)Owner.CreateProxy(Target.Current);
+			get => (IShapeBaseProxy<ShapeBase>?)Owner.CreateProxy(Target.Current);
 			set => SetValue(x => x.Current, value?.Target);
 		}
 
-		public IBorderedBaseProxy<IBordered>? Next
+		public IShapeBaseProxy<ShapeBase>? Next
 		{
-			get => (IBorderedBaseProxy<IBordered>?)Owner.CreateProxy(Target.Next);
+			get => (IShapeBaseProxy<ShapeBase>?)Owner.CreateProxy(Target.Next);
 			set => SetValue(x => x.Next, value?.Target);
 		}
 
