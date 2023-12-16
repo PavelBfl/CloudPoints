@@ -27,10 +27,9 @@ namespace StepFlow.Master.Proxies.Components
 			if (Collided is { Current: { } current })
 			{
 				var offset = Course.ToOffset();
-				var next = current.Target.Clone(offset);
-				var nextProxy = (IShapeBaseProxy<ShapeBase>?)Owner.CreateProxy(next);
+				var next = new RefCounter<ShapeBase>(Owner.GetPlaygroundProxy().IntersectionContext.Target, current.Value.Clone(offset));
 
-				Collided.Next = nextProxy;
+				Collided.Next = next;
 				Collided.IsMove = true;
 			}
 		}

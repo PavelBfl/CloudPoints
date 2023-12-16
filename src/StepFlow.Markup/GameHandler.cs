@@ -47,7 +47,7 @@ namespace StepFlow.Markup
 			//CreateEnemy(new(50, 180, 20, 20), 50);
 			//CreateEnemy(new(200, 180, 20, 20), 50);
 
-			CreateObstruction(new(50, 50, 40, 40), 150);
+			CreateObstruction(new(50, 100, 40, 40), 150);
 
 			CreatePlayerCharacter(new(100, 100, 20, 20), 100);
 		}
@@ -255,12 +255,12 @@ namespace StepFlow.Markup
 		{
 			if (collided?.Target is { Current: { } current })
 			{
-				Drawer.Draw(texture, current.Bounds);
+				Drawer.Draw(texture, current.Value.Bounds);
 				if (strength is not null)
 				{
 					Drawer.DrawString(
 						strength.Value.ToString(),
-						current.Bounds,
+						current.Value.Bounds,
 						HorizontalAlign.Center,
 						VerticalAlign.Center,
 						Color.Red
@@ -273,13 +273,14 @@ namespace StepFlow.Markup
 		{
 			if (collided?.Target is { Current: { } current })
 			{
+				var bounds = current.Value.Bounds;
 				Drawer.Polygon(
 					new PointF[]
 					{
-						new(current.Bounds.Left, current.Bounds.Top),
-						new(current.Bounds.Right, current.Bounds.Top),
-						new(current.Bounds.Right, current.Bounds.Bottom),
-						new(current.Bounds.Left, current.Bounds.Bottom),
+						new(bounds.Left, bounds.Top),
+						new(bounds.Right, bounds.Top),
+						new(bounds.Right, bounds.Bottom),
+						new(bounds.Left, bounds.Bottom),
 					},
 					color
 				);

@@ -6,11 +6,13 @@ namespace StepFlow.Master.Proxies.Components
 {
 	public interface ICollidedProxy : IProxyBase<Collided>
 	{
-		IShapeBaseProxy<ShapeBase>? Current { get; set; }
-
-		IShapeBaseProxy<ShapeBase>? Next { get; set; }
+		IRefCounter<ShapeBase>? Current { get; set; }
+		IShapeBaseProxy<ShapeBase>? CurrentProxy { get; }
+		IRefCounter<ShapeBase>? Next { get; set; }
+		IShapeBaseProxy<ShapeBase>? NextProxy { get; }
 
 		bool IsMove { get; set; }
+
 		bool IsRigid { get; set; }
 
 		void Move()
@@ -25,6 +27,12 @@ namespace StepFlow.Master.Proxies.Components
 		void Break()
 		{
 			Next = null;
+
+			if (Current is { })
+			{
+				Current.Value.Attached = Target;
+			}
+
 			IsMove = false;
 		}
 	}
@@ -35,27 +43,13 @@ namespace StepFlow.Master.Proxies.Components
 		{
 		}
 
-		public IShapeBaseProxy<ShapeBase>? Current
-		{
-			get => (IShapeBaseProxy<ShapeBase>?)Owner.CreateProxy(Target.Current);
-			set
-			{
-				Current?.Unregister();
-				SetValue(x => x.Current, value?.Target);
-				Current?.Register();
-			}
-		}
+		public IRefCounter<ShapeBase>? Current { get => Target.Current; set => SetValue(x => x.Current, value); }
 
-		public IShapeBaseProxy<ShapeBase>? Next
-		{
-			get => (IShapeBaseProxy<ShapeBase>?)Owner.CreateProxy(Target.Next);
-			set
-			{
-				Next?.Unregister();
-				SetValue(x => x.Next, value?.Target);
-				Next?.Register();
-			}
-		}
+		public IShapeBaseProxy<ShapeBase>? CurrentProxy => (IShapeBaseProxy<ShapeBase>?)Owner.CreateProxy(Target.Current);
+
+		public IRefCounter<ShapeBase>? Next { get => Target.Next; set => SetValue(x => x.Next, value); }
+
+		public IShapeBaseProxy<ShapeBase>? NextProxy => (IShapeBaseProxy<ShapeBase>?)Owner.CreateProxy(Target.Next);
 
 		public bool IsMove { get => Target.IsMove; set => SetValue(x => x.IsMove, value); }
 

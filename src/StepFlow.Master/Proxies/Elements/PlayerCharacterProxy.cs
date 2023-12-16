@@ -66,7 +66,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 			if (Cooldown.Value == 0)
 			{
-				var border = Body.Current.Bounds;
+				var border = Body.Current.Value.Bounds;
 				var center = new Point(
 					border.X + border.Width / 2,
 					border.Y + border.Height / 2
@@ -81,12 +81,12 @@ namespace StepFlow.Master.Proxies.Elements
 					CurrentPathIndex = 0,
 				});
 
-				projectile.Body.Current = (IShapeBaseProxy<ShapeBase>)Owner.CreateProxy(new ShapeCell(new Rectangle(
+				projectile.Body.Current = Owner.GetPlaygroundProxy().IntersectionContext.Target.CreateCell(new Rectangle(
 					center.X - SIZE / 2,
 					center.Y - SIZE / 2,
 					SIZE,
 					SIZE
-				)));
+				));
 
 				for (var i = 0; i < 100; i++)
 				{

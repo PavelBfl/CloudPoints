@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace StepFlow.Intersection
 {
-	public sealed class Context : ICollection<ShapeBase>
+	public sealed class Context : ICollection<ShapeBase>, IRefContainer<ShapeBase>
 	{
 		private List<List<Relation>> Relations { get; } = new List<List<Relation>>();
 
@@ -74,6 +74,8 @@ namespace StepFlow.Intersection
 
 			return true;
 		}
+
+		void IRefContainer<ShapeBase>.Remove(ShapeBase item) => Remove(item);
 
 		public IReadOnlyList<Relation> GetCollisions()
 		{
