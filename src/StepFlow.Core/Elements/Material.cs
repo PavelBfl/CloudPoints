@@ -5,20 +5,16 @@ namespace StepFlow.Core.Elements
 {
 	public class Material : ElementBase
 	{
-		public Scale? Strength { get; set; }
+		private Scale? strength;
 
-		public Collided? Body { get; set; }
+		public Scale? Strength { get => strength; set => SetComponent(ref strength, value); }
+
+		private Collided? body;
+
+		public Collided? Body { get => body; set => SetComponent(ref body, value); }
 
 		public Action? CurrentAction { get; set; }
 
 		public int Speed { get; set; }
-
-		public virtual IEnumerable<Collided> GetCollideds()
-		{
-			if (Body is { })
-			{
-				yield return Body;
-			}
-		}
 	}
 }

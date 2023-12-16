@@ -1,5 +1,7 @@
 ﻿using StepFlow.Core;
 using StepFlow.Core.Components;
+using StepFlow.Intersection;
+using StepFlow.Master.Proxies.Intersection;
 
 namespace StepFlow.Master.Proxies.Components
 {
@@ -24,7 +26,10 @@ namespace StepFlow.Master.Proxies.Components
 		{
 			if (Collided is { Current: { } current })
 			{
-				current.Offset(Course.ToOffset());
+				var offset = Course.ToOffset();
+				var next = current.Target.Clone(offset);
+
+				Collided.Next = (IShapeBaseProxy<ShapeBase>?)Owner.CreateProxy(next);
 				Collided.IsMove = true;
 			}
 		}

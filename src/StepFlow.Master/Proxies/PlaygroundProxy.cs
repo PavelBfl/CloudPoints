@@ -17,7 +17,7 @@ namespace StepFlow.Master.Proxies
 		{
 		}
 
-		public IContextProxy Context => (IContextProxy)Owner.CreateProxy(Context);
+		public IContextProxy IntersectionContext => (IContextProxy)Owner.CreateProxy(Target.IntersectionContext);
 
 		public IPlayerCharacterProxy? PlayerCharacter { get => (IPlayerCharacterProxy?)Owner.CreateProxy(Target.PlayerCharacter); set => SetValue(x => x.PlayerCharacter, ((IProxyBase<PlayerCharacter>?)value)?.Target); }
 
@@ -39,14 +39,14 @@ namespace StepFlow.Master.Proxies
 		public IShapeContainerProxy CreateShapeContainer(IEnumerable<Rectangle> subRectangles)
 		{
 			var shape = (IShapeContainerProxy)Owner.CreateProxy(new ShapeContainer(subRectangles));
-			Context.Add(shape);
+			IntersectionContext.Add(shape);
 			return shape;
 		}
 
 		public IShapeCellProxy CreateCell(Rectangle border)
 		{
 			var shape = (IShapeCellProxy)Owner.CreateProxy(new ShapeCell(border));
-			Context.Add(shape);
+			IntersectionContext.Add(shape);
 			return shape;
 		}
 

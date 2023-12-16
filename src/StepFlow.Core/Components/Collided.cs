@@ -4,9 +4,28 @@ namespace StepFlow.Core.Components
 {
 	public sealed class Collided : ComponentBase
 	{
-		public ShapeBase? Current { get; set; }
+		private void SetShape(ref ShapeBase? field, ShapeBase? value)
+		{
+			if (field is { })
+			{
+				field.Attached = null;
+			}
 
-		public ShapeBase? Next { get; set; }
+			field = value;
+
+			if (field is { })
+			{
+				field.Attached = this;
+			}
+		}
+
+		private ShapeBase? current;
+
+		public ShapeBase? Current { get => current; set => SetShape(ref current, value); }
+
+		private ShapeBase? next;
+
+		public ShapeBase? Next { get => next; set => SetShape(ref next, value); }
 
 		public bool IsMove { get; set; }
 

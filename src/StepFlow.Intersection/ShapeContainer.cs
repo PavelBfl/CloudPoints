@@ -14,6 +14,11 @@ namespace StepFlow.Intersection
 			SubRectangles.AddRange(rectangles);
 		}
 
+		public ShapeContainer(ShapeContainer original) : base(original)
+		{
+			SubRectangles.AddRange(original);
+		}
+
 		private List<Rectangle> SubRectangles { get; } = new List<Rectangle>();
 
 		public override int Count => SubRectangles.Count;
@@ -112,5 +117,7 @@ namespace StepFlow.Intersection
 				((IList<Rectangle>)this)[i] = subRectangle;
 			}
 		}
+
+		public override ShapeBase Clone() => new ShapeContainer(this);
 	}
 }

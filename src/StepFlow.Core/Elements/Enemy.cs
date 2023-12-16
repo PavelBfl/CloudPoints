@@ -5,21 +5,12 @@ namespace StepFlow.Core.Elements
 {
 	public sealed class Enemy : Material
 	{
-		public Collided? Vision { get; set; }
+		private Collided? vision;
 
-		public Scale? Cooldown { get; set; }
+		public Collided? Vision { get => vision; set => SetComponent(ref vision, value); }
 
-		public override IEnumerable<Collided> GetCollideds()
-		{
-			foreach (var item in base.GetCollideds())
-			{
-				yield return item;
-			}
+		private Scale? cooldown;
 
-			if (Vision is { })
-			{
-				yield return Vision;
-			}
-		}
+		public Scale? Cooldown { get => cooldown; set => SetComponent(ref cooldown, value); }
 	}
 }

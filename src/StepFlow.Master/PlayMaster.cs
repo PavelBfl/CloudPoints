@@ -99,13 +99,14 @@ namespace StepFlow.Master
 
 			foreach (var collision in Playground.IntersectionContext.GetCollisions().ToArray())
 			{
-				//var firstMaterialProxy = (IMaterialProxy<Material>)CreateProxy(collision.Item1.Element);
-				//var firstCollidedProxy = (ICollidedProxy)CreateProxy(collision.Item1.Component);
-				//var secondMaterialProxy = (IMaterialProxy<Material>)CreateProxy(collision.Item2.Element);
-				//var secondCollidedProxy = (ICollidedProxy)CreateProxy(collision.Item2.Component);
+				var leftCollided = (ICollidedProxy)CreateProxy(collision.Left.Attached);
+				var leftMaterial = (IMaterialProxy<Material>)CreateProxy(leftCollided.Target.Element);
 
-				//firstMaterialProxy.Collision(firstCollidedProxy, secondMaterialProxy, secondCollidedProxy);
-				//secondMaterialProxy.Collision(secondCollidedProxy, firstMaterialProxy, firstCollidedProxy);
+				var rightCollided = (ICollidedProxy)CreateProxy(collision.Right.Attached);
+				var rightMaterial = (IMaterialProxy<Material>)CreateProxy(leftCollided.Target.Element);
+
+				leftMaterial.Collision(leftCollided, rightMaterial, rightCollided);
+				rightMaterial.Collision(rightCollided, leftMaterial, leftCollided);
 			}
 
 			foreach (var collision in Playground.GetMaterials()

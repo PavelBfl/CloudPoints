@@ -5,7 +5,9 @@ namespace StepFlow.Core.Elements
 {
 	public sealed class PlayerCharacter : Material
 	{
-		public Scale? Cooldown { get; set; }
+		private Scale? cooldown;
+
+		public Scale? Cooldown { get => cooldown; set => SetComponent(ref cooldown, value); }
 
 		public IList<Item> Items { get; } = new List<Item>();
 	}
