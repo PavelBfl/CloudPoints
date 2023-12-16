@@ -2,7 +2,9 @@
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
+using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
+using StepFlow.Master.Proxies.Intersection;
 
 namespace StepFlow.Master.Proxies.Elements
 {
@@ -63,15 +65,7 @@ namespace StepFlow.Master.Proxies.Elements
 				var projectile = (IProjectileProxy)Owner.CreateProxy(new Projectile()
 				{
 					Creator = Target,
-					Body = new Collided()
-					{
-						Current = Owner.GetPlaygroundProxy().CreateCell(new Rectangle(
-							center.X - SIZE / 2,
-							center.Y - SIZE / 2,
-							SIZE,
-							SIZE
-						)).Target,
-					},
+					Body = new Collided(),
 					Damage = new Damage()
 					{
 						Value = 10,
@@ -79,6 +73,13 @@ namespace StepFlow.Master.Proxies.Elements
 					Speed = 5,
 					CurrentPathIndex = 0,
 				});
+
+				projectile.Body.Current = (IShapeBaseProxy<ShapeBase>)Owner.CreateProxy(new ShapeCell(new Rectangle(
+					center.X - SIZE / 2,
+					center.Y - SIZE / 2,
+					SIZE,
+					SIZE
+				)));
 
 				foreach (var course in CourseExtensions.GetPath(center, otherCenter))
 				{

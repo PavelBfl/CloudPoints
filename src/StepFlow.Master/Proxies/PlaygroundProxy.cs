@@ -33,23 +33,6 @@ namespace StepFlow.Master.Proxies
 
 		public Point CreatePoint(int x, int y) => new Point(x, y);
 
-		public IShapeContainerProxy CreateShapeContainer(params Rectangle[] rectangles)
-			=> CreateShapeContainer(rectangles.AsEnumerable());
-
-		public IShapeContainerProxy CreateShapeContainer(IEnumerable<Rectangle> subRectangles)
-		{
-			var shape = (IShapeContainerProxy)Owner.CreateProxy(new ShapeContainer(subRectangles));
-			IntersectionContext.Add(shape);
-			return shape;
-		}
-
-		public IShapeCellProxy CreateCell(Rectangle border)
-		{
-			var shape = (IShapeCellProxy)Owner.CreateProxy(new ShapeCell(border));
-			IntersectionContext.Add(shape);
-			return shape;
-		}
-
 		public void CreatePlayerCharacter(Rectangle bounds, int strength)
 		{
 			PlayerCharacter = (IPlayerCharacterProxy)Owner.CreateProxy(new PlayerCharacter()
@@ -66,11 +49,12 @@ namespace StepFlow.Master.Proxies
 				},
 				Body = new Collided()
 				{
-					Current = CreateCell(bounds).Target,
 					IsRigid = true,
 				},
 				Speed = 1,
 			});
+
+			PlayerCharacter.Body.Current = (IShapeBaseProxy<ShapeBase>)Owner.CreateProxy(new ShapeCell(bounds));
 		}
 
 		public void CreateObstruction(Rectangle bounds, int? strength)
@@ -79,7 +63,6 @@ namespace StepFlow.Master.Proxies
 			{
 				Body = new Collided()
 				{
-					Current = CreateCell(bounds).Target,
 					IsRigid = true,
 				},
 				Strength = strength is { } ?
@@ -91,6 +74,8 @@ namespace StepFlow.Master.Proxies
 					null,
 			});
 
+			barrier.Body.Current = (IShapeBaseProxy<ShapeBase>)Owner.CreateProxy(new ShapeCell(bounds));
+
 			Obstructions.Add(barrier);
 		}
 
@@ -100,7 +85,6 @@ namespace StepFlow.Master.Proxies
 			{
 				Body = new Collided()
 				{
-					Current = CreateCell(bounds).Target,
 					IsRigid = true,
 				},
 				Damage = new Damage()
@@ -110,6 +94,8 @@ namespace StepFlow.Master.Proxies
 				},
 				Speed = 5,
 			});
+
+			projectile.Body.Current = (IShapeBaseProxy<ShapeBase>)Owner.CreateProxy(new ShapeCell(bounds));
 
 			Projectiles.Add(projectile);
 		}
@@ -126,7 +112,6 @@ namespace StepFlow.Master.Proxies
 				},
 				Body = new Collided()
 				{
-					Current = Owner.GetPlaygroundProxy().CreateCell(bounds).Target,
 					IsRigid = true,
 				},
 				DamageSetting = new Damage()
@@ -135,6 +120,8 @@ namespace StepFlow.Master.Proxies
 					Kind = kind,
 				},
 			});
+
+			item.Body.Current = (IShapeBaseProxy<ShapeBase>)Owner.CreateProxy(new ShapeCell(bounds));
 
 			Items.Add(item);
 		}
@@ -146,11 +133,12 @@ namespace StepFlow.Master.Proxies
 				Kind = ItemKind.Speed,
 				Body = new Collided()
 				{
-					Current = Owner.GetPlaygroundProxy().CreateCell(bounds).Target,
 					IsRigid = true,
 				},
 				Speed = speed,
 			});
+
+			item.Body.Current = (IShapeBaseProxy<ShapeBase>)Owner.CreateProxy(new ShapeCell(bounds));
 
 			Items.Add(item);
 		}
@@ -161,13 +149,9 @@ namespace StepFlow.Master.Proxies
 			{
 				Body = new Collided()
 				{
-					Current = Owner.GetPlaygroundProxy().CreateCell(bounds).Target,
 					IsRigid = true,
 				},
-				Vision = new Collided()
-				{
-					Current = Owner.GetPlaygroundProxy().CreateCell(vision).Target,
-				},
+				Vision = new Collided(),
 				Cooldown = new Scale()
 				{
 					Value = 1000,
@@ -179,6 +163,9 @@ namespace StepFlow.Master.Proxies
 					Max = 100,
 				},
 			});
+
+			enemy.Body.Current = (IShapeBaseProxy<ShapeBase>)Owner.CreateProxy(new ShapeCell(bounds));
+			enemy.Vision.Current = (IShapeBaseProxy<ShapeBase>)Owner.CreateProxy(new ShapeCell(vision));
 
 			Enemies.Add(enemy);
 		}

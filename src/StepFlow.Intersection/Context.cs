@@ -21,6 +21,7 @@ namespace StepFlow.Intersection
 				throw new ArgumentNullException(nameof(shape));
 			}
 
+			shape.Index = Shapes.Count;
 			Shapes.Add(shape);
 
 			if (Shapes.Count > 1)
@@ -39,6 +40,11 @@ namespace StepFlow.Intersection
 			if (shape is null)
 			{
 				throw new ArgumentNullException(nameof(shape));
+			}
+
+			if (shape.Index < 0)
+			{
+				throw new InvalidOperationException();
 			}
 
 			if (shape.Index > 0)
@@ -63,6 +69,8 @@ namespace StepFlow.Intersection
 			{
 				Shapes[i].Index = i;
 			}
+
+			shape.Index = -1;
 
 			return true;
 		}

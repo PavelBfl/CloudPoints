@@ -14,6 +14,7 @@ namespace StepFlow.Master.Proxies
 		IList<IProjectileProxy> Projectiles { get; }
 		IList<IItemProxy> Items { get; }
 		IList<IEnemyProxy> Enemies { get; }
+		IContextProxy IntersectionContext { get; }
 
 		void CreateObstruction(Rectangle bounds, int? strength);
 		void CreatePlayerCharacter(Rectangle bounds, int strength);
@@ -22,6 +23,5 @@ namespace StepFlow.Master.Proxies
 		void CreateDamageItem(Rectangle bounds, int value, DamageKind kind);
 		void CreateEnemy(Rectangle bounds, Rectangle vision);
 		void CreateSpeedItem(Rectangle bounds, int speed);
-		IShapeCellProxy CreateCell(Rectangle border);
 	}
 }

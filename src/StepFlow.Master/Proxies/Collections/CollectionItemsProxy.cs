@@ -40,7 +40,7 @@ namespace StepFlow.Master.Proxies.Collections
 			var removed = Target.Remove(item.Target);
 			if (removed)
 			{
-				Owner.TimeAxis.Add(new Reverse(new AddItemCommand<TItem>(Target, item.Target)));
+				Owner.TimeAxis.Add(new Reverse(new AddItemCommand<TItem>(Target, item.Target)), true);
 			}
 
 			return removed;

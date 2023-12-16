@@ -50,7 +50,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public virtual void Collision(ICollidedProxy thisCollided, IMaterialProxy<Material> otherMaterial, ICollidedProxy otherCollided)
 		{
-			if (otherCollided.IsRigid)
+			if (Target != otherMaterial.Target && otherCollided.IsRigid)
 			{
 				Body.Break();
 			}

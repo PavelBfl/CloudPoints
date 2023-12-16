@@ -38,13 +38,23 @@ namespace StepFlow.Master.Proxies.Components
 		public IShapeBaseProxy<ShapeBase>? Current
 		{
 			get => (IShapeBaseProxy<ShapeBase>?)Owner.CreateProxy(Target.Current);
-			set => SetValue(x => x.Current, value?.Target);
+			set
+			{
+				Current?.Unregister();
+				SetValue(x => x.Current, value?.Target);
+				Current?.Register();
+			}
 		}
 
 		public IShapeBaseProxy<ShapeBase>? Next
 		{
 			get => (IShapeBaseProxy<ShapeBase>?)Owner.CreateProxy(Target.Next);
-			set => SetValue(x => x.Next, value?.Target);
+			set
+			{
+				Next?.Unregister();
+				SetValue(x => x.Next, value?.Target);
+				Next?.Register();
+			}
 		}
 
 		public bool IsMove { get => Target.IsMove; set => SetValue(x => x.IsMove, value); }

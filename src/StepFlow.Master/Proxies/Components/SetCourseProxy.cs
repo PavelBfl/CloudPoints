@@ -28,8 +28,9 @@ namespace StepFlow.Master.Proxies.Components
 			{
 				var offset = Course.ToOffset();
 				var next = current.Target.Clone(offset);
+				var nextProxy = (IShapeBaseProxy<ShapeBase>?)Owner.CreateProxy(next);
 
-				Collided.Next = (IShapeBaseProxy<ShapeBase>?)Owner.CreateProxy(next);
+				Collided.Next = nextProxy;
 				Collided.IsMove = true;
 			}
 		}

@@ -38,14 +38,14 @@ namespace StepFlow.Markup
 
 		public void Init()
 		{
-			CreateRoom(new(5, 5), new(40, 20), 15);
+			//CreateRoom(new(5, 5), new(40, 20), 15);
 
-			CreateDamageItem(new(130, 50, 15, 15), 10, DamageKind.Fire);
-			CreateDamageItem(new(200, 50, 15, 15), 10, DamageKind.Poison);
-			CreateSpeedItem(new(270, 50, 15, 15), 5);
+			//CreateDamageItem(new(130, 50, 15, 15), 10, DamageKind.Fire);
+			//CreateDamageItem(new(200, 50, 15, 15), 10, DamageKind.Poison);
+			//CreateSpeedItem(new(270, 50, 15, 15), 5);
 
-			CreateEnemy(new(50, 180, 20, 20), 50);
-			CreateEnemy(new(200, 180, 20, 20), 50);
+			//CreateEnemy(new(50, 180, 20, 20), 50);
+			//CreateEnemy(new(200, 180, 20, 20), 50);
 
 			CreateObstruction(new(50, 50, 40, 40), 150);
 
