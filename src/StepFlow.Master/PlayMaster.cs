@@ -8,6 +8,7 @@ using StepFlow.Core.Elements;
 using StepFlow.Master.Proxies;
 using StepFlow.Master.Proxies.Components;
 using StepFlow.Master.Proxies.Elements;
+using StepFlow.Master.Proxies.Intersection;
 using StepFlow.Master.Scripts;
 using StepFlow.TimeLine;
 
@@ -68,8 +69,6 @@ namespace StepFlow.Master
 				Playground instance => new PlaygroundProxy(this, instance),
 				PlayerCharacter instance => new PlayerCharacterProxy(this, instance),
 				Obstruction instance => new ObstructionProxy(this, instance),
-				Bordered instance => new BorderedProxy(this, instance),
-				Cell instance => new CellProxy(this, instance),
 				SetCourse instance => new SetCourseProxy(this, instance),
 				Turn instance => new TurnProxy(this, instance),
 				Scale instance => new ScaleProxy(this, instance),
@@ -80,6 +79,9 @@ namespace StepFlow.Master
 				Collided instance => new CollidedProxy(this, instance),
 				Scheduled instance => new ScheduledProxy(this, instance),
 				Core.Components.Action instance => new ActionProxy(this, instance),
+				Intersection.Context instance => new ContextProxy(this, instance),
+				Intersection.ShapeCell instance => new ShapeCellProxy(this, instance),
+				Intersection.ShapeContainer instance => new ShapeContainerProxy(this, instance),
 				null => null,
 				_ => throw new InvalidOperationException(),
 			};
@@ -95,15 +97,15 @@ namespace StepFlow.Master
 				collision.OnTick();
 			}
 
-			foreach (var collision in Playground.GetCollision().ToArray())
+			foreach (var collision in Playground.IntersectionContext.GetCollisions().ToArray())
 			{
-				var firstMaterialProxy = (IMaterialProxy<Material>)CreateProxy(collision.Item1.Element);
-				var firstCollidedProxy = (ICollidedProxy)CreateProxy(collision.Item1.Component);
-				var secondMaterialProxy = (IMaterialProxy<Material>)CreateProxy(collision.Item2.Element);
-				var secondCollidedProxy = (ICollidedProxy)CreateProxy(collision.Item2.Component);
+				//var firstMaterialProxy = (IMaterialProxy<Material>)CreateProxy(collision.Item1.Element);
+				//var firstCollidedProxy = (ICollidedProxy)CreateProxy(collision.Item1.Component);
+				//var secondMaterialProxy = (IMaterialProxy<Material>)CreateProxy(collision.Item2.Element);
+				//var secondCollidedProxy = (ICollidedProxy)CreateProxy(collision.Item2.Component);
 
-				firstMaterialProxy.Collision(firstCollidedProxy, secondMaterialProxy, secondCollidedProxy);
-				secondMaterialProxy.Collision(secondCollidedProxy, firstMaterialProxy, firstCollidedProxy);
+				//firstMaterialProxy.Collision(firstCollidedProxy, secondMaterialProxy, secondCollidedProxy);
+				//secondMaterialProxy.Collision(secondCollidedProxy, firstMaterialProxy, firstCollidedProxy);
 			}
 
 			foreach (var collision in Playground.GetMaterials()

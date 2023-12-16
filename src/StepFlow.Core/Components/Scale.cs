@@ -1,6 +1,6 @@
 ﻿namespace StepFlow.Core.Components
 {
-	public sealed class Scale : Subject
+	public sealed class Scale : ComponentBase
 	{
 		public int Value { get; set; }
 

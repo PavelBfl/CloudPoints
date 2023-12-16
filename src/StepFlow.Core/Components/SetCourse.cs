@@ -1,6 +1,6 @@
 ﻿namespace StepFlow.Core.Components
 {
-	public sealed class SetCourse : Subject
+	public sealed class SetCourse : ComponentBase
 	{
 		public Collided? Collided { get; set; }
 

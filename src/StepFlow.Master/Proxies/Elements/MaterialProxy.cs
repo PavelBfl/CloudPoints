@@ -1,4 +1,6 @@
-﻿using StepFlow.Core;
+﻿using System.Drawing;
+using System.Linq;
+using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Master.Proxies.Components;
@@ -19,6 +21,8 @@ namespace StepFlow.Master.Proxies.Elements
 		void OnTick();
 
 		void SetCourse(Course course);
+
+		bool TryOffset(Course course);
 
 		void Collision(ICollidedProxy thisCollided, IMaterialProxy<Material> otherMaterial, ICollidedProxy otherCollided);
 	}
@@ -52,7 +56,7 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			if (otherCollided.IsRigid)
 			{
-				Body.Break(); 
+				Body.Break();
 			}
 		}
 
@@ -70,6 +74,22 @@ namespace StepFlow.Master.Proxies.Elements
 					Course = course,
 				},
 			});
+		}
+
+		public bool TryOffset(Course course)
+		{
+			var offset = course.ToOffset();
+			Body.Current.Offset(offset);
+
+			if (Owner.Playground.IntersectionContext.GetCollisions().Any())
+			{
+				Body.Current.Offset(new Point(-offset.X, -offset.Y));
+				return false;
+			}
+			else
+			{
+				return true;
+			}
 		}
 
 		public int Speed { get => Target.Speed; set => SetValue(x => x.Speed, value); }

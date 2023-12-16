@@ -31,13 +31,13 @@ namespace StepFlow.Intersection
 
 		private bool GetCollision()
 		{
-			var leftBorder = Left.GetBorder();
-			var rightBorder = Right.GetBorder();
+			var leftBorder = Left.Bounds;
+			var rightBorder = Right.Bounds;
 			if (leftBorder.IntersectsWith(rightBorder))
 			{
-				foreach (var leftChild in Left.GetChilds() ?? new[] { leftBorder })
+				foreach (var leftChild in Left)
 				{
-					foreach (var rightChild in Right.GetChilds() ?? new[] { rightBorder })
+					foreach (var rightChild in Right)
 					{
 						if (leftChild.IntersectsWith(rightChild))
 						{

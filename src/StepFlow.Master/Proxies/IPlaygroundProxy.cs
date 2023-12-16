@@ -3,6 +3,7 @@ using System.Drawing;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Master.Proxies.Elements;
+using StepFlow.Master.Proxies.Intersection;
 
 namespace StepFlow.Master.Proxies
 {
@@ -21,5 +22,6 @@ namespace StepFlow.Master.Proxies
 		void CreateDamageItem(Rectangle bounds, int value, DamageKind kind);
 		void CreateEnemy(Rectangle bounds, Rectangle vision);
 		void CreateSpeedItem(Rectangle bounds, int speed);
+		IShapeCellProxy CreateCell(Rectangle border);
 	}
 }

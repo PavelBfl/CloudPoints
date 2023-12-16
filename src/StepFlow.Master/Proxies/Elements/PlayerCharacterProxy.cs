@@ -64,7 +64,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 			if (Cooldown.Value == 0)
 			{
-				var border = Body.Current.Border;
+				var border = Body.Current.Bounds;
 				var center = new Point(
 					border.X + border.Width / 2,
 					border.Y + border.Height / 2
@@ -75,15 +75,12 @@ namespace StepFlow.Master.Proxies.Elements
 					Creator = Target,
 					Body = new Collided()
 					{
-						Current = new Cell()
-						{
-							Border = new Rectangle(
-								center.X - SIZE / 2,
-								center.Y - SIZE / 2,
-								SIZE,
-								SIZE
-							),
-						},
+						Current = Owner.GetPlaygroundProxy().CreateCell(new Rectangle(
+							center.X - SIZE / 2,
+							center.Y - SIZE / 2,
+							SIZE,
+							SIZE
+						)).Target,
 					},
 					Damage = AggregateDamage(10),
 					Speed = 5,

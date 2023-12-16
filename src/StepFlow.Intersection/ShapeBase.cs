@@ -6,6 +6,8 @@ namespace StepFlow.Intersection
 {
 	public abstract class ShapeBase : IReadOnlyList<Rectangle>
 	{
+		public object? Attached { get; set; }
+
 		public abstract Rectangle this[int index] { get; }
 
 		public abstract int Count { get; }
@@ -15,6 +17,8 @@ namespace StepFlow.Intersection
 		internal bool IsHandle { get; set; } = false;
 
 		public abstract Rectangle Bounds { get; }
+
+		public abstract void Offset(Point value);
 
 		public abstract IEnumerator<Rectangle> GetEnumerator();
 

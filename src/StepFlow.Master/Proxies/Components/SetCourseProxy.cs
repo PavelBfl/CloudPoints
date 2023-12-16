@@ -24,11 +24,7 @@ namespace StepFlow.Master.Proxies.Components
 		{
 			if (Collided is { Current: { } current })
 			{
-				var next = current.Target.Clone();
-				var offset = Course.ToOffset();
-				next.Offset(offset);
-
-				Collided.Next = (IBorderedBaseProxy<IBordered>)Owner.CreateProxy(next);
+				current.Offset(Course.ToOffset());
 				Collided.IsMove = true;
 			}
 		}

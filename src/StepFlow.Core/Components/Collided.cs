@@ -2,7 +2,7 @@
 
 namespace StepFlow.Core.Components
 {
-	public sealed class Collided : Subject
+	public sealed class Collided : ComponentBase
 	{
 		public ShapeBase? Current { get; set; }
 

@@ -40,7 +40,7 @@ namespace StepFlow.Intersection
 		{
 			Rectangle? result = null;
 
-			foreach (var rectangle in Rectangles)
+			foreach (var rectangle in this)
 			{
 				if (result is { } instance)
 				{
@@ -101,6 +101,16 @@ namespace StepFlow.Intersection
 				Reset();
 			}
 			return removed;
+		}
+
+		public override void Offset(Point value)
+		{
+			for (var i = 0; i < Count; i++)
+			{
+				var subRectangle = this[i];
+				subRectangle.Offset(value);
+				((IList<Rectangle>)this)[i] = subRectangle;
+			}
 		}
 	}
 }

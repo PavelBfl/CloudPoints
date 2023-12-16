@@ -126,10 +126,7 @@ namespace StepFlow.Master.Proxies
 				},
 				Body = new Collided()
 				{
-					Current = new Cell()
-					{
-						Border = bounds,
-					},
+					Current = Owner.GetPlaygroundProxy().CreateCell(bounds).Target,
 					IsRigid = true,
 				},
 				DamageSetting = new Damage()
@@ -149,10 +146,7 @@ namespace StepFlow.Master.Proxies
 				Kind = ItemKind.Speed,
 				Body = new Collided()
 				{
-					Current = new Cell()
-					{
-						Border = bounds,
-					},
+					Current = Owner.GetPlaygroundProxy().CreateCell(bounds).Target,
 					IsRigid = true,
 				},
 				Speed = speed,
@@ -167,18 +161,12 @@ namespace StepFlow.Master.Proxies
 			{
 				Body = new Collided()
 				{
-					Current = new Cell()
-					{
-						Border = bounds,
-					},
+					Current = Owner.GetPlaygroundProxy().CreateCell(bounds).Target,
 					IsRigid = true,
 				},
 				Vision = new Collided()
 				{
-					Current = new Cell()
-					{
-						Border = vision,
-					},
+					Current = Owner.GetPlaygroundProxy().CreateCell(vision).Target,
 				},
 				Cooldown = new Scale()
 				{

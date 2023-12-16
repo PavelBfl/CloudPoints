@@ -9,6 +9,8 @@ namespace StepFlow.Master.Proxies.Intersection
 		where TTarget : ShapeBase
 	{
 		Rectangle Bounds { get; }
+
+		void Offset(Point value);
 	}
 
 	internal class ShapeBaseProxy<TTarget> : ProxyBase<TTarget>, IShapeBaseProxy<TTarget>
@@ -23,6 +25,8 @@ namespace StepFlow.Master.Proxies.Intersection
 		public Rectangle Bounds => Target.Bounds;
 
 		public int Count => Target.Count;
+
+		public void Offset(Point value) => Owner.TimeAxis.Add(new ShapeOffsetCommand(Target, value));
 
 		public IEnumerator<Rectangle> GetEnumerator() => Target.GetEnumerator();
 

@@ -9,7 +9,7 @@ namespace StepFlow.Core.Components
 		IList<Turn> Queue { get; }
 	}
 
-	public sealed class Scheduled : Subject, IScheduled
+	public sealed class Scheduled : ComponentBase, IScheduled
 	{
 		public long QueueBegin { get; set; }
 

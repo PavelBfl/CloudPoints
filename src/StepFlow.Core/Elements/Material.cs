@@ -3,7 +3,7 @@ using StepFlow.Core.Components;
 
 namespace StepFlow.Core.Elements
 {
-	public class Material : Subject
+	public class Material : ElementBase
 	{
 		public Scale? Strength { get; set; }
 
