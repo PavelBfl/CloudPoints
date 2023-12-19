@@ -5,16 +5,16 @@ namespace StepFlow.Intersection
 {
 	public sealed class ShapeContainer : ShapeBase, IList<Rectangle>
 	{
-		public ShapeContainer()
+		public ShapeContainer(Context context) : base(context)
 		{
 		}
 
-		public ShapeContainer(IEnumerable<Rectangle> rectangles)
+		public ShapeContainer(Context context, IEnumerable<Rectangle> rectangles) : base(context)
 		{
 			SubRectangles.AddRange(rectangles);
 		}
 
-		public ShapeContainer(ShapeContainer original) : base(original)
+		public ShapeContainer(Context context, ShapeContainer original) : base(context, original)
 		{
 			SubRectangles.AddRange(original);
 		}
@@ -60,10 +60,11 @@ namespace StepFlow.Intersection
 			return result ?? Rectangle.Empty;
 		}
 
-		private void Reset()
+		protected override void Reset()
 		{
 			bounds = null;
-			IsHandle = false;
+
+			base.Reset();
 		}
 
 		public override IEnumerator<Rectangle> GetEnumerator() => SubRectangles.GetEnumerator();
@@ -118,6 +119,6 @@ namespace StepFlow.Intersection
 			}
 		}
 
-		public override ShapeBase Clone() => new ShapeContainer(this);
+		public override ShapeBase Clone() => new ShapeContainer(Context, this);
 	}
 }

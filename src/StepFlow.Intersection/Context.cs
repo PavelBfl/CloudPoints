@@ -14,6 +14,42 @@ namespace StepFlow.Intersection
 
 		public bool IsReadOnly => false;
 
+		internal void Reset(ShapeBase shape)
+		{
+			if (shape is null)
+			{
+				throw new ArgumentNullException(nameof(shape));
+			}
+
+			if (shape.Context != this)
+			{
+				throw new InvalidOperationException();
+			}
+
+			if (shape.Index < 0)
+			{
+				return;
+			}
+
+			if (shape.Index > 0)
+			{
+				foreach (var row in Relations[shape.Index - 1])
+				{
+					row.Reset();
+				}
+			}
+
+			foreach (var row in Relations)
+			{
+				if (shape.Index < row.Count)
+				{
+					row[shape.Index].Reset();
+				}
+			}
+
+			Collisions = null;
+		}
+
 		public void Add(ShapeBase shape)
 		{
 			if (shape is null)
@@ -77,31 +113,33 @@ namespace StepFlow.Intersection
 
 		void IRefContainer<ShapeBase>.Remove(ShapeBase item) => Remove(item);
 
+		private IReadOnlyList<Relation>? Collisions { get; set; }
+
 		public IReadOnlyList<Relation> GetCollisions()
 		{
-			var result = new List<Relation>();
-
-			for (var i = 0; i < Relations.Count; i++)
+			if (Collisions is null)
 			{
-				var row = Relations[i];
+				var result = new List<Relation>();
 
-				for (var j = 0; j < row.Count; j++)
+				for (var i = 0; i < Relations.Count; i++)
 				{
-					var relation = row[j];
+					var row = Relations[i];
 
-					if (relation.IsCollision)
+					for (var j = 0; j < row.Count; j++)
 					{
-						result.Add(relation);
+						var relation = row[j];
+
+						if (relation.IsCollision)
+						{
+							result.Add(relation);
+						}
 					}
 				}
+
+				Collisions = result;
 			}
 
-			for (var i = 0; i < Shapes.Count; i++)
-			{
-				Shapes[i].IsHandle = true;
-			}
-
-			return result;
+			return Collisions;
 		}
 
 		public void Clear()

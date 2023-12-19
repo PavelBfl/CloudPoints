@@ -23,10 +23,13 @@ namespace StepFlow.Markup
 
 			Meter.CreateObservableGauge("Time", () => PlayMaster.Time);
 			Meter.CreateObservableGauge("Commands", () => PlayMaster.TimeAxis.Count);
+			Meter.CreateObservableGauge("Frame", () => Frame.TotalMilliseconds);
 			Init();
 		}
 
 		private Meter Meter { get; } = new Meter("Game.Gameplay");
+
+		private TimeSpan Frame { get; set; }
 
 		private PlayMaster PlayMaster { get; } = new PlayMaster();
 
@@ -38,14 +41,14 @@ namespace StepFlow.Markup
 
 		public void Init()
 		{
-			//CreateRoom(new(5, 5), new(40, 20), 15);
+			CreateRoom(new(5, 5), new(40, 20), 15);
 
-			//CreateDamageItem(new(130, 50, 15, 15), 10, DamageKind.Fire);
-			//CreateDamageItem(new(200, 50, 15, 15), 10, DamageKind.Poison);
-			//CreateSpeedItem(new(270, 50, 15, 15), 5);
+			CreateDamageItem(new(130, 50, 15, 15), 10, DamageKind.Fire);
+			CreateDamageItem(new(200, 50, 15, 15), 10, DamageKind.Poison);
+			CreateSpeedItem(new(270, 50, 15, 15), 5);
 
-			//CreateEnemy(new(50, 180, 20, 20), 50);
-			//CreateEnemy(new(200, 180, 20, 20), 50);
+			CreateEnemy(new(50, 180, 20, 20), 50);
+			CreateEnemy(new(200, 180, 20, 20), 50);
 
 			CreateObstruction(new(50, 100, 40, 40), 150);
 
@@ -168,7 +171,7 @@ namespace StepFlow.Markup
 
 		public void Update()
 		{
-			const int TICKS_COUNT = 10;
+			const int TICKS_COUNT = 250;
 			if (Keyboard.IsUndo())
 			{
 				for (var i = 0; i < TICKS_COUNT; i++)
@@ -178,6 +181,7 @@ namespace StepFlow.Markup
 			}
 			else
 			{
+				var sw = System.Diagnostics.Stopwatch.StartNew();
 				for (var i = 0; i < TICKS_COUNT; i++)
 				{
 					if (Keyboard.GetPlayerCourse() is { } playerCourse)
@@ -192,6 +196,8 @@ namespace StepFlow.Markup
 
 					PlayMaster.TakeStep.Execute(null);
 				}
+
+				Frame = sw.Elapsed;
 			}
 		}
 

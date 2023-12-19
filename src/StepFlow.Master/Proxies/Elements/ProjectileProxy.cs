@@ -64,6 +64,8 @@ namespace StepFlow.Master.Proxies.Elements
 				}
 
 				Owner.GetPlaygroundProxy().Projectiles.Remove(this);
+				Body.Current = null;
+				Body.Next = null;
 			}
 		}
 	}

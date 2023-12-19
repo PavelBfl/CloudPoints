@@ -7,11 +7,12 @@ namespace StepFlow.Intersection
 {
 	public abstract class ShapeBase : IReadOnlyList<Rectangle>, ICloneable
 	{
-		protected ShapeBase()
+		protected ShapeBase(Context context)
 		{
+			Context = context ?? throw new ArgumentNullException(nameof(context));
 		}
 
-		protected ShapeBase(ShapeBase original)
+		protected ShapeBase(Context context, ShapeBase original) : this(context)
 		{
 			if (original is null)
 			{
@@ -27,11 +28,13 @@ namespace StepFlow.Intersection
 
 		public abstract int Count { get; }
 
+		public Context Context { get; }
+
 		internal int Index { get; set; } = -1;
 
-		internal bool IsHandle { get; set; } = false;
-
 		public abstract Rectangle Bounds { get; }
+
+		protected virtual void Reset() => Context.Reset(this);
 
 		public abstract void Offset(Point value);
 

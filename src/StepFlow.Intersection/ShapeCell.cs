@@ -6,13 +6,16 @@ namespace StepFlow.Intersection
 {
 	public sealed class ShapeCell : ShapeBase
 	{
-		public ShapeCell()
+		public ShapeCell(Context context) : base(context)
 		{
 		}
 
-		public ShapeCell(Rectangle border) => Border = border;
+		public ShapeCell(Context context, Rectangle border) : base(context)
+		{
+			Border = border;
+		}
 
-		public ShapeCell(ShapeCell original) : base(original)
+		public ShapeCell(Context context, ShapeCell original) : base(context, original)
 		{
 			Border = original.Border;
 		}
@@ -29,7 +32,7 @@ namespace StepFlow.Intersection
 				if (Border != value)
 				{
 					border = value;
-					IsHandle = false;
+					Reset();
 				}
 			}
 		}
@@ -41,6 +44,6 @@ namespace StepFlow.Intersection
 
 		public override void Offset(Point value) => border.Offset(value);
 
-		public override ShapeBase Clone() => new ShapeCell(this);
+		public override ShapeBase Clone() => new ShapeCell(Context, this);
 	}
 }

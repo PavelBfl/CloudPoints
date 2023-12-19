@@ -14,20 +14,11 @@ namespace StepFlow.Intersection
 
 		public ShapeBase Right { get; }
 
+		internal void Reset() => isCollision = null;
+
 		private bool? isCollision;
 
-		public bool IsCollision
-		{
-			get
-			{
-				if (isCollision is null || !Left.IsHandle || !Right.IsHandle)
-				{
-					isCollision = GetCollision();
-				}
-
-				return isCollision.Value;
-			}
-		}
+		public bool IsCollision => isCollision ??= GetCollision();
 
 		private bool GetCollision()
 		{

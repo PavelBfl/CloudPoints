@@ -89,7 +89,7 @@ namespace StepFlow.Intersection
 
 		public ShapeContainer CreateBordered()
 		{
-			var result = new ShapeContainer();
+			//var result = new ShapeContainer();
 
 			for (var iX = 0; iX < Size.Width; iX++)
 			{
@@ -114,7 +114,7 @@ namespace StepFlow.Intersection
 				}
 			}
 
-			return result;
+			return null;
 		}
 
 		private Rectangle ExpandFromLeft(Point begin)
