@@ -30,6 +30,10 @@ namespace StepFlow.Master.Proxies.Elements
 			if (Strength?.Value == 0)
 			{
 				Owner.GetPlaygroundProxy().Enemies.Remove(this);
+				Body.Current = null;
+				Body.Next = null;
+				Vision.Current = null;
+				Vision.Next = null;
 			}
 			else
 			{

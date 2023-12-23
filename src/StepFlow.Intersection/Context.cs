@@ -69,6 +69,8 @@ namespace StepFlow.Intersection
 				}
 				Relations.Add(row);
 			}
+
+			Collisions = null;
 		}
 
 		public bool Remove(ShapeBase shape)
@@ -108,6 +110,7 @@ namespace StepFlow.Intersection
 
 			shape.Index = -1;
 
+			Collisions = null;
 			return true;
 		}
 

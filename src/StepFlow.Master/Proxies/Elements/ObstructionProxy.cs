@@ -23,6 +23,8 @@ namespace StepFlow.Master.Proxies.Elements
 			if (Strength?.Value == 0)
 			{
 				Owner.GetPlaygroundProxy().Obstructions.Remove(this);
+				Body.Current = null;
+				Body.Next = null;
 			}
 		}
 	}

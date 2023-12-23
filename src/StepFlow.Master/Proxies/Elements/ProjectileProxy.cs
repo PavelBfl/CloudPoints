@@ -45,6 +45,8 @@ namespace StepFlow.Master.Proxies.Elements
 			if (CurrentPathIndex >= Path.Count)
 			{
 				Owner.GetPlaygroundProxy().Projectiles.Remove(this);
+				Body.Current = null;
+				Body.Next = null;
 			}
 			else if (CurrentAction is null)
 			{

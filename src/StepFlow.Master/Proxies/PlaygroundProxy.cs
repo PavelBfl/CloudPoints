@@ -53,7 +53,7 @@ namespace StepFlow.Master.Proxies
 					Current = Owner.Playground.IntersectionContext.CreateCell(bounds),
 					IsRigid = true,
 				},
-				Speed = 1,
+				Speed = 10,
 			});
 		}
 

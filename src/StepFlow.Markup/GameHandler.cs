@@ -171,7 +171,7 @@ namespace StepFlow.Markup
 
 		public void Update()
 		{
-			const int TICKS_COUNT = 250;
+			const int TICKS_COUNT = 100;
 			if (Keyboard.IsUndo())
 			{
 				for (var i = 0; i < TICKS_COUNT; i++)

@@ -50,6 +50,8 @@ namespace StepFlow.Master.Proxies.Elements
 			if (otherMaterial is IItemProxy itemProxy)
 			{
 				Owner.GetPlaygroundProxy().Items.Remove(itemProxy);
+				itemProxy.Body.Current = null;
+				itemProxy.Body.Next = null;
 				Items.Add(itemProxy);
 
 				Speed -= itemProxy.Speed;

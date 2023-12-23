@@ -52,5 +52,7 @@ namespace StepFlow.Intersection
 		}
 
 		object ICloneable.Clone() => Clone();
+
+		public override string ToString() => Bounds.ToString();
 	}
 }
