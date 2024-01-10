@@ -25,8 +25,7 @@ namespace StepFlow.Master
 			AddExecutor(PlayerCharacterSetCourse = new PlayerCharacterSetCourse(this));
 			AddExecutor(CreateObstruction = new CreateObstruction(this));
 			AddExecutor(CreateProjectile = new CreateProjectile(this));
-			AddExecutor(CreateDamageItem = new CreateDamageItem(this));
-			AddExecutor(CreateSpeedItem = new CreateSpeedItem(this));
+			AddExecutor(CreateItem = new CreateItem(this));
 			AddExecutor(CreateEnemy = new CreateEnemy(this));
 		}
 
@@ -46,9 +45,7 @@ namespace StepFlow.Master
 
 		public CreateProjectile CreateProjectile { get; }
 
-		public CreateDamageItem CreateDamageItem { get; }
-
-		public CreateSpeedItem CreateSpeedItem { get; }
+		public CreateItem CreateItem { get; }
 
 		public CreateEnemy CreateEnemy { get; }
 

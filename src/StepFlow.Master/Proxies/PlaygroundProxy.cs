@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
@@ -29,10 +28,6 @@ namespace StepFlow.Master.Proxies
 
 		public IList<IEnemyProxy> Enemies => CreateListItemProxy<Enemy, IEnemyProxy>(Target.Enemies);
 
-		public Rectangle CreateRectangle(int x, int y, int width, int height) => new Rectangle(x, y, width, height);
-
-		public Point CreatePoint(int x, int y) => new Point(x, y);
-
 		public void CreatePlayerCharacter(Rectangle bounds, int strength)
 		{
 			PlayerCharacter = (IPlayerCharacterProxy)Owner.CreateProxy(new PlayerCharacter()
@@ -45,8 +40,8 @@ namespace StepFlow.Master.Proxies
 				},
 				Cooldown = new Scale()
 				{
-					Max = 1000,
-					Value = 1000,
+					Max = 3000,
+					Value = 3000,
 				},
 				Body = new Collided()
 				{
@@ -99,47 +94,6 @@ namespace StepFlow.Master.Proxies
 			Projectiles.Add(projectile);
 		}
 
-		public void CreateDamageItem(Rectangle bounds, int value, DamageKind kind)
-		{
-			var item = (IItemProxy)Owner.CreateProxy(new Item()
-			{
-				Kind = kind switch
-				{
-					DamageKind.Fire => ItemKind.Fire,
-					DamageKind.Poison => ItemKind.Poison,
-					_ => ItemKind.None,
-				},
-				Body = new Collided()
-				{
-					Current = Owner.Playground.IntersectionContext.CreateCell(bounds),
-					IsRigid = true,
-				},
-				DamageSetting = new Damage()
-				{
-					Value = value,
-					Kind = kind,
-				},
-			});
-
-			Items.Add(item);
-		}
-
-		public void CreateSpeedItem(Rectangle bounds, int speed)
-		{
-			var item = (IItemProxy)Owner.CreateProxy(new Item()
-			{
-				Kind = ItemKind.Speed,
-				Body = new Collided()
-				{
-					Current = Owner.Playground.IntersectionContext.CreateCell(bounds),
-					IsRigid = true,
-				},
-				Speed = speed,
-			});
-
-			Items.Add(item);
-		}
-
 		public void CreateEnemy(Rectangle bounds, Rectangle vision)
 		{
 			var enemy = (IEnemyProxy)Owner.CreateProxy(new Enemy()
@@ -166,6 +120,63 @@ namespace StepFlow.Master.Proxies
 			});
 
 			Enemies.Add(enemy);
+		}
+
+		public void CreateItem(Point position, ItemKind kind)
+		{
+			const int RADIUS = 7;
+
+			var bounds = new Rectangle(
+				position.X - RADIUS,
+				position.Y - RADIUS,
+				RADIUS * 2,
+				RADIUS * 2
+			);
+
+			var item = kind switch
+			{
+				ItemKind.Fire => (IItemProxy)Owner.CreateProxy(new Item()
+				{
+					Kind = ItemKind.Fire,
+					Body = new Collided()
+					{
+						Current = Owner.Playground.IntersectionContext.CreateCell(bounds),
+						IsRigid = true,
+					},
+					DamageSetting = new Damage()
+					{
+						Value = 10,
+						Kind = DamageKind.Fire,
+					},
+				}),
+				ItemKind.Poison => (IItemProxy)Owner.CreateProxy(new Item()
+				{
+					Kind = ItemKind.Poison,
+					Body = new Collided()
+					{
+						Current = Owner.Playground.IntersectionContext.CreateCell(bounds),
+						IsRigid = true,
+					},
+					DamageSetting = new Damage()
+					{
+						Value = 10,
+						Kind = DamageKind.Poison,
+					},
+				}),
+				ItemKind.Speed => (IItemProxy)Owner.CreateProxy(new Item()
+				{
+					Kind = ItemKind.Speed,
+					Body = new Collided()
+					{
+						Current = Owner.Playground.IntersectionContext.CreateCell(bounds),
+						IsRigid = true,
+					},
+					Speed = 5,
+				}),
+				_ => throw new System.InvalidOperationException(),
+			};
+
+			Items.Add(item);
 		}
 	}
 }

@@ -90,7 +90,7 @@ namespace StepFlow.Master.Proxies.Elements
 					SIZE
 				));
 
-				for (var i = 0; i < 100; i++)
+				for (var i = 0; i < 300; i++)
 				{
 					projectile.Path.Add(course);
 				}

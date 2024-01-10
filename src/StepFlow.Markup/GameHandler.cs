@@ -43,9 +43,9 @@ namespace StepFlow.Markup
 		{
 			CreateRoom(new(5, 5), new(40, 20), 15);
 
-			CreateDamageItem(new(130, 50, 15, 15), 10, DamageKind.Fire);
-			CreateDamageItem(new(200, 50, 15, 15), 10, DamageKind.Poison);
-			CreateSpeedItem(new(270, 50, 15, 15), 5);
+			PlayMaster.CreateItem.Execute(new() { X = 130, Y = 50, Kind = ItemKind.Fire });
+			PlayMaster.CreateItem.Execute(new() { X = 200, Y = 50, Kind = ItemKind.Poison });
+			PlayMaster.CreateItem.Execute(new() { X = 270, Y = 50, Kind = ItemKind.Speed });
 
 			CreateEnemy(new(50, 180, 20, 20), 50);
 			CreateEnemy(new(200, 180, 20, 20), 50);
@@ -120,31 +120,6 @@ namespace StepFlow.Markup
 		private void CreateProjectile(Course course)
 		{
 			PlayMaster.CreateProjectile.Execute(new() { Course = course, });
-		}
-
-		private void CreateDamageItem(Rectangle bounds, int value, DamageKind kind)
-		{
-			PlayMaster.CreateDamageItem.Execute(new()
-			{
-				X = bounds.X,
-				Y = bounds.Y,
-				Width = bounds.Width,
-				Height = bounds.Height,
-				Value = value,
-				Kind = kind
-			});
-		}
-
-		private void CreateSpeedItem(Rectangle bounds, int speed)
-		{
-			PlayMaster.CreateSpeedItem.Execute(new()
-			{
-				X = bounds.X,
-				Y = bounds.Y,
-				Width = bounds.Width,
-				Height = bounds.Height,
-				Speed = speed,
-			});
 		}
 
 		private void CreateEnemy(Rectangle bounds, int visionSize)
