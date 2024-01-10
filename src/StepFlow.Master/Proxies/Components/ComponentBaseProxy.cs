@@ -7,7 +7,7 @@ namespace StepFlow.Master.Proxies.Components
 	public interface IComponentBaseProxy<TTarget> : IProxyBase<TTarget>
 		where TTarget : ComponentBase
 	{
-		IElementBaseProxy<ElementBase>? Element { get; set; }
+		ElementBase? Element { get; set; }
 	}
 
 	internal class ComponentBaseProxy<TTarget> : ProxyBase<TTarget>, IComponentBaseProxy<TTarget>
@@ -17,10 +17,6 @@ namespace StepFlow.Master.Proxies.Components
 		{
 		}
 
-		public IElementBaseProxy<ElementBase>? Element
-		{
-			get => (IElementBaseProxy<ElementBase>?)Owner.CreateProxy(Target.Element);
-			set => SetValue(x => x.Element, value?.Target);
-		}
+		public ElementBase? Element { get => Target.Element; set => SetValue(x => x.Element, value); }
 	}
 }

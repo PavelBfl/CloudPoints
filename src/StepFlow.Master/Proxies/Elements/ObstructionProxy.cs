@@ -1,11 +1,11 @@
-﻿using StepFlow.Core.Elements;
-using StepFlow.Master.Proxies.Components;
+﻿using StepFlow.Core.Components;
+using StepFlow.Core.Elements;
 
 namespace StepFlow.Master.Proxies.Elements
 {
 	public interface IObstructionProxy : IMaterialProxy<Obstruction>
 	{
-		new IScaleProxy? Strength { get; set; }
+		new Scale? Strength { get; set; }
 	}
 
 	internal class ObstructionProxy : MaterialProxy<Obstruction>, IObstructionProxy
@@ -14,7 +14,7 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 		}
 
-		public new IScaleProxy? Strength { get => base.Strength; set => base.Strength = value; }
+		public new Scale? Strength { get => base.Strength; set => base.Strength = value; }
 
 		public override void OnTick()
 		{

@@ -1,4 +1,5 @@
-﻿using StepFlow.Core.Components;
+﻿using StepFlow.Core;
+using StepFlow.Core.Components;
 
 namespace StepFlow.Master.Proxies.Components
 {
@@ -8,7 +9,7 @@ namespace StepFlow.Master.Proxies.Components
 
 		long Duration { get; set; }
 
-		ITurnExecutor? Executor { get; set; }
+		Subject? Executor { get; set; }
 	}
 
 	internal class ActionProxy : ProxyBase<Action>, IActionProxy
@@ -21,6 +22,6 @@ namespace StepFlow.Master.Proxies.Components
 
 		public long Duration { get => Target.Duration; set => SetValue(x => x.Duration, value); }
 
-		public ITurnExecutor? Executor { get => (ITurnExecutor?)Owner.CreateProxy(Target.Executor); set => SetValue(x => x.Executor, value?.Target); }
+		public Subject? Executor { get => Target.Executor; set => SetValue(x => x.Executor, value); }
 	}
 }

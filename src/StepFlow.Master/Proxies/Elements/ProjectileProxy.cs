@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using StepFlow.Core;
+using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Master.Proxies.Components;
 
@@ -7,9 +8,9 @@ namespace StepFlow.Master.Proxies.Elements
 {
 	public interface IProjectileProxy : IMaterialProxy<Projectile>
 	{
-		IProxyBase<Subject>? Creator { get; set; }
+		Subject? Creator { get; set; }
 
-		IDamageProxy? Damage { get; set; }
+		Damage? Damage { get; set; }
 
 		int CurrentPathIndex { get; set; }
 
@@ -22,17 +23,9 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 		}
 
-		public IProxyBase<Subject>? Creator
-		{
-			get => (IProxyBase<Subject>?)Owner.CreateProxy(Target.Creator);
-			set => SetValue(x => x.Creator, value?.Target);
-		}
+		public Subject? Creator { get => Target.Creator; set => SetValue(x => x.Creator, value); }
 
-		public IDamageProxy? Damage
-		{
-			get => (IDamageProxy?)Owner.CreateProxy(Target.Damage);
-			set => SetValue(x => x.Damage, value?.Target);
-		}
+		public Damage? Damage { get => Target.Damage; set => SetValue(x => x.Damage, value); }
 
 		public int CurrentPathIndex { get => Target.CurrentPathIndex; set => SetValue(x => x.CurrentPathIndex, value); }
 
@@ -58,11 +51,12 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public override void Collision(ICollidedProxy thisCollided, IMaterialProxy<Material> otherMaterial, ICollidedProxy otherCollided)
 		{
-			if (Creator?.Target != otherMaterial.Target && otherCollided.IsRigid)
+			if (Creator != otherMaterial.Target && otherCollided.IsRigid)
 			{
 				if (otherMaterial.Strength is { } strength)
 				{
-					strength.Add(-Damage.Value);
+					var strengthProxy = (IScaleProxy)Owner.CreateProxy(strength);
+					strengthProxy.Add(-Damage.Value);
 				}
 
 				Owner.GetPlaygroundProxy().Projectiles.Remove(this);

@@ -8,13 +8,13 @@ namespace StepFlow.Master.Proxies.Elements
 	public interface IMaterialProxy<out TTarget> : IProxyBase<TTarget>
 		where TTarget : Material
 	{
-		IScaleProxy? Strength { get; }
+		Scale? Strength { get; }
 
-		ICollidedProxy Body { get; }
+		Collided Body { get; }
 
 		int Speed { get; set; }
 
-		IActionProxy? CurrentAction { get; set; }
+		Action? CurrentAction { get; set; }
 
 		void OnTick();
 
@@ -30,11 +30,11 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 		}
 
-		public IScaleProxy? Strength { get => (IScaleProxy?)Owner.CreateProxy(Target.Strength); protected set => SetValue(x => x.Strength, value?.Target); }
+		public Scale? Strength { get => Target.Strength; protected set => SetValue(x => x.Strength, value); }
 
-		public ICollidedProxy Body { get => (ICollidedProxy)Owner.CreateProxy(Target.Body); }
+		public Collided Body { get => Target.Body; }
 
-		public IActionProxy? CurrentAction { get => (IActionProxy?)Owner.CreateProxy(Target.CurrentAction); set => SetValue(x => x.CurrentAction, value?.Target); }
+		public Action? CurrentAction { get => Target.CurrentAction; set => SetValue(x => x.CurrentAction, value); }
 
 		public virtual void OnTick()
 		{
@@ -42,7 +42,8 @@ namespace StepFlow.Master.Proxies.Elements
 			{
 				if (Owner.Time == (currentAction.Begin + currentAction.Duration))
 				{
-					currentAction.Executor?.Execute();
+					var executorProxy = (ITurnExecutor?)Owner.CreateProxy(currentAction.Executor);
+					executorProxy?.Execute();
 					CurrentAction = null;
 				}
 			}
@@ -52,7 +53,7 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			if (Target != otherMaterial.Target && otherCollided.IsRigid)
 			{
-				Body.Break();
+				((ICollidedProxy)Owner.CreateProxy(Body)).Break();
 			}
 		}
 
@@ -60,16 +61,16 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			var factor = course.GetFactor();
 
-			CurrentAction = (IActionProxy)Owner.CreateProxy(new Action()
+			CurrentAction = new Action()
 			{
 				Begin = Owner.Time,
 				Duration = factor * Speed,
 				Executor = new SetCourse()
 				{
-					Collided = Body.Target,
+					Collided = Body,
 					Course = course,
 				},
-			});
+			};
 		}
 
 		public int Speed { get => Target.Speed; set => SetValue(x => x.Speed, value); }

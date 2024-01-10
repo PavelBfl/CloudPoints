@@ -10,7 +10,7 @@ namespace StepFlow.Master.Proxies.Elements
 {
 	public interface IEnemyProxy : IMaterialProxy<Enemy>
 	{
-		ICollidedProxy Vision { get; }
+		Collided Vision { get; }
 	}
 
 	internal sealed class EnemyProxy : MaterialProxy<Enemy>, IEnemyProxy
@@ -19,9 +19,9 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 		}
 
-		public ICollidedProxy Vision => (ICollidedProxy)Owner.CreateProxy(Target.Vision);
+		public Collided Vision => Target.Vision;
 
-		public IScaleProxy Cooldown => (IScaleProxy)Owner.CreateProxy(Target.Cooldown);
+		public Scale Cooldown => Target.Cooldown;
 
 		public override void OnTick()
 		{
@@ -38,13 +38,14 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 			else
 			{
-				Cooldown.Decrement();
+				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);
+				cooldownProxy.Decrement();
 			}
 		}
 
 		public override void Collision(ICollidedProxy thisCollided, IMaterialProxy<Material> otherMaterial, ICollidedProxy otherCollided)
 		{
-			if (thisCollided.Target == Vision.Target && otherMaterial.Target == Owner.Playground.PlayerCharacter)
+			if (thisCollided.Target == Vision && otherMaterial.Target == Owner.Playground.PlayerCharacter)
 			{
 				CreateProjectile(otherMaterial);
 			}
@@ -92,7 +93,8 @@ namespace StepFlow.Master.Proxies.Elements
 				}
 
 				Owner.GetPlaygroundProxy().Projectiles.Add(projectile);
-				Cooldown.SetMax();
+				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);
+				cooldownProxy.SetMax();
 			}
 		}
 	}

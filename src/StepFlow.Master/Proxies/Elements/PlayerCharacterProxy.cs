@@ -14,7 +14,7 @@ namespace StepFlow.Master.Proxies.Elements
 {
 	public interface IPlayerCharacterProxy : IMaterialProxy<PlayerCharacter>
 	{
-		new IScaleProxy Strength { get; }
+		new Scale Strength { get; }
 
 		void CreateProjectile(Course course);
 	}
@@ -25,7 +25,7 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 		}
 
-		public new IScaleProxy Strength => base.Strength ?? throw new InvalidOperationException();
+		public new Scale Strength => base.Strength ?? throw new InvalidOperationException();
 
 		public IScaleProxy Cooldown => (IScaleProxy)Owner.CreateProxy(Target.Cooldown);
 
@@ -56,7 +56,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 				Speed -= itemProxy.Speed;
 			}
-			else if ((otherMaterial as IProjectileProxy)?.Creator?.Target != Target)
+			else if ((otherMaterial as IProjectileProxy)?.Creator != Target)
 			{
 				base.Collision(thisCollided, otherMaterial, otherCollided);
 			}

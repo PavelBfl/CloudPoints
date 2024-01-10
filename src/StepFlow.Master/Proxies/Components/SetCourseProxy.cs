@@ -1,7 +1,6 @@
 ﻿using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Intersection;
-using StepFlow.Master.Proxies.Intersection;
 
 namespace StepFlow.Master.Proxies.Components
 {

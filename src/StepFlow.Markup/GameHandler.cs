@@ -232,9 +232,9 @@ namespace StepFlow.Markup
 			}
 		}
 
-		private void CreateTexture(ICollidedProxy? collided, Texture texture, IScaleProxy? strength)
+		private void CreateTexture(Collided? collided, Texture texture, Scale? strength)
 		{
-			if (collided?.Target is { Current: { } current })
+			if (collided is { Current: { } current })
 			{
 				Drawer.Draw(texture, current.Value.Bounds);
 				if (strength is not null)
@@ -250,9 +250,9 @@ namespace StepFlow.Markup
 			}
 		}
 
-		private void CreateBorder(ICollidedProxy? collided, Color color)
+		private void CreateBorder(Collided? collided, Color color)
 		{
-			if (collided?.Target is { Current: { } current })
+			if (collided is { Current: { } current })
 			{
 				var bounds = current.Value.Bounds;
 				Drawer.Polygon(
