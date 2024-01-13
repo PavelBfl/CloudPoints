@@ -46,6 +46,7 @@ namespace StepFlow.Markup
 			PlayMaster.CreateItem.Execute(new() { X = 130, Y = 50, Kind = ItemKind.Fire });
 			PlayMaster.CreateItem.Execute(new() { X = 200, Y = 50, Kind = ItemKind.Poison });
 			PlayMaster.CreateItem.Execute(new() { X = 270, Y = 50, Kind = ItemKind.Speed });
+			PlayMaster.CreateItem.Execute(new() { X = 340, Y = 50, Kind = ItemKind.AttackSpeed });
 
 			CreateEnemy(new(50, 180, 20, 20), 50);
 			CreateEnemy(new(200, 180, 20, 20), 50);

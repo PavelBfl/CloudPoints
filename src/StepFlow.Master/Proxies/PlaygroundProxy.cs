@@ -173,6 +173,16 @@ namespace StepFlow.Master.Proxies
 					},
 					Speed = 5,
 				}),
+				ItemKind.AttackSpeed => (IItemProxy)Owner.CreateProxy(new Item()
+				{
+					Kind = ItemKind.AttackSpeed,
+					Body = new Collided()
+					{
+						Current = Owner.Playground.IntersectionContext.CreateCell(bounds),
+						IsRigid = true,
+					},
+					AttackCooldown = 1000,
+				}),
 				_ => throw new System.InvalidOperationException(),
 			};
 

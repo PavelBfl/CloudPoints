@@ -8,6 +8,8 @@ namespace StepFlow.Core.Elements
 		Fire,
 		Poison,
 		Speed,
+
+		AttackSpeed,
 	}
 
 	public sealed class Item : Material
@@ -17,5 +19,7 @@ namespace StepFlow.Core.Elements
 		private Damage? damageSetting;
 
 		public Damage? DamageSetting { get => damageSetting; set => SetComponent(ref damageSetting, value); }
+
+		public int AttackCooldown { get; set; }
 	}
 }

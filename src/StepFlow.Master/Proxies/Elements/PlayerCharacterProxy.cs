@@ -8,7 +8,6 @@ using StepFlow.Core.Elements;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Collections;
 using StepFlow.Master.Proxies.Components;
-using StepFlow.Master.Proxies.Intersection;
 
 namespace StepFlow.Master.Proxies.Elements
 {
@@ -55,6 +54,8 @@ namespace StepFlow.Master.Proxies.Elements
 				Items.Add(itemProxy);
 
 				Speed -= itemProxy.Speed;
+				Cooldown.SetMin();
+				Cooldown.Max -= itemProxy.AttackCooldown;
 			}
 			else if ((otherMaterial as IProjectileProxy)?.Creator != Target)
 			{
