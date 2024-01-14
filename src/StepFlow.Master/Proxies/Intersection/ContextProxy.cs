@@ -4,12 +4,12 @@ using StepFlow.Master.Proxies.Collections;
 
 namespace StepFlow.Master.Proxies.Intersection
 {
-	public interface IContextProxy : IProxyBase<Context>, ICollection<IShapeBaseProxy<ShapeBase>>
+	public interface IContextProxy : IProxyBase<Context>, ICollection<ShapeBase>
 	{
 		
 	}
 
-	internal sealed class ContextProxy : CollectionItemsProxy<ShapeBase, Context, IShapeBaseProxy<ShapeBase>>, IContextProxy
+	internal sealed class ContextProxy : CollectionProxy<ShapeBase, Context>, IContextProxy
 	{
 		public ContextProxy(PlayMaster owner, Context target) : base(owner, target)
 		{

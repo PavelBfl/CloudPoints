@@ -26,7 +26,7 @@ namespace StepFlow.Master.Proxies.Components
 			if (Collided is { Current: { } current })
 			{
 				var offset = Course.ToOffset();
-				var next = new RefCounter<ShapeBase>(Owner.GetPlaygroundProxy().IntersectionContext.Target, current.Value.Clone(offset));
+				var next = current.Clone(offset);
 
 				Collided.Next = next;
 				Collided.IsMove = true;

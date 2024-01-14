@@ -5,6 +5,7 @@ using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Collections;
+using StepFlow.Master.Proxies.Components;
 using StepFlow.Master.Proxies.Elements;
 using StepFlow.Master.Proxies.Intersection;
 
@@ -45,7 +46,7 @@ namespace StepFlow.Master.Proxies
 				},
 				Body = new Collided()
 				{
-					Current = Owner.Playground.IntersectionContext.CreateCell(bounds),
+					Current = new ShapeCell(Owner.Playground.IntersectionContext, bounds),
 					IsRigid = true,
 				},
 				Speed = 10,
@@ -59,7 +60,7 @@ namespace StepFlow.Master.Proxies
 				Name = "Obstruction",
 				Body = new Collided()
 				{
-					Current = Owner.Playground.IntersectionContext.CreateCell(bounds),
+					Current = new ShapeCell(Owner.Playground.IntersectionContext, bounds),
 					IsRigid = true,
 				},
 				Strength = strength is { } ?
@@ -80,7 +81,7 @@ namespace StepFlow.Master.Proxies
 			{
 				Body = new Collided()
 				{
-					Current = Owner.Playground.IntersectionContext.CreateCell(bounds),
+					Current = new ShapeCell(Owner.Playground.IntersectionContext, bounds),
 					IsRigid = true,
 				},
 				Damage = new Damage()
@@ -100,12 +101,12 @@ namespace StepFlow.Master.Proxies
 			{
 				Body = new Collided()
 				{
-					Current = Owner.Playground.IntersectionContext.CreateCell(bounds),
+					Current = new ShapeCell(Owner.Playground.IntersectionContext, bounds),
 					IsRigid = true,
 				},
 				Vision = new Collided()
 				{
-					Current = Owner.Playground.IntersectionContext.CreateCell(vision),
+					Current = new ShapeCell(Owner.Playground.IntersectionContext, vision),
 				},
 				Cooldown = new Scale()
 				{
@@ -140,7 +141,7 @@ namespace StepFlow.Master.Proxies
 					Kind = ItemKind.Fire,
 					Body = new Collided()
 					{
-						Current = Owner.Playground.IntersectionContext.CreateCell(bounds),
+						Current = new ShapeCell(Owner.Playground.IntersectionContext, bounds),
 						IsRigid = true,
 					},
 					DamageSetting = new Damage()
@@ -154,7 +155,7 @@ namespace StepFlow.Master.Proxies
 					Kind = ItemKind.Poison,
 					Body = new Collided()
 					{
-						Current = Owner.Playground.IntersectionContext.CreateCell(bounds),
+						Current = new ShapeCell(Owner.Playground.IntersectionContext, bounds),
 						IsRigid = true,
 					},
 					DamageSetting = new Damage()
@@ -168,7 +169,7 @@ namespace StepFlow.Master.Proxies
 					Kind = ItemKind.Speed,
 					Body = new Collided()
 					{
-						Current = Owner.Playground.IntersectionContext.CreateCell(bounds),
+						Current = new ShapeCell(Owner.Playground.IntersectionContext, bounds),
 						IsRigid = true,
 					},
 					Speed = 5,
@@ -178,7 +179,7 @@ namespace StepFlow.Master.Proxies
 					Kind = ItemKind.AttackSpeed,
 					Body = new Collided()
 					{
-						Current = Owner.Playground.IntersectionContext.CreateCell(bounds),
+						Current = new ShapeCell(Owner.Playground.IntersectionContext, bounds),
 						IsRigid = true,
 					},
 					AttackCooldown = 1000,

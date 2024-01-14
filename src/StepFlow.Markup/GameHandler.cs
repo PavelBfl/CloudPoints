@@ -237,12 +237,12 @@ namespace StepFlow.Markup
 		{
 			if (collided is { Current: { } current })
 			{
-				Drawer.Draw(texture, current.Value.Bounds);
+				Drawer.Draw(texture, current.Bounds);
 				if (strength is not null)
 				{
 					Drawer.DrawString(
 						strength.Value.ToString(),
-						current.Value.Bounds,
+						current.Bounds,
 						HorizontalAlign.Center,
 						VerticalAlign.Center,
 						Color.Red
@@ -255,7 +255,7 @@ namespace StepFlow.Markup
 		{
 			if (collided is { Current: { } current })
 			{
-				var bounds = current.Value.Bounds;
+				var bounds = current.Bounds;
 				Drawer.Polygon(
 					new PointF[]
 					{

@@ -36,8 +36,8 @@ namespace StepFlow.Master.Proxies.Intersection
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-		public void Register() => Owner.GetPlaygroundProxy().IntersectionContext.Add(this);
+		public void Register() => Owner.GetPlaygroundProxy().IntersectionContext.Add(Target);
 
-		public void Unregister() => Owner.GetPlaygroundProxy().IntersectionContext.Remove(this);
+		public void Unregister() => Owner.GetPlaygroundProxy().IntersectionContext.Remove(Target);
 	}
 }
