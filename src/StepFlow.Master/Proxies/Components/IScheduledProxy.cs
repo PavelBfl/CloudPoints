@@ -39,7 +39,7 @@ namespace StepFlow.Master.Proxies.Components
 			var queue = Queue;
 			if (!queue.Any())
 			{
-				QueueBegin = Owner.Time;
+				QueueBegin = Owner.TimeAxis.Current;
 			}
 
 			queue.Add(turnProxy);
@@ -54,11 +54,11 @@ namespace StepFlow.Master.Proxies.Components
 
 		private bool TryDequeueSingle()
 		{
-			if (Queue.FirstOrDefault() is { } first && (QueueBegin + first.Duration) == Owner.Time)
+			if (Queue.FirstOrDefault() is { } first && (QueueBegin + first.Duration) == Owner.TimeAxis.Current)
 			{
 				Queue.RemoveAt(0);
 				first.Executor?.Execute();
-				QueueBegin = Owner.Time;
+				QueueBegin = Owner.TimeAxis.Current;
 
 				return true;
 			}

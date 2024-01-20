@@ -11,6 +11,7 @@ using StepFlow.Master.Proxies.Elements;
 using StepFlow.Master.Proxies.Intersection;
 using StepFlow.Master.Scripts;
 using StepFlow.TimeLine;
+using StepFlow.TimeLine.Transactions;
 
 namespace StepFlow.Master
 {
@@ -50,9 +51,7 @@ namespace StepFlow.Master
 		public CreateEnemy CreateEnemy { get; }
 
 
-		public IAxis<ICommand> TimeAxis { get; } = new Axis<ICommand>();
-
-		public long Time { get; private set; }
+		public TransactionAxis TimeAxis { get; } = new TransactionAxis();
 
 		public Playground Playground { get; } = new Playground();
 
@@ -119,8 +118,6 @@ namespace StepFlow.Master
 			{
 				collision.Move();
 			}
-
-			Time++;
 		}
 
 		public void Execute(string commandName, IReadOnlyDictionary<string, object>? parameters = null)

@@ -40,7 +40,7 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			if (CurrentAction is { } currentAction)
 			{
-				if (Owner.Time == (currentAction.Begin + currentAction.Duration))
+				if (Owner.TimeAxis.Current == (currentAction.Begin + currentAction.Duration))
 				{
 					var executorProxy = (ITurnExecutor?)Owner.CreateProxy(currentAction.Executor);
 					executorProxy?.Execute();
@@ -63,7 +63,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 			CurrentAction = new Action()
 			{
-				Begin = Owner.Time,
+				Begin = Owner.TimeAxis.Current,
 				Duration = factor * Speed,
 				Executor = new SetCourse()
 				{

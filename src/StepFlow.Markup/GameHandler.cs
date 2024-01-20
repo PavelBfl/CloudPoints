@@ -21,8 +21,8 @@ namespace StepFlow.Markup
 			Keyboard = keyboard ?? throw new ArgumentNullException(nameof(keyboard));
 			Place = placeBounds;
 
-			Meter.CreateObservableGauge("Time", () => PlayMaster.Time);
-			Meter.CreateObservableGauge("Commands", () => PlayMaster.TimeAxis.Count);
+			Meter.CreateObservableGauge("Time", () => PlayMaster.TimeAxis.Current);
+			Meter.CreateObservableGauge("Commands", () => PlayMaster.TimeAxis.Source.Current);
 			Meter.CreateObservableGauge("Frame", () => Frame.TotalMilliseconds);
 			Init();
 		}
@@ -160,6 +160,8 @@ namespace StepFlow.Markup
 				var sw = System.Diagnostics.Stopwatch.StartNew();
 				for (var i = 0; i < TICKS_COUNT; i++)
 				{
+					var transaction = PlayMaster.TimeAxis.BeginTransaction();
+
 					if (Keyboard.GetPlayerCourse() is { } playerCourse)
 					{
 						PlayerCharacterSetCourse(playerCourse);
@@ -171,6 +173,8 @@ namespace StepFlow.Markup
 					}
 
 					PlayMaster.TakeStep.Execute(null);
+
+					transaction.Commit();
 				}
 
 				Frame = sw.Elapsed;
