@@ -30,7 +30,14 @@ namespace StepFlow.Master.Proxies.Elements
 			if (Strength?.Value == 0)
 			{
 				Owner.GetPlaygroundProxy().Enemies.Remove(this);
-				Owner.CreateItem.Execute(new Scripts.CreateItem.Parameters() { X = Body.Current.Bounds.X, Y = Body.Current.Bounds.Y, Kind = ItemKind.Fire });
+
+				var itemPosition = Body.Current.Bounds.GetCenter();
+				Owner.CreateItem.Execute(new Scripts.CreateItem.Parameters()
+				{
+					X = itemPosition.X,
+					Y = itemPosition.Y,
+					Kind = Target.ReleaseItem
+				});
 				Body.Current = null;
 				Body.Next = null;
 				Vision.Current = null;

@@ -95,7 +95,7 @@ namespace StepFlow.Master.Proxies
 			Projectiles.Add(projectile);
 		}
 
-		public void CreateEnemy(Rectangle bounds, Rectangle vision)
+		public void CreateEnemy(Rectangle bounds, Rectangle vision, ItemKind releaseItem)
 		{
 			var enemy = (IEnemyProxy)Owner.CreateProxy(new Enemy()
 			{
@@ -118,6 +118,7 @@ namespace StepFlow.Master.Proxies
 					Value = 100,
 					Max = 100,
 				},
+				ReleaseItem = releaseItem,
 			});
 
 			Enemies.Add(enemy);
@@ -125,14 +126,14 @@ namespace StepFlow.Master.Proxies
 
 		public void CreateItem(Point position, ItemKind kind)
 		{
+			if (kind == ItemKind.None)
+			{
+				return;
+			}
+
 			const int RADIUS = 7;
 
-			var bounds = new Rectangle(
-				position.X - RADIUS,
-				position.Y - RADIUS,
-				RADIUS * 2,
-				RADIUS * 2
-			);
+			var bounds = RectangleExtensions.Create(position, RADIUS);
 
 			var item = kind switch
 			{
@@ -183,6 +184,16 @@ namespace StepFlow.Master.Proxies
 						IsRigid = true,
 					},
 					AttackCooldown = 1000,
+				}),
+				ItemKind.AddStrength => (IItemProxy)Owner.CreateProxy(new Item()
+				{
+					Kind = ItemKind.AddStrength,
+					Body = new Collided()
+					{
+						Current = new ShapeCell(Owner.Playground.IntersectionContext, bounds),
+						IsRigid = true,
+					},
+					AddStrength = 20,
 				}),
 				_ => throw new System.InvalidOperationException(),
 			};

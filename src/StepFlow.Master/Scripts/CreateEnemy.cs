@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using StepFlow.Core.Elements;
 
 namespace StepFlow.Master.Scripts
 {
@@ -12,7 +13,8 @@ namespace StepFlow.Master.Scripts
 		{
 			PlayMaster.GetPlaygroundProxy().CreateEnemy(
 				new Rectangle(parameters.X, parameters.Y, parameters.Width, parameters.Height),
-				new Rectangle(parameters.VisionX, parameters.VisionY, parameters.VisionWidth, parameters.VisionHeight)
+				new Rectangle(parameters.VisionX, parameters.VisionY, parameters.VisionWidth, parameters.VisionHeight),
+				parameters.ReleaseItem
 			);
 		}
 
@@ -26,6 +28,7 @@ namespace StepFlow.Master.Scripts
 			public int VisionY { get; set; }
 			public int VisionWidth { get; set; }
 			public int VisionHeight { get; set; }
+			public ItemKind ReleaseItem { get; set; }
 		}
 	}
 }

@@ -12,5 +12,7 @@ namespace StepFlow.Core.Elements
 		private Scale? cooldown;
 
 		public Scale? Cooldown { get => cooldown; set => SetComponent(ref cooldown, value); }
+
+		public ItemKind ReleaseItem { get; set; }
 	}
 }

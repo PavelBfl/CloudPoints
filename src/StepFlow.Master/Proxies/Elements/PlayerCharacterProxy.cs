@@ -57,6 +57,8 @@ namespace StepFlow.Master.Proxies.Elements
 				Speed -= itemProxy.Speed;
 				Cooldown.SetMin();
 				Cooldown.Max -= itemProxy.AttackCooldown;
+
+				Strength.Value += itemProxy.AddStrength;
 			}
 			else if ((otherMaterial as IProjectileProxy)?.Creator != Target)
 			{

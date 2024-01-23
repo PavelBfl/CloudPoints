@@ -10,6 +10,8 @@ namespace StepFlow.Master.Proxies.Elements
 		Damage? DamageSettings { get; set; }
 
 		int AttackCooldown { get; set; }
+
+		int AddStrength { get; set; }
 	}
 
 	internal class ItemProxy : MaterialProxy<Item>, IItemProxy
@@ -23,5 +25,7 @@ namespace StepFlow.Master.Proxies.Elements
 		public Damage? DamageSettings { get => Target.DamageSetting; set => SetValue(x => x.DamageSetting, value); }
 
 		public int AttackCooldown { get => Target.AttackCooldown; set => SetValue(x => x.AttackCooldown, value); }
+
+		public int AddStrength { get => Target.AddStrength; set => SetValue(x => x.AddStrength, value); }
 	}
 }

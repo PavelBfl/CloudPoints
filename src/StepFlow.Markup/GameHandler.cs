@@ -47,6 +47,7 @@ namespace StepFlow.Markup
 			PlayMaster.CreateItem.Execute(new() { X = 200, Y = 50, Kind = ItemKind.Poison });
 			PlayMaster.CreateItem.Execute(new() { X = 270, Y = 50, Kind = ItemKind.Speed });
 			PlayMaster.CreateItem.Execute(new() { X = 340, Y = 50, Kind = ItemKind.AttackSpeed });
+			PlayMaster.CreateItem.Execute(new() { X = 410, Y = 50, Kind = ItemKind.AddStrength });
 
 			CreateEnemy(new(50, 180, 20, 20), 50);
 			CreateEnemy(new(200, 180, 20, 20), 50);
@@ -142,6 +143,7 @@ namespace StepFlow.Markup
 				VisionY = vision.Y,
 				VisionWidth = vision.Width,
 				VisionHeight = vision.Height,
+				ReleaseItem = ItemKind.AddStrength,
 			});
 		}
 
@@ -194,7 +196,7 @@ namespace StepFlow.Markup
 
 			var playground = PlayMaster.GetPlaygroundProxy();
 
-			CreateTexture(playground.PlayerCharacter?.Body, Texture.Character, null);
+			CreateTexture(playground.PlayerCharacter?.Body, Texture.Character, playground.PlayerCharacter?.Strength);
 			CreateBorder(playground.PlayerCharacter?.Body, Color.Red);
 
 			foreach (var barrier in playground.Obstructions)
@@ -231,7 +233,7 @@ namespace StepFlow.Markup
 
 			foreach (var enemy in playground.Enemies)
 			{
-				CreateTexture(enemy.Body, Texture.Enemy, null);
+				CreateTexture(enemy.Body, Texture.Enemy, enemy.Strength);
 				CreateBorder(enemy.Body, Color.Red);
 				CreateBorder(enemy.Vision, Color.Yellow);
 			}
