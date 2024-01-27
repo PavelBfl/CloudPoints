@@ -97,14 +97,21 @@ namespace StepFlow.Master.Proxies.Elements
 					)
 				);
 
-				var scheduler = new PathScheduler();
-				var repeatCount = 0;
+				var scheduler = new Scheduler()
+				{
+					Begin = Owner.TimeAxis.Count,
+				};
 				for (var i = 0; i < 300; i++)
 				{
-					scheduler.Path.Add(course);
-					repeatCount += course.GetFactor();
+					scheduler.Queue.Add(new Turn(
+						course.GetFactor(),
+						new SetCourse()
+						{
+							Collided = projectile.Target.Body,
+							Course = course,
+						}
+					));
 				}
-				scheduler.RepeatCount = repeatCount;
 
 				projectile.AddScheduler(scheduler);
 

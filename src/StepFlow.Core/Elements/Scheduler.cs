@@ -7,15 +7,10 @@ namespace StepFlow.Core.Elements
 	{
 		public Subject? Target { get; set; }
 
-		public Scale? Cooldown { get; set; }
+		public int Begin { get; set; }
 
-		public int? RepeatCount { get; set; }
-	}
+		public int CurrentIndex { get; set; }
 
-	public class PathScheduler : Scheduler
-	{
-		public int CurrentPathIndex { get; set; }
-
-		public IList<Course> Path { get; } = new List<Course>();
+		public IList<Turn> Queue { get; } = new List<Turn>();
 	}
 }

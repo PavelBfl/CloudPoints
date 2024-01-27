@@ -6,85 +6,47 @@ using StepFlow.Master.Proxies.Components;
 
 namespace StepFlow.Master.Proxies.Elements
 {
-	public interface ISchedulerProxy<out TEffect> : IElementBaseProxy<TEffect>
-		where TEffect : Scheduler
+	public interface ISchedulerProxy : IElementBaseProxy<Scheduler>
 	{
 		new Subject? Target { get; set; }
 
-		Scale? Cooldown { get; set; }
+		int Begin { get; set; }
 
-		int? RepeatCount { get; set; }
+		int CurrentIndex { get; set; }
+
+		IList<Turn> Queue { get; }
 
 		void OnTick();
 	}
 
-	internal abstract class SchedulerProxy<TEffect> : ElementBaseProxy<TEffect>, ISchedulerProxy<TEffect>
-		where TEffect : Scheduler
+	internal sealed class SchedulerProxy : ElementBaseProxy<Scheduler>, ISchedulerProxy
 	{
-		public SchedulerProxy(PlayMaster owner, TEffect target) : base(owner, target)
+		public SchedulerProxy(PlayMaster owner, Scheduler target) : base(owner, target)
 		{
 		}
 
 		public new Subject? Target { get => base.Target.Target; set => SetValue(x => x.Target, value); }
 
-		public Scale? Cooldown { get => base.Target.Cooldown; set => SetValue(x => x.Cooldown, value); }
+		public int Begin { get => base.Target.Begin; set => SetValue(x => x.Begin, value); }
 
-		public int? RepeatCount { get => base.Target.RepeatCount; set => SetValue(x => x.RepeatCount, value); }
+		public int CurrentIndex { get => base.Target.CurrentIndex; set => SetValue(x => x.CurrentIndex, value); }
 
-		public virtual void OnTick()
+		public IList<Turn> Queue => CreateListProxy(base.Target.Queue);
+
+		public void OnTick()
 		{
-			if (RepeatCount == 0)
+			if (0 <= CurrentIndex && CurrentIndex < Queue.Count)
 			{
-				return;
-			}
+				var currentTurn = Queue[CurrentIndex];
 
-			var cooldownProxy = (IScaleProxy?)Owner.CreateProxy(Cooldown);
-			if (cooldownProxy is null || cooldownProxy.Value == cooldownProxy.Max)
-			{
-				InnerOnTick();
-
-				if (cooldownProxy is { })
+				if (Owner.TimeAxis.Count == (Begin + currentTurn.Duration))
 				{
-					cooldownProxy.Value = 0;
+					var executor = (ITurnExecutor?)Owner.CreateProxy(currentTurn.Executor);
+					executor?.Execute();
+
+					Begin += (int)currentTurn.Duration;
+					CurrentIndex++;
 				}
-
-				RepeatCount--;
-			}
-			else
-			{
-				cooldownProxy.Increment();
-			}
-		}
-
-		protected abstract void InnerOnTick();
-	}
-
-	public interface IPathSchedulerProxy : ISchedulerProxy<PathScheduler>
-	{
-		int CurrentPathIndex { get; set; }
-		IList<Course> Path { get; }
-	}
-
-	internal sealed class PathSchedulerProxy : SchedulerProxy<PathScheduler>, IPathSchedulerProxy
-	{
-		public PathSchedulerProxy(PlayMaster owner, PathScheduler target) : base(owner, target)
-		{
-		}
-
-		public int CurrentPathIndex { get => ((IReadOnlyProxyBase<PathScheduler>)this).Target.CurrentPathIndex; set => SetValue(x => x.CurrentPathIndex, value); }
-
-		public IList<Course> Path { get => CreateListProxy(((IReadOnlyProxyBase<PathScheduler>)this).Target.Path); }
-
-		protected override void InnerOnTick()
-		{
-			// TODO переделать на универсальный объект
-			if (Target is Projectile { CurrentAction: null } projectile)
-			{
-				var projectileProxy = (IProjectileProxy)Owner.CreateProxy(projectile);
-				projectileProxy.SetCourse(Path[CurrentPathIndex]);
-
-				var newIndex = CurrentPathIndex + 1;
-				CurrentPathIndex = newIndex < Path.Count ? newIndex : 0;
 			}
 		}
 	}
