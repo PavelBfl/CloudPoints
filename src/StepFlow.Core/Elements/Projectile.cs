@@ -14,5 +14,7 @@ namespace StepFlow.Core.Elements
 		public int CurrentPathIndex { get; set; }
 
 		public IList<Course> Path { get; } = new List<Course>();
+
+		public ICollection<Scheduler> Schedulers { get; } = new HashSet<Scheduler>();
 	}
 }

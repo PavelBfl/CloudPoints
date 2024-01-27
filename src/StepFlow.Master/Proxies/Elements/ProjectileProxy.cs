@@ -15,6 +15,10 @@ namespace StepFlow.Master.Proxies.Elements
 		int CurrentPathIndex { get; set; }
 
 		IList<Course> Path { get; }
+
+		ICollection<Scheduler> Schedulers { get; }
+
+		void AddScheduler(Scheduler scheduler);
 	}
 
 	internal sealed class ProjectileProxy : MaterialProxy<Projectile>, IProjectileProxy
@@ -31,9 +35,34 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public IList<Course> Path => CreateListProxy(Target.Path);
 
+		public ICollection<Scheduler> Schedulers => CreateCollectionProxy(Target.Schedulers);
+
+		public void AddScheduler(Scheduler scheduler)
+		{
+			var schedulerProxy = (ISchedulerProxy<Scheduler>)Owner.CreateProxy(scheduler);
+			schedulerProxy.Target = Target;
+			Schedulers.Add(scheduler);
+		}
+
 		public override void OnTick()
 		{
 			base.OnTick();
+
+			foreach (var scheduler in Schedulers)
+			{
+				var schedulerProxy = (ISchedulerProxy<Scheduler>)Owner.CreateProxy(scheduler);
+				schedulerProxy.OnTick();
+
+				if (schedulerProxy.RepeatCount == 0)
+				{
+					Owner.GetPlaygroundProxy().Projectiles.Remove(this);
+					Body.Current = null;
+					Body.Next = null;
+				}
+			}
+
+			// TODO временно
+			return;
 
 			if (CurrentPathIndex >= Path.Count)
 			{

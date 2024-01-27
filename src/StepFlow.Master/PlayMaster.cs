@@ -78,6 +78,7 @@ namespace StepFlow.Master
 				Intersection.Context instance => new ContextProxy(this, instance),
 				Intersection.ShapeCell instance => new ShapeCellProxy(this, instance),
 				Intersection.ShapeContainer instance => new ShapeContainerProxy(this, instance),
+				PathScheduler instance => new PathSchedulerProxy(this, instance),
 				null => null,
 				_ => throw new InvalidOperationException(),
 			};

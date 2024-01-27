@@ -97,10 +97,22 @@ namespace StepFlow.Master.Proxies.Elements
 					)
 				);
 
+				var scheduler = new PathScheduler();
+				var repeatCount = 0;
 				for (var i = 0; i < 300; i++)
 				{
-					projectile.Path.Add(course);
+					scheduler.Path.Add(course);
+					repeatCount += course.GetFactor();
 				}
+				scheduler.RepeatCount = repeatCount;
+
+				projectile.AddScheduler(scheduler);
+
+				// TODO Need delete
+				//for (var i = 0; i < 300; i++)
+				//{
+				//	projectile.Path.Add(course);
+				//}
 
 				Owner.GetPlaygroundProxy().Projectiles.Add(projectile);
 				Cooldown.SetMax();

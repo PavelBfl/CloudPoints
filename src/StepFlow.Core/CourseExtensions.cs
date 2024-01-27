@@ -7,10 +7,10 @@ namespace StepFlow.Core
 {
 	public static class CourseExtensions
 	{
-		public const long FLAT_FACTOR = 5;
-		public const long DIAGONAL_FACTOR = 7;
+		public const int FLAT_FACTOR = 5;
+		public const int DIAGONAL_FACTOR = 7;
 
-		public static long GetFactor(this Course course) => course switch
+		public static int GetFactor(this Course course) => course switch
 		{
 			Course.Right => FLAT_FACTOR,
 			Course.Left => FLAT_FACTOR,

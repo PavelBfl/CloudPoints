@@ -2,7 +2,7 @@
 
 namespace StepFlow.Master.Proxies.Elements
 {
-	public interface IElementBaseProxy<TTarget> : IProxyBase<TTarget>
+	public interface IElementBaseProxy<out TTarget> : IProxyBase<TTarget>
 		where TTarget : ElementBase
 	{
 
