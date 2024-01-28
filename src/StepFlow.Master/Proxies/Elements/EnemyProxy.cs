@@ -4,7 +4,6 @@ using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
-using StepFlow.Master.Proxies.Intersection;
 
 namespace StepFlow.Master.Proxies.Elements
 {
@@ -84,7 +83,6 @@ namespace StepFlow.Master.Proxies.Elements
 						Value = 10,
 					},
 					Speed = 5,
-					CurrentPathIndex = 0,
 				});
 
 				projectile.Body.Current = new ShapeCell(
@@ -97,10 +95,23 @@ namespace StepFlow.Master.Proxies.Elements
 					)
 				);
 
+				var scheduler = new Scheduler()
+				{
+					Begin = Owner.TimeAxis.Count,
+				};
 				foreach (var course in CourseExtensions.GetPath(center, otherCenter))
 				{
-					projectile.Path.Add(course);
+					scheduler.Queue.Add(new Turn(
+						course.GetFactor() * projectile.Speed,
+						new SetCourse()
+						{
+							Collided = projectile.Target.Body,
+							Course = course,
+						})
+					);
 				}
+				scheduler.Queue.Add(new Turn(0, new RemoveProjectile() { Projectile = projectile.Target }));
+				projectile.AddScheduler(scheduler);
 
 				Owner.GetPlaygroundProxy().Projectiles.Add(projectile);
 				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);

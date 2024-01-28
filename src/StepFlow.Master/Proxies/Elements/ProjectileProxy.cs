@@ -12,10 +12,6 @@ namespace StepFlow.Master.Proxies.Elements
 
 		Damage? Damage { get; set; }
 
-		int CurrentPathIndex { get; set; }
-
-		IList<Course> Path { get; }
-
 		ICollection<Scheduler> Schedulers { get; }
 
 		void AddScheduler(Scheduler scheduler);
@@ -30,10 +26,6 @@ namespace StepFlow.Master.Proxies.Elements
 		public Subject? Creator { get => Target.Creator; set => SetValue(x => x.Creator, value); }
 
 		public Damage? Damage { get => Target.Damage; set => SetValue(x => x.Damage, value); }
-
-		public int CurrentPathIndex { get => Target.CurrentPathIndex; set => SetValue(x => x.CurrentPathIndex, value); }
-
-		public IList<Course> Path => CreateListProxy(Target.Path);
 
 		public ICollection<Scheduler> Schedulers => CreateCollectionProxy(Target.Schedulers);
 
@@ -53,22 +45,6 @@ namespace StepFlow.Master.Proxies.Elements
 				var schedulerProxy = (ISchedulerProxy)Owner.CreateProxy(scheduler);
 				schedulerProxy.OnTick();
 			}
-
-			// TODO временно
-			return;
-
-			if (CurrentPathIndex >= Path.Count)
-			{
-				Owner.GetPlaygroundProxy().Projectiles.Remove(this);
-				Body.Current = null;
-				Body.Next = null;
-			}
-			else if (CurrentAction is null)
-			{
-				SetCourse(Path[CurrentPathIndex]);
-				CurrentPathIndex++;
-			}
-			
 		}
 
 		public override void Collision(ICollidedProxy thisCollided, IMaterialProxy<Material> otherMaterial, ICollidedProxy otherCollided)

@@ -11,10 +11,6 @@ namespace StepFlow.Core.Elements
 
 		public Damage? Damage { get => damage; set => SetComponent(ref damage, value); }
 
-		public int CurrentPathIndex { get; set; }
-
-		public IList<Course> Path { get; } = new List<Course>();
-
 		public ICollection<Scheduler> Schedulers { get; } = new HashSet<Scheduler>();
 	}
 }

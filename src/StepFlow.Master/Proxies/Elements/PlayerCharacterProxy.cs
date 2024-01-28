@@ -84,7 +84,6 @@ namespace StepFlow.Master.Proxies.Elements
 					Body = new Collided(),
 					Damage = AggregateDamage(10),
 					Speed = 5,
-					CurrentPathIndex = 0,
 				});
 
 				projectile.Body.Current = new ShapeCell(
@@ -104,7 +103,7 @@ namespace StepFlow.Master.Proxies.Elements
 				for (var i = 0; i < 300; i++)
 				{
 					scheduler.Queue.Add(new Turn(
-						course.GetFactor(),
+						course.GetFactor() * projectile.Speed,
 						new SetCourse()
 						{
 							Collided = projectile.Target.Body,
@@ -112,14 +111,9 @@ namespace StepFlow.Master.Proxies.Elements
 						}
 					));
 				}
+				scheduler.Queue.Add(new Turn(0, new RemoveProjectile() { Projectile = projectile.Target }));
 
 				projectile.AddScheduler(scheduler);
-
-				// TODO Need delete
-				//for (var i = 0; i < 300; i++)
-				//{
-				//	projectile.Path.Add(course);
-				//}
 
 				Owner.GetPlaygroundProxy().Projectiles.Add(projectile);
 				Cooldown.SetMax();

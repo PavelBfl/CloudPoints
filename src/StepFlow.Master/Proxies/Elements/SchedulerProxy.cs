@@ -35,6 +35,11 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public void OnTick()
 		{
+			while (SingleTick()) ;
+		}
+
+		private bool SingleTick()
+		{
 			if (0 <= CurrentIndex && CurrentIndex < Queue.Count)
 			{
 				var currentTurn = Queue[CurrentIndex];
@@ -46,8 +51,11 @@ namespace StepFlow.Master.Proxies.Elements
 
 					Begin += (int)currentTurn.Duration;
 					CurrentIndex++;
+					return true;
 				}
 			}
+
+			return false;
 		}
 	}
 }
