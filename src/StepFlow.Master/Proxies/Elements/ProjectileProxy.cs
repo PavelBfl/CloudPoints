@@ -31,7 +31,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public void AddScheduler(Scheduler scheduler)
 		{
-			var schedulerProxy = (ISchedulerProxy)Owner.CreateProxy(scheduler);
+			var schedulerProxy = (ISchedulerProxy<Scheduler>)Owner.CreateProxy(scheduler);
 			schedulerProxy.Target = Target;
 			Schedulers.Add(scheduler);
 		}
@@ -42,7 +42,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 			foreach (var scheduler in Schedulers)
 			{
-				var schedulerProxy = (ISchedulerProxy)Owner.CreateProxy(scheduler);
+				var schedulerProxy = (ISchedulerProxy<Scheduler>)Owner.CreateProxy(scheduler);
 				schedulerProxy.OnTick();
 			}
 		}

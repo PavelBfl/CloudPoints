@@ -95,22 +95,15 @@ namespace StepFlow.Master.Proxies.Elements
 					)
 				);
 
-				var scheduler = new Scheduler()
+				var scheduler = new SchedulerPath()
 				{
 					Begin = Owner.TimeAxis.Count,
 				};
 				foreach (var course in CourseExtensions.GetPath(center, otherCenter))
 				{
-					scheduler.Queue.Add(new Turn(
-						course.GetFactor() * projectile.Speed,
-						new SetCourse()
-						{
-							Collided = projectile.Target.Body,
-							Course = course,
-						})
-					);
+					scheduler.Path.Add(course);
 				}
-				scheduler.Queue.Add(new Turn(0, new RemoveProjectile() { Projectile = projectile.Target }));
+				scheduler.Last = new Turn(0, new RemoveProjectile() { Projectile = projectile.Target });
 				projectile.AddScheduler(scheduler);
 
 				Owner.GetPlaygroundProxy().Projectiles.Add(projectile);

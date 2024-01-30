@@ -6,22 +6,20 @@ using StepFlow.Master.Proxies.Components;
 
 namespace StepFlow.Master.Proxies.Elements
 {
-	public interface ISchedulerProxy : IElementBaseProxy<Scheduler>
+	public interface ISchedulerProxy<out TScheduler> : IElementBaseProxy<TScheduler>
+		where TScheduler : Scheduler
 	{
 		new Subject? Target { get; set; }
 
 		int Begin { get; set; }
 
-		int CurrentIndex { get; set; }
-
-		IList<Turn> Queue { get; }
-
 		void OnTick();
 	}
 
-	internal sealed class SchedulerProxy : ElementBaseProxy<Scheduler>, ISchedulerProxy
+	internal abstract class SchedulerProxy<TScheduler> : ElementBaseProxy<TScheduler>, ISchedulerProxy<TScheduler>
+		where TScheduler : Scheduler
 	{
-		public SchedulerProxy(PlayMaster owner, Scheduler target) : base(owner, target)
+		protected SchedulerProxy(PlayMaster owner, TScheduler target) : base(owner, target)
 		{
 		}
 
@@ -29,9 +27,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public int Begin { get => base.Target.Begin; set => SetValue(x => x.Begin, value); }
 
-		public int CurrentIndex { get => base.Target.CurrentIndex; set => SetValue(x => x.CurrentIndex, value); }
-
-		public IList<Turn> Queue => CreateListProxy(base.Target.Queue);
+		public Turn? Current { get => base.Target.Current; set => SetValue(x => x.Current, value); }
 
 		public void OnTick()
 		{
@@ -40,22 +36,84 @@ namespace StepFlow.Master.Proxies.Elements
 
 		private bool SingleTick()
 		{
-			if (0 <= CurrentIndex && CurrentIndex < Queue.Count)
+			if (Current is null)
 			{
-				var currentTurn = Queue[CurrentIndex];
+				Next();
+			}
 
-				if (Owner.TimeAxis.Count == (Begin + currentTurn.Duration))
+			if (Current is { } current)
+			{
+				if (Owner.TimeAxis.Count == (Begin + current.Duration))
 				{
-					var executor = (ITurnExecutor?)Owner.CreateProxy(currentTurn.Executor);
+					var executor = (ITurnExecutor?)Owner.CreateProxy(current.Executor);
 					executor?.Execute();
 
-					Begin += (int)currentTurn.Duration;
-					CurrentIndex++;
+					Begin += (int)current.Duration;
+					Current = null;
 					return true;
 				}
 			}
 
 			return false;
+		}
+
+		protected abstract void Next();
+	}
+
+	public interface ISchedulerPathProxy : ISchedulerProxy<SchedulerPath>
+	{
+		int CurrentIndex { get; set; }
+
+		IList<Course> Path { get; }
+	}
+
+	internal sealed class SchedulerPathProxy : SchedulerProxy<SchedulerPath>, ISchedulerPathProxy
+	{
+		public SchedulerPathProxy(PlayMaster owner, SchedulerPath target) : base(owner, target)
+		{
+		}
+
+		private SchedulerPath GetBaseTarget() => ((IProxyBase<SchedulerPath>)this).Target;
+
+		public int CurrentIndex { get => GetBaseTarget().CurrentIndex; set => SetValue(x => x.CurrentIndex, value); }
+
+		public IList<Course> Path => CreateListProxy(GetBaseTarget().Path);
+
+		public bool IsLast { get => GetBaseTarget().IsLast; set => SetValue(x => x.IsLast, value); }
+
+		public Turn? Last { get => GetBaseTarget().Last; set => SetValue(x => x.Last, value); }
+
+		protected override void Next()
+		{
+			if (0 <= CurrentIndex && CurrentIndex < Path.Count)
+			{
+				var material = (Material)Target;
+				var course = Path[CurrentIndex];
+				Current = new Turn(
+					course.GetFactor() * material.Speed,
+					new SetCourse()
+					{
+						Collided = material.Body,
+						Course = course,
+					}
+				);
+				CurrentIndex++;
+
+				if (CurrentIndex >= Path.Count)
+				{
+					IsLast = true;
+				}
+			}
+			else if (IsLast)
+			{
+				Current = Last;
+				IsLast = false;
+			}
+			else
+			{
+				Current = null;
+				IsLast = false;
+			}
 		}
 	}
 }

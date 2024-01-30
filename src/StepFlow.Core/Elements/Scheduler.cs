@@ -9,8 +9,17 @@ namespace StepFlow.Core.Elements
 
 		public int Begin { get; set; }
 
+		public Turn? Current { get; set; }
+	}
+
+	public sealed class SchedulerPath : Scheduler
+	{
 		public int CurrentIndex { get; set; }
 
-		public IList<Turn> Queue { get; } = new List<Turn>();
+		public IList<Course> Path { get; } = new List<Course>();
+
+		public bool IsLast { get; set; }
+
+		public Turn? Last { get; set; }
 	}
 }
