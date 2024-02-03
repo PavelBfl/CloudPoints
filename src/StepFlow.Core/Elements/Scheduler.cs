@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using StepFlow.Core.Components;
 
 namespace StepFlow.Core.Elements
@@ -21,5 +22,17 @@ namespace StepFlow.Core.Elements
 		public bool IsLast { get; set; }
 
 		public Turn? Last { get; set; }
+	}
+
+	public sealed class SchedulerVector : Scheduler
+	{
+		public ICollection<EndPoint> EndPoints { get; } = new List<EndPoint>();
+	}
+
+	public sealed class EndPoint : Subject
+	{
+		public Point Point { get; set; }
+
+		public int Force { get; set; }
 	}
 }

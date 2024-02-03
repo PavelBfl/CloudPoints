@@ -96,15 +96,23 @@ namespace StepFlow.Master.Proxies.Elements
 					)
 				);
 
-				var scheduler = new SchedulerPath()
+				var courseVector = course.ToOffset();
+				courseVector.X *= 300;
+				courseVector.Y *= 300;
+				var point = projectile.Body.Current.Bounds.GetCenter();
+				point.X += courseVector.X;
+				point.Y += courseVector.Y;
+				var endPoint = new EndPoint()
 				{
-					Begin = Owner.TimeAxis.Count,
+					Point = point,
+					Force = 5,
 				};
-				for (var i = 0; i < 300; i++)
+				var scheduler = new SchedulerVector()
 				{
-					scheduler.Path.Add(course);
-				}
-				scheduler.Last = new Turn(0, new RemoveProjectile() { Projectile = projectile.Target });
+					Target = Target,
+					Begin = Owner.TimeAxis.Count,
+					EndPoints = { endPoint },
+				};
 
 				projectile.AddScheduler(scheduler);
 

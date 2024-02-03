@@ -79,6 +79,7 @@ namespace StepFlow.Master
 				Intersection.ShapeCell instance => new ShapeCellProxy(this, instance),
 				Intersection.ShapeContainer instance => new ShapeContainerProxy(this, instance),
 				SchedulerPath instance => new SchedulerPathProxy(this, instance),
+				SchedulerVector instance => new SchedulerVectorProxy(this, instance),
 				RemoveProjectile instance => new RemoveProjectileProxy(this, instance),
 				null => null,
 				_ => throw new InvalidOperationException(),
