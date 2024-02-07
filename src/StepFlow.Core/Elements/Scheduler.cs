@@ -6,8 +6,6 @@ namespace StepFlow.Core.Elements
 {
 	public class Scheduler : ElementBase
 	{
-		public Subject? Target { get; set; }
-
 		public int Begin { get; set; }
 
 		public Turn? Current { get; set; }
@@ -26,6 +24,8 @@ namespace StepFlow.Core.Elements
 
 	public sealed class SchedulerVector : Scheduler
 	{
+		public Collided? Collided { get; set; }
+
 		public ICollection<EndPoint> EndPoints { get; } = new List<EndPoint>();
 	}
 
@@ -34,5 +34,12 @@ namespace StepFlow.Core.Elements
 		public Point Point { get; set; }
 
 		public int Force { get; set; }
+	}
+
+	public sealed class SchedulerLimit : Scheduler
+	{
+		public Scheduler? Source { get; set; }
+
+		public Scale? Range { get; set; }
 	}
 }

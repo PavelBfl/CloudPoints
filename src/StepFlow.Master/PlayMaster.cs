@@ -81,6 +81,7 @@ namespace StepFlow.Master
 				SchedulerPath instance => new SchedulerPathProxy(this, instance),
 				SchedulerVector instance => new SchedulerVectorProxy(this, instance),
 				RemoveProjectile instance => new RemoveProjectileProxy(this, instance),
+				SchedulerLimit instance => new SchedulerLimitProxy(this, instance),
 				null => null,
 				_ => throw new InvalidOperationException(),
 			};

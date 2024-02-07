@@ -109,12 +109,21 @@ namespace StepFlow.Master.Proxies.Elements
 				};
 				var scheduler = new SchedulerVector()
 				{
-					Target = Target,
+					Collided = projectile.Body,
 					Begin = Owner.TimeAxis.Count,
 					EndPoints = { endPoint },
 				};
+				var schedulerLimit = new SchedulerLimit()
+				{
+					Begin = Owner.TimeAxis.Count,
+					Source = scheduler,
+					Range = new Scale()
+					{
+						Max = 12000,
+					},
+				};
 
-				projectile.AddScheduler(scheduler);
+				projectile.AddScheduler(schedulerLimit);
 
 				Owner.GetPlaygroundProxy().Projectiles.Add(projectile);
 				Cooldown.SetMax();
