@@ -256,6 +256,96 @@ namespace StepFlow.Master.Proxies.Elements
 				var schedulerProxy = (ISchedulerProxy<Scheduler>)Owner.CreateProxy(Source);
 				schedulerProxy.Next();
 				Current = schedulerProxy.Current;
+
+				if (Current is { } current)
+				{
+					var rangeProxy = (IScaleProxy)Owner.CreateProxy(Range);
+					rangeProxy.Add((int)current.Duration);
+				}
+			}
+			else
+			{
+				Current = null;
+			}
+		}
+	}
+
+	public interface ISchedulerCollectionProxy : ISchedulerProxy<SchedulerCollection>
+	{
+		int Index { get; set; }
+	}
+
+	internal sealed class SchedulerCollectionProxy : SchedulerProxy<SchedulerCollection>, ISchedulerCollectionProxy
+	{
+		public SchedulerCollectionProxy(PlayMaster owner, SchedulerCollection target) : base(owner, target)
+		{
+		}
+
+		public int Index { get => Target.Index; set => SetValue(x => x.Index, value); }
+
+		public override void Next()
+		{
+			if (0 <= Index && Index < Target.Turns.Count)
+			{
+				Current = Target.Turns[Index];
+				Index++;
+			}
+			else
+			{
+				Current = null;
+			}
+		}
+	}
+
+	public interface ISchedulerUnionProxy : ISchedulerProxy<SchedulerCollection>
+	{
+		int Index { get; set; }
+	}
+
+	internal sealed class SchedulerUnionProxy : SchedulerProxy<SchedulerUnion>
+	{
+		public SchedulerUnionProxy(PlayMaster owner, SchedulerUnion target) : base(owner, target)
+		{
+		}
+
+		public int Index { get => Target.Index; set => SetValue(x => x.Index, value); }
+
+		public override void Next()
+		{
+			while (true)
+			{
+				if (TryNext(out var result))
+				{
+					Current = result;
+					return;
+				}
+			}
+		}
+
+		private bool TryNext(out Turn? result)
+		{
+			if (0 <= Index && Index < Target.Schedulers.Count)
+			{
+				var currentScheduler = Target.Schedulers[Index];
+				var currentSchedulerProxy = (ISchedulerProxy<Scheduler>)Owner.CreateProxy(currentScheduler);
+
+				currentSchedulerProxy.Next();
+				if (currentSchedulerProxy.Current is { } currentTurn)
+				{
+					result = currentTurn;
+					return true;
+				}
+				else
+				{
+					Index++;
+					result = null;
+					return false;
+				}
+			}
+			else
+			{
+				result = null;
+				return true;
 			}
 		}
 	}

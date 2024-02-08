@@ -42,4 +42,18 @@ namespace StepFlow.Core.Elements
 
 		public Scale? Range { get; set; }
 	}
+
+	public sealed class SchedulerCollection : Scheduler
+	{
+		public int Index { get; set; }
+
+		public IList<Turn> Turns { get; } = new List<Turn>();
+	}
+
+	public sealed class SchedulerUnion : Scheduler
+	{
+		public int Index { get; set; }
+
+		public IList<Scheduler> Schedulers { get; } = new List<Scheduler>();
+	}
 }

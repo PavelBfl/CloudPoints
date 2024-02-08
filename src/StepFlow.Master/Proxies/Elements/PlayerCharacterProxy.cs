@@ -122,8 +122,27 @@ namespace StepFlow.Master.Proxies.Elements
 						Max = 12000,
 					},
 				};
+				var schedulerCompletion = new SchedulerCollection()
+				{
+					Begin = Owner.TimeAxis.Count,
+					Turns =
+					{
+						new Turn(
+							0,
+							new RemoveProjectile()
+							{
+								Projectile = projectile.Target,
+							}
+						)
+					},
+				};
+				var schedulerUnion = new SchedulerUnion()
+				{
+					Begin = Owner.TimeAxis.Count,
+					Schedulers = { schedulerLimit, schedulerCompletion },
+				};
 
-				projectile.AddScheduler(schedulerLimit);
+				projectile.AddScheduler(schedulerUnion);
 
 				Owner.GetPlaygroundProxy().Projectiles.Add(projectile);
 				Cooldown.SetMax();
