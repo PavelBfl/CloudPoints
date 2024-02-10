@@ -11,6 +11,6 @@ namespace StepFlow.Core.Elements
 
 		public Damage? Damage { get => damage; set => SetComponent(ref damage, value); }
 
-		public ICollection<Scheduler> Schedulers { get; } = new HashSet<Scheduler>();
+		public ICollection<SchedulerRunner> Schedulers { get; } = new HashSet<SchedulerRunner>();
 	}
 }

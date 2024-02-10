@@ -12,11 +12,7 @@ namespace StepFlow.Master.Proxies.Elements
 	public interface ISchedulerProxy<out TScheduler> : IElementBaseProxy<TScheduler>
 		where TScheduler : Scheduler
 	{
-		int Begin { get; set; }
-
 		Turn? Current { get; set; }
-
-		void OnTick();
 
 		void Next();
 	}
@@ -28,42 +24,7 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 		}
 
-		public int Begin { get => Target.Begin; set => SetValue(x => x.Begin, value); }
-
 		public Turn? Current { get => Target.Current; set => SetValue(x => x.Current, value); }
-
-		public void OnTick()
-		{
-			OnTickInner();
-			while (SingleTick()) ;
-		}
-
-		protected virtual void OnTickInner()
-		{
-		}
-
-		private bool SingleTick()
-		{
-			if (Current is null)
-			{
-				Next();
-			}
-
-			if (Current is { } current)
-			{
-				if (Owner.TimeAxis.Count == (Begin + current.Duration))
-				{
-					var executor = (ITurnExecutor?)Owner.CreateProxy(current.Executor);
-					executor?.Execute();
-
-					Begin += (int)current.Duration;
-					Current = null;
-					return true;
-				}
-			}
-
-			return false;
-		}
 
 		public abstract void Next();
 	}
@@ -241,14 +202,6 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public Scale? Range { get => Target.Range; set => SetValue(x => x.Range, value); }
 
-		protected override void OnTickInner()
-		{
-			base.OnTickInner();
-
-			var rangeProxy = (IScaleProxy)Owner.CreateProxy(Range);
-			rangeProxy.Increment();
-		}
-
 		public override void Next()
 		{
 			if (Range.Value < Range.Max)
@@ -347,6 +300,60 @@ namespace StepFlow.Master.Proxies.Elements
 				result = null;
 				return true;
 			}
+		}
+	}
+
+	public interface ISchedulerRunnerProxy : IProxyBase<SchedulerRunner>
+	{
+		int Begin { get; set; }
+
+		Turn? Current { get; set; }
+
+		Scheduler? Scheduler { get; set; }
+
+		void OnTick();
+	}
+
+	internal sealed class SchedulerRunnerProxy : ProxyBase<SchedulerRunner>, ISchedulerRunnerProxy
+	{
+		public SchedulerRunnerProxy(PlayMaster owner, SchedulerRunner target) : base(owner, target)
+		{
+		}
+
+		public int Begin { get => Target.Begin; set => SetValue(x => x.Begin, value); }
+
+		public Turn? Current { get => Target.Current; set => SetValue(x => x.Current, value); }
+
+		public Scheduler? Scheduler { get => Target.Scheduler; set => SetValue(x => x.Scheduler, value); }
+
+		public void OnTick()
+		{
+			while (SingleTick()) ;
+		}
+
+		private bool SingleTick()
+		{
+			if (Current is null)
+			{
+				var schedulerProxy = (ISchedulerProxy<Scheduler>?)Owner.CreateProxy(Scheduler);
+				schedulerProxy?.Next();
+				Current = schedulerProxy?.Current;
+			}
+
+			if (Current is { } current)
+			{
+				if (Owner.TimeAxis.Count == (Begin + current.Duration))
+				{
+					var executor = (ITurnExecutor?)Owner.CreateProxy(current.Executor);
+					executor?.Execute();
+
+					Begin += (int)current.Duration;
+					Current = null;
+					return true;
+				}
+			}
+
+			return false;
 		}
 	}
 }

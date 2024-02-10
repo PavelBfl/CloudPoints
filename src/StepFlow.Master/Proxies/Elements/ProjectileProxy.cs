@@ -12,9 +12,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		Damage? Damage { get; set; }
 
-		ICollection<Scheduler> Schedulers { get; }
-
-		void AddScheduler(Scheduler scheduler);
+		ICollection<SchedulerRunner> Schedulers { get; }
 	}
 
 	internal sealed class ProjectileProxy : MaterialProxy<Projectile>, IProjectileProxy
@@ -27,12 +25,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public Damage? Damage { get => Target.Damage; set => SetValue(x => x.Damage, value); }
 
-		public ICollection<Scheduler> Schedulers => CreateCollectionProxy(Target.Schedulers);
-
-		public void AddScheduler(Scheduler scheduler)
-		{
-			Schedulers.Add(scheduler);
-		}
+		public ICollection<SchedulerRunner> Schedulers => CreateCollectionProxy(Target.Schedulers);
 
 		public override void OnTick()
 		{
@@ -40,7 +33,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 			foreach (var scheduler in Schedulers)
 			{
-				var schedulerProxy = (ISchedulerProxy<Scheduler>)Owner.CreateProxy(scheduler);
+				var schedulerProxy = (ISchedulerRunnerProxy)Owner.CreateProxy(scheduler);
 				schedulerProxy.OnTick();
 			}
 		}

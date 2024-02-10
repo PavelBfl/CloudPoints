@@ -110,12 +110,10 @@ namespace StepFlow.Master.Proxies.Elements
 				var scheduler = new SchedulerVector()
 				{
 					Collided = projectile.Body,
-					Begin = Owner.TimeAxis.Count,
 					EndPoints = { endPoint },
 				};
 				var schedulerLimit = new SchedulerLimit()
 				{
-					Begin = Owner.TimeAxis.Count,
 					Source = scheduler,
 					Range = new Scale()
 					{
@@ -124,7 +122,6 @@ namespace StepFlow.Master.Proxies.Elements
 				};
 				var schedulerCompletion = new SchedulerCollection()
 				{
-					Begin = Owner.TimeAxis.Count,
 					Turns =
 					{
 						new Turn(
@@ -138,11 +135,14 @@ namespace StepFlow.Master.Proxies.Elements
 				};
 				var schedulerUnion = new SchedulerUnion()
 				{
-					Begin = Owner.TimeAxis.Count,
 					Schedulers = { schedulerLimit, schedulerCompletion },
 				};
 
-				projectile.AddScheduler(schedulerUnion);
+				projectile.Schedulers.Add(new SchedulerRunner()
+				{
+					Begin = Owner.TimeAxis.Count,
+					Scheduler = schedulerUnion,
+				});
 
 				Owner.GetPlaygroundProxy().Projectiles.Add(projectile);
 				Cooldown.SetMax();

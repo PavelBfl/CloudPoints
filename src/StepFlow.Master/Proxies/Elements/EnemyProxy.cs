@@ -95,16 +95,17 @@ namespace StepFlow.Master.Proxies.Elements
 					)
 				);
 
-				var scheduler = new SchedulerPath()
-				{
-					Begin = Owner.TimeAxis.Count,
-				};
+				var scheduler = new SchedulerPath();
 				foreach (var course in CourseExtensions.GetPath(center, otherCenter))
 				{
 					scheduler.Path.Add(course);
 				}
 				scheduler.Last = new Turn(0, new RemoveProjectile() { Projectile = projectile.Target });
-				projectile.AddScheduler(scheduler);
+				projectile.Schedulers.Add(new SchedulerRunner()
+				{
+					Begin = Owner.TimeAxis.Count,
+					Scheduler = scheduler,
+				});
 
 				Owner.GetPlaygroundProxy().Projectiles.Add(projectile);
 				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);

@@ -6,8 +6,6 @@ namespace StepFlow.Core.Elements
 {
 	public class Scheduler : ElementBase
 	{
-		public int Begin { get; set; }
-
 		public Turn? Current { get; set; }
 	}
 
@@ -55,5 +53,14 @@ namespace StepFlow.Core.Elements
 		public int Index { get; set; }
 
 		public IList<Scheduler> Schedulers { get; } = new List<Scheduler>();
+	}
+
+	public sealed class SchedulerRunner : Subject
+	{
+		public int Begin { get; set; }
+
+		public Turn? Current { get; set; }
+
+		public Scheduler? Scheduler { get; set; }
 	}
 }
