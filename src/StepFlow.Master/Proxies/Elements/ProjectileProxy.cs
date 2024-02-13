@@ -11,8 +11,6 @@ namespace StepFlow.Master.Proxies.Elements
 		Subject? Creator { get; set; }
 
 		Damage? Damage { get; set; }
-
-		ICollection<SchedulerRunner> Schedulers { get; }
 	}
 
 	internal sealed class ProjectileProxy : MaterialProxy<Projectile>, IProjectileProxy
@@ -24,19 +22,6 @@ namespace StepFlow.Master.Proxies.Elements
 		public Subject? Creator { get => Target.Creator; set => SetValue(x => x.Creator, value); }
 
 		public Damage? Damage { get => Target.Damage; set => SetValue(x => x.Damage, value); }
-
-		public ICollection<SchedulerRunner> Schedulers => CreateCollectionProxy(Target.Schedulers);
-
-		public override void OnTick()
-		{
-			base.OnTick();
-
-			foreach (var scheduler in Schedulers)
-			{
-				var schedulerProxy = (ISchedulerRunnerProxy)Owner.CreateProxy(scheduler);
-				schedulerProxy.OnTick();
-			}
-		}
 
 		public override void Collision(ICollidedProxy thisCollided, IMaterialProxy<Material> otherMaterial, ICollidedProxy otherCollided)
 		{

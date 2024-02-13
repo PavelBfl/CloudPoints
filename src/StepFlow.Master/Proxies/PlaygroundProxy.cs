@@ -110,8 +110,8 @@ namespace StepFlow.Master.Proxies
 				},
 				Cooldown = new Scale()
 				{
-					Value = 1000,
-					Max = 1000,
+					Value = 10000,
+					Max = 10000,
 				},
 				Strength = new Scale()
 				{

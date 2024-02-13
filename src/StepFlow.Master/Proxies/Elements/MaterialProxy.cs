@@ -1,4 +1,6 @@
-﻿using StepFlow.Core;
+﻿using System.Collections.Generic;
+using System.Linq;
+using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Master.Proxies.Components;
@@ -15,6 +17,8 @@ namespace StepFlow.Master.Proxies.Elements
 		int Speed { get; set; }
 
 		Action? CurrentAction { get; set; }
+
+		ICollection<SchedulerRunner> Schedulers { get; }
 
 		void OnTick();
 
@@ -36,6 +40,8 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public Action? CurrentAction { get => Target.CurrentAction; set => SetValue(x => x.CurrentAction, value); }
 
+		public ICollection<SchedulerRunner> Schedulers => CreateCollectionProxy(Target.Schedulers);
+
 		public virtual void OnTick()
 		{
 			if (CurrentAction is { } currentAction)
@@ -46,6 +52,11 @@ namespace StepFlow.Master.Proxies.Elements
 					executorProxy?.Execute();
 					CurrentAction = null;
 				}
+			}
+
+			foreach (var scheduler in Schedulers.Select(Owner.CreateProxy).Cast<ISchedulerRunnerProxy>())
+			{
+				scheduler.OnTick();
 			}
 		}
 

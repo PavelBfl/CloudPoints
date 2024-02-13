@@ -54,7 +54,7 @@ namespace StepFlow.Markup
 
 			CreateObstruction(new(50, 100, 40, 40), 150);
 
-			CreatePlayerCharacter(new(100, 100, 20, 20), 100);
+			CreatePlayerCharacter(new(100, 100, 20, 20), 1000);
 		}
 
 		private void CreatePlayerCharacter(Rectangle bounds, int strength)

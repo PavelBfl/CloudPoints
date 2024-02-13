@@ -16,5 +16,7 @@ namespace StepFlow.Core.Elements
 		public Action? CurrentAction { get; set; }
 
 		public int Speed { get; set; }
+
+		public ICollection<SchedulerRunner> Schedulers { get; } = new HashSet<SchedulerRunner>();
 	}
 }

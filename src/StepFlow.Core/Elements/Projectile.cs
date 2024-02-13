@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using StepFlow.Core.Components;
+﻿using StepFlow.Core.Components;
 
 namespace StepFlow.Core.Elements
 {
@@ -10,7 +9,5 @@ namespace StepFlow.Core.Elements
 		private Damage? damage;
 
 		public Damage? Damage { get => damage; set => SetComponent(ref damage, value); }
-
-		public ICollection<SchedulerRunner> Schedulers { get; } = new HashSet<SchedulerRunner>();
 	}
 }
