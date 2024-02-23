@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
+using System.Numerics;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
@@ -91,59 +93,65 @@ namespace StepFlow.Master.Proxies.Elements
 
 	internal sealed class SchedulerVectorProxy : SchedulerProxy<SchedulerVector>, ISchedulerVectorProxy
 	{
-
-		private static float GetLength(PointF vector) => MathF.Sqrt((vector.X * vector.X) + (vector.Y * vector.Y));
-
-		private static PointF GetVector(Point beginPoint, EndPoint endPoint)
-		{
-			var result = new PointF(
-				endPoint.Point.X - beginPoint.X,
-				endPoint.Point.Y - beginPoint.Y
-			);
-
-			var length = GetLength(result);
-			var factor = endPoint.Force / length;
-
-			result.X *= factor;
-			result.Y *= factor;
-
-			return result;
-		}
-
 		public SchedulerVectorProxy(PlayMaster owner, SchedulerVector target) : base(owner, target)
 		{
 		}
 
 		public Collided Collided { get => Target.Collided; set => SetValue(x => x.Collided, value); }
 
+		public Vector2 CorrectVector { get => Target.CorrectVector; set => SetValue(x => x.CorrectVector, value); }
+
+		public int IndexCourse { get => Target.IndexCourse; set => SetValue(x => x.IndexCourse, value); }
+
 		public override void Next()
 		{
-			var sum = PointF.Empty;
-			var center = Collided.Current.Bounds.GetCenter();
+			var sum = Vector2.Zero;
 
-			foreach (var endPoint in Target.EndPoints)
+			foreach (var vector in Target.Vectors)
 			{
-				var vector = GetVector(center, endPoint);
-				sum.X += vector.X;
-				sum.Y += vector.Y;
+				sum += vector;
 			}
 
-			var length = (int)GetLength(sum);
-
-			if (length > 0)
+			if (sum != CorrectVector)
 			{
-				Current = new Turn(
-					100 - length,
-					new SetCourse()
-					{
-						Collided = Collided,
-						Course = GetCourse(sum),
-					}
-				);
+				CorrectVector = sum;
+				IndexCourse = 0;
 			}
+
+			var nextIndexCourse = Target.IndexCourse + 1;
+			if (nextIndexCourse > sum.X && sum.X != 0)
+			{
+				sum *= nextIndexCourse / sum.X;
+			}
+
+			if (nextIndexCourse > sum.Y && sum.Y != 0)
+			{
+				sum *= nextIndexCourse / sum.Y;
+			}
+
+			var path = CourseExtensions.GetPath(
+				Point.Empty,
+				new Point(
+					(int)MathF.Truncate(sum.X) + MathF.Sign(sum.X),
+					(int)MathF.Truncate(sum.Y) + MathF.Sign(sum.Y)
+				)
+			).ToArray();
+
+			var length = (int)sum.Length();
+
+			Current = new Turn(
+				1000 - length,
+				new SetCourse()
+				{
+					Collided = Collided,
+					Course = path[IndexCourse]
+				}
+			);
+
+			IndexCourse++;
 		}
 
-		public static Course GetCourse(PointF vector)
+		private static Course GetCourse(PointF vector)
 		{
 			var angle = MathF.Atan2(vector.Y, vector.X);
 

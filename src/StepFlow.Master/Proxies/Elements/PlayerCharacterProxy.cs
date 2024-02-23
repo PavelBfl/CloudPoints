@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
@@ -102,15 +103,11 @@ namespace StepFlow.Master.Proxies.Elements
 				var point = projectile.Body.Current.Bounds.GetCenter();
 				point.X += courseVector.X;
 				point.Y += courseVector.Y;
-				var endPoint = new EndPoint()
-				{
-					Point = point,
-					Force = 5,
-				};
+
 				var scheduler = new SchedulerVector()
 				{
 					Collided = projectile.Body,
-					EndPoints = { endPoint },
+					Vectors = { new Vector2(point.X, point.Y) },
 				};
 				var schedulerLimit = new SchedulerLimit()
 				{

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Numerics;
 using StepFlow.Core.Components;
 
 namespace StepFlow.Core.Elements
@@ -24,14 +25,11 @@ namespace StepFlow.Core.Elements
 	{
 		public Collided? Collided { get; set; }
 
-		public ICollection<EndPoint> EndPoints { get; } = new List<EndPoint>();
-	}
+		public ICollection<Vector2> Vectors { get; } = new List<Vector2>();
 
-	public sealed class EndPoint : Subject
-	{
-		public Point Point { get; set; }
+		public Vector2 CorrectVector { get; set; }
 
-		public int Force { get; set; }
+		public int IndexCourse { get; set; }
 	}
 
 	public sealed class SchedulerLimit : Scheduler

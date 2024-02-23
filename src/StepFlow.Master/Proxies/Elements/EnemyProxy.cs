@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Numerics;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
@@ -99,15 +100,10 @@ namespace StepFlow.Master.Proxies.Elements
 				courseVector.X *= 1;
 				courseVector.Y *= 1;
 
-				var endPoint = new EndPoint()
-				{
-					Point = new Point(center.X + courseVector.X, center.Y + courseVector.Y),
-					Force = 5,
-				};
 				var scheduler = new SchedulerVector()
 				{
 					Collided = projectile.Body,
-					EndPoints = { endPoint },
+					Vectors = { new Vector2(center.X + courseVector.X, center.Y + courseVector.Y) },
 				};
 				var schedulerLimit = new SchedulerLimit()
 				{
