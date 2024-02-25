@@ -118,37 +118,25 @@ namespace StepFlow.Master.Proxies.Elements
 				IndexCourse = 0;
 			}
 
-			var nextIndexCourse = Target.IndexCourse + 1;
-			if (nextIndexCourse > sum.X && sum.X != 0)
+
+			if (CourseExtensions.GetCourseStep(sum, IndexCourse) is { } course)
 			{
-				sum *= nextIndexCourse / sum.X;
-			}
+				var length = (int)sum.Length();
+				Current = new Turn(
+					100 - length,
+					new SetCourse()
+					{
+						Collided = Collided,
+						Course = course
+					}
+				);
 
-			if (nextIndexCourse > sum.Y && sum.Y != 0)
+				IndexCourse++;
+			}
+			else
 			{
-				sum *= nextIndexCourse / sum.Y;
+				Current = new Turn(1, null);
 			}
-
-			var path = CourseExtensions.GetPath(
-				Point.Empty,
-				new Point(
-					(int)MathF.Truncate(sum.X) + MathF.Sign(sum.X),
-					(int)MathF.Truncate(sum.Y) + MathF.Sign(sum.Y)
-				)
-			).ToArray();
-
-			var length = (int)sum.Length();
-
-			Current = new Turn(
-				1000 - length,
-				new SetCourse()
-				{
-					Collided = Collided,
-					Course = path[IndexCourse]
-				}
-			);
-
-			IndexCourse++;
 		}
 
 		private static Course GetCourse(PointF vector)

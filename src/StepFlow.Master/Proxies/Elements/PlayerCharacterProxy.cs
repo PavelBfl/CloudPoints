@@ -98,16 +98,10 @@ namespace StepFlow.Master.Proxies.Elements
 				);
 
 				var courseVector = course.ToOffset();
-				courseVector.X *= 300;
-				courseVector.Y *= 300;
-				var point = projectile.Body.Current.Bounds.GetCenter();
-				point.X += courseVector.X;
-				point.Y += courseVector.Y;
-
 				var scheduler = new SchedulerVector()
 				{
 					Collided = projectile.Body,
-					Vectors = { new Vector2(point.X, point.Y) },
+					Vectors = { new Vector2(courseVector.X, courseVector.Y) },
 				};
 				var schedulerLimit = new SchedulerLimit()
 				{

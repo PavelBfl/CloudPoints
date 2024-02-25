@@ -35,7 +35,7 @@ namespace StepFlow.Markup
 
 		private IKeyboard Keyboard { get; }
 
-		private IDrawer Drawer { get; }
+		public IDrawer Drawer { get; }
 
 		public RectangleF Place { get; }
 

@@ -96,14 +96,12 @@ namespace StepFlow.Master.Proxies.Elements
 					)
 				);
 
-				var courseVector = new Point(otherCenter.X - center.X, otherCenter.Y - center.Y);
-				courseVector.X *= 1;
-				courseVector.Y *= 1;
+				var courseVector = Vector2.Normalize(new Vector2(otherCenter.X - center.X, otherCenter.Y - center.Y)) * 5;
 
 				var scheduler = new SchedulerVector()
 				{
 					Collided = projectile.Body,
-					Vectors = { new Vector2(center.X + courseVector.X, center.Y + courseVector.Y) },
+					Vectors = { courseVector },
 				};
 				var schedulerLimit = new SchedulerLimit()
 				{

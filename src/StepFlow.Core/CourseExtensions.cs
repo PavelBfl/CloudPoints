@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Numerics;
 using StepFlow.Common.Exceptions;
 
 namespace StepFlow.Core
@@ -56,54 +57,59 @@ namespace StepFlow.Core
 			{
 				if (prev is { })
 				{
-					if (prev.Value.Y < point.Y)
-					{
-						if (prev.Value.X < point.X)
-						{
-							yield return Course.RightBottom;
-						}
-						else if (prev.Value.X > point.X)
-						{
-							yield return Course.LeftBottom;
-						}
-						else
-						{
-							yield return Course.Bottom;
-						}
-					}
-					else if (prev.Value.Y > point.Y)
-					{
-						if (prev.Value.X < point.X)
-						{
-							yield return Course.RightTop;
-						}
-						else if (prev.Value.X > point.X)
-						{
-							yield return Course.LeftTop;
-						}
-						else
-						{
-							yield return Course.Top;
-						}
-					}
-					else
-					{
-						if (prev.Value.X < point.X)
-						{
-							yield return Course.Right;
-						}
-						else if (prev.Value.X > point.X)
-						{
-							yield return Course.Left;
-						}
-						else
-						{
-							throw new InvalidOperationException();
-						}
-					}
+					yield return GetCourse(prev.Value, point) ?? throw new InvalidOperationException();
 				}
 
 				prev = point;
+			}
+		}
+
+		private static Course? GetCourse(Point current, Point next)
+		{
+			if (current.Y < next.Y)
+			{
+				if (current.X < next.X)
+				{
+					return Course.RightBottom;
+				}
+				else if (current.X > next.X)
+				{
+					return Course.LeftBottom;
+				}
+				else
+				{
+					return Course.Bottom;
+				}
+			}
+			else if (current.Y > next.Y)
+			{
+				if (current.X < next.X)
+				{
+					return Course.RightTop;
+				}
+				else if (current.X > next.X)
+				{
+					return Course.LeftTop;
+				}
+				else
+				{
+					return Course.Top;
+				}
+			}
+			else
+			{
+				if (current.X < next.X)
+				{
+					return Course.Right;
+				}
+				else if (current.X > next.X)
+				{
+					return Course.Left;
+				}
+				else
+				{
+					return null;
+				}
 			}
 		}
 
@@ -160,5 +166,33 @@ namespace StepFlow.Core
 				}
 			}
 		}
+
+		public static Course? GetCourseStep(Vector2 vector, int step)
+		{
+			if (vector == Vector2.Zero)
+			{
+				return null;
+			}
+			else if (MathF.Abs(vector.X) > MathF.Abs(vector.Y))
+			{
+				var pair = GetStep(vector, step);
+				return GetCourse(pair.Current, pair.Next);
+			}
+			else
+			{
+				vector = new Vector2(vector.Y, vector.X);
+				var pair = GetStep(vector, step);
+				return GetCourse(Reflect(pair.Current), Reflect(pair.Next));
+			}
+		}
+
+		private static (Point Current, Point Next) GetStep(Vector2 vector, int step)
+		{
+			var factor = vector.Y / vector.X;
+
+			return (GetPointStep(factor, step), GetPointStep(factor, step + MathF.Sign(vector.X)));
+		}
+
+		private static Point GetPointStep(float factor, int step) => new Point(step, (int)MathF.Floor(step * factor));
 	}
 }
