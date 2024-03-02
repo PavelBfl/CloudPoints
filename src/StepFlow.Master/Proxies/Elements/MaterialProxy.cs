@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
@@ -74,16 +75,24 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			var factor = course.GetFactor();
 
-			CurrentAction = new Action()
+			if (Schedulers.Select(x => x.Scheduler).OfType<SchedulerVector>().SelectMany(x => x.Vectors).FirstOrDefault(x => x.Name == "Control") is { } controlVector)
 			{
-				Begin = Owner.TimeAxis.Current,
-				Duration = factor * Speed,
-				Executor = new SetCourse()
-				{
-					Collided = Body,
-					Course = course,
-				},
-			};
+				var offset = course.ToOffset();
+				var vector = new Vector2(offset.X, offset.Y) * Speed;
+				controlVector.Value = vector;
+			}
+
+			// TODO Удалить после доработки планировщиков
+			//CurrentAction = new Action()
+			//{
+			//	Begin = Owner.TimeAxis.Current,
+			//	Duration = factor * Speed,
+			//	Executor = new SetCourse()
+			//	{
+			//		Collided = Body,
+			//		Course = course,
+			//	},
+			//};
 		}
 
 		public int Speed { get => Target.Speed; set => SetValue(x => x.Speed, value); }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.Numerics;
+﻿using System.Numerics;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Schedulers;
@@ -30,7 +28,7 @@ namespace StepFlow.Master.Proxies.Schedulers
 
 			foreach (var vector in Target.Vectors)
 			{
-				sum += vector;
+				sum += vector.Value;
 			}
 
 			if (sum != CorrectVector)
@@ -57,49 +55,6 @@ namespace StepFlow.Master.Proxies.Schedulers
 			else
 			{
 				Current = new Turn(1, null);
-			}
-		}
-
-		private static Course GetCourse(PointF vector)
-		{
-			var angle = MathF.Atan2(vector.Y, vector.X);
-
-			const double step = Math.PI / 8;
-			if (-Math.PI < angle && angle <= step * -7)
-			{
-				return Course.Left;
-			}
-			else if (step * -7 < angle && angle <= step * -5)
-			{
-				return Course.LeftTop;
-			}
-			else if (step * -5 < angle && angle <= step * -3)
-			{
-				return Course.Top;
-			}
-			else if (step * -3 < angle && angle <= step * -1)
-			{
-				return Course.RightTop;
-			}
-			else if (step * -1 < angle && angle <= step * 1)
-			{
-				return Course.Right;
-			}
-			else if (step * 1 < angle && angle <= step * 3)
-			{
-				return Course.RightBottom;
-			}
-			else if (step * 3 < angle && angle <= step * 5)
-			{
-				return Course.Bottom;
-			}
-			else if (step * 5 < angle && angle <= step * 7)
-			{
-				return Course.LeftBottom;
-			}
-			else
-			{
-				return Course.Left;
 			}
 		}
 	}

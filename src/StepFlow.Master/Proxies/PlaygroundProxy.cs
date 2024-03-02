@@ -3,6 +3,7 @@ using System.Drawing;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
+using StepFlow.Core.Schedulers;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Elements;
 using StepFlow.Master.Proxies.Intersection;
@@ -44,6 +45,12 @@ namespace StepFlow.Master.Proxies
 
 		public void CreatePlayerCharacter(Rectangle bounds, int strength)
 		{
+			var body = new Collided()
+			{
+				Current = new ShapeCell(Owner.Playground.IntersectionContext, bounds),
+				IsRigid = true,
+			};
+
 			PlayerCharacter = new PlayerCharacter()
 			{
 				Name = "Player",
@@ -57,10 +64,24 @@ namespace StepFlow.Master.Proxies
 					Max = 3000,
 					Value = 3000,
 				},
-				Body = new Collided()
+				Body = body,
+				Schedulers =
 				{
-					Current = new ShapeCell(Owner.Playground.IntersectionContext, bounds),
-					IsRigid = true,
+					new SchedulerRunner()
+					{
+						Begin = Owner.TimeAxis.Count,
+						Scheduler = new SchedulerVector()
+						{
+							Collided = body,
+							Vectors =
+							{
+								new CourseVector()
+								{
+									Name = "Control",
+								},
+							},
+						}
+					},
 				},
 				Speed = 10,
 			};
@@ -91,13 +112,14 @@ namespace StepFlow.Master.Proxies
 
 		public void CreateProjectile(Rectangle bounds, int value, DamageKind kind)
 		{
+			var body = new Collided()
+			{
+				Current = new ShapeCell(Owner.Playground.IntersectionContext, bounds),
+				IsRigid = true,
+			};
 			var projectile = new Projectile()
 			{
-				Body = new Collided()
-				{
-					Current = new ShapeCell(Owner.Playground.IntersectionContext, bounds),
-					IsRigid = true,
-				},
+				Body = body,
 				Damage = new Damage()
 				{
 					Value = value,

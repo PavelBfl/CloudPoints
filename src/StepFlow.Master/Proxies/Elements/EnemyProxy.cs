@@ -102,7 +102,7 @@ namespace StepFlow.Master.Proxies.Elements
 				var scheduler = new SchedulerVector()
 				{
 					Collided = projectile.Body,
-					Vectors = { courseVector },
+					Vectors = { new CourseVector() { Value = courseVector } },
 				};
 				var schedulerLimit = new SchedulerLimit()
 				{
