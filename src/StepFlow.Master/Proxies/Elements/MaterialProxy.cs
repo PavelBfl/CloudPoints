@@ -3,11 +3,13 @@ using System.Linq;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
+using StepFlow.Core.Schedulers;
 using StepFlow.Master.Proxies.Components;
+using StepFlow.Master.Proxies.Schedulers;
 
 namespace StepFlow.Master.Proxies.Elements
 {
-	public interface IMaterialProxy<out TTarget> : IProxyBase<TTarget>
+    public interface IMaterialProxy<out TTarget> : IProxyBase<TTarget>
 		where TTarget : Material
 	{
 		Scale? Strength { get; }
@@ -24,7 +26,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		void SetCourse(Course course);
 
-		void Collision(ICollidedProxy thisCollided, IMaterialProxy<Material> otherMaterial, ICollidedProxy otherCollided);
+		void Collision(Collided thisCollided, Material otherMaterial, Collided otherCollided);
 	}
 
 	internal class MaterialProxy<TTarget> : ProxyBase<TTarget>, IMaterialProxy<TTarget>
@@ -60,9 +62,9 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 		}
 
-		public virtual void Collision(ICollidedProxy thisCollided, IMaterialProxy<Material> otherMaterial, ICollidedProxy otherCollided)
+		public virtual void Collision(Collided thisCollided, Material otherMaterial, Collided otherCollided)
 		{
-			if (Target != otherMaterial.Target && otherCollided.IsRigid)
+			if (Target != otherMaterial && otherCollided.IsRigid)
 			{
 				((ICollidedProxy)Owner.CreateProxy(Body)).Break();
 			}

@@ -26,7 +26,7 @@ namespace StepFlow.Master.Proxies.Collections
 
 		public IEnumerator<TItem> GetEnumerator() => Target.GetEnumerator();
 
-		public bool Remove(TItem item)
+		public virtual bool Remove(TItem item)
 		{
 			var removed = Target.Remove(item);
 			if (removed)

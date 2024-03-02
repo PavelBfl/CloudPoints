@@ -24,10 +24,10 @@ namespace StepFlow.Master.Proxies.Components
 		{
 			if (Projectile is { } projectile)
 			{
-				var projectileProxy = (IProjectileProxy)Owner.CreateProxy(projectile);
-				Owner.GetPlaygroundProxy().Projectiles.Remove(projectileProxy);
-				projectileProxy.Body.Current = null;
-				projectileProxy.Body.Next = null;
+				var projectilesProxy = CreateListProxy(Owner.GetPlaygroundProxy().Projectiles);
+				projectilesProxy.Remove(projectile);
+
+				((ICollidedProxy?)Owner.CreateProxy(projectile.Body))?.Clear();
 			}
 		}
 	}

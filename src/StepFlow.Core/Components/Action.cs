@@ -1,5 +1,8 @@
-﻿namespace StepFlow.Core.Components
+﻿using System;
+
+namespace StepFlow.Core.Components
 {
+	[Obsolete]
 	public sealed class Action
 	{
 		public long Begin { get; set; }

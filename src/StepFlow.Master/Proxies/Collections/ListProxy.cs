@@ -21,6 +21,18 @@ namespace StepFlow.Master.Proxies.Collections
 
 		public void Insert(int index, TItem item) => Owner.TimeAxis.Add(new InsertItemCommand<TItem>(Target, item, index));
 
+		public override bool Remove(TItem item)
+		{
+			var index = IndexOf(item);
+			var removed = index >= 0;
+			if (removed)
+			{
+				RemoveAt(index);
+			}
+
+			return removed;
+		}
+
 		public void RemoveAt(int index)
 		{
 			var item = Target[index];

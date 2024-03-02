@@ -32,9 +32,5 @@ namespace StepFlow.Master.Proxies
 		protected IList<T> CreateListProxy<T>(IList<T> target) => new ListProxy<T, IList<T>>(Owner, target);
 
 		protected ICollection<T> CreateCollectionProxy<T>(ICollection<T> target) => new CollectionProxy<T, ICollection<T>>(Owner, target);
-
-		protected IList<TItemProxy> CreateListItemProxy<TItem, TItemProxy>(IList<TItem> target)
-			where TItemProxy : IReadOnlyProxyBase<TItem>
-			=> new ListItemsProxy<TItem, IList<TItem>, TItemProxy>(Owner, target);
 	}
 }

@@ -3,6 +3,7 @@ using System.Numerics;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
+using StepFlow.Core.Schedulers;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
 
@@ -29,7 +30,8 @@ namespace StepFlow.Master.Proxies.Elements
 
 			if (Strength?.Value == 0)
 			{
-				Owner.GetPlaygroundProxy().Enemies.Remove(this);
+				var enemiesProxy = CreateListProxy(Owner.Playground.Enemies);
+				enemiesProxy.Remove(Target);
 
 				var itemPosition = Body.Current.Bounds.GetCenter();
 				Owner.CreateItem.Execute(new Scripts.CreateItem.Parameters()
@@ -50,15 +52,15 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 		}
 
-		public override void Collision(ICollidedProxy thisCollided, IMaterialProxy<Material> otherMaterial, ICollidedProxy otherCollided)
+		public override void Collision(Collided thisCollided, Material otherMaterial, Collided otherCollided)
 		{
-			if (thisCollided.Target == Vision && otherMaterial.Target == Owner.Playground.PlayerCharacter)
+			if (thisCollided == Vision && otherMaterial == Owner.Playground.PlayerCharacter)
 			{
 				CreateProjectile(otherMaterial);
 			}
 		}
 
-		private void CreateProjectile(IMaterialProxy<Material> other)
+		private void CreateProjectile(Material other)
 		{
 			if (Cooldown.Value == 0)
 			{
@@ -135,7 +137,8 @@ namespace StepFlow.Master.Proxies.Elements
 					Scheduler = schedulerUnion,
 				});
 
-				Owner.GetPlaygroundProxy().Projectiles.Add(projectile);
+				var projectilesProxy = CreateListProxy(Owner.Playground.Projectiles);
+				projectilesProxy.Add(projectile.Target);
 				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);
 				cooldownProxy.SetMax();
 			}

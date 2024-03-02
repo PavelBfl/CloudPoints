@@ -6,7 +6,7 @@ namespace StepFlow.Master.Proxies.Components
 {
 	public interface ISetCourseProxy : IProxyBase<SetCourse>, ITurnExecutor
 	{
-		ICollidedProxy? Collided { get; set; }
+		Collided? Collided { get; set; }
 
 		Course Course { get; set; }
 	}
@@ -17,7 +17,7 @@ namespace StepFlow.Master.Proxies.Components
 		{
 		}
 
-		public ICollidedProxy? Collided { get => (ICollidedProxy?)Owner.CreateProxy(Target.Collided); set => SetValue(x => x.Collided, value?.Target); }
+		public Collided? Collided { get => Target.Collided; set => SetValue(x => x.Collided, value); }
 
 		public Course Course { get => Target.Course; set => SetValue(x => x.Course, value); }
 
@@ -28,8 +28,9 @@ namespace StepFlow.Master.Proxies.Components
 				var offset = Course.ToOffset();
 				var next = current.Clone(offset);
 
-				Collided.Next = next;
-				Collided.IsMove = true;
+				var collidedProxy = (ICollidedProxy)Owner.CreateProxy(Collided);
+				collidedProxy.Next = next;
+				collidedProxy.IsMove = true;
 			}
 		}
 

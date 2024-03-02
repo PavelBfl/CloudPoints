@@ -23,9 +23,9 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public Damage? Damage { get => Target.Damage; set => SetValue(x => x.Damage, value); }
 
-		public override void Collision(ICollidedProxy thisCollided, IMaterialProxy<Material> otherMaterial, ICollidedProxy otherCollided)
+		public override void Collision(Collided thisCollided, Material otherMaterial, Collided otherCollided)
 		{
-			if (Creator != otherMaterial.Target && otherCollided.IsRigid)
+			if (Creator != otherMaterial && otherCollided.IsRigid)
 			{
 				if (otherMaterial.Strength is { } strength)
 				{
@@ -33,9 +33,11 @@ namespace StepFlow.Master.Proxies.Elements
 					strengthProxy.Add(-Damage.Value);
 				}
 
-				Owner.GetPlaygroundProxy().Projectiles.Remove(this);
-				Body.Current = null;
-				Body.Next = null;
+				var projectilesProxy = CreateListProxy(Owner.Playground.Projectiles);
+				projectilesProxy.Remove(Target);
+
+				var bodyProxy = (ICollidedProxy)Owner.CreateProxy(Body);
+				bodyProxy.Clear();
 			}
 		}
 	}

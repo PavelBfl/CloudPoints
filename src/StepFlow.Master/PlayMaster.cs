@@ -5,17 +5,19 @@ using System.Linq;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
+using StepFlow.Core.Schedulers;
 using StepFlow.Master.Proxies;
 using StepFlow.Master.Proxies.Components;
 using StepFlow.Master.Proxies.Elements;
 using StepFlow.Master.Proxies.Intersection;
+using StepFlow.Master.Proxies.Schedulers;
 using StepFlow.Master.Scripts;
 using StepFlow.TimeLine;
 using StepFlow.TimeLine.Transactions;
 
 namespace StepFlow.Master
 {
-	public class PlayMaster
+    public class PlayMaster
 	{
 		public const string TAKE_STEP_CALL = "TakeStep";
 
@@ -73,12 +75,10 @@ namespace StepFlow.Master
 				Item instance => new ItemProxy(this, instance),
 				Enemy instance => new EnemyProxy(this, instance),
 				Collided instance => new CollidedProxy(this, instance),
-				Scheduled instance => new ScheduledProxy(this, instance),
 				Core.Components.Action instance => new ActionProxy(this, instance),
 				Intersection.Context instance => new ContextProxy(this, instance),
 				Intersection.ShapeCell instance => new ShapeCellProxy(this, instance),
 				Intersection.ShapeContainer instance => new ShapeContainerProxy(this, instance),
-				SchedulerPath instance => new SchedulerPathProxy(this, instance),
 				SchedulerVector instance => new SchedulerVectorProxy(this, instance),
 				RemoveProjectile instance => new RemoveProjectileProxy(this, instance),
 				SchedulerLimit instance => new SchedulerLimitProxy(this, instance),
@@ -105,14 +105,14 @@ namespace StepFlow.Master
 			{
 				if (collision.Left.Attached is { } leftAttached && collision.Right.Attached is { } rightAttached)
 				{
-					var leftCollided = (ICollidedProxy)CreateProxy(leftAttached);
-					var leftMaterial = (IMaterialProxy<Material>)CreateProxy(leftCollided.Target.Element);
+					var leftCollided = (Collided)leftAttached;
+					var leftMaterial = (IMaterialProxy<Material>)CreateProxy(leftCollided.Element);
 
-					var rightCollided = (ICollidedProxy)CreateProxy(rightAttached);
-					var rightMaterial = (IMaterialProxy<Material>)CreateProxy(rightCollided.Target.Element);
+					var rightCollided = (Collided)rightAttached;
+					var rightMaterial = (IMaterialProxy<Material>)CreateProxy(rightCollided.Element);
 
-					leftMaterial.Collision(leftCollided, rightMaterial, rightCollided);
-					rightMaterial.Collision(rightCollided, leftMaterial, leftCollided);
+					leftMaterial.Collision(leftCollided, rightMaterial.Target, rightCollided);
+					rightMaterial.Collision(rightCollided, leftMaterial.Target, leftCollided);
 				}
 			}
 

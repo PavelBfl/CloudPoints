@@ -6,6 +6,7 @@ using System.Numerics;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
+using StepFlow.Core.Schedulers;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Collections;
 using StepFlow.Master.Proxies.Components;
@@ -29,8 +30,6 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public IScaleProxy Cooldown => (IScaleProxy)Owner.CreateProxy(Target.Cooldown);
 
-		public IList<IItemProxy> Items => new ListItemsProxy<Item, IList<Item>, IItemProxy>(Owner, Target.Items);
-
 		public override void OnTick()
 		{
 			base.OnTick();
@@ -45,23 +44,23 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 		}
 
-		public override void Collision(ICollidedProxy thisCollided, IMaterialProxy<Material> otherMaterial, ICollidedProxy otherCollided)
+		public override void Collision(Collided thisCollided, Material otherMaterial, Collided otherCollided)
 		{
-			if (otherMaterial is IItemProxy itemProxy)
+			if (otherMaterial is Item item)
 			{
-				Owner.GetPlaygroundProxy().Items.Remove(itemProxy);
-				var itemBody = (ICollidedProxy)Owner.CreateProxy(itemProxy.Body);
-				itemBody.Current = null;
-				itemBody.Next = null;
-				Items.Add(itemProxy);
+				var itemsProxy = CreateListProxy(Owner.Playground.Items);
+				itemsProxy.Remove(item);
+				var itemBody = (ICollidedProxy?)Owner.CreateProxy(item.Body);
+				itemBody?.Clear();
+				CreateListProxy(Target.Items).Add(item);
 
-				Speed -= itemProxy.Speed;
+				Speed -= item.Speed;
 				Cooldown.SetMin();
-				Cooldown.Max -= itemProxy.AttackCooldown;
+				Cooldown.Max -= item.AttackCooldown;
 
-				Strength.Value += itemProxy.AddStrength;
+				Strength.Value += item.AddStrength;
 			}
-			else if ((otherMaterial as IProjectileProxy)?.Creator != Target)
+			else if ((otherMaterial as Projectile)?.Creator != Target)
 			{
 				base.Collision(thisCollided, otherMaterial, otherCollided);
 			}
@@ -135,14 +134,15 @@ namespace StepFlow.Master.Proxies.Elements
 					Scheduler = schedulerUnion,
 				});
 
-				Owner.GetPlaygroundProxy().Projectiles.Add(projectile);
+				var projectilesProxy = CreateListProxy(Owner.Playground.Projectiles);
+				projectilesProxy.Add(projectile.Target);
 				Cooldown.SetMax();
 			}
 		}
 
 		private Damage AggregateDamage(int value = 0, DamageKind kind = DamageKind.None)
 		{
-			foreach (var settings in Items.Select(x => x.DamageSettings))
+			foreach (var settings in Target.Items.Select(x => x.DamageSetting))
 			{
 				if (settings is { })
 				{

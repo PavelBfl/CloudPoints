@@ -27,6 +27,12 @@ namespace StepFlow.Master.Proxies.Components
 			Next = null;
 			IsMove = false;
 		}
+
+		void Clear()
+		{
+			Current = null;
+			Next = null;
+		}
 	}
 
 	internal sealed class CollidedProxy : ProxyBase<Collided>, ICollidedProxy

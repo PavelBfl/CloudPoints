@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using StepFlow.Core.Components;
+using StepFlow.Core.Schedulers;
 
 namespace StepFlow.Core.Elements
 {

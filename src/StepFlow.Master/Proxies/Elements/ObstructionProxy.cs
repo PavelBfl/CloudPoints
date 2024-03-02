@@ -1,5 +1,6 @@
 ﻿using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
+using StepFlow.Master.Proxies.Components;
 
 namespace StepFlow.Master.Proxies.Elements
 {
@@ -22,9 +23,12 @@ namespace StepFlow.Master.Proxies.Elements
 
 			if (Strength?.Value == 0)
 			{
-				Owner.GetPlaygroundProxy().Obstructions.Remove(this);
-				Body.Current = null;
-				Body.Next = null;
+				var obstructionsProxy = CreateListProxy(Owner.GetPlaygroundProxy().Obstructions);
+				obstructionsProxy.Remove(Target);
+
+				var collidedProxy = (ICollidedProxy)Owner.CreateProxy(Body);
+				collidedProxy.Current = null;
+				collidedProxy.Next = null;
 			}
 		}
 	}
