@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using StepFlow.Core;
+﻿using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Master.Proxies.Components;

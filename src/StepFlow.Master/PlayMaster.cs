@@ -12,12 +12,11 @@ using StepFlow.Master.Proxies.Elements;
 using StepFlow.Master.Proxies.Intersection;
 using StepFlow.Master.Proxies.Schedulers;
 using StepFlow.Master.Scripts;
-using StepFlow.TimeLine;
 using StepFlow.TimeLine.Transactions;
 
 namespace StepFlow.Master
 {
-    public class PlayMaster
+	public class PlayMaster
 	{
 		public const string TAKE_STEP_CALL = "TakeStep";
 

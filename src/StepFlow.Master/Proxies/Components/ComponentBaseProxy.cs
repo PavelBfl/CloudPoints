@@ -1,6 +1,5 @@
 ﻿using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
-using StepFlow.Master.Proxies.Elements;
 
 namespace StepFlow.Master.Proxies.Components
 {

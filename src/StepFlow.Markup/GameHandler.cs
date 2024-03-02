@@ -5,7 +5,6 @@ using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Markup.Services;
 using StepFlow.Master;
-using StepFlow.Master.Proxies.Components;
 
 namespace StepFlow.Markup
 {

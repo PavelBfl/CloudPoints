@@ -9,7 +9,7 @@ using StepFlow.Master.Proxies.Schedulers;
 
 namespace StepFlow.Master.Proxies.Elements
 {
-    public interface IMaterialProxy<out TTarget> : IProxyBase<TTarget>
+	public interface IMaterialProxy<out TTarget> : IProxyBase<TTarget>
 		where TTarget : Material
 	{
 		Scale? Strength { get; }
