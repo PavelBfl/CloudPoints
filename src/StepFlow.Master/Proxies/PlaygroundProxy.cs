@@ -11,7 +11,7 @@ namespace StepFlow.Master.Proxies
 {
 	public interface IPlaygroundProxy : IProxyBase<Playground>
 	{
-		IPlayerCharacterProxy? PlayerCharacter { get; set; }
+		PlayerCharacter? PlayerCharacter { get; set; }
 		IList<Obstruction> Obstructions { get; }
 		IList<Projectile> Projectiles { get; }
 		IList<Item> Items { get; }
@@ -32,7 +32,7 @@ namespace StepFlow.Master.Proxies
 
 		public IContextProxy IntersectionContext => (IContextProxy)Owner.CreateProxy(Target.IntersectionContext);
 
-		public IPlayerCharacterProxy? PlayerCharacter { get => (IPlayerCharacterProxy?)Owner.CreateProxy(Target.PlayerCharacter); set => SetValue(x => x.PlayerCharacter, ((IProxyBase<PlayerCharacter>?)value)?.Target); }
+		public PlayerCharacter? PlayerCharacter { get => Target.PlayerCharacter; set => SetValue(x => x.PlayerCharacter, value); }
 
 		public IList<Obstruction> Obstructions => Target.Obstructions;
 
@@ -44,7 +44,7 @@ namespace StepFlow.Master.Proxies
 
 		public void CreatePlayerCharacter(Rectangle bounds, int strength)
 		{
-			PlayerCharacter = (IPlayerCharacterProxy)Owner.CreateProxy(new PlayerCharacter()
+			PlayerCharacter = new PlayerCharacter()
 			{
 				Name = "Player",
 				Strength = new Scale()
@@ -63,7 +63,7 @@ namespace StepFlow.Master.Proxies
 					IsRigid = true,
 				},
 				Speed = 10,
-			});
+			};
 		}
 
 		public void CreateObstruction(Rectangle bounds, int? strength)
