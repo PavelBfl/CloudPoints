@@ -60,11 +60,6 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public void SetCourse(Course? course)
 		{
-			if (course is { })
-			{
-
-			}
-
 			if (Target.GetControlVector() is { } controlVector)
 			{
 				var offset = course?.ToOffset() ?? Point.Empty;

@@ -13,5 +13,7 @@ namespace StepFlow.Core.Components
 		public long Duration { get; }
 
 		public Subject? Executor { get; }
+
+		public Turn Decrement() => new Turn(Duration - 1, Executor);
 	}
 }

@@ -132,7 +132,6 @@ namespace StepFlow.Master.Proxies.Elements
 
 				projectile.Schedulers.Add(new SchedulerRunner()
 				{
-					Begin = Owner.TimeAxis.Count,
 					Scheduler = schedulerUnion,
 				});
 

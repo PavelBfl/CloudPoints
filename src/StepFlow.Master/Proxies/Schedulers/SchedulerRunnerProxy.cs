@@ -6,8 +6,6 @@ namespace StepFlow.Master.Proxies.Schedulers
 {
 	public interface ISchedulerRunnerProxy : IProxyBase<SchedulerRunner>
 	{
-		int Begin { get; set; }
-
 		Turn? Current { get; set; }
 
 		Scheduler? Scheduler { get; set; }
@@ -20,8 +18,6 @@ namespace StepFlow.Master.Proxies.Schedulers
 		public SchedulerRunnerProxy(PlayMaster owner, SchedulerRunner target) : base(owner, target)
 		{
 		}
-
-		public int Begin { get => Target.Begin; set => SetValue(x => x.Begin, value); }
 
 		public Turn? Current { get => Target.Current; set => SetValue(x => x.Current, value); }
 
@@ -43,14 +39,17 @@ namespace StepFlow.Master.Proxies.Schedulers
 
 			if (Current is { } current)
 			{
-				if (Owner.TimeAxis.Count == Begin + current.Duration)
+				if (current.Duration == 0)
 				{
 					var executor = (ITurnExecutor?)Owner.CreateProxy(current.Executor);
 					executor?.Execute();
 
-					Begin += (int)current.Duration;
 					Current = null;
 					return true;
+				}
+				else
+				{
+					Current = current.Decrement();
 				}
 			}
 

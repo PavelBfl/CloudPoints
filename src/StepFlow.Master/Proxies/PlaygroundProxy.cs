@@ -69,7 +69,6 @@ namespace StepFlow.Master.Proxies
 				{
 					new SchedulerRunner()
 					{
-						Begin = Owner.TimeAxis.Count,
 						Scheduler = new SchedulerVector()
 						{
 							Collided = body,
