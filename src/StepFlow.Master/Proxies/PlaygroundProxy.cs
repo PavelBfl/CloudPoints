@@ -77,7 +77,7 @@ namespace StepFlow.Master.Proxies
 							{
 								new CourseVector()
 								{
-									Name = "Control",
+									Name = Material.SHEDULER_CONTROL_NAME,
 								},
 							},
 						}

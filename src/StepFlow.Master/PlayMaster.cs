@@ -84,6 +84,7 @@ namespace StepFlow.Master
 				SchedulerCollection instance => new SchedulerCollectionProxy(this, instance),
 				SchedulerUnion instance => new SchedulerUnionProxy(this, instance),
 				SchedulerRunner instance => new SchedulerRunnerProxy(this, instance),
+				CourseVector instance => new CourseVectorProxy(this, instance),
 				null => null,
 				_ => throw new InvalidOperationException(),
 			};

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using StepFlow.Core;
@@ -19,13 +20,11 @@ namespace StepFlow.Master.Proxies.Elements
 
 		int Speed { get; set; }
 
-		Action? CurrentAction { get; set; }
-
 		ICollection<SchedulerRunner> Schedulers { get; }
 
 		void OnTick();
 
-		void SetCourse(Course course);
+		void SetCourse(Course? course);
 
 		void Collision(Collided thisCollided, Material otherMaterial, Collided otherCollided);
 	}
@@ -41,22 +40,10 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public Collided Body { get => Target.Body; }
 
-		public Action? CurrentAction { get => Target.CurrentAction; set => SetValue(x => x.CurrentAction, value); }
-
 		public ICollection<SchedulerRunner> Schedulers => CreateCollectionProxy(Target.Schedulers);
 
 		public virtual void OnTick()
 		{
-			if (CurrentAction is { } currentAction)
-			{
-				if (Owner.TimeAxis.Current == (currentAction.Begin + currentAction.Duration))
-				{
-					var executorProxy = (ITurnExecutor?)Owner.CreateProxy(currentAction.Executor);
-					executorProxy?.Execute();
-					CurrentAction = null;
-				}
-			}
-
 			foreach (var scheduler in Schedulers.Select(Owner.CreateProxy).Cast<ISchedulerRunnerProxy>())
 			{
 				scheduler.OnTick();
@@ -71,28 +58,21 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 		}
 
-		public void SetCourse(Course course)
+		public void SetCourse(Course? course)
 		{
-			var factor = course.GetFactor();
-
-			if (Schedulers.Select(x => x.Scheduler).OfType<SchedulerVector>().SelectMany(x => x.Vectors).FirstOrDefault(x => x.Name == "Control") is { } controlVector)
+			if (course is { })
 			{
-				var offset = course.ToOffset();
-				var vector = new Vector2(offset.X, offset.Y) * Speed;
-				controlVector.Value = vector;
+
 			}
 
-			// TODO Удалить после доработки планировщиков
-			//CurrentAction = new Action()
-			//{
-			//	Begin = Owner.TimeAxis.Current,
-			//	Duration = factor * Speed,
-			//	Executor = new SetCourse()
-			//	{
-			//		Collided = Body,
-			//		Course = course,
-			//	},
-			//};
+			if (Target.GetControlVector() is { } controlVector)
+			{
+				var offset = course?.ToOffset() ?? Point.Empty;
+				var vector = new Vector2(offset.X, offset.Y) * Speed;
+
+				var controlVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(controlVector);
+				controlVectorProxy.Value = vector;
+			}
 		}
 
 		public int Speed { get => Target.Speed; set => SetValue(x => x.Speed, value); }

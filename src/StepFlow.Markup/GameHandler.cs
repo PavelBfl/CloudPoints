@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.Metrics;
 using System.Drawing;
+using System.Numerics;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
@@ -110,12 +111,9 @@ namespace StepFlow.Markup
 			});
 		}
 
-		private void PlayerCharacterSetCourse(Course course)
+		private void PlayerCharacterSetCourse(Course? course)
 		{
-			if (PlayMaster.Playground.PlayerCharacter is { CurrentAction: null })
-			{
-				PlayMaster.PlayerCharacterSetCourse.Execute(new() { Course = course, });
-			}
+			PlayMaster.PlayerCharacterSetCourse.Execute(new() { Course = course, });
 		}
 
 		private void CreateProjectile(Course course)
@@ -163,10 +161,7 @@ namespace StepFlow.Markup
 				{
 					var transaction = PlayMaster.TimeAxis.BeginTransaction();
 
-					if (Keyboard.GetPlayerCourse() is { } playerCourse)
-					{
-						PlayerCharacterSetCourse(playerCourse);
-					}
+					PlayerCharacterSetCourse(Keyboard.GetPlayerCourse());
 
 					if (Keyboard.GetPlayerShot() is { } playerShot)
 					{
