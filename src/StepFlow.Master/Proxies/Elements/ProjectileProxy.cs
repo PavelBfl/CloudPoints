@@ -9,7 +9,7 @@ namespace StepFlow.Master.Proxies.Elements
 	{
 		Subject? Creator { get; set; }
 
-		Damage? Damage { get; set; }
+		Damage Damage { get; set; }
 	}
 
 	internal sealed class ProjectileProxy : MaterialProxy<Projectile>, IProjectileProxy
@@ -20,7 +20,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public Subject? Creator { get => Target.Creator; set => SetValue(x => x.Creator, value); }
 
-		public Damage? Damage { get => Target.Damage; set => SetValue(x => x.Damage, value); }
+		public Damage Damage { get => Target.Damage; set => SetValue(x => x.Damage, value); }
 
 		public override void Collision(Collided thisCollided, Material otherMaterial, Collided otherCollided)
 		{

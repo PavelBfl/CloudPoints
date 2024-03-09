@@ -202,7 +202,7 @@ namespace StepFlow.Markup
 
 			foreach (var projectile in playground.Projectiles)
 			{
-				var textureName = projectile.Damage?.Kind switch
+				var textureName = projectile.Damage.Kind switch
 				{
 					DamageKind.None => Texture.Projectile,
 					DamageKind.Fire => Texture.ProjectileFire,

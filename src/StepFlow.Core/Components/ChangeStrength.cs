@@ -6,6 +6,6 @@ namespace StepFlow.Core.Components
 	{
 		public Material? Material { get; set; }
 
-		public Damage? Damage { get; set; }
+		public Damage Damage { get; set; }
 	}
 }

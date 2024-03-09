@@ -20,6 +20,8 @@ namespace StepFlow.Master.Proxies.Components
 
 		public Course Course { get => Target.Course; set => SetValue(x => x.Course, value); }
 
+		Subject IProxyBase<Subject>.Target => throw new System.NotImplementedException();
+
 		public void Execute()
 		{
 			if (Collided is { Current: { } current })
@@ -32,7 +34,5 @@ namespace StepFlow.Master.Proxies.Components
 				collidedProxy.IsMove = true;
 			}
 		}
-
-		Subject IReadOnlyProxyBase<Subject>.Target => Target;
 	}
 }

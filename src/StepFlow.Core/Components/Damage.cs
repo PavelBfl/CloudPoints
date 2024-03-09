@@ -7,7 +7,7 @@
 		Poison = 2,
 	}
 
-	public sealed class Damage : ComponentBase
+	public struct Damage
 	{
 		public int Value { get; set; }
 

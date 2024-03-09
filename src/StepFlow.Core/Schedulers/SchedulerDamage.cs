@@ -7,6 +7,6 @@ namespace StepFlow.Core.Schedulers
 	{
 		public Material? Material { get; set; }
 
-		public Damage? Damage { get; set; }
+		public Damage Damage { get; set; }
 	}
 }

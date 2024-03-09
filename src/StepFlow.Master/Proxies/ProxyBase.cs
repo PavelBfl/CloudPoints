@@ -7,13 +7,18 @@ using StepFlow.Master.Proxies.Collections;
 
 namespace StepFlow.Master.Proxies
 {
-	internal class ProxyBase<TTarget> : ReadOnlyBaseProxy<TTarget>, IProxyBase<TTarget>
+	internal class ProxyBase<TTarget> : IProxyBase<TTarget>
 		where TTarget : class
 	{
 		public ProxyBase(PlayMaster owner, TTarget target)
-			: base(owner, target)
 		{
+			Owner = owner ?? throw new ArgumentNullException(nameof(owner));
+			Target = target ?? throw new ArgumentNullException(nameof(target));
 		}
+
+		public PlayMaster Owner { get; }
+
+		public TTarget Target { get; }
 
 		protected bool SetValue<TValue>(Expression<Func<TTarget, TValue>> expression, TValue newValue, [CallerMemberName] string? propertyName = null)
 		{

@@ -17,9 +17,7 @@ namespace StepFlow.Core.Elements
 	{
 		public ItemKind Kind { get; set; }
 
-		private Damage? damageSetting;
-
-		public Damage? DamageSetting { get => damageSetting; set => SetComponent(ref damageSetting, value); }
+		public Damage DamageSetting { get; set; }
 
 		public int AttackCooldown { get; set; }
 

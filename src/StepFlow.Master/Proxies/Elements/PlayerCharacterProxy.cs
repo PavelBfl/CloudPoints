@@ -141,11 +141,8 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			foreach (var settings in Target.Items.Select(x => x.DamageSetting))
 			{
-				if (settings is { })
-				{
-					value += settings.Value;
-					kind |= settings.Kind;
-				}
+				value += settings.Value;
+				kind |= settings.Kind;
 			}
 
 			return new Damage()
