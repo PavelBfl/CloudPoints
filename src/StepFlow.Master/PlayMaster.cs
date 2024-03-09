@@ -29,6 +29,7 @@ namespace StepFlow.Master
 			AddExecutor(CreateProjectile = new CreateProjectile(this));
 			AddExecutor(CreateItem = new CreateItem(this));
 			AddExecutor(CreateEnemy = new CreateEnemy(this));
+			AddExecutor(CreatePlace = new CreatePlace(this));
 		}
 
 		private readonly Dictionary<string, Executor> executors = new Dictionary<string, Executor>();
@@ -50,6 +51,8 @@ namespace StepFlow.Master
 		public CreateItem CreateItem { get; }
 
 		public CreateEnemy CreateEnemy { get; }
+
+		public CreatePlace CreatePlace { get; }
 
 
 		public TransactionAxis TimeAxis { get; } = new TransactionAxis();
@@ -74,7 +77,6 @@ namespace StepFlow.Master
 				Item instance => new ItemProxy(this, instance),
 				Enemy instance => new EnemyProxy(this, instance),
 				Collided instance => new CollidedProxy(this, instance),
-				Core.Components.Action instance => new ActionProxy(this, instance),
 				Intersection.Context instance => new ContextProxy(this, instance),
 				Intersection.ShapeCell instance => new ShapeCellProxy(this, instance),
 				Intersection.ShapeContainer instance => new ShapeContainerProxy(this, instance),
@@ -85,6 +87,9 @@ namespace StepFlow.Master
 				SchedulerUnion instance => new SchedulerUnionProxy(this, instance),
 				SchedulerRunner instance => new SchedulerRunnerProxy(this, instance),
 				CourseVector instance => new CourseVectorProxy(this, instance),
+				Place instance => new PlaceProxy(this, instance),
+				SchedulerDamage instance => new SchedulerDamageProxy(this, instance),
+				ChangeStrength instance => new ChangeStrengthProxy(this, instance),
 				null => null,
 				_ => throw new InvalidOperationException(),
 			};

@@ -27,6 +27,7 @@ namespace StepFlow.Master.Proxies.Elements
 		void SetCourse(Course? course);
 
 		void Collision(Collided thisCollided, Material otherMaterial, Collided otherCollided);
+		void ChangeStrength(Damage damage);
 	}
 
 	internal class MaterialProxy<TTarget> : ProxyBase<TTarget>, IMaterialProxy<TTarget>
@@ -37,6 +38,14 @@ namespace StepFlow.Master.Proxies.Elements
 		}
 
 		public Scale? Strength { get => Target.Strength; protected set => SetValue(x => x.Strength, value); }
+
+		public virtual void ChangeStrength(Damage damage)
+		{
+			if ((IScaleProxy?)Owner.CreateProxy(Strength) is { } strengthProxy)
+			{
+				strengthProxy.Add(-damage.Value);
+			}
+		}
 
 		public Collided Body { get => Target.Body; }
 

@@ -23,6 +23,7 @@ namespace StepFlow.Master.Proxies
 		void CreatePlayerCharacter(Rectangle bounds, int strength);
 		void CreateEnemy(Rectangle bounds, Rectangle vision, ItemKind releaseItem);
 		void CreateItem(Point position, ItemKind kind);
+		void CreatePlace(Rectangle bounds);
 	}
 
 	internal sealed class PlaygroundProxy : ProxyBase<Playground>, IPlaygroundProxy
@@ -237,6 +238,20 @@ namespace StepFlow.Master.Proxies
 
 			var itemsProxy = CreateListProxy(Items);
 			itemsProxy.Add(item.Target);
+		}
+
+		public void CreatePlace(Rectangle bounds)
+		{
+			var place = new Place()
+			{
+				Body = new Collided()
+				{
+					Current = new ShapeCell(Owner.Playground.IntersectionContext, bounds),
+				},
+			};
+
+			var placesProxy = CreateListProxy(Owner.Playground.Places);
+			placesProxy.Add(place);
 		}
 	}
 }

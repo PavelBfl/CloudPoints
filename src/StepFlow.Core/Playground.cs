@@ -18,11 +18,14 @@ namespace StepFlow.Core
 
 		public IList<Enemy> Enemies { get; } = new List<Enemy>();
 
+		public IList<Place> Places { get; } = new List<Place>();
+
 		public IEnumerable<Material> GetMaterials()
 			=> (PlayerCharacter is null ? Enumerable.Empty<Material>() : new Material[] { PlayerCharacter })
 				.Concat(Obstructions)
 				.Concat(Projectiles)
 				.Concat(Items)
-				.Concat(Enemies);
+				.Concat(Enemies)
+				.Concat(Places);
 	}
 }

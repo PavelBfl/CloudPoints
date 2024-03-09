@@ -49,6 +49,8 @@ namespace StepFlow.Markup
 			PlayMaster.CreateItem.Execute(new() { X = 340, Y = 50, Kind = ItemKind.AttackSpeed });
 			PlayMaster.CreateItem.Execute(new() { X = 410, Y = 50, Kind = ItemKind.AddStrength });
 
+			PlayMaster.CreatePlace.Execute(new() { Bounds = new(400, 150, 50, 50) });
+
 			CreateEnemy(new(50, 180, 20, 20), 50);
 			CreateEnemy(new(200, 180, 20, 20), 50);
 
@@ -188,7 +190,7 @@ namespace StepFlow.Markup
 				}
 			}
 
-			var playground = PlayMaster.GetPlaygroundProxy();
+			var playground = PlayMaster.Playground;
 
 			CreateTexture(playground.PlayerCharacter?.Body, Texture.Character, playground.PlayerCharacter?.Strength);
 			CreateBorder(playground.PlayerCharacter?.Body, Color.Red);
@@ -231,6 +233,11 @@ namespace StepFlow.Markup
 				CreateBorder(enemy.Body, Color.Red);
 				CreateBorder(enemy.Vision, Color.Yellow);
 			}
+
+			foreach (var place in playground.Places)
+			{
+				CreateTexture(place.Body, Texture.Wall, null);
+			}
 		}
 
 		private void CreateTexture(Collided? collided, Texture texture, Scale? strength)
@@ -240,11 +247,17 @@ namespace StepFlow.Markup
 				Drawer.Draw(texture, current.Bounds);
 				if (strength is not null)
 				{
+					var strengthBounds = new Rectangle(
+						current.Bounds.Left,
+						current.Bounds.Top,
+						current.Bounds.Width,
+						0
+					);
 					Drawer.DrawString(
 						strength.Value.ToString(),
-						current.Bounds,
+						strengthBounds,
 						HorizontalAlign.Center,
-						VerticalAlign.Center,
+						VerticalAlign.Bottom,
 						Color.Red
 					);
 				}
