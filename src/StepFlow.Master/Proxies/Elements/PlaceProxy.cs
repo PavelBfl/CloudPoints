@@ -29,7 +29,7 @@ namespace StepFlow.Master.Proxies.Elements
 					Name = Place.PLACE_SCHEDULER,
 					Range = new Scale()
 					{
-						Max = 2000,
+						Max = TimeTick.FromSeconds(2),
 					},
 					Source = new SchedulerDamage()
 					{

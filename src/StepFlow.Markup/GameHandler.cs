@@ -148,10 +148,9 @@ namespace StepFlow.Markup
 
 		public void Update()
 		{
-			const int TICKS_COUNT = 100;
 			if (Keyboard.IsUndo())
 			{
-				for (var i = 0; i < TICKS_COUNT; i++)
+				for (var i = 0; i < TimeTick.TICKS_PER_FRAME; i++)
 				{
 					PlayMaster.TimeAxis.Revert();
 				}
@@ -159,7 +158,7 @@ namespace StepFlow.Markup
 			else
 			{
 				var sw = System.Diagnostics.Stopwatch.StartNew();
-				for (var i = 0; i < TICKS_COUNT; i++)
+				for (var i = 0; i < TimeTick.TICKS_PER_FRAME; i++)
 				{
 					var transaction = PlayMaster.TimeAxis.BeginTransaction();
 
@@ -191,6 +190,11 @@ namespace StepFlow.Markup
 			}
 
 			var playground = PlayMaster.Playground;
+
+			foreach (var place in playground.Places)
+			{
+				CreateTexture(place.Body, Texture.Wall, null);
+			}
 
 			CreateTexture(playground.PlayerCharacter?.Body, Texture.Character, playground.PlayerCharacter?.Strength);
 			CreateBorder(playground.PlayerCharacter?.Body, Color.Red);
@@ -232,11 +236,6 @@ namespace StepFlow.Markup
 				CreateTexture(enemy.Body, Texture.Enemy, enemy.Strength);
 				CreateBorder(enemy.Body, Color.Red);
 				CreateBorder(enemy.Vision, Color.Yellow);
-			}
-
-			foreach (var place in playground.Places)
-			{
-				CreateTexture(place.Body, Texture.Wall, null);
 			}
 		}
 
