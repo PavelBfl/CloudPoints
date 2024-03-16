@@ -18,7 +18,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public override void Collision(Collided thisCollided, Material otherMaterial, Collided otherCollided)
 		{
-			var placeSceduler = otherMaterial.Schedulers
+			var placeSceduler = (SchedulerLimit?)otherMaterial.Schedulers
 				.Select(x => x.Scheduler)
 				.SingleOrDefault(x => x.Name == Place.PLACE_SCHEDULER);
 
@@ -29,7 +29,7 @@ namespace StepFlow.Master.Proxies.Elements
 					Name = Place.PLACE_SCHEDULER,
 					Range = new Scale()
 					{
-						Max = TimeTick.FromSeconds(2),
+						Max = 1,
 					},
 					Source = new SchedulerDamage()
 					{
@@ -47,7 +47,10 @@ namespace StepFlow.Master.Proxies.Elements
 				});
 			}
 
-			((SchedulerLimit)placeSceduler).Range.Value = 0;
+			if (placeSceduler.Current is null)
+			{
+				placeSceduler.Range.Value = 0;
+			}
 		}
 	}
 }

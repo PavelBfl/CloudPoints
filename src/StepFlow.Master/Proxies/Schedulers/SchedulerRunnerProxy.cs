@@ -19,7 +19,7 @@ namespace StepFlow.Master.Proxies.Schedulers
 		{
 		}
 
-		public Turn? Current { get => Target.Current; set => SetValue(x => x.Current, value); }
+		public Turn? Current { get => Target.Current; set => SetValue(value, nameof(Target.Current)); }
 
 		public Scheduler? Scheduler { get => Target.Scheduler; set => SetValue(x => x.Scheduler, value); }
 

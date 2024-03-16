@@ -4,7 +4,9 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using StepFlow.Core.Commands.Accessors;
 using StepFlow.Core.Components;
+using StepFlow.Master.Commands;
 using StepFlow.Master.Proxies.Collections;
+using StepFlow.TimeLine;
 
 namespace StepFlow.Master.Proxies
 {
@@ -21,7 +23,12 @@ namespace StepFlow.Master.Proxies
 
 		public TTarget Target { get; }
 
+		// TODO Избавится от статического кеша
 		private static Dictionary<(Type, string), object> AccessorsCache { get; } = new Dictionary<(Type, string), object>();
+
+		private static Dictionary<(TTarget, IValueAccessor<TTarget, Turn?>), ICommand> Increments { get; } = new Dictionary<(TTarget, IValueAccessor<TTarget, Turn?>), ICommand>();
+
+		private static Dictionary<(TTarget, IValueAccessor<TTarget, Turn?>), ICommand> Decrements { get; } = new Dictionary<(TTarget, IValueAccessor<TTarget, Turn?>), ICommand>();
 
 		private static IValueAccessor<TTarget, TValue> GetAccessor<TValue>(string propertyName)
 		{
@@ -36,6 +43,40 @@ namespace StepFlow.Master.Proxies
 			}
 
 			return (IValueAccessor<TTarget, TValue>)accessor;
+		}
+
+		protected bool SetValue(Turn? newValue, [CallerMemberName] string? propertyName = null)
+		{
+			var accessor = GetAccessor<Turn?>(propertyName);
+
+			var oldValue = accessor.GetValue(Target);
+			if (newValue is { } newValueInstance && oldValue is { } oldValueInstance && newValueInstance.Executor == oldValueInstance.Executor)
+			{
+				if (newValueInstance.Duration == oldValueInstance.Duration - 1)
+				{
+					if (!Decrements.TryGetValue((Target, accessor), out var decrementCommand))
+					{
+						decrementCommand = new TurnDecrementCommand<TTarget>(Target, accessor);
+						Decrements.Add((Target, accessor), decrementCommand);
+					}
+
+					Owner.TimeAxis.Add(decrementCommand);
+					return true;
+				}
+				else if (newValueInstance.Duration == oldValueInstance.Duration + 1)
+				{
+					if (!Increments.TryGetValue((Target, accessor), out var incrementCommand))
+					{
+						incrementCommand = new TurnIncrementCommand<TTarget>(Target, accessor);
+						Increments.Add((Target, accessor), incrementCommand);
+					}
+
+					Owner.TimeAxis.Add(incrementCommand);
+					return true;
+				}
+			}
+
+			return SetValue<Turn?>(newValue, propertyName);
 		}
 
 		protected bool SetValue<TValue>(TValue newValue, [CallerMemberName] string? propertyName = null)

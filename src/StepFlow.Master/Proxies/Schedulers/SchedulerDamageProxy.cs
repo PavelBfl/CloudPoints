@@ -22,7 +22,7 @@ namespace StepFlow.Master.Proxies.Schedulers
 		public override void Next()
 		{
 			Current = new Turn(
-				6000,
+				TimeTick.FromSeconds(1),
 				new ChangeStrength()
 				{
 					Damage = Damage,
