@@ -37,6 +37,16 @@ namespace StepFlow.Core.Commands.Accessors
 
 			var propertyInfo = GetPropertyInfo(expression);
 
+			return CreatePropertyAccessor<TTarget, TValue>(propertyInfo);
+		}
+
+		public static IValueAccessor<TTarget, TValue> CreatePropertyAccessor<TTarget, TValue>(PropertyInfo propertyInfo)
+		{
+			if (propertyInfo is null)
+			{
+				throw new ArgumentNullException(nameof(propertyInfo));
+			}
+
 			var getter = propertyInfo.GetGetMethod() ?? throw new InvalidOperationException();
 			var setter = propertyInfo.GetSetMethod() ?? throw new InvalidOperationException();
 
