@@ -2,6 +2,7 @@
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.Schedulers;
+using StepFlow.Master.Proxies.Components;
 
 namespace StepFlow.Master.Proxies.Elements
 {
@@ -18,13 +19,13 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public override void Collision(Collided thisCollided, Material otherMaterial, Collided otherCollided)
 		{
-			var placeSceduler = (SchedulerLimit?)otherMaterial.Schedulers
+			var placeScheduler = (SchedulerLimit?)otherMaterial.Schedulers
 				.Select(x => x.Scheduler)
 				.SingleOrDefault(x => x.Name == Place.PLACE_SCHEDULER);
 
-			if (placeSceduler is null)
+			if (placeScheduler is null)
 			{
-				placeSceduler = new SchedulerLimit()
+				placeScheduler = new SchedulerLimit()
 				{
 					Name = Place.PLACE_SCHEDULER,
 					Range = new Scale()
@@ -43,13 +44,14 @@ namespace StepFlow.Master.Proxies.Elements
 
 				otherMaterial.Schedulers.Add(new SchedulerRunner()
 				{
-					Scheduler = placeSceduler,
+					Scheduler = placeScheduler,
 				});
 			}
 
-			if (placeSceduler.Current is null)
+			if (placeScheduler.Current is null)
 			{
-				placeSceduler.Range.Value = 0;
+				var rangeProxy = (IScaleProxy?)Owner.CreateProxy(placeScheduler.Range);
+				rangeProxy.Value = 0;
 			}
 		}
 	}

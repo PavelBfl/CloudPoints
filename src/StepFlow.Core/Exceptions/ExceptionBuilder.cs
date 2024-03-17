@@ -1,4 +1,6 @@
-﻿namespace StepFlow.Core.Exceptions
+﻿using System;
+
+namespace StepFlow.Core.Exceptions
 {
 	internal static class ExceptionBuilder
 	{
@@ -24,5 +26,7 @@
 		internal static CoreException CreateParticleCanNotInteraction() => new CoreException("Particle can not for interaction.");
 
 		internal static CoreException CreatePairParticlesCanNotInteraction() => new CoreException("Pair particles can not for interaction.");
+
+		internal static Exception CreatePropertyIsNull(string? propertyName) => new PropertyNullException(propertyName);
 	}
 }

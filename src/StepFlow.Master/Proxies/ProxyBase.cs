@@ -24,30 +24,19 @@ namespace StepFlow.Master.Proxies
 		public TTarget Target { get; }
 
 		// TODO Избавится от статического кеша
-		private static Dictionary<(Type, string), object> AccessorsCache { get; } = new Dictionary<(Type, string), object>();
 
 		private static Dictionary<(TTarget, IValueAccessor<TTarget, Turn?>), ICommand> Increments { get; } = new Dictionary<(TTarget, IValueAccessor<TTarget, Turn?>), ICommand>();
 
 		private static Dictionary<(TTarget, IValueAccessor<TTarget, Turn?>), ICommand> Decrements { get; } = new Dictionary<(TTarget, IValueAccessor<TTarget, Turn?>), ICommand>();
 
-		private static IValueAccessor<TTarget, TValue> GetAccessor<TValue>(string propertyName)
-		{
-			var key = (typeof(TTarget), propertyName);
-			if (!AccessorsCache.TryGetValue(key, out var accessor))
-			{
-				var propertyInfo = typeof(TTarget).GetProperty(propertyName);
-
-				accessor = AccessorsExtensions.CreatePropertyAccessor<TTarget, TValue>(propertyInfo);
-
-				AccessorsCache.Add(key, accessor);
-			}
-
-			return (IValueAccessor<TTarget, TValue>)accessor;
-		}
-
 		protected bool SetValue(Turn? newValue, [CallerMemberName] string? propertyName = null)
 		{
-			var accessor = GetAccessor<Turn?>(propertyName);
+			if (propertyName is null)
+			{
+				throw new ArgumentNullException(nameof(propertyName));
+			}
+
+			var accessor = Owner.GetAccessor<TTarget, Turn?>(propertyName);
 
 			var oldValue = accessor.GetValue(Target);
 			if (newValue is { } newValueInstance && oldValue is { } oldValueInstance && newValueInstance.Executor == oldValueInstance.Executor)
@@ -81,7 +70,7 @@ namespace StepFlow.Master.Proxies
 
 		protected bool SetValue<TValue>(TValue newValue, [CallerMemberName] string? propertyName = null)
 		{
-			var accessor = GetAccessor<TValue>(propertyName);
+			var accessor = Owner.GetAccessor<TTarget, TValue>(propertyName);
 
 			var change = !EqualityComparer<TValue>.Default.Equals(accessor.GetValue(Target), newValue);
 			if (change)

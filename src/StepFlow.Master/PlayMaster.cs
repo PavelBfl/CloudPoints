@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using StepFlow.Core;
+using StepFlow.Core.Commands.Accessors;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.Schedulers;
@@ -12,6 +13,7 @@ using StepFlow.Master.Proxies.Elements;
 using StepFlow.Master.Proxies.Intersection;
 using StepFlow.Master.Proxies.Schedulers;
 using StepFlow.Master.Scripts;
+using StepFlow.TimeLine;
 using StepFlow.TimeLine.Transactions;
 
 namespace StepFlow.Master
@@ -32,6 +34,7 @@ namespace StepFlow.Master
 			AddExecutor(CreatePlace = new CreatePlace(this));
 		}
 
+		#region Executors
 		private readonly Dictionary<string, Executor> executors = new Dictionary<string, Executor>();
 
 		private void AddExecutor(Executor executor) => executors.Add(executor.Name, executor);
@@ -54,6 +57,9 @@ namespace StepFlow.Master
 
 		public CreatePlace CreatePlace { get; }
 
+		public void Execute(string commandName, IReadOnlyDictionary<string, object>? parameters = null)
+			=> Executors[commandName].Execute(parameters); 
+		#endregion
 
 		public TransactionAxis TimeAxis { get; } = new TransactionAxis();
 
@@ -130,7 +136,25 @@ namespace StepFlow.Master
 			}
 		}
 
-		public void Execute(string commandName, IReadOnlyDictionary<string, object>? parameters = null)
-			=> Executors[commandName].Execute(parameters);
+		#region Accessors
+
+		private Dictionary<(Type, string), object> AccessorsCache { get; } = new Dictionary<(Type, string), object>();
+
+		public IValueAccessor<TTarget, TValue> GetAccessor<TTarget, TValue>(string propertyName)
+		{
+			var key = (typeof(TTarget), propertyName);
+			if (!AccessorsCache.TryGetValue(key, out var accessor))
+			{
+				var propertyInfo = typeof(TTarget).GetProperty(propertyName);
+
+				accessor = AccessorsExtensions.CreatePropertyAccessor<TTarget, TValue>(propertyInfo);
+
+				AccessorsCache.Add(key, accessor);
+			}
+
+			return (IValueAccessor<TTarget, TValue>)accessor;
+		}
+
+		#endregion
 	}
 }
