@@ -23,12 +23,6 @@ namespace StepFlow.Master.Proxies
 
 		public TTarget Target { get; }
 
-		// TODO Избавится от статического кеша
-
-		private static Dictionary<(TTarget, IValueAccessor<TTarget, Turn?>), ICommand> Increments { get; } = new Dictionary<(TTarget, IValueAccessor<TTarget, Turn?>), ICommand>();
-
-		private static Dictionary<(TTarget, IValueAccessor<TTarget, Turn?>), ICommand> Decrements { get; } = new Dictionary<(TTarget, IValueAccessor<TTarget, Turn?>), ICommand>();
-
 		protected bool SetValue(Turn? newValue, [CallerMemberName] string? propertyName = null)
 		{
 			if (propertyName is null)
@@ -43,24 +37,14 @@ namespace StepFlow.Master.Proxies
 			{
 				if (newValueInstance.Duration == oldValueInstance.Duration - 1)
 				{
-					if (!Decrements.TryGetValue((Target, accessor), out var decrementCommand))
-					{
-						decrementCommand = new TurnDecrementCommand<TTarget>(Target, accessor);
-						Decrements.Add((Target, accessor), decrementCommand);
-					}
-
-					Owner.TimeAxis.Add(decrementCommand);
+					var command = Owner.GetDecrement(Target, accessor);
+					Owner.TimeAxis.Add(command);
 					return true;
 				}
 				else if (newValueInstance.Duration == oldValueInstance.Duration + 1)
 				{
-					if (!Increments.TryGetValue((Target, accessor), out var incrementCommand))
-					{
-						incrementCommand = new TurnIncrementCommand<TTarget>(Target, accessor);
-						Increments.Add((Target, accessor), incrementCommand);
-					}
-
-					Owner.TimeAxis.Add(incrementCommand);
+					var command = Owner.GetIncrement(Target, accessor);
+					Owner.TimeAxis.Add(command);
 					return true;
 				}
 			}
@@ -70,6 +54,11 @@ namespace StepFlow.Master.Proxies
 
 		protected bool SetValue<TValue>(TValue newValue, [CallerMemberName] string? propertyName = null)
 		{
+			if (propertyName is null)
+			{
+				throw new ArgumentNullException(nameof(propertyName));
+			}
+
 			var accessor = Owner.GetAccessor<TTarget, TValue>(propertyName);
 
 			var change = !EqualityComparer<TValue>.Default.Equals(accessor.GetValue(Target), newValue);
