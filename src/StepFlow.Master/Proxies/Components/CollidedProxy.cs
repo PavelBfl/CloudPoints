@@ -41,12 +41,12 @@ namespace StepFlow.Master.Proxies.Components
 		{
 		}
 
-		public ShapeBase? Current { get => Target.Current; set => SetValue(x => x.Current, value); }
+		public ShapeBase? Current { get => Target.Current; set => SetValue(value); }
 
-		public ShapeBase? Next { get => Target.Next; set => SetValue(x => x.Next, value); }
+		public ShapeBase? Next { get => Target.Next; set => SetValue(value); }
 
-		public bool IsMove { get => Target.IsMove; set => SetValue(x => x.IsMove, value); }
+		public bool IsMove { get => Target.IsMove; set => SetValue(value); }
 
-		public bool IsRigid { get => Target.IsRigid; set => SetValue(x => x.IsRigid, value); }
+		public bool IsRigid { get => Target.IsRigid; set => SetValue(value); }
 	}
 }

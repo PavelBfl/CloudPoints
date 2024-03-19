@@ -20,12 +20,12 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 		}
 
-		public ItemKind Kind { get => Target.Kind; set => SetValue(x => x.Kind, value); }
+		public ItemKind Kind { get => Target.Kind; set => SetValue(value); }
 
-		public Damage? DamageSettings { get => Target.DamageSetting; set => SetValue(x => x.DamageSetting, value); }
+		public Damage? DamageSettings { get => Target.DamageSetting; set => SetValue(value); }
 
-		public int AttackCooldown { get => Target.AttackCooldown; set => SetValue(x => x.AttackCooldown, value); }
+		public int AttackCooldown { get => Target.AttackCooldown; set => SetValue(value); }
 
-		public int AddStrength { get => Target.AddStrength; set => SetValue(x => x.AddStrength, value); }
+		public int AddStrength { get => Target.AddStrength; set => SetValue(value); }
 	}
 }

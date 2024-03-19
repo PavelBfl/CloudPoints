@@ -19,8 +19,9 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public override void Collision(Collided thisCollided, Material otherMaterial, Collided otherCollided)
 		{
-			var placeScheduler = (SchedulerLimit?)otherMaterial.Schedulers
+			var placeScheduler = otherMaterial.Schedulers
 				.Select(x => x.Scheduler)
+				.OfType<SchedulerLimit>()
 				.SingleOrDefault(x => x.Name == Place.PLACE_SCHEDULER);
 
 			if (placeScheduler is null)
@@ -50,7 +51,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 			if (placeScheduler.Current is null)
 			{
-				var rangeProxy = (IScaleProxy?)Owner.CreateProxy(placeScheduler.Range);
+				var rangeProxy = (IScaleProxy)Owner.CreateProxy(placeScheduler.GetRangeRequired());
 				rangeProxy.Value = 0;
 			}
 		}

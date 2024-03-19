@@ -16,6 +16,6 @@ namespace StepFlow.Master.Proxies.Components
 		{
 		}
 
-		public ElementBase? Element { get => Target.Element; set => SetValue(x => x.Element, value); }
+		public ElementBase? Element { get => Target.Element; set => SetValue(value); }
 	}
 }

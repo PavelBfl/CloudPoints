@@ -10,6 +10,8 @@ namespace StepFlow.Core
 
 		public PlayerCharacter? PlayerCharacter { get; set; }
 
+		public PlayerCharacter GetPlayerCharacterRequired() => PropertyRequired(PlayerCharacter, nameof(PlayerCharacter));
+
 		public IList<Obstruction> Obstructions { get; } = new List<Obstruction>();
 
 		public IList<Projectile> Projectiles { get; } = new List<Projectile>();

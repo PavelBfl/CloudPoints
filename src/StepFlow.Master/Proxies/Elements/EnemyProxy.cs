@@ -19,9 +19,9 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 		}
 
-		public Collided Vision => Target.Vision;
+		public Collided Vision => Target.GetVisionRequired();
 
-		public Scale Cooldown => Target.Cooldown;
+		public Scale Cooldown => Target.GetCooldownRequired();
 
 		public override void OnTick()
 		{
@@ -32,7 +32,7 @@ namespace StepFlow.Master.Proxies.Elements
 				var enemiesProxy = CreateListProxy(Owner.Playground.Enemies);
 				enemiesProxy.Remove(Target);
 
-				var itemPosition = Body.Current.Bounds.GetCenter();
+				var itemPosition = Body.GetCurrentRequired().Bounds.GetCenter();
 				Owner.CreateItem.Execute(new Scripts.CreateItem.Parameters()
 				{
 					X = itemPosition.X,
@@ -63,13 +63,13 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			if (Cooldown.Value == 0)
 			{
-				var border = Body.Current.Bounds;
+				var border = Body.GetCurrentRequired().Bounds;
 				var center = new Point(
 					border.X + border.Width / 2,
 					border.Y + border.Height / 2
 				);
 
-				var otherBorder = other.Body.Current.Bounds;
+				var otherBorder = other.GetBodyRequired().GetCurrentRequired().Bounds;
 				var otherCenter = new Point(
 					otherBorder.X + otherBorder.Width / 2,
 					otherBorder.Y + otherBorder.Height / 2

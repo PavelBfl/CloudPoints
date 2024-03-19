@@ -15,7 +15,7 @@ namespace StepFlow.Master.Proxies.Components
 		{
 		}
 
-		public Projectile? Projectile { get => Target.Projectile; set => SetValue(x => x.Projectile, value); }
+		public Projectile? Projectile { get => Target.Projectile; set => SetValue(value); }
 
 		Subject IProxyBase<Subject>.Target => Target;
 

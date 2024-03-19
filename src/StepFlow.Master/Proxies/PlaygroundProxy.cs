@@ -34,7 +34,7 @@ namespace StepFlow.Master.Proxies
 
 		public IContextProxy IntersectionContext => (IContextProxy)Owner.CreateProxy(Target.IntersectionContext);
 
-		public PlayerCharacter? PlayerCharacter { get => Target.PlayerCharacter; set => SetValue(x => x.PlayerCharacter, value); }
+		public PlayerCharacter? PlayerCharacter { get => Target.PlayerCharacter; set => SetValue(value); }
 
 		public IList<Obstruction> Obstructions => Target.Obstructions;
 

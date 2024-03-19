@@ -25,6 +25,8 @@ namespace StepFlow.Core.Components
 
 		public ShapeBase? Current { get => current; set => SetShape(ref current, value); }
 
+		public ShapeBase GetCurrentRequired() => PropertyRequired(Current, nameof(Current));
+
 		private ShapeBase? next;
 
 		public ShapeBase? Next { get => next; set => SetShape(ref next, value); }

@@ -1,4 +1,5 @@
-﻿using StepFlow.Core.Components;
+﻿using StepFlow.Core;
+using StepFlow.Core.Components;
 using StepFlow.Core.Schedulers;
 using StepFlow.Master.Proxies.Components;
 
@@ -15,9 +16,9 @@ namespace StepFlow.Master.Proxies.Schedulers
 		{
 		}
 
-		public Scheduler? Source { get => Target.Source; set => SetValue(x => x.Source, value); }
+		public Scheduler Source { get => Target.GetSourceRequired(); set => SetValue(Subject.PropertyRequired(value, nameof(Target.Source))); }
 
-		public Scale? Range { get => Target.Range; set => SetValue(x => x.Range, value); }
+		public Scale Range { get => Target.GetRangeRequired(); set => SetValue(Subject.PropertyRequired(value, nameof(Target.Range))); }
 
 		public override void Next()
 		{

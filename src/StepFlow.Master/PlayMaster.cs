@@ -116,10 +116,10 @@ namespace StepFlow.Master
 				if (collision.Left.Attached is { } leftAttached && collision.Right.Attached is { } rightAttached)
 				{
 					var leftCollided = (Collided)leftAttached;
-					var leftMaterial = (IMaterialProxy<Material>)CreateProxy(leftCollided.Element);
+					var leftMaterial = (IMaterialProxy<Material>)CreateProxy(leftCollided.GetElementRequired());
 
 					var rightCollided = (Collided)rightAttached;
-					var rightMaterial = (IMaterialProxy<Material>)CreateProxy(rightCollided.Element);
+					var rightMaterial = (IMaterialProxy<Material>)CreateProxy(rightCollided.GetElementRequired());
 
 					leftMaterial.Collision(leftCollided, rightMaterial.Target, rightCollided);
 					rightMaterial.Collision(rightCollided, leftMaterial.Target, leftCollided);

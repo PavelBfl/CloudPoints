@@ -1,5 +1,4 @@
-﻿using System.Buffers;
-using StepFlow.Core;
+﻿using StepFlow.Core;
 using StepFlow.Master.Proxies.Elements;
 
 namespace StepFlow.Master.Scripts
@@ -12,7 +11,7 @@ namespace StepFlow.Master.Scripts
 
 		public override void Execute(Parameters parameters)
 		{
-			var playerCharacterProxy = (IPlayerCharacterProxy?)PlayMaster.CreateProxy(PlayMaster.Playground.PlayerCharacter);
+			var playerCharacterProxy = (IPlayerCharacterProxy)PlayMaster.CreateProxy(PlayMaster.Playground.GetPlayerCharacterRequired());
 			playerCharacterProxy.CreateProjectile(parameters.Course);
 		}
 

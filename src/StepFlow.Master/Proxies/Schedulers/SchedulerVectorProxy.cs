@@ -16,11 +16,11 @@ namespace StepFlow.Master.Proxies.Schedulers
 		{
 		}
 
-		public Collided Collided { get => Target.Collided; set => SetValue(x => x.Collided, value); }
+		public Collided Collided { get => Target.GetCollidedRequired(); set => SetValue(Subject.PropertyRequired(value, nameof(Target.Collided))); }
 
-		public Vector2 CorrectVector { get => Target.CorrectVector; set => SetValue(x => x.CorrectVector, value); }
+		public Vector2 CorrectVector { get => Target.CorrectVector; set => SetValue(value); }
 
-		public int IndexCourse { get => Target.IndexCourse; set => SetValue(x => x.IndexCourse, value); }
+		public int IndexCourse { get => Target.IndexCourse; set => SetValue(value); }
 
 		public override void Next()
 		{

@@ -9,6 +9,8 @@ namespace StepFlow.Core.Elements
 
 		public Scale? Cooldown { get => cooldown; set => SetComponent(ref cooldown, value); }
 
+		public Scale GetCooldownRequired() => PropertyRequired(Cooldown, nameof(Cooldown));
+
 		public IList<Item> Items { get; } = new List<Item>();
 	}
 }

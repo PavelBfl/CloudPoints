@@ -18,9 +18,9 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 		}
 
-		public Subject? Creator { get => Target.Creator; set => SetValue(x => x.Creator, value); }
+		public Subject? Creator { get => Target.Creator; set => SetValue(value); }
 
-		public Damage Damage { get => Target.Damage; set => SetValue(x => x.Damage, value); }
+		public Damage Damage { get => Target.Damage; set => SetValue(value); }
 
 		public override void Collision(Collided thisCollided, Material otherMaterial, Collided otherCollided)
 		{

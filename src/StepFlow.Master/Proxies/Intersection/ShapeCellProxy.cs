@@ -14,6 +14,6 @@ namespace StepFlow.Master.Proxies.Intersection
 		{
 		}
 
-		public Rectangle Border { get => Target.Border; set => SetValue(x => x.Border, value); }
+		public Rectangle Border { get => Target.Border; set => SetValue(value); }
 	}
 }

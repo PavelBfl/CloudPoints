@@ -27,11 +27,11 @@ namespace StepFlow.Master.Proxies.Components
 		{
 		}
 
-		public int Value { get => Target.Value; set => SetValue(x => x.Value, value); }
+		public int Value { get => Target.Value; set => SetValue(value); }
 
-		public int Max { get => Target.Max; set => SetValue(x => x.Max, value); }
+		public int Max { get => Target.Max; set => SetValue(value); }
 
-		public bool Freeze { get => Target.Freeze; set => SetValue(x => x.Freeze, value); }
+		public bool Freeze { get => Target.Freeze; set => SetValue(value); }
 
 		public bool Add(int value)
 		{

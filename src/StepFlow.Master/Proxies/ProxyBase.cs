@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using StepFlow.Core.Commands.Accessors;
 using StepFlow.Core.Components;
-using StepFlow.Master.Commands;
 using StepFlow.Master.Proxies.Collections;
-using StepFlow.TimeLine;
 
 namespace StepFlow.Master.Proxies
 {
@@ -60,24 +57,6 @@ namespace StepFlow.Master.Proxies
 			}
 
 			var accessor = Owner.GetAccessor<TTarget, TValue>(propertyName);
-
-			var change = !EqualityComparer<TValue>.Default.Equals(accessor.GetValue(Target), newValue);
-			if (change)
-			{
-				var command = new ValueAccessorCommand<TTarget, TValue>(Target, accessor, newValue);
-				Owner.TimeAxis.Add(command);
-			}
-
-			return change;
-		}
-
-		protected bool SetValue<TValue>(Expression<Func<TTarget, TValue>> expression, TValue newValue, [CallerMemberName] string? propertyName = null)
-		{
-			var propertyInfo = AccessorsExtensions.GetPropertyInfo(expression);
-
-			return SetValue(newValue, propertyInfo.Name);
-
-			var accessor = AccessorsExtensions.CreatePropertyAccessor(expression);
 
 			var change = !EqualityComparer<TValue>.Default.Equals(accessor.GetValue(Target), newValue);
 			if (change)

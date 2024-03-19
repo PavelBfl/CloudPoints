@@ -37,7 +37,7 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 		}
 
-		public Scale? Strength { get => Target.Strength; protected set => SetValue(x => x.Strength, value); }
+		public Scale? Strength { get => Target.Strength; protected set => SetValue(value); }
 
 		public virtual void ChangeStrength(Damage damage)
 		{
@@ -47,7 +47,7 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 		}
 
-		public Collided Body { get => Target.Body; }
+		public Collided Body { get => Target.GetBodyRequired(); }
 
 		public ICollection<SchedulerRunner> Schedulers => CreateCollectionProxy(Target.Schedulers);
 
@@ -79,6 +79,6 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 		}
 
-		public int Speed { get => Target.Speed; set => SetValue(x => x.Speed, value); }
+		public int Speed { get => Target.Speed; set => SetValue(value); }
 	}
 }

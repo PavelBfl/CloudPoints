@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
+﻿using System.Numerics;
 using StepFlow.Core.Schedulers;
 
 namespace StepFlow.Master.Proxies.Schedulers
@@ -17,6 +14,6 @@ namespace StepFlow.Master.Proxies.Schedulers
 		{
 		}
 
-		public Vector2 Value { get => Target.Value; set => SetValue(x => x.Value, value); }
+		public Vector2 Value { get => Target.Value; set => SetValue(value); }
 	}
 }

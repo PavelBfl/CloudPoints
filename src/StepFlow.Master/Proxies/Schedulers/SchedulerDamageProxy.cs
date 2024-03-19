@@ -15,9 +15,9 @@ namespace StepFlow.Master.Proxies.Schedulers
 		{
 		}
 
-		public Material? Material { get => Target.Material; set => SetValue(x => x.Material, value); }
+		public Material? Material { get => Target.Material; set => SetValue(value); }
 
-		public Damage Damage { get => Target.Damage; set => SetValue(x => x.Damage, value); }
+		public Damage Damage { get => Target.Damage; set => SetValue(value); }
 
 		public override void Next()
 		{

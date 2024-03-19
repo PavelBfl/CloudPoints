@@ -17,6 +17,8 @@ namespace StepFlow.Core.Elements
 
 		public Collided? Body { get => body; set => SetComponent(ref body, value); }
 
+		public Collided GetBodyRequired() => PropertyRequired(Body, nameof(Body));
+
 		public int Speed { get; set; }
 
 		public ICollection<SchedulerRunner> Schedulers { get; } = new HashSet<SchedulerRunner>();

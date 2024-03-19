@@ -26,7 +26,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public new Scale Strength => base.Strength ?? throw new InvalidOperationException();
 
-		public IScaleProxy Cooldown => (IScaleProxy)Owner.CreateProxy(Target.Cooldown);
+		public Scale Cooldown => Target.GetCooldownRequired();
 
 		public override void OnTick()
 		{
@@ -38,7 +38,8 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 			else
 			{
-				Cooldown.Decrement();
+				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);
+				cooldownProxy.Decrement();
 			}
 		}
 
@@ -53,8 +54,9 @@ namespace StepFlow.Master.Proxies.Elements
 				CreateListProxy(Target.Items).Add(item);
 
 				Speed -= item.Speed;
-				Cooldown.SetMin();
-				Cooldown.Max -= item.AttackCooldown;
+				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);
+				cooldownProxy.SetMin();
+				cooldownProxy.Max -= item.AttackCooldown;
 
 				Strength.Value += item.AddStrength;
 			}
@@ -70,7 +72,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 			if (Cooldown.Value == 0)
 			{
-				var border = Body.Current.Bounds;
+				var border = Body.GetCurrentRequired().Bounds;
 				var center = new Point(
 					border.X + border.Width / 2,
 					border.Y + border.Height / 2
@@ -133,7 +135,9 @@ namespace StepFlow.Master.Proxies.Elements
 
 				var projectilesProxy = CreateListProxy(Owner.Playground.Projectiles);
 				projectilesProxy.Add(projectile.Target);
-				Cooldown.SetMax();
+
+				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);
+				cooldownProxy.SetMax();
 			}
 		}
 

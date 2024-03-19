@@ -13,7 +13,7 @@ namespace StepFlow.Master.Proxies.Schedulers
 		{
 		}
 
-		public int Index { get => Target.Index; set => SetValue(x => x.Index, value); }
+		public int Index { get => Target.Index; set => SetValue(value); }
 
 		public override void Next()
 		{

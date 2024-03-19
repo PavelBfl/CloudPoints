@@ -16,9 +16,9 @@ namespace StepFlow.Master.Proxies.Components
 		{
 		}
 
-		public Collided? Collided { get => Target.Collided; set => SetValue(x => x.Collided, value); }
+		public Collided? Collided { get => Target.Collided; set => SetValue(value); }
 
-		public Course Course { get => Target.Course; set => SetValue(x => x.Course, value); }
+		public Course Course { get => Target.Course; set => SetValue(value); }
 
 		Subject IProxyBase<Subject>.Target => throw new System.NotImplementedException();
 

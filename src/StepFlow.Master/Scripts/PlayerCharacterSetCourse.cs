@@ -11,7 +11,7 @@ namespace StepFlow.Master.Scripts
 
 		public override void Execute(Parameters parameters)
 		{
-			var playerCharacterProxy = (IPlayerCharacterProxy?)PlayMaster.CreateProxy(PlayMaster.Playground.PlayerCharacter);
+			var playerCharacterProxy = (IPlayerCharacterProxy)PlayMaster.CreateProxy(PlayMaster.Playground.GetPlayerCharacterRequired());
 			playerCharacterProxy.SetCourse(parameters.Course);
 		}
 
