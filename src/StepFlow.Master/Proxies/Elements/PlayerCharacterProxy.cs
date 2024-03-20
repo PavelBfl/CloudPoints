@@ -53,7 +53,7 @@ namespace StepFlow.Master.Proxies.Elements
 				itemBody?.Clear();
 				CreateListProxy(Target.Items).Add(item);
 
-				Speed -= item.Speed;
+				Speed += item.Speed;
 				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);
 				cooldownProxy.SetMin();
 				cooldownProxy.Max -= item.AttackCooldown;

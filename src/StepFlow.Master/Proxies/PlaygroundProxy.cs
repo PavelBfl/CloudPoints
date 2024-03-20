@@ -211,7 +211,7 @@ namespace StepFlow.Master.Proxies
 						Current = new ShapeCell(Owner.Playground.IntersectionContext, bounds),
 						IsRigid = true,
 					},
-					Speed = 5,
+					Speed = 10,
 				}),
 				ItemKind.AttackSpeed => (IItemProxy)Owner.CreateProxy(new Item()
 				{
