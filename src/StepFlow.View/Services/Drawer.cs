@@ -34,6 +34,8 @@ namespace StepFlow.View.Services
 			Sprites.Add(Markup.Services.Texture.ItemUnknown, new(DefaultTiles, new(517, 561, 13, 13)));
 			Sprites.Add(Markup.Services.Texture.Floor, new(DefaultTiles, new(550, 658, 32, 32)));
 			Sprites.Add(Markup.Services.Texture.ItemSpeed, new(DefaultTiles, new(20, 158, 18, 22)));
+			Sprites.Add(Markup.Services.Texture.ItemAttackSpeed, new(DefaultTiles, new(51, 317, 24, 26)));
+			Sprites.Add(Markup.Services.Texture.ItemAddStrength, new(DefaultTiles, new(339, 573, 10, 9)));
 
 			Pixel = new(graphicsDevice, 1, 1);
 			Pixel.SetData(new[] { Color.White });

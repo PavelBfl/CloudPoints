@@ -14,5 +14,7 @@
 		ItemUnknown,
 		Floor,
 		ItemSpeed,
+		ItemAttackSpeed,
+		ItemAddStrength,
 	};
 }

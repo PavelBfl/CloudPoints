@@ -224,6 +224,8 @@ namespace StepFlow.Markup
 					ItemKind.Fire => Texture.ItemFire,
 					ItemKind.Poison => Texture.ItemPoison,
 					ItemKind.Speed => Texture.ItemSpeed,
+					ItemKind.AttackSpeed => Texture.ItemAttackSpeed,
+					ItemKind.AddStrength => Texture.ItemAddStrength,
 					_ => Texture.ItemUnknown,
 				};
 
