@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace StepFlow.Intersection
@@ -33,6 +34,15 @@ namespace StepFlow.Intersection
 				diameter,
 				diameter
 			);
+		}
+
+		public static IEnumerable<Rectangle> Offset(this IEnumerable<Rectangle> rectangles, Point value)
+		{
+			foreach (var rectangle in rectangles)
+			{
+				rectangle.Offset(value);
+				yield return rectangle;
+			}
 		}
 	}
 }

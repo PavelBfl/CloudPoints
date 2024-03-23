@@ -26,7 +26,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		void SetCourse(Course? course);
 
-		void Collision(Collided thisCollided, Material otherMaterial, Collided otherCollided);
+		void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided);
 		void ChangeStrength(Damage damage);
 	}
 
@@ -59,9 +59,9 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 		}
 
-		public virtual void Collision(Collided thisCollided, Material otherMaterial, Collided otherCollided)
+		public virtual void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
 		{
-			if (Target != otherMaterial && otherCollided.IsRigid)
+			if (Target != otherMaterial && otherCollided.Collided.IsRigid)
 			{
 				((ICollidedProxy)Owner.CreateProxy(Body)).Break();
 			}

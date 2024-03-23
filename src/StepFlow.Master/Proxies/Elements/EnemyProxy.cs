@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
@@ -31,20 +32,22 @@ namespace StepFlow.Master.Proxies.Elements
 
 			if (Strength?.Value == 0)
 			{
-				var enemiesProxy = CreateListProxy(Owner.Playground.Enemies);
+				var enemiesProxy = Owner.CreateListProxy(Owner.Playground.Enemies);
 				enemiesProxy.Remove(Target);
 
-				var itemPosition = Body.GetCurrentRequired().Bounds.GetCenter();
+				var itemPosition = Body.Current.Bounds.GetCenter();
 				Owner.CreateItem.Execute(new Scripts.CreateItem.Parameters()
 				{
 					X = itemPosition.X,
 					Y = itemPosition.Y,
 					Kind = Target.ReleaseItem
 				});
-				Body.Current = null;
-				Body.Next = null;
-				Vision.Current = null;
-				Vision.Next = null;
+
+				var bodyProxy = (ICollidedProxy)Owner.CreateProxy(Body);
+				bodyProxy.Clear();
+				
+				var visionProxy = (ICollidedProxy)Owner.CreateProxy(Vision);
+				visionProxy.Clear();
 			}
 			else
 			{
@@ -53,20 +56,28 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 		}
 
-		public override void Collision(Collided thisCollided, Material otherMaterial, Collided otherCollided)
+		public override void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
 		{
+			base.Collision(thisCollided, otherMaterial, otherCollided);
+
 			if (Target != otherMaterial)
 			{
-				if (thisCollided == Vision && otherMaterial == Owner.Playground.PlayerCharacter)
+				if (thisCollided.Collided == Vision && otherMaterial == Owner.Playground.PlayerCharacter)
 				{
 					CreateProjectile(otherMaterial);
 				}
-				else if (otherCollided.IsRigid && thisCollided == Body && Target.GetControlVector() is { } controlVector)
+				else if (otherCollided.Collided.IsRigid &&
+					thisCollided.Collided == Body &&
+					Target.TryGetControlVector(out var runner, out _, out var controlVector) &&
+					runner.Current is { })
 				{
+					var runnerProxy = (ISchedulerRunnerProxy)Owner.CreateProxy(runner);
+					runnerProxy.Current = null;
+
 					var rotate = Matrix3x2.CreateRotation(MathF.PI / 2);
 					var controlVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(controlVector);
 					controlVectorProxy.Value = Vector2.Transform(controlVector.Value, rotate);
-				} 
+				}
 			}
 		}
 
@@ -74,13 +85,13 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			if (Cooldown.Value == 0)
 			{
-				var border = Body.GetCurrentRequired().Bounds;
+				var border = Body.Current.Bounds;
 				var center = new Point(
 					border.X + border.Width / 2,
 					border.Y + border.Height / 2
 				);
 
-				var otherBorder = other.GetBodyRequired().GetCurrentRequired().Bounds;
+				var otherBorder = other.GetBodyRequired().Current.Bounds;
 				var otherCenter = new Point(
 					otherBorder.X + otherBorder.Width / 2,
 					otherBorder.Y + otherBorder.Height / 2
@@ -98,15 +109,15 @@ namespace StepFlow.Master.Proxies.Elements
 					Speed = 5,
 				});
 
-				projectile.Body.Current = new ShapeCell(
-					Owner.Playground.IntersectionContext,
+				projectile.Body.Current = new Rectangle[]
+				{
 					new Rectangle(
 						center.X - SIZE / 2,
 						center.Y - SIZE / 2,
 						SIZE,
 						SIZE
 					)
-				);
+				};
 
 				var courseVector = Vector2.Normalize(new Vector2(otherCenter.X - center.X, otherCenter.Y - center.Y)) * 5;
 

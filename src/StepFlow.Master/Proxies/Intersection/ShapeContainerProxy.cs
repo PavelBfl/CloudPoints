@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Collections;
@@ -7,7 +8,19 @@ namespace StepFlow.Master.Proxies.Intersection
 {
 	public interface IShapeContainerProxy : IShapeBaseProxy<ShapeContainer>, IList<Rectangle>
 	{
-		
+		void Reset(IEnumerable<Rectangle> rectangles)
+		{
+			if (rectangles is null)
+			{
+				throw new ArgumentNullException();
+			}
+
+			Clear();
+			foreach (var rectangle in rectangles)
+			{
+				Add(rectangle);
+			}
+		}
 	}
 
 	internal sealed class ShapeContainerProxy : ShapeBaseProxy<ShapeContainer>, IShapeContainerProxy

@@ -242,15 +242,15 @@ namespace StepFlow.Markup
 
 		private void CreateTexture(Collided? collided, Texture texture, Scale? strength)
 		{
-			if (collided is { Current: { } current })
+			if (collided is { })
 			{
-				Drawer.Draw(texture, current.Bounds);
+				Drawer.Draw(texture, collided.CurrentShape.Bounds);
 				if (strength is not null)
 				{
 					var strengthBounds = new Rectangle(
-						current.Bounds.Left,
-						current.Bounds.Top,
-						current.Bounds.Width,
+						collided.CurrentShape.Bounds.Left,
+						collided.CurrentShape.Bounds.Top,
+						collided.CurrentShape.Bounds.Width,
 						0
 					);
 					Drawer.DrawString(
@@ -266,9 +266,9 @@ namespace StepFlow.Markup
 
 		private void CreateBorder(Collided? collided, Color color)
 		{
-			if (collided is { Current: { } current })
+			if (collided is { })
 			{
-				var bounds = current.Bounds;
+				var bounds = collided.CurrentShape.Bounds;
 				Drawer.Polygon(
 					new PointF[]
 					{

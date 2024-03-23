@@ -67,9 +67,5 @@ namespace StepFlow.Master.Proxies
 
 			return change;
 		}
-
-		protected IList<T> CreateListProxy<T>(IList<T> target) => new ListProxy<T, IList<T>>(Owner, target);
-
-		protected ICollection<T> CreateCollectionProxy<T>(ICollection<T> target) => new CollectionProxy<T, ICollection<T>>(Owner, target);
 	}
 }

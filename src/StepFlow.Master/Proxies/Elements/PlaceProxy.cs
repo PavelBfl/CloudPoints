@@ -17,7 +17,7 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 		}
 
-		public override void Collision(Collided thisCollided, Material otherMaterial, Collided otherCollided)
+		public override void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
 		{
 			var placeScheduler = otherMaterial.Schedulers
 				.Select(x => x.Scheduler)

@@ -1,5 +1,7 @@
-﻿using StepFlow.Core;
+﻿using System.Linq;
+using StepFlow.Core;
 using StepFlow.Core.Components;
+using StepFlow.Intersection;
 
 namespace StepFlow.Master.Proxies.Components
 {
@@ -24,13 +26,13 @@ namespace StepFlow.Master.Proxies.Components
 
 		public void Execute()
 		{
-			if (Collided is { Current: { } current })
+			if (Collided is { })
 			{
 				var offset = Course.ToOffset();
-				var next = current.Clone(offset);
+				var next = Collided.Current.AsEnumerable().Offset(offset);
 
 				var collidedProxy = (ICollidedProxy)Owner.CreateProxy(Collided);
-				collidedProxy.Next = next;
+				collidedProxy.NextProxy.Reset(next);
 				collidedProxy.IsMove = true;
 			}
 		}

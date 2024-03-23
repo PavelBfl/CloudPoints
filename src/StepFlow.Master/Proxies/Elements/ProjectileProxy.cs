@@ -22,9 +22,9 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public Damage Damage { get => Target.Damage; set => SetValue(value); }
 
-		public override void Collision(Collided thisCollided, Material otherMaterial, Collided otherCollided)
+		public override void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
 		{
-			if (Creator != otherMaterial && otherCollided.IsRigid)
+			if (Creator != otherMaterial && otherCollided.Collided.IsRigid)
 			{
 				if (otherMaterial.Strength is { } strength)
 				{

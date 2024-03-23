@@ -6,7 +6,7 @@ namespace StepFlow.Core
 {
 	public sealed class Playground : Subject
 	{
-		public Intersection.Context IntersectionContext { get; } = new Intersection.Context();
+		public static Intersection.Context IntersectionContext { get; } = new Intersection.Context();
 
 		public PlayerCharacter? PlayerCharacter { get; set; }
 

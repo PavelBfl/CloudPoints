@@ -1,35 +1,34 @@
-﻿using StepFlow.Intersection;
+﻿using System;
+using StepFlow.Intersection;
 
 namespace StepFlow.Core.Components
 {
-	public sealed class Collided : ComponentBase
+	public sealed class CollidedAttached
 	{
-		private void SetShape(ref ShapeBase? field, ShapeBase? value)
+		public CollidedAttached(string propertyName, Collided collided)
 		{
-			if (field is { })
-			{
-				field.Context.Remove(field);
-				field.Attached = null;
-			}
-
-			field = value;
-
-			if (field is { })
-			{
-				field.Context.Add(field);
-				field.Attached = this;
-			}
+			PropertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
+			Collided = collided ?? throw new ArgumentNullException(nameof(collided));
 		}
 
-		private ShapeBase? current;
+		public string PropertyName { get; }
 
-		public ShapeBase? Current { get => current; set => SetShape(ref current, value); }
+		public Collided Collided { get; }
+	}
 
-		public ShapeBase GetCurrentRequired() => PropertyRequired(Current, nameof(Current));
+	public sealed class Collided : ComponentBase
+	{
+		public Collided()
+		{
+			Current.Attached = new CollidedAttached(nameof(Current), this);
+			Playground.IntersectionContext.Add(Current);
+			Next.Attached = new CollidedAttached(nameof(Next), this);
+			Playground.IntersectionContext.Add(Next);
+		}
 
-		private ShapeBase? next;
+		public ShapeContainer Current { get; } = new ShapeContainer(Playground.IntersectionContext);
 
-		public ShapeBase? Next { get => next; set => SetShape(ref next, value); }
+		public ShapeContainer Next { get; } = new ShapeContainer(Playground.IntersectionContext);
 
 		public bool IsMove { get; set; }
 

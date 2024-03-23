@@ -43,7 +43,7 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 		}
 
-		public override void Collision(Collided thisCollided, Material otherMaterial, Collided otherCollided)
+		public override void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
 		{
 			if (otherMaterial is Item item)
 			{
@@ -72,7 +72,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 			if (Cooldown.Value == 0)
 			{
-				var border = Body.GetCurrentRequired().Bounds;
+				var border = Body.CurrentShape.Bounds;
 				var center = new Point(
 					border.X + border.Width / 2,
 					border.Y + border.Height / 2
@@ -86,15 +86,15 @@ namespace StepFlow.Master.Proxies.Elements
 					Speed = 5,
 				});
 
-				projectile.Body.Current = new ShapeCell(
-					Owner.Playground.IntersectionContext,
+				projectile.Body.Current = new Rectangle[]
+				{
 					new Rectangle(
 						center.X - SIZE / 2,
 						center.Y - SIZE / 2,
 						SIZE,
 						SIZE
 					)
-				);
+				};
 
 				var courseVector = course.ToOffset();
 				var scheduler = new SchedulerVector()

@@ -1,13 +1,18 @@
 ﻿using StepFlow.Core.Components;
 using StepFlow.Intersection;
+using StepFlow.Master.Proxies.Intersection;
 
 namespace StepFlow.Master.Proxies.Components
 {
 	public interface ICollidedProxy : IProxyBase<Collided>
 	{
-		ShapeBase? Current { get; set; }
+		ShapeContainer Current { get; }
 
-		ShapeBase? Next { get; set; }
+		IShapeContainerProxy CurrentProxy => (IShapeContainerProxy)Owner.CreateProxy(Current);
+
+		ShapeContainer Next { get; }
+
+		IShapeContainerProxy NextProxy => (IShapeContainerProxy)Owner.CreateProxy(Next);
 
 		bool IsMove { get; set; }
 
@@ -17,21 +22,21 @@ namespace StepFlow.Master.Proxies.Components
 		{
 			if (IsMove)
 			{
-				Current = Next?.Clone();
+				CurrentProxy.Reset(Next);
 				Break();
 			}
 		}
 
 		void Break()
 		{
-			Next = null;
+			NextProxy.Clear();
 			IsMove = false;
 		}
 
 		void Clear()
 		{
-			Current = null;
-			Next = null;
+			CurrentProxy.Clear();
+			NextProxy.Clear();
 		}
 	}
 
@@ -41,9 +46,9 @@ namespace StepFlow.Master.Proxies.Components
 		{
 		}
 
-		public ShapeBase? Current { get => Target.Current; set => SetValue(value); }
+		public ShapeContainer Current { get => Target.Current; }
 
-		public ShapeBase? Next { get => Target.Next; set => SetValue(value); }
+		public ShapeContainer Next { get => Target.Next; }
 
 		public bool IsMove { get => Target.IsMove; set => SetValue(value); }
 

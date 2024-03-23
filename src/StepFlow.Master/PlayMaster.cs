@@ -9,6 +9,7 @@ using StepFlow.Core.Elements;
 using StepFlow.Core.Schedulers;
 using StepFlow.Master.Commands;
 using StepFlow.Master.Proxies;
+using StepFlow.Master.Proxies.Collections;
 using StepFlow.Master.Proxies.Components;
 using StepFlow.Master.Proxies.Elements;
 using StepFlow.Master.Proxies.Intersection;
@@ -100,6 +101,10 @@ namespace StepFlow.Master
 			};
 		}
 
+		public IList<T> CreateListProxy<T>(IList<T> target) => new ListProxy<T, IList<T>>(this, target);
+
+		public ICollection<T> CreateCollectionProxy<T>(ICollection<T> target) => new CollectionProxy<T, ICollection<T>>(this, target);
+
 		private void TakeStepInner()
 		{
 			foreach (var collision in Playground.GetMaterials()
@@ -115,11 +120,11 @@ namespace StepFlow.Master
 			{
 				if (collision.Left.Attached is { } leftAttached && collision.Right.Attached is { } rightAttached)
 				{
-					var leftCollided = (Collided)leftAttached;
-					var leftMaterial = (IMaterialProxy<Material>)CreateProxy(leftCollided.GetElementRequired());
+					var leftCollided = (CollidedAttached)leftAttached;
+					var leftMaterial = (IMaterialProxy<Material>)CreateProxy(leftCollided.Collided.GetElementRequired());
 
-					var rightCollided = (Collided)rightAttached;
-					var rightMaterial = (IMaterialProxy<Material>)CreateProxy(rightCollided.GetElementRequired());
+					var rightCollided = (CollidedAttached)rightAttached;
+					var rightMaterial = (IMaterialProxy<Material>)CreateProxy(rightCollided.Collided.GetElementRequired());
 
 					leftMaterial.Collision(leftCollided, rightMaterial.Target, rightCollided);
 					rightMaterial.Collision(rightCollided, leftMaterial.Target, leftCollided);
