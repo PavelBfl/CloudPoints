@@ -12,6 +12,7 @@ namespace StepFlow.View.Services
 	{
 		private const string DEFAULT_FONT_KEY = "DefaultFont";
 		private const string DEFAULT_TILES_KEY = "DefaultTiles";
+		private const string PLACE_TILES_KEY = "PlaceTiles";
 
 		public Drawer(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, ContentManager content)
 		{
@@ -22,20 +23,23 @@ namespace StepFlow.View.Services
 			DefaultFont = content.Load<SpriteFont>(DEFAULT_FONT_KEY);
 
 			DefaultTiles = content.Load<Texture2D>(DEFAULT_TILES_KEY);
+			PlaceTiles = content.Load<Texture2D>(PLACE_TILES_KEY);
+
 			Sprites.Add(Markup.Services.Texture.Character, new(DefaultTiles, new(414, 53, 44, 59)));
 			Sprites.Add(Markup.Services.Texture.Projectile, new(DefaultTiles, new(243, 256, 20, 19)));
 			Sprites.Add(Markup.Services.Texture.ProjectileFire, new(DefaultTiles, new(211, 256, 20, 19)));
 			Sprites.Add(Markup.Services.Texture.ProjectilePoison, new(DefaultTiles, new(51, 256, 20, 19)));
 			Sprites.Add(Markup.Services.Texture.ProjectileAll, new(DefaultTiles, new(147, 256, 20, 19)));
 			Sprites.Add(Markup.Services.Texture.Enemy, new(DefaultTiles, new(662, 22, 56, 81)));
-			Sprites.Add(Markup.Services.Texture.Wall, new(DefaultTiles, new(454, 690, 32, 32)));
+			Sprites.Add(Markup.Services.Texture.Wall, new(DefaultTiles, new(519, 690, 32, 32)));
 			Sprites.Add(Markup.Services.Texture.ItemPoison, new(DefaultTiles, new(523, 827, 22, 21)));
 			Sprites.Add(Markup.Services.Texture.ItemFire, new(DefaultTiles, new(552, 833, 29, 16)));
 			Sprites.Add(Markup.Services.Texture.ItemUnknown, new(DefaultTiles, new(517, 561, 13, 13)));
-			Sprites.Add(Markup.Services.Texture.Floor, new(DefaultTiles, new(550, 658, 32, 32)));
+			Sprites.Add(Markup.Services.Texture.Floor, new(PlaceTiles, new(640, 0, 32, 32)));
 			Sprites.Add(Markup.Services.Texture.ItemSpeed, new(DefaultTiles, new(20, 158, 18, 22)));
 			Sprites.Add(Markup.Services.Texture.ItemAttackSpeed, new(DefaultTiles, new(51, 317, 24, 26)));
 			Sprites.Add(Markup.Services.Texture.ItemAddStrength, new(DefaultTiles, new(339, 573, 10, 9)));
+			Sprites.Add(Markup.Services.Texture.PoisonPlace, new(PlaceTiles, new(352, 736, 32, 32)));
 
 			Pixel = new(graphicsDevice, 1, 1);
 			Pixel.SetData(new[] { Color.White });
@@ -44,6 +48,8 @@ namespace StepFlow.View.Services
 		private SpriteFont DefaultFont { get; }
 
 		private Texture2D DefaultTiles { get; }
+
+		private Texture2D PlaceTiles { get; }
 
 		private Dictionary<Markup.Services.Texture, Sprite> Sprites { get; } = new();
 

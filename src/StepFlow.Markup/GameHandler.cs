@@ -50,8 +50,8 @@ namespace StepFlow.Markup
 
 			PlayMaster.CreatePlace.Execute(new() { Bounds = new(400, 150, 50, 50) });
 
-			CreateEnemy(new(50, 180, 20, 20), 50);
-			CreateEnemy(new(200, 180, 20, 20), 50);
+			CreateEnemy(new(500, 180, 20, 20), 50);
+			//CreateEnemy(new(200, 180, 20, 20), 50);
 
 			CreateObstruction(new(50, 100, 40, 40), 150);
 
@@ -192,7 +192,7 @@ namespace StepFlow.Markup
 
 			foreach (var place in playground.Places)
 			{
-				CreateTexture(place.Body, Texture.Wall, null);
+				CreateTexture(place.Body, Texture.PoisonPlace, null);
 			}
 
 			CreateTexture(playground.PlayerCharacter?.Body, Texture.Character, playground.PlayerCharacter?.Strength);

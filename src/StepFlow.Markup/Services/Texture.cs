@@ -16,5 +16,6 @@
 		ItemSpeed,
 		ItemAttackSpeed,
 		ItemAddStrength,
+		PoisonPlace,
 	};
 }

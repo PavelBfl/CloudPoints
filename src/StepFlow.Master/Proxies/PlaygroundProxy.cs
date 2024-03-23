@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Numerics;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
@@ -134,13 +135,14 @@ namespace StepFlow.Master.Proxies
 
 		public void CreateEnemy(Rectangle bounds, Rectangle vision, ItemKind releaseItem)
 		{
+			var body = new Collided()
+			{
+				Current = new ShapeCell(Owner.Playground.IntersectionContext, bounds),
+				IsRigid = true,
+			};
 			var enemy = new Enemy()
 			{
-				Body = new Collided()
-				{
-					Current = new ShapeCell(Owner.Playground.IntersectionContext, bounds),
-					IsRigid = true,
-				},
+				Body = body,
 				Vision = new Collided()
 				{
 					Current = new ShapeCell(Owner.Playground.IntersectionContext, vision),
@@ -156,6 +158,25 @@ namespace StepFlow.Master.Proxies
 					Max = 100,
 				},
 				ReleaseItem = releaseItem,
+				Schedulers =
+				{
+					new SchedulerRunner()
+					{
+						Scheduler = new SchedulerVector()
+						{
+							Collided = body,
+							Vectors =
+							{
+								new CourseVector()
+								{
+									Name = Material.SHEDULER_CONTROL_NAME,
+									Value = new Vector2(1, 0),
+								},
+							},
+						}
+					},
+				},
+				Speed = 10,
 			};
 
 			var enemiesProxy = CreateListProxy(Enemies);

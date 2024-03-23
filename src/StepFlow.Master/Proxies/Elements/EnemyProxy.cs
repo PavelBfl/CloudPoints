@@ -1,10 +1,12 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Numerics;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.Schedulers;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
+using StepFlow.Master.Proxies.Schedulers;
 
 namespace StepFlow.Master.Proxies.Elements
 {
@@ -53,9 +55,18 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public override void Collision(Collided thisCollided, Material otherMaterial, Collided otherCollided)
 		{
-			if (thisCollided == Vision && otherMaterial == Owner.Playground.PlayerCharacter)
+			if (Target != otherMaterial)
 			{
-				CreateProjectile(otherMaterial);
+				if (thisCollided == Vision && otherMaterial == Owner.Playground.PlayerCharacter)
+				{
+					CreateProjectile(otherMaterial);
+				}
+				else if (otherCollided.IsRigid && thisCollided == Body && Target.GetControlVector() is { } controlVector)
+				{
+					var rotate = Matrix3x2.CreateRotation(MathF.PI / 2);
+					var controlVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(controlVector);
+					controlVectorProxy.Value = Vector2.Transform(controlVector.Value, rotate);
+				} 
 			}
 		}
 
