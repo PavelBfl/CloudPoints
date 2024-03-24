@@ -1,4 +1,5 @@
-﻿using StepFlow.Core.Components;
+﻿using System.Collections.Generic;
+using StepFlow.Core.Components;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Intersection;
 

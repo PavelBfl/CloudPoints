@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Drawing;
-using System.Linq;
 using System.Numerics;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.Schedulers;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
+using StepFlow.Master.Proxies.Intersection;
 using StepFlow.Master.Proxies.Schedulers;
 
 namespace StepFlow.Master.Proxies.Elements
@@ -53,6 +53,11 @@ namespace StepFlow.Master.Proxies.Elements
 			{
 				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);
 				cooldownProxy.Decrement();
+
+				var center = Body.Current.Bounds.GetCenter();
+				var visionPlace = RectangleExtensions.Create(center, 50);
+				var visionProxy = (IShapeContainerProxy)Owner.CreateProxy(Vision.Current);
+				visionProxy.Reset(visionPlace);
 			}
 		}
 
@@ -109,15 +114,12 @@ namespace StepFlow.Master.Proxies.Elements
 					Speed = 5,
 				});
 
-				projectile.Body.Current = new Rectangle[]
-				{
-					new Rectangle(
-						center.X - SIZE / 2,
-						center.Y - SIZE / 2,
-						SIZE,
-						SIZE
-					)
-				};
+				projectile.Body.Current.Add(new Rectangle(
+					center.X - SIZE / 2,
+					center.Y - SIZE / 2,
+					SIZE,
+					SIZE
+				));
 
 				var courseVector = Vector2.Normalize(new Vector2(otherCenter.X - center.X, otherCenter.Y - center.Y)) * 5;
 
@@ -157,7 +159,7 @@ namespace StepFlow.Master.Proxies.Elements
 					Scheduler = schedulerUnion,
 				});
 
-				var projectilesProxy = CreateListProxy(Owner.Playground.Projectiles);
+				var projectilesProxy = Owner.CreateListProxy(Owner.Playground.Projectiles);
 				projectilesProxy.Add(projectile.Target);
 				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);
 				cooldownProxy.SetMax();

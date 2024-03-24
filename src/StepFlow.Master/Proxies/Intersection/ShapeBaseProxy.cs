@@ -5,7 +5,7 @@ using StepFlow.Intersection;
 
 namespace StepFlow.Master.Proxies.Intersection
 {
-	public interface IShapeBaseProxy<out TTarget> : IProxyBase<TTarget>, IReadOnlyList<Rectangle>
+	public interface IShapeBaseProxy<out TTarget> : IProxyBase<TTarget>, IReadOnlyCollection<Rectangle>
 		where TTarget : ShapeBase
 	{
 		Rectangle Bounds { get; }
@@ -19,8 +19,6 @@ namespace StepFlow.Master.Proxies.Intersection
 		public ShapeBaseProxy(PlayMaster owner, TTarget target) : base(owner, target)
 		{
 		}
-
-		public Rectangle this[int index] => Target[index];
 
 		public Rectangle Bounds => Target.Bounds;
 

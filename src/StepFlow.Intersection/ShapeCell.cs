@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace StepFlow.Intersection
 {
@@ -20,8 +20,6 @@ namespace StepFlow.Intersection
 			Border = original.Border;
 		}
 
-		public override Rectangle this[int index] => index == 0 ? Border : throw new ArgumentOutOfRangeException(nameof(index));
-
 		private Rectangle border;
 
 		public Rectangle Border
@@ -40,7 +38,7 @@ namespace StepFlow.Intersection
 
 		public override int Count => 1;
 
-		public override IEnumerator<Rectangle> GetEnumerator() => ((IEnumerable<Rectangle>)new[] { Border }).GetEnumerator();
+		public override IEnumerator<Rectangle> GetEnumerator() => new[] { Border }.AsEnumerable().GetEnumerator();
 
 		public override void Offset(Point value) => border.Offset(value);
 

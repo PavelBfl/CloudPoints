@@ -49,7 +49,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public Collided Body { get => Target.GetBodyRequired(); }
 
-		public ICollection<SchedulerRunner> Schedulers => CreateCollectionProxy(Target.Schedulers);
+		public ICollection<SchedulerRunner> Schedulers => Owner.CreateCollectionProxy(Target.Schedulers);
 
 		public virtual void OnTick()
 		{
@@ -61,7 +61,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public virtual void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
 		{
-			if (Target != otherMaterial && otherCollided.Collided.IsRigid)
+			if (Target != otherMaterial && otherCollided.Collided.IsRigid && thisCollided.Collided.IsRigid)
 			{
 				((ICollidedProxy)Owner.CreateProxy(Body)).Break();
 			}

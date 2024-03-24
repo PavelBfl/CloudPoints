@@ -51,7 +51,7 @@ namespace StepFlow.Markup
 			PlayMaster.CreatePlace.Execute(new() { Bounds = new(400, 150, 50, 50) });
 
 			CreateEnemy(new(500, 180, 20, 20), 50);
-			//CreateEnemy(new(200, 180, 20, 20), 50);
+			CreateEnemy(new(200, 180, 20, 20), 50);
 
 			CreateObstruction(new(50, 100, 40, 40), 150);
 
@@ -244,13 +244,13 @@ namespace StepFlow.Markup
 		{
 			if (collided is { })
 			{
-				Drawer.Draw(texture, collided.CurrentShape.Bounds);
+				Drawer.Draw(texture, collided.Current.Bounds);
 				if (strength is not null)
 				{
 					var strengthBounds = new Rectangle(
-						collided.CurrentShape.Bounds.Left,
-						collided.CurrentShape.Bounds.Top,
-						collided.CurrentShape.Bounds.Width,
+						collided.Current.Bounds.Left,
+						collided.Current.Bounds.Top,
+						collided.Current.Bounds.Width,
 						0
 					);
 					Drawer.DrawString(
@@ -268,7 +268,7 @@ namespace StepFlow.Markup
 		{
 			if (collided is { })
 			{
-				var bounds = collided.CurrentShape.Bounds;
+				var bounds = collided.Current.Bounds;
 				Drawer.Polygon(
 					new PointF[]
 					{

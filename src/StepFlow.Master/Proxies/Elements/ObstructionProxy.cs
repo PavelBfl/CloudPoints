@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-using System.Linq;
-using StepFlow.Core.Components;
+﻿using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Master.Proxies.Components;
 
@@ -25,12 +23,12 @@ namespace StepFlow.Master.Proxies.Elements
 
 			if (Strength?.Value == 0)
 			{
-				var obstructionsProxy = CreateListProxy(Owner.GetPlaygroundProxy().Obstructions);
+				var obstructionsProxy = Owner.CreateListProxy(Owner.GetPlaygroundProxy().Obstructions);
 				obstructionsProxy.Remove(Target);
 
 				var collidedProxy = (ICollidedProxy)Owner.CreateProxy(Body);
-				collidedProxy.Current = Enumerable.Empty<Rectangle>();
-				collidedProxy.Next = Enumerable.Empty<Rectangle>();
+				collidedProxy.Current.Clear();
+				collidedProxy.Next.Clear();
 			}
 		}
 	}

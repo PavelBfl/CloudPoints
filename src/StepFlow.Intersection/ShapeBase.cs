@@ -5,7 +5,7 @@ using System.Drawing;
 
 namespace StepFlow.Intersection
 {
-	public abstract class ShapeBase : IReadOnlyList<Rectangle>, ICloneable
+	public abstract class ShapeBase : IReadOnlyCollection<Rectangle>, ICloneable
 	{
 		protected ShapeBase(Context context)
 		{
@@ -23,8 +23,6 @@ namespace StepFlow.Intersection
 		}
 
 		public object? Attached { get; set; }
-
-		public abstract Rectangle this[int index] { get; }
 
 		public abstract int Count { get; }
 

@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace StepFlow.Intersection
 {
-	public sealed class ShapeContainer : ShapeBase, IList<Rectangle>
+	public sealed class ShapeContainer : ShapeBase, ICollection<Rectangle>
 	{
 		public ShapeContainer(Context context) : base(context)
 		{
@@ -11,31 +12,19 @@ namespace StepFlow.Intersection
 
 		public ShapeContainer(Context context, IEnumerable<Rectangle> rectangles) : base(context)
 		{
-			SubRectangles.AddRange(rectangles);
+			SubRectangles.UnionWith(rectangles);
 		}
 
 		public ShapeContainer(Context context, ShapeContainer original) : base(context, original)
 		{
-			SubRectangles.AddRange(original);
+			SubRectangles.UnionWith(original);
 		}
 
-		private List<Rectangle> SubRectangles { get; } = new List<Rectangle>();
+		private HashSet<Rectangle> SubRectangles { get; } = new HashSet<Rectangle>();
 
 		public override int Count => SubRectangles.Count;
 
 		public bool IsReadOnly => false;
-
-		Rectangle IList<Rectangle>.this[int index]
-		{
-			get => SubRectangles[index];
-			set
-			{
-				SubRectangles[index] = value;
-				Reset();
-			}
-		}
-
-		public override Rectangle this[int index] => SubRectangles[index];
 
 		private Rectangle? bounds;
 
@@ -69,20 +58,6 @@ namespace StepFlow.Intersection
 
 		public override IEnumerator<Rectangle> GetEnumerator() => SubRectangles.GetEnumerator();
 
-		public int IndexOf(Rectangle item) => SubRectangles.IndexOf(item);
-
-		public void Insert(int index, Rectangle item)
-		{
-			SubRectangles.Insert(index, item);
-			Reset();
-		}
-
-		public void RemoveAt(int index)
-		{
-			SubRectangles.RemoveAt(index);
-			Reset();
-		}
-
 		public void Add(Rectangle item)
 		{
 			SubRectangles.Add(item);
@@ -111,12 +86,21 @@ namespace StepFlow.Intersection
 
 		public override void Offset(Point value)
 		{
+			if (value == Point.Empty)
+			{
+				return;
+			}
+
+			var subRectangles = SubRectangles.ToArray();
+			SubRectangles.Clear();
 			for (var i = 0; i < Count; i++)
 			{
-				var subRectangle = this[i];
+				var subRectangle = subRectangles[i];
 				subRectangle.Offset(value);
-				((IList<Rectangle>)this)[i] = subRectangle;
+				subRectangles[i] = subRectangle;
 			}
+
+			SubRectangles.UnionWith(subRectangles);
 		}
 
 		public override ShapeBase Clone() => new ShapeContainer(Context, this);

@@ -6,7 +6,6 @@ using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.Schedulers;
-using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
 
 namespace StepFlow.Master.Proxies.Elements
@@ -47,11 +46,11 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			if (otherMaterial is Item item)
 			{
-				var itemsProxy = CreateListProxy(Owner.Playground.Items);
+				var itemsProxy = Owner.CreateListProxy(Owner.Playground.Items);
 				itemsProxy.Remove(item);
 				var itemBody = (ICollidedProxy?)Owner.CreateProxy(item.Body);
 				itemBody?.Clear();
-				CreateListProxy(Target.Items).Add(item);
+				Owner.CreateListProxy(Target.Items).Add(item);
 
 				Speed += item.Speed;
 				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);
@@ -72,7 +71,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 			if (Cooldown.Value == 0)
 			{
-				var border = Body.CurrentShape.Bounds;
+				var border = Body.Current.Bounds;
 				var center = new Point(
 					border.X + border.Width / 2,
 					border.Y + border.Height / 2
@@ -86,15 +85,14 @@ namespace StepFlow.Master.Proxies.Elements
 					Speed = 5,
 				});
 
-				projectile.Body.Current = new Rectangle[]
-				{
+				projectile.Body.Current.Add(
 					new Rectangle(
 						center.X - SIZE / 2,
 						center.Y - SIZE / 2,
 						SIZE,
 						SIZE
 					)
-				};
+				);
 
 				var courseVector = course.ToOffset();
 				var scheduler = new SchedulerVector()
@@ -133,7 +131,7 @@ namespace StepFlow.Master.Proxies.Elements
 					Scheduler = schedulerUnion,
 				});
 
-				var projectilesProxy = CreateListProxy(Owner.Playground.Projectiles);
+				var projectilesProxy = Owner.CreateListProxy(Owner.Playground.Projectiles);
 				projectilesProxy.Add(projectile.Target);
 
 				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);

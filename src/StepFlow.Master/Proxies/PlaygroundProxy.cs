@@ -7,7 +7,6 @@ using StepFlow.Core.Elements;
 using StepFlow.Core.Schedulers;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Elements;
-using StepFlow.Master.Proxies.Intersection;
 
 namespace StepFlow.Master.Proxies
 {
@@ -46,7 +45,7 @@ namespace StepFlow.Master.Proxies
 		{
 			var body = new Collided()
 			{
-				Current = new[] { bounds },
+				Current = { bounds },
 				IsRigid = true,
 			};
 
@@ -92,7 +91,7 @@ namespace StepFlow.Master.Proxies
 				Name = "Obstruction",
 				Body = new Collided()
 				{
-					Current = new[] { bounds },
+					Current = { bounds },
 					IsRigid = true,
 				},
 				Strength = strength is { } ?
@@ -104,7 +103,7 @@ namespace StepFlow.Master.Proxies
 					null,
 			};
 
-			var obstructionsProxy = CreateListProxy(Obstructions);
+			var obstructionsProxy = Owner.CreateListProxy(Obstructions);
 			obstructionsProxy.Add(barrier);
 		}
 
@@ -112,7 +111,7 @@ namespace StepFlow.Master.Proxies
 		{
 			var body = new Collided()
 			{
-				Current = new[] { bounds },
+				Current = { bounds },
 				IsRigid = true,
 			};
 			var projectile = new Projectile()
@@ -126,7 +125,7 @@ namespace StepFlow.Master.Proxies
 				Speed = 5,
 			};
 
-			var projectilesProxy = CreateListProxy(Projectiles);
+			var projectilesProxy = Owner.CreateListProxy(Projectiles);
 			projectilesProxy.Add(projectile);
 		}
 
@@ -134,7 +133,7 @@ namespace StepFlow.Master.Proxies
 		{
 			var body = new Collided()
 			{
-				Current = new[] { bounds },
+				Current = { bounds },
 				IsRigid = true,
 			};
 			var enemy = new Enemy()
@@ -142,7 +141,7 @@ namespace StepFlow.Master.Proxies
 				Body = body,
 				Vision = new Collided()
 				{
-					Current = new[] { vision },
+					Current = { vision },
 				},
 				Cooldown = new Scale()
 				{
@@ -176,7 +175,7 @@ namespace StepFlow.Master.Proxies
 				Speed = 10,
 			};
 
-			var enemiesProxy = CreateListProxy(Enemies);
+			var enemiesProxy = Owner.CreateListProxy(Enemies);
 			enemiesProxy.Add(enemy);
 		}
 
@@ -198,7 +197,7 @@ namespace StepFlow.Master.Proxies
 					Kind = ItemKind.Fire,
 					Body = new Collided()
 					{
-						Current = new[] { bounds },
+						Current = { bounds },
 						IsRigid = true,
 					},
 					DamageSetting = new Damage()
@@ -212,7 +211,7 @@ namespace StepFlow.Master.Proxies
 					Kind = ItemKind.Poison,
 					Body = new Collided()
 					{
-						Current = new[] { bounds },
+						Current = { bounds },
 						IsRigid = true,
 					},
 					DamageSetting = new Damage()
@@ -226,7 +225,7 @@ namespace StepFlow.Master.Proxies
 					Kind = ItemKind.Speed,
 					Body = new Collided()
 					{
-						Current = new[] { bounds },
+						Current = { bounds },
 						IsRigid = true,
 					},
 					Speed = 10,
@@ -236,7 +235,7 @@ namespace StepFlow.Master.Proxies
 					Kind = ItemKind.AttackSpeed,
 					Body = new Collided()
 					{
-						Current = new[] { bounds },
+						Current = { bounds },
 						IsRigid = true,
 					},
 					AttackCooldown = 1000,
@@ -246,7 +245,7 @@ namespace StepFlow.Master.Proxies
 					Kind = ItemKind.AddStrength,
 					Body = new Collided()
 					{
-						Current = new[] { bounds },
+						Current = { bounds },
 						IsRigid = true,
 					},
 					AddStrength = 20,
@@ -254,7 +253,7 @@ namespace StepFlow.Master.Proxies
 				_ => throw new System.InvalidOperationException(),
 			};
 
-			var itemsProxy = CreateListProxy(Items);
+			var itemsProxy = Owner.CreateListProxy(Items);
 			itemsProxy.Add(item.Target);
 		}
 
@@ -264,11 +263,11 @@ namespace StepFlow.Master.Proxies
 			{
 				Body = new Collided()
 				{
-					Current = new[] { bounds },
+					Current = { bounds },
 				},
 			};
 
-			var placesProxy = CreateListProxy(Owner.Playground.Places);
+			var placesProxy = Owner.CreateListProxy(Owner.Playground.Places);
 			placesProxy.Add(place);
 		}
 	}

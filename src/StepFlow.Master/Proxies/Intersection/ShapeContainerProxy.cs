@@ -1,25 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using StepFlow.Intersection;
-using StepFlow.Master.Proxies.Collections;
 
 namespace StepFlow.Master.Proxies.Intersection
 {
-	public interface IShapeContainerProxy : IShapeBaseProxy<ShapeContainer>, IList<Rectangle>
+	public interface IShapeContainerProxy : IShapeBaseProxy<ShapeContainer>, ICollection<Rectangle>
 	{
-		void Reset(IEnumerable<Rectangle> rectangles)
+		void Reset(Rectangle rectangle, bool force = false)
+		{
+			if (force || !Equal(new[] { rectangle }))
+			{
+				Clear();
+				Add(rectangle);
+			}
+		}
+
+		void Reset(IEnumerable<Rectangle> rectangles, bool force = false)
 		{
 			if (rectangles is null)
 			{
-				throw new ArgumentNullException();
+				throw new ArgumentNullException(nameof(rectangles));
 			}
 
-			Clear();
+			if (force || !Equal(rectangles.ToArray()))
+			{
+				Clear();
+				foreach (var rectangle in rectangles)
+				{
+					Add(rectangle);
+				}
+			}
+		}
+
+		bool Equal(ICollection<Rectangle> rectangles)
+		{
+			if (rectangles is null)
+			{
+				throw new ArgumentNullException(nameof(rectangles));
+			}
+
+			if (rectangles.Count != Target.Count)
+			{
+				return false;
+			}
+
 			foreach (var rectangle in rectangles)
 			{
-				Add(rectangle);
+				if (!Target.Contains(rectangle))
+				{
+					return false;
+				}
 			}
+
+			return true;
 		}
 	}
 
@@ -27,12 +62,10 @@ namespace StepFlow.Master.Proxies.Intersection
 	{
 		public ShapeContainerProxy(PlayMaster owner, ShapeContainer target) : base(owner, target)
 		{
-			ItemsProxy = new ListProxy<Rectangle, IList<Rectangle>>(Owner, Target);
+			ItemsProxy = Owner.CreateCollectionProxy(Target);
 		}
 
-		private IList<Rectangle> ItemsProxy { get; }
-
-		Rectangle IList<Rectangle>.this[int index] { get => ItemsProxy[index]; set => ItemsProxy[index] = value; }
+		private ICollection<Rectangle> ItemsProxy { get; }
 
 		public bool IsReadOnly => ItemsProxy.IsReadOnly;
 
@@ -44,12 +77,6 @@ namespace StepFlow.Master.Proxies.Intersection
 
 		public void CopyTo(Rectangle[] array, int arrayIndex) => ItemsProxy.CopyTo(array, arrayIndex);
 
-		public int IndexOf(Rectangle item) => ItemsProxy.IndexOf(item);
-
-		public void Insert(int index, Rectangle item) => ItemsProxy.Insert(index, item);
-
 		public bool Remove(Rectangle item) => ItemsProxy.Remove(item);
-
-		public void RemoveAt(int index) => ItemsProxy.RemoveAt(index);
 	}
 }
