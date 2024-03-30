@@ -29,7 +29,19 @@ namespace StepFlow.Master.Proxies
 			var accessor = Owner.GetAccessor<TTarget, Turn?>(propertyName);
 
 			var oldValue = accessor.GetValue(Target);
-			if (newValue is { } newValueInstance && oldValue is { } oldValueInstance && newValueInstance.Executor == oldValueInstance.Executor)
+			if (newValue == null && oldValue == new Turn(0))
+			{
+				var command = Owner.GetReset(Target, accessor);
+				Owner.TimeAxis.Add(command);
+				return true;
+			}
+			else if (newValue == new Turn(1) && oldValue == null)
+			{
+				var command = Owner.GetWait(Target, accessor);
+				Owner.TimeAxis.Add(command);
+				return true;
+			}
+			else if (newValue is { } newValueInstance && oldValue is { } oldValueInstance && newValueInstance.Executor == oldValueInstance.Executor)
 			{
 				if (newValueInstance.Duration == oldValueInstance.Duration - 1)
 				{

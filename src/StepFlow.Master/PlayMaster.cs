@@ -191,6 +191,34 @@ namespace StepFlow.Master
 			return decrementCommand;
 		}
 
+		private Dictionary<object, ICommand> Resets { get; } = new Dictionary<object, ICommand>();
+
+		public ICommand GetReset<TTarget>(TTarget target, IValueAccessor<TTarget, Turn?> accessor)
+			where TTarget : class
+		{
+			if (!Resets.TryGetValue(target, out var command))
+			{
+				command = new TurnResetCommand<TTarget>(target, accessor);
+				Resets.Add(target, command);
+			}
+
+			return command;
+		}
+
+		private Dictionary<object, ICommand> Waits { get; } = new Dictionary<object, ICommand>();
+
+		public ICommand GetWait<TTarget>(TTarget target, IValueAccessor<TTarget, Turn?> accessor)
+			where TTarget : class
+		{
+			if (!Waits.TryGetValue(target, out var command))
+			{
+				command = new TurnWaitCommand<TTarget>(target, accessor);
+				Waits.Add(target, command);
+			}
+
+			return command;
+		}
+
 		#endregion
 	}
 }
