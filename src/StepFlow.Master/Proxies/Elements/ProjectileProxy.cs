@@ -36,7 +36,7 @@ namespace StepFlow.Master.Proxies.Elements
 				projectilesProxy.Remove(Target);
 
 				var bodyProxy = (ICollidedProxy)Owner.CreateProxy(Body);
-				bodyProxy.Clear();
+				bodyProxy.Unregister();
 			}
 		}
 	}

@@ -59,8 +59,8 @@ namespace StepFlow.Master.Proxies
 				},
 				Cooldown = new Scale()
 				{
-					Max = 3000,
-					Value = 3000,
+					Max = TimeTick.FromFrames(10),
+					Value = TimeTick.FromFrames(10),
 				},
 				Body = body,
 				Schedulers =

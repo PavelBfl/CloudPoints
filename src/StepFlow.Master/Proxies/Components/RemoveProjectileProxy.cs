@@ -26,7 +26,7 @@ namespace StepFlow.Master.Proxies.Components
 				var projectilesProxy = Owner.CreateListProxy(Owner.GetPlaygroundProxy().Projectiles);
 				projectilesProxy.Remove(projectile);
 
-				((ICollidedProxy?)Owner.CreateProxy(projectile.Body))?.Clear();
+				((ICollidedProxy?)Owner.CreateProxy(projectile.Body))?.Unregister();
 			}
 		}
 	}
