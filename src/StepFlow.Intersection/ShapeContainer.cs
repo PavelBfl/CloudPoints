@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -62,6 +63,20 @@ namespace StepFlow.Intersection
 		{
 			SubRectangles.Add(item);
 			Reset();
+		}
+
+		// TODO Реализован для добавления элементов в инициализаторе, не уверен что он нужен
+		public void Add(IEnumerable<Rectangle> items)
+		{
+			if (items is null)
+			{
+				throw new ArgumentNullException(nameof(items));
+			}
+
+			foreach (var item in items)
+			{
+				Add(item);
+			}
 		}
 
 		public void Clear()

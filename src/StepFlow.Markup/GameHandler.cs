@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.Metrics;
 using System.Drawing;
+using StepFlow.Common.Exceptions;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
@@ -23,6 +24,7 @@ namespace StepFlow.Markup
 			Meter.CreateObservableGauge("Time", () => PlayMaster.TimeAxis.Current);
 			Meter.CreateObservableGauge("Commands", () => PlayMaster.TimeAxis.Source.Current);
 			Meter.CreateObservableGauge("Frame", () => Frame.TotalMilliseconds);
+			Meter.CreateObservableGauge("Shapes", () => Playground.IntersectionContext.Count);
 			Init();
 		}
 
@@ -72,43 +74,42 @@ namespace StepFlow.Markup
 
 		private void CreateRoom(Point location, Size size, int width)
 		{
+			var top = new Rectangle[size.Width];
+			var bottom = new Rectangle[size.Width];
 			for (var iX = 0; iX < size.Width; iX++)
 			{
-				CreateBounds(new(iX, 0));
+				top[iX] = CreatePixel(new(iX, 0));
+				bottom[iX] = CreatePixel(new(iX, size.Height));
 			}
 
+			var left = new Rectangle[size.Height];
+			var right = new Rectangle[size.Height];
 			for (var iY = 0; iY < size.Height; iY++)
 			{
-				CreateBounds(new(size.Width, iY));
+				left[iY] = CreatePixel(new(0, iY));
+				right[iY] = CreatePixel(new(size.Width, iY));
 			}
 
-			for (var iX = size.Width; iX > 0; iX--)
-			{
-				CreateBounds(new(iX, size.Height));
-			}
+			PlayMaster.CreateObstruction.Execute(new() { Bounds = top, Kind = ObstructionKind.Tiles, });
+			PlayMaster.CreateObstruction.Execute(new() { Bounds = bottom, Kind = ObstructionKind.Tiles, });
+			PlayMaster.CreateObstruction.Execute(new() { Bounds = left, Kind = ObstructionKind.Tiles, });
+			PlayMaster.CreateObstruction.Execute(new() { Bounds = right, Kind = ObstructionKind.Tiles, });
 
-			for (var iY = size.Height; iY > 0; iY--)
-			{
-				CreateBounds(new(0, iY));
-			}
-
-			void CreateBounds(Point index)
-			{
-				var tileLocation = new Point(index.X * width + location.X, index.Y * width + location.Y);
-				var bounds = new Rectangle(tileLocation.X, tileLocation.Y, width, width);
-				CreateObstruction(bounds, null);
-			}
+			Rectangle CreatePixel(Point position) => new Rectangle(
+				location.X + position.X * width,
+				location.Y + position.Y * width,
+				width,
+				width
+			);
 		}
 
 		private void CreateObstruction(Rectangle bounds, int? strength)
 		{
 			PlayMaster.CreateObstruction.Execute(new()
 			{
-				X = bounds.X,
-				Y = bounds.Y,
-				Width = bounds.Width,
-				Height = bounds.Height,
+				Bounds = new[] { bounds },
 				Strength = strength,
+				Kind = ObstructionKind.Single,
 			});
 		}
 
@@ -192,15 +193,27 @@ namespace StepFlow.Markup
 
 			foreach (var place in playground.Places)
 			{
-				CreateTexture(place.Body, Texture.PoisonPlace, null);
+				CreateTexture(place.Body?.Current.Bounds ?? Rectangle.Empty, Texture.PoisonPlace, null);
 			}
 
-			CreateTexture(playground.PlayerCharacter?.Body, Texture.Character, playground.PlayerCharacter?.Strength);
+			CreateTexture(playground.PlayerCharacter?.Body?.Current.Bounds ?? Rectangle.Empty, Texture.Character, playground.PlayerCharacter?.Strength);
 			CreateBorder(playground.PlayerCharacter?.Body, Color.Red);
 
 			foreach (var barrier in playground.Obstructions)
 			{
-				CreateTexture(barrier.Body, Texture.Wall, barrier.Strength);
+				switch (barrier.Kind)
+				{
+					case ObstructionKind.Single:
+						CreateTexture(barrier.Body?.Current.Bounds ?? Rectangle.Empty, Texture.Wall, barrier.Strength);
+						break;
+					case ObstructionKind.Tiles:
+						foreach (var bounds in barrier.Body?.Current ?? Enumerable.Empty<Rectangle>())
+						{
+							CreateTexture(bounds, Texture.Wall, barrier.Strength);
+						}
+						break;
+					default: throw EnumNotSupportedException.Create<ObstructionKind>(barrier.Kind);
+				}
 			}
 
 			foreach (var projectile in playground.Projectiles)
@@ -214,7 +227,7 @@ namespace StepFlow.Markup
 					_ => Texture.Projectile,
 				};
 
-				CreateTexture(projectile.Body, textureName, null);
+				CreateTexture(projectile.Body?.Current.Bounds ?? Rectangle.Empty, textureName, null);
 			}
 
 			foreach (var item in playground.Items)
@@ -229,28 +242,28 @@ namespace StepFlow.Markup
 					_ => Texture.ItemUnknown,
 				};
 
-				CreateTexture(item.Body, textureName, null);
+				CreateTexture(item.Body?.Current.Bounds ?? Rectangle.Empty, textureName, null);
 			}
 
 			foreach (var enemy in playground.Enemies)
 			{
-				CreateTexture(enemy.Body, Texture.Enemy, enemy.Strength);
+				CreateTexture(enemy.Body?.Current.Bounds ?? Rectangle.Empty, Texture.Enemy, enemy.Strength);
 				CreateBorder(enemy.Body, Color.Red);
 				CreateBorder(enemy.Vision, Color.Yellow);
 			}
 		}
 
-		private void CreateTexture(Collided? collided, Texture texture, Scale? strength)
+		private void CreateTexture(Rectangle bounds, Texture texture, Scale? strength)
 		{
-			if (collided is { })
+			if (!bounds.IsEmpty)
 			{
-				Drawer.Draw(texture, collided.Current.Bounds);
+				Drawer.Draw(texture, bounds);
 				if (strength is not null)
 				{
 					var strengthBounds = new Rectangle(
-						collided.Current.Bounds.Left,
-						collided.Current.Bounds.Top,
-						collided.Current.Bounds.Width,
+						bounds.Left,
+						bounds.Top,
+						bounds.Width,
 						0
 					);
 					Drawer.DrawString(

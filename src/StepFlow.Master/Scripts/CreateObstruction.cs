@@ -1,4 +1,6 @@
 ﻿using System.Drawing;
+using System.Linq;
+using StepFlow.Core.Elements;
 
 namespace StepFlow.Master.Scripts
 {
@@ -11,22 +13,19 @@ namespace StepFlow.Master.Scripts
 		public override void Execute(Parameters parameters)
 		{
 			PlayMaster.GetPlaygroundProxy().CreateObstruction(
-				new Rectangle(parameters.X, parameters.Y, parameters.Width, parameters.Height),
-				parameters.Strength
+				parameters.Bounds ?? Enumerable.Empty<Rectangle>(),
+				parameters.Strength,
+				parameters.Kind
 			);
 		}
 
 		public struct Parameters
 		{
-			public int X { get; set; }
-
-			public int Y { get; set; }
-
-			public int Width { get; set; }
-
-			public int Height { get; set; }
+			public Rectangle[]? Bounds { get; set; }
 
 			public int? Strength { get; set; }
+
+			public ObstructionKind Kind { get; set; }
 		}
 	}
 }

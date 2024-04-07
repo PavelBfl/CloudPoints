@@ -18,7 +18,7 @@ namespace StepFlow.Master.Proxies
 		IList<Item> Items { get; }
 		IList<Enemy> Enemies { get; }
 
-		void CreateObstruction(Rectangle bounds, int? strength);
+		void CreateObstruction(IEnumerable<Rectangle> bounds, int? strength, ObstructionKind kind);
 		void CreatePlayerCharacter(Rectangle bounds, int strength);
 		void CreateEnemy(Rectangle bounds, Rectangle vision, ItemKind releaseItem);
 		void CreateItem(Point position, ItemKind kind);
@@ -84,11 +84,12 @@ namespace StepFlow.Master.Proxies
 			};
 		}
 
-		public void CreateObstruction(Rectangle bounds, int? strength)
+		public void CreateObstruction(IEnumerable<Rectangle> bounds, int? strength, ObstructionKind kind)
 		{
 			var barrier = new Obstruction()
 			{
 				Name = "Obstruction",
+				Kind = kind,
 				Body = new Collided()
 				{
 					Current = { bounds },
