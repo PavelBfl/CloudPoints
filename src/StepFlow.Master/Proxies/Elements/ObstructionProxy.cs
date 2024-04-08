@@ -23,7 +23,9 @@ namespace StepFlow.Master.Proxies.Elements
 
 			if (Strength?.Value == 0)
 			{
-				var obstructionsProxy = Owner.CreateListProxy(Owner.GetPlaygroundProxy().Obstructions);
+				var playgroundProxy = (IPlaygroundProxy)Owner.CreateProxy(Owner.Playground);
+
+				var obstructionsProxy = Owner.CreateListProxy(playgroundProxy.Obstructions);
 				obstructionsProxy.Remove(Target);
 
 				var collidedProxy = (ICollidedProxy)Owner.CreateProxy(Body);

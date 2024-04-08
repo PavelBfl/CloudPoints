@@ -74,17 +74,17 @@ namespace StepFlow.Markup
 
 		private void CreateRoom(Point location, Size size, int width)
 		{
-			var top = new Rectangle[size.Width];
-			var bottom = new Rectangle[size.Width];
-			for (var iX = 0; iX < size.Width; iX++)
+			var top = new Rectangle[size.Width + 1];
+			var bottom = new Rectangle[size.Width + 1];
+			for (var iX = 0; iX <= size.Width; iX++)
 			{
 				top[iX] = CreatePixel(new(iX, 0));
 				bottom[iX] = CreatePixel(new(iX, size.Height));
 			}
 
-			var left = new Rectangle[size.Height];
-			var right = new Rectangle[size.Height];
-			for (var iY = 0; iY < size.Height; iY++)
+			var left = new Rectangle[size.Height + 1];
+			var right = new Rectangle[size.Height + 1];
+			for (var iY = 0; iY <= size.Height; iY++)
 			{
 				left[iY] = CreatePixel(new(0, iY));
 				right[iY] = CreatePixel(new(size.Width, iY));

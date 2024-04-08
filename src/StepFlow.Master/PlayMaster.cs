@@ -67,8 +67,6 @@ namespace StepFlow.Master
 
 		public Playground Playground { get; } = new Playground();
 
-		public IPlaygroundProxy GetPlaygroundProxy() => new PlaygroundProxy(this, Playground);
-
 		[return: NotNullIfNotNull("value")]
 		public object? CreateProxy(object? value)
 		{

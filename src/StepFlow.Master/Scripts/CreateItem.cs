@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using StepFlow.Core.Elements;
+using StepFlow.Master.Proxies;
 
 namespace StepFlow.Master.Scripts
 {
@@ -11,7 +12,8 @@ namespace StepFlow.Master.Scripts
 
 		public override void Execute(Parameters parameters)
 		{
-			PlayMaster.GetPlaygroundProxy().CreateItem(
+			var playgroundProxy = (IPlaygroundProxy)PlayMaster.CreateProxy(PlayMaster.Playground);
+			playgroundProxy.CreateItem(
 				new Point(parameters.X, parameters.Y),
 				parameters.Kind
 			);

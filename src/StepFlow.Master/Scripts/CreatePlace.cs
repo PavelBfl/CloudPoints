@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using StepFlow.Master.Proxies;
 
 namespace StepFlow.Master.Scripts
 {
@@ -10,7 +11,8 @@ namespace StepFlow.Master.Scripts
 
 		public override void Execute(Parameters parameters)
 		{
-			PlayMaster.GetPlaygroundProxy().CreatePlace(parameters.Bounds);
+			var playgroundProxy = (IPlaygroundProxy)PlayMaster.CreateProxy(PlayMaster.Playground);
+			playgroundProxy.CreatePlace(parameters.Bounds);
 		}
 
 		public struct Parameters

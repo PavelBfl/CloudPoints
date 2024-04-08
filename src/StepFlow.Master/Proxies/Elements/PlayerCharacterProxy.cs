@@ -33,7 +33,8 @@ namespace StepFlow.Master.Proxies.Elements
 
 			if (Strength.Value == 0)
 			{
-				Owner.GetPlaygroundProxy().PlayerCharacter = null;
+				var playgroundProxy = (IPlaygroundProxy)Owner.CreateProxy(Owner.Playground);
+				playgroundProxy.PlayerCharacter = null;
 			}
 			else
 			{

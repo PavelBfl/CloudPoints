@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using StepFlow.Core.Elements;
+using StepFlow.Master.Proxies;
 
 namespace StepFlow.Master.Scripts
 {
@@ -11,7 +12,8 @@ namespace StepFlow.Master.Scripts
 
 		public override void Execute(Parameters parameters)
 		{
-			PlayMaster.GetPlaygroundProxy().CreateEnemy(
+			var playgroundProxy = (IPlaygroundProxy)PlayMaster.CreateProxy(PlayMaster.Playground);
+			playgroundProxy.CreateEnemy(
 				new Rectangle(parameters.X, parameters.Y, parameters.Width, parameters.Height),
 				new Rectangle(parameters.VisionX, parameters.VisionY, parameters.VisionWidth, parameters.VisionHeight),
 				parameters.ReleaseItem

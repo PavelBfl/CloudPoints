@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using System.Linq;
 using StepFlow.Core.Elements;
+using StepFlow.Master.Proxies;
 
 namespace StepFlow.Master.Scripts
 {
@@ -12,7 +13,9 @@ namespace StepFlow.Master.Scripts
 
 		public override void Execute(Parameters parameters)
 		{
-			PlayMaster.GetPlaygroundProxy().CreateObstruction(
+			var playgroundProxy = (IPlaygroundProxy)PlayMaster.CreateProxy(PlayMaster.Playground);
+
+			playgroundProxy.CreateObstruction(
 				parameters.Bounds ?? Enumerable.Empty<Rectangle>(),
 				parameters.Strength,
 				parameters.Kind
