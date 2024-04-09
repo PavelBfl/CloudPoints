@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Numerics;
 using StepFlow.Core.Elements;
 using StepFlow.Master.Proxies;
 
@@ -14,23 +15,21 @@ namespace StepFlow.Master.Scripts
 		{
 			var playgroundProxy = (IPlaygroundProxy)PlayMaster.CreateProxy(PlayMaster.Playground);
 			playgroundProxy.CreateEnemy(
-				new Rectangle(parameters.X, parameters.Y, parameters.Width, parameters.Height),
-				new Rectangle(parameters.VisionX, parameters.VisionY, parameters.VisionWidth, parameters.VisionHeight),
-				parameters.ReleaseItem
+				parameters.Bounds,
+				parameters.Vision,
+				parameters.Strategy,
+				parameters.ReleaseItem,
+				parameters.BeginVector
 			);
 		}
 
 		public struct Parameters
 		{
-			public int X { get; set; }
-			public int Y { get; set; }
-			public int Width { get; set; }
-			public int Height { get; set; }
-			public int VisionX { get; set; }
-			public int VisionY { get; set; }
-			public int VisionWidth { get; set; }
-			public int VisionHeight { get; set; }
+			public Rectangle Bounds { get; set; }
+			public Rectangle Vision { get; set; }
+			public Strategy Strategy { get; set; }
 			public ItemKind ReleaseItem { get; set; }
+			public Vector2 BeginVector { get; set; }
 		}
 	}
 }

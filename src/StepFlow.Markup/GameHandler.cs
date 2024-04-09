@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.Metrics;
 using System.Drawing;
+using System.Numerics;
 using StepFlow.Common.Exceptions;
 using StepFlow.Core;
 using StepFlow.Core.Components;
@@ -52,8 +53,8 @@ namespace StepFlow.Markup
 
 			PlayMaster.CreatePlace.Execute(new() { Bounds = new(400, 150, 50, 50) });
 
-			CreateEnemy(new(500, 180, 20, 20), 50);
-			CreateEnemy(new(200, 180, 20, 20), 50);
+			CreateEnemy(new(500, 180, 20, 20), 50, Strategy.Reflection, new(2, 1));
+			CreateEnemy(new(200, 180, 20, 20), 50, Strategy.CW, new(1, 0));
 
 			CreateObstruction(new(50, 100, 40, 40), 150);
 
@@ -123,26 +124,20 @@ namespace StepFlow.Markup
 			PlayMaster.CreateProjectile.Execute(new() { Course = course, });
 		}
 
-		private void CreateEnemy(Rectangle bounds, int visionSize)
+		private void CreateEnemy(Rectangle bounds, int visionSize, Strategy strategy, Vector2 beginVector)
 		{
-			var vision = Rectangle.FromLTRB(
-				bounds.Left - visionSize,
-				bounds.Top - visionSize,
-				bounds.Right + visionSize,
-				bounds.Bottom + visionSize
-			);
-
 			PlayMaster.CreateEnemy.Execute(new()
 			{
-				X = bounds.X,
-				Y = bounds.Y,
-				Width = bounds.Width,
-				Height = bounds.Height,
-				VisionX = vision.X,
-				VisionY = vision.Y,
-				VisionWidth = vision.Width,
-				VisionHeight = vision.Height,
+				Bounds = bounds,
+				Vision = Rectangle.FromLTRB(
+					bounds.Left - visionSize,
+					bounds.Top - visionSize,
+					bounds.Right + visionSize,
+					bounds.Bottom + visionSize
+				),
+				Strategy = strategy,
 				ReleaseItem = ItemKind.AddStrength,
+				BeginVector = beginVector
 			});
 		}
 

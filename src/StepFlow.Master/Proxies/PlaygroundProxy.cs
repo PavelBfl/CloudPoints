@@ -20,7 +20,7 @@ namespace StepFlow.Master.Proxies
 
 		void CreateObstruction(IEnumerable<Rectangle> bounds, int? strength, ObstructionKind kind);
 		void CreatePlayerCharacter(Rectangle bounds, int strength);
-		void CreateEnemy(Rectangle bounds, Rectangle vision, ItemKind releaseItem);
+		void CreateEnemy(Rectangle bounds, Rectangle vision, Strategy strategy, ItemKind releaseItem, Vector2 beginVector);
 		void CreateItem(Point position, ItemKind kind);
 		void CreatePlace(Rectangle bounds);
 	}
@@ -130,7 +130,7 @@ namespace StepFlow.Master.Proxies
 			projectilesProxy.Add(projectile);
 		}
 
-		public void CreateEnemy(Rectangle bounds, Rectangle vision, ItemKind releaseItem)
+		public void CreateEnemy(Rectangle bounds, Rectangle vision, Strategy strategy, ItemKind releaseItem, Vector2 beginVector)
 		{
 			var body = new Collided()
 			{
@@ -154,6 +154,7 @@ namespace StepFlow.Master.Proxies
 					Value = 100,
 					Max = 100,
 				},
+				Strategy = strategy,
 				ReleaseItem = releaseItem,
 				Schedulers =
 				{
@@ -167,7 +168,7 @@ namespace StepFlow.Master.Proxies
 								new CourseVector()
 								{
 									Name = Material.SHEDULER_CONTROL_NAME,
-									Value = new Vector2(1, 0),
+									Value = beginVector,
 								},
 							},
 						}

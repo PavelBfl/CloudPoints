@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Numerics;
+using StepFlow.Common.Exceptions;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.Schedulers;
@@ -73,17 +74,69 @@ namespace StepFlow.Master.Proxies.Elements
 				}
 				else if (otherCollided.Collided.IsRigid &&
 					thisCollided.Collided == Body &&
-					Target.TryGetControlVector(out var runner, out _, out var controlVector) &&
-					runner.Current is { })
+					Target.GetControlVector() is { } controlVector &&
+					controlVector.Runner.Current is { })
 				{
-					var runnerProxy = (ISchedulerRunnerProxy)Owner.CreateProxy(runner);
-					runnerProxy.Current = null;
-
-					var rotate = Matrix3x2.CreateRotation(MathF.PI / 2);
-					var controlVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(controlVector);
-					controlVectorProxy.Value = Vector2.Transform(controlVector.Value, rotate);
+					switch (Target.Strategy)
+					{
+						case Strategy.None:
+							StrategyNone(controlVector);
+							break;
+						case Strategy.CW:
+							StrategyClock(true, controlVector);
+							break;
+						case Strategy.CWW:
+							StrategyClock(false, controlVector);
+							break;
+						case Strategy.Reflection:
+							StrategyReflection(thisCollided.Collided.Current, otherCollided.Collided.Current, controlVector);
+							break;
+						default: throw EnumNotSupportedException.Create(Target.Strategy);
+					}
 				}
 			}
+		}
+
+		private void StrategyNone(Material.ControlVector controlVector)
+		{
+			var runnerProxy = (ISchedulerRunnerProxy)Owner.CreateProxy(controlVector.Runner);
+			runnerProxy.Current = null;
+
+			var controlVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(controlVector.CourseVector);
+			controlVectorProxy.Value = Vector2.Zero;
+		}
+
+		private void StrategyClock(bool cw, Material.ControlVector controlVector)
+		{
+			var runnerProxy = (ISchedulerRunnerProxy)Owner.CreateProxy(controlVector.Runner);
+			runnerProxy.Current = null;
+
+			var rotate = Matrix3x2.CreateRotation(MathF.PI / (cw ? 2 : -2));
+			var controlVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(controlVector.CourseVector);
+			controlVectorProxy.Value = Vector2.Transform(controlVector.CourseVector.Value, rotate);
+		}
+
+		private void StrategyReflection(ShapeContainer shape, ShapeContainer otherShape, Material.ControlVector controlVector)
+		{
+			Vector2 newVector = controlVector.CourseVector.Value;
+			if (shape.Bounds.Right <= otherShape.Bounds.Left || shape.Bounds.Left >= otherShape.Bounds.Right)
+			{
+				newVector.X = -newVector.X;
+			}
+			else if (shape.Bounds.Top <= otherShape.Bounds.Bottom || shape.Bounds.Bottom >= otherShape.Bounds.Top)
+			{
+				newVector.Y = -newVector.Y;
+			}
+			else
+			{
+				throw new InvalidOperationException();
+			}
+
+			var runnerProxy = (ISchedulerRunnerProxy)Owner.CreateProxy(controlVector.Runner);
+			runnerProxy.Current = null;
+
+			var controlVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(controlVector.CourseVector);
+			controlVectorProxy.Value = newVector;
 		}
 
 		private void CreateProjectile(Material other)

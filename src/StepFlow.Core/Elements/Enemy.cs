@@ -2,6 +2,14 @@
 
 namespace StepFlow.Core.Elements
 {
+	public enum Strategy
+	{
+		None,
+		CW,
+		CWW,
+		Reflection
+	}
+
 	public sealed class Enemy : Material
 	{
 		private Collided? vision;
@@ -15,6 +23,8 @@ namespace StepFlow.Core.Elements
 		public Scale? Cooldown { get => cooldown; set => SetComponent(ref cooldown, value); }
 
 		public Scale GetCooldownRequired() => PropertyRequired(Cooldown, nameof(Cooldown));
+
+		public Strategy Strategy { get; set; }
 
 		public ItemKind ReleaseItem { get; set; }
 	}

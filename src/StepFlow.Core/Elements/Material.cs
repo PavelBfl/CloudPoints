@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using StepFlow.Core.Components;
 using StepFlow.Core.Schedulers;
@@ -23,12 +24,7 @@ namespace StepFlow.Core.Elements
 
 		public ICollection<SchedulerRunner> Schedulers { get; } = new HashSet<SchedulerRunner>();
 
-		public CourseVector? GetControlVector() => Schedulers.Select(x => x.Scheduler)
-			.OfType<SchedulerVector>()
-			.SelectMany(x => x.Vectors)
-			.SingleOrDefault(x => x.Name == SHEDULER_CONTROL_NAME);
-
-		public bool TryGetControlVector(out SchedulerRunner runner, out SchedulerVector scheduler, out CourseVector courseVector)
+		public ControlVector? GetControlVector()
 		{
 			foreach (var localRunner in Schedulers)
 			{
@@ -38,19 +34,29 @@ namespace StepFlow.Core.Elements
 					{
 						if (vector.Name == SHEDULER_CONTROL_NAME)
 						{
-							runner = localRunner;
-							scheduler = schedulerVector;
-							courseVector = vector;
-							return true;
+							return new ControlVector(localRunner, schedulerVector, vector);
 						}
 					}
 				}
 			}
 
-			runner = null;
-			scheduler = null;
-			courseVector = null;
-			return false;
+			return null;
+		}
+
+		public sealed class ControlVector
+		{
+			public ControlVector(SchedulerRunner runner, SchedulerVector scheduler, CourseVector courseVector)
+			{
+				Runner = runner ?? throw new ArgumentNullException(nameof(runner));
+				Scheduler = scheduler ?? throw new ArgumentNullException(nameof(scheduler));
+				CourseVector = courseVector ?? throw new ArgumentNullException(nameof(courseVector));
+			}
+
+			public SchedulerRunner Runner { get; }
+
+			public SchedulerVector Scheduler { get; }
+
+			public CourseVector CourseVector { get; }
 		}
 	}
 }

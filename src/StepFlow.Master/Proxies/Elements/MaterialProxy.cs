@@ -74,7 +74,7 @@ namespace StepFlow.Master.Proxies.Elements
 				var offset = course?.ToOffset() ?? Point.Empty;
 				var vector = new Vector2(offset.X, offset.Y) * Speed;
 
-				var controlVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(controlVector);
+				var controlVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(controlVector.CourseVector);
 				controlVectorProxy.Value = vector;
 			}
 		}
