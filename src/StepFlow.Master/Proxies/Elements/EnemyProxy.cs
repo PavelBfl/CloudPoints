@@ -33,8 +33,8 @@ namespace StepFlow.Master.Proxies.Elements
 
 			if (Strength?.Value == 0)
 			{
-				var enemiesProxy = Owner.CreateListProxy(Owner.Playground.Enemies);
-				enemiesProxy.Remove(Target);
+				var items = Owner.CreateCollectionUsedProxy(Owner.Playground.Items);
+				items.Remove(Target);
 
 				var itemPosition = Body.Current.Bounds.GetCenter();
 				Owner.CreateItem.Execute(new Scripts.CreateItem.Parameters()
@@ -68,7 +68,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 			if (Target != otherMaterial)
 			{
-				if (thisCollided.Collided == Vision && otherMaterial == Owner.Playground.PlayerCharacter)
+				if (thisCollided.Collided == Vision && otherMaterial == Owner.Playground.GetPlayerCharacterRequired())
 				{
 					CreateProjectile(otherMaterial);
 				}
@@ -212,11 +212,26 @@ namespace StepFlow.Master.Proxies.Elements
 					Scheduler = schedulerUnion,
 				});
 
-				var projectilesProxy = Owner.CreateListProxy(Owner.Playground.Projectiles);
-				projectilesProxy.Add(projectile.Target);
+				Owner.GetPlaygroundItemsProxy().Add(projectile.Target);
 				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);
 				cooldownProxy.SetMax();
 			}
+		}
+
+		public override void Begin()
+		{
+			base.Begin();
+
+			var visionProxy = (ICollidedProxy)Owner.CreateProxy(Vision);
+			visionProxy.Register();
+		}
+
+		public override void End()
+		{
+			base.End();
+
+			var visionProxy = (ICollidedProxy)Owner.CreateProxy(Vision);
+			visionProxy.Unregister();
 		}
 	}
 }

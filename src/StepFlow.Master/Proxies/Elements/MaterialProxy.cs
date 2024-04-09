@@ -11,7 +11,7 @@ using StepFlow.Master.Proxies.Schedulers;
 
 namespace StepFlow.Master.Proxies.Elements
 {
-	public interface IMaterialProxy<out TTarget> : IProxyBase<TTarget>
+	public interface IMaterialProxy<out TTarget> : IProxyBase<TTarget>, IPlaygroundUsed
 		where TTarget : Material
 	{
 		Scale? Strength { get; }
@@ -27,6 +27,7 @@ namespace StepFlow.Master.Proxies.Elements
 		void SetCourse(Course? course);
 
 		void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided);
+
 		void ChangeStrength(Damage damage);
 	}
 
@@ -77,6 +78,18 @@ namespace StepFlow.Master.Proxies.Elements
 				var controlVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(controlVector.CourseVector);
 				controlVectorProxy.Value = vector;
 			}
+		}
+
+		public virtual void Begin()
+		{
+			var bodyProxy = (ICollidedProxy)Owner.CreateProxy(Body);
+			bodyProxy.Register();
+		}
+
+		public virtual void End()
+		{
+			var bodyProxy = (ICollidedProxy)Owner.CreateProxy(Body);
+			bodyProxy.Unregister();
 		}
 
 		public int Speed { get => Target.Speed; set => SetValue(value); }

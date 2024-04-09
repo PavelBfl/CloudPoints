@@ -23,14 +23,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 			if (Strength?.Value == 0)
 			{
-				var playgroundProxy = (IPlaygroundProxy)Owner.CreateProxy(Owner.Playground);
-
-				var obstructionsProxy = Owner.CreateListProxy(playgroundProxy.Obstructions);
-				obstructionsProxy.Remove(Target);
-
-				var collidedProxy = (ICollidedProxy)Owner.CreateProxy(Body);
-				collidedProxy.Current.Clear();
-				collidedProxy.Next.Clear();
+				Owner.GetPlaygroundItemsProxy().Remove(Target);
 			}
 		}
 	}

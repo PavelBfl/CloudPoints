@@ -33,8 +33,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 			if (Strength.Value == 0)
 			{
-				var playgroundProxy = (IPlaygroundProxy)Owner.CreateProxy(Owner.Playground);
-				playgroundProxy.PlayerCharacter = null;
+				Owner.GetPlaygroundItemsProxy().Remove(Target);
 			}
 			else
 			{
@@ -47,8 +46,7 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			if (otherMaterial is Item item)
 			{
-				var itemsProxy = Owner.CreateListProxy(Owner.Playground.Items);
-				itemsProxy.Remove(item);
+				Owner.GetPlaygroundItemsProxy().Remove(item);
 				var itemBody = (ICollidedProxy?)Owner.CreateProxy(item.Body);
 				itemBody?.Clear();
 				Owner.CreateListProxy(Target.Items).Add(item);
@@ -132,8 +130,7 @@ namespace StepFlow.Master.Proxies.Elements
 					Scheduler = schedulerUnion,
 				});
 
-				var projectilesProxy = Owner.CreateListProxy(Owner.Playground.Projectiles);
-				projectilesProxy.Add(projectile.Target);
+				Owner.GetPlaygroundItemsProxy().Add(projectile.Target);
 
 				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);
 				cooldownProxy.SetMax();

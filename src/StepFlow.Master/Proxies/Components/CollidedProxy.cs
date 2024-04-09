@@ -45,6 +45,12 @@ namespace StepFlow.Master.Proxies.Components
 			CurrentProxy.Unregister();
 			NextProxy.Unregister();
 		}
+
+		void Register()
+		{
+			CurrentProxy.Register();
+			NextProxy.Register();
+		}
 	}
 
 	internal sealed class CollidedProxy : ProxyBase<Collided>, ICollidedProxy

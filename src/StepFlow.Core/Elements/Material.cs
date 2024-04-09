@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using StepFlow.Core.Components;
 using StepFlow.Core.Schedulers;
 
@@ -9,6 +8,9 @@ namespace StepFlow.Core.Elements
 	public class Material : ElementBase
 	{
 		public const string SHEDULER_CONTROL_NAME = "Control";
+
+		public int Ordinal { get; set; }
+
 
 		private Scale? strength;
 

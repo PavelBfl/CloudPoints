@@ -12,11 +12,9 @@ namespace StepFlow.Master.Proxies
 {
 	public interface IPlaygroundProxy : IProxyBase<Playground>
 	{
-		PlayerCharacter? PlayerCharacter { get; set; }
-		IList<Obstruction> Obstructions { get; }
-		IList<Projectile> Projectiles { get; }
-		IList<Item> Items { get; }
-		IList<Enemy> Enemies { get; }
+		ICollection<Material> Items { get; }
+
+		ICollection<Material> ItemsProxy => Owner.CreateCollectionUsedProxy(Items);
 
 		void CreateObstruction(IEnumerable<Rectangle> bounds, int? strength, ObstructionKind kind);
 		void CreatePlayerCharacter(Rectangle bounds, int strength);
@@ -31,15 +29,7 @@ namespace StepFlow.Master.Proxies
 		{
 		}
 
-		public PlayerCharacter? PlayerCharacter { get => Target.PlayerCharacter; set => SetValue(value); }
-
-		public IList<Obstruction> Obstructions => Target.Obstructions;
-
-		public IList<Projectile> Projectiles => Target.Projectiles;
-
-		public IList<Item> Items => Target.Items;
-
-		public IList<Enemy> Enemies => Target.Enemies;
+		public ICollection<Material> Items => Target.Items;
 
 		public void CreatePlayerCharacter(Rectangle bounds, int strength)
 		{
@@ -49,7 +39,7 @@ namespace StepFlow.Master.Proxies
 				IsRigid = true,
 			};
 
-			PlayerCharacter = new PlayerCharacter()
+			var playerCharacter = new PlayerCharacter()
 			{
 				Name = "Player",
 				Strength = new Scale()
@@ -82,6 +72,8 @@ namespace StepFlow.Master.Proxies
 				},
 				Speed = 10,
 			};
+
+			Owner.GetPlaygroundItemsProxy().Add(playerCharacter);
 		}
 
 		public void CreateObstruction(IEnumerable<Rectangle> bounds, int? strength, ObstructionKind kind)
@@ -104,8 +96,7 @@ namespace StepFlow.Master.Proxies
 					null,
 			};
 
-			var obstructionsProxy = Owner.CreateListProxy(Obstructions);
-			obstructionsProxy.Add(barrier);
+			Owner.GetPlaygroundItemsProxy().Add(barrier);
 		}
 
 		public void CreateProjectile(Rectangle bounds, int value, DamageKind kind)
@@ -126,8 +117,7 @@ namespace StepFlow.Master.Proxies
 				Speed = 5,
 			};
 
-			var projectilesProxy = Owner.CreateListProxy(Projectiles);
-			projectilesProxy.Add(projectile);
+			Owner.GetPlaygroundItemsProxy().Add(projectile);
 		}
 
 		public void CreateEnemy(Rectangle bounds, Rectangle vision, Strategy strategy, ItemKind releaseItem, Vector2 beginVector)
@@ -177,8 +167,7 @@ namespace StepFlow.Master.Proxies
 				Speed = 10,
 			};
 
-			var enemiesProxy = Owner.CreateListProxy(Enemies);
-			enemiesProxy.Add(enemy);
+			Owner.GetPlaygroundItemsProxy().Add(enemy);
 		}
 
 		public void CreateItem(Point position, ItemKind kind)
@@ -255,8 +244,7 @@ namespace StepFlow.Master.Proxies
 				_ => throw new System.InvalidOperationException(),
 			};
 
-			var itemsProxy = Owner.CreateListProxy(Items);
-			itemsProxy.Add(item.Target);
+			Owner.GetPlaygroundItemsProxy().Add(item.Target);
 		}
 
 		public void CreatePlace(Rectangle bounds)
@@ -269,8 +257,7 @@ namespace StepFlow.Master.Proxies
 				},
 			};
 
-			var placesProxy = Owner.CreateListProxy(Owner.Playground.Places);
-			placesProxy.Add(place);
+			Owner.GetPlaygroundItemsProxy().Add(place);
 		}
 	}
 }

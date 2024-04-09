@@ -32,11 +32,7 @@ namespace StepFlow.Master.Proxies.Elements
 					strengthProxy.Add(-Damage.Value);
 				}
 
-				var projectilesProxy = Owner.CreateListProxy(Owner.Playground.Projectiles);
-				projectilesProxy.Remove(Target);
-
-				var bodyProxy = (ICollidedProxy)Owner.CreateProxy(Body);
-				bodyProxy.Unregister();
+				Owner.GetPlaygroundItemsProxy().Remove(Target);
 			}
 		}
 	}

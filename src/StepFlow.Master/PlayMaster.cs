@@ -103,9 +103,17 @@ namespace StepFlow.Master
 
 		public ICollection<T> CreateCollectionProxy<T>(ICollection<T> target) => new CollectionProxy<T, ICollection<T>>(this, target);
 
+		public ICollection<T> CreateCollectionUsedProxy<T>(ICollection<T> target)
+			where T : Material
+			=> new PlaygroundUsedCollectionProxy<T, ICollection<T>>(this, target);
+
+		public IPlaygroundProxy GetPlaygroundProxy() => (IPlaygroundProxy)CreateProxy(Playground);
+
+		public ICollection<Material> GetPlaygroundItemsProxy() => CreateCollectionUsedProxy(Playground.Items);
+
 		private void TakeStepInner()
 		{
-			foreach (var collision in Playground.GetMaterials()
+			foreach (var collision in Playground.Items
 				.Select(x => (IMaterialProxy<Material>)CreateProxy(x))
 				.ToArray()
 			)
@@ -129,7 +137,7 @@ namespace StepFlow.Master
 				}
 			}
 
-			foreach (var collision in Playground.GetMaterials()
+			foreach (var collision in Playground.Items
 				.Select(x => x.Body)
 				.OfType<Collided>()
 				.Select(x => (ICollidedProxy)CreateProxy(x))

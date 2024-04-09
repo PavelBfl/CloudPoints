@@ -21,9 +21,7 @@ namespace StepFlow.Core.Components
 		public Collided()
 		{
 			Current.Attached = new CollidedAttached(nameof(Current), this);
-			Playground.IntersectionContext.Add(Current);
 			Next.Attached = new CollidedAttached(nameof(Next), this);
-			Playground.IntersectionContext.Add(Next);
 		}
 
 		public ShapeContainer Current { get; } = new ShapeContainer(Playground.IntersectionContext);

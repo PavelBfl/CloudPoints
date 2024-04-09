@@ -186,15 +186,16 @@ namespace StepFlow.Markup
 
 			var playground = PlayMaster.Playground;
 
-			foreach (var place in playground.Places)
+			foreach (var place in playground.Items.OfType<Place>())
 			{
 				CreateTexture(place.Body?.Current.Bounds ?? Rectangle.Empty, Texture.PoisonPlace, null);
 			}
 
-			CreateTexture(playground.PlayerCharacter?.Body?.Current.Bounds ?? Rectangle.Empty, Texture.Character, playground.PlayerCharacter?.Strength);
-			CreateBorder(playground.PlayerCharacter?.Body, Color.Red);
+			var playerCharacter = playground.GetPlayerCharacterRequired();
+			CreateTexture(playerCharacter?.Body?.Current.Bounds ?? Rectangle.Empty, Texture.Character, playerCharacter?.Strength);
+			CreateBorder(playerCharacter?.Body, Color.Red);
 
-			foreach (var barrier in playground.Obstructions)
+			foreach (var barrier in playground.Items.OfType<Obstruction>())
 			{
 				switch (barrier.Kind)
 				{
@@ -211,7 +212,7 @@ namespace StepFlow.Markup
 				}
 			}
 
-			foreach (var projectile in playground.Projectiles)
+			foreach (var projectile in playground.Items.OfType<Projectile>())
 			{
 				var textureName = projectile.Damage.Kind switch
 				{
@@ -225,7 +226,7 @@ namespace StepFlow.Markup
 				CreateTexture(projectile.Body?.Current.Bounds ?? Rectangle.Empty, textureName, null);
 			}
 
-			foreach (var item in playground.Items)
+			foreach (var item in playground.Items.OfType<Item>())
 			{
 				var textureName = item.Kind switch
 				{
@@ -240,7 +241,7 @@ namespace StepFlow.Markup
 				CreateTexture(item.Body?.Current.Bounds ?? Rectangle.Empty, textureName, null);
 			}
 
-			foreach (var enemy in playground.Enemies)
+			foreach (var enemy in playground.Items.OfType<Enemy>())
 			{
 				CreateTexture(enemy.Body?.Current.Bounds ?? Rectangle.Empty, Texture.Enemy, enemy.Strength);
 				CreateBorder(enemy.Body, Color.Red);

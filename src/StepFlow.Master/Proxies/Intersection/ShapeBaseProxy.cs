@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
-using StepFlow.Core;
 using StepFlow.Intersection;
 
 namespace StepFlow.Master.Proxies.Intersection
@@ -33,8 +32,8 @@ namespace StepFlow.Master.Proxies.Intersection
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-		public void Register() => Owner.CreateCollectionProxy(Playground.IntersectionContext).Add(Target);
+		public void Register() => Owner.CreateCollectionProxy(Target.Context).Add(Target);
 
-		public void Unregister() => Owner.CreateCollectionProxy(Playground.IntersectionContext).Remove(Target);
+		public void Unregister() => Owner.CreateCollectionProxy(Target.Context).Remove(Target);
 	}
 }
