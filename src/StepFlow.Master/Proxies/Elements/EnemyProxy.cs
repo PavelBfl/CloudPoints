@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Drawing;
 using System.Numerics;
 using StepFlow.Common.Exceptions;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
-using StepFlow.Core.Schedulers;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
 using StepFlow.Master.Proxies.Intersection;

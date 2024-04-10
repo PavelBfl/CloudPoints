@@ -2,7 +2,6 @@
 using StepFlow.Core.Components;
 using StepFlow.Core.Schedulers;
 using StepFlow.Master.Proxies.Actions;
-using StepFlow.Master.Proxies.Components;
 
 namespace StepFlow.Master.Proxies.Schedulers
 {
