@@ -1,16 +1,16 @@
-﻿using StepFlow.Core;
+﻿using StepFlow.Core.Actions;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
-using StepFlow.Master.Proxies.Components;
+using StepFlow.Master.Proxies.Elements;
 
-namespace StepFlow.Master.Proxies.Elements
+namespace StepFlow.Master.Proxies.Actions
 {
-	public interface IChangeStrengthProxy : IProxyBase<ChangeStrength>, ITurnExecutor
+	public interface IChangeStrengthProxy : IActionBaseProxy<ChangeStrength>
 	{
-		
+
 	}
 
-	internal class ChangeStrengthProxy : ProxyBase<ChangeStrength>, IChangeStrengthProxy
+	internal sealed class ChangeStrengthProxy : ActionBaseProxy<ChangeStrength>, IChangeStrengthProxy
 	{
 		public ChangeStrengthProxy(PlayMaster owner, ChangeStrength target) : base(owner, target)
 		{
@@ -20,9 +20,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public Damage Damage { get => Target.Damage; set => SetValue(value); }
 
-		Subject IProxyBase<Subject>.Target => Target;
-
-		public void Execute()
+		public override void Execute()
 		{
 			if ((IMaterialProxy<Material>?)Owner.CreateProxy(Material) is { } materialProxy)
 			{

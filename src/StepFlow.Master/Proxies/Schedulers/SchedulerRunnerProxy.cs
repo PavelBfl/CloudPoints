@@ -1,5 +1,7 @@
-﻿using StepFlow.Core.Components;
+﻿using StepFlow.Core.Actions;
+using StepFlow.Core.Components;
 using StepFlow.Core.Schedulers;
+using StepFlow.Master.Proxies.Actions;
 using StepFlow.Master.Proxies.Components;
 
 namespace StepFlow.Master.Proxies.Schedulers
@@ -41,7 +43,7 @@ namespace StepFlow.Master.Proxies.Schedulers
 			{
 				if (current.Duration == 0)
 				{
-					var executor = (ITurnExecutor?)Owner.CreateProxy(current.Executor);
+					var executor = (IActionBaseProxy<ActionBase>?)Owner.CreateProxy(current.Executor);
 					executor?.Execute();
 
 					Current = null;

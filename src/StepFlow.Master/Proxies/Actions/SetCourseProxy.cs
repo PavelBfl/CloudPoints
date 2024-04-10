@@ -1,18 +1,20 @@
 ﻿using System.Linq;
 using StepFlow.Core;
+using StepFlow.Core.Actions;
 using StepFlow.Core.Components;
 using StepFlow.Intersection;
+using StepFlow.Master.Proxies.Components;
 
-namespace StepFlow.Master.Proxies.Components
+namespace StepFlow.Master.Proxies.Actions
 {
-	public interface ISetCourseProxy : IProxyBase<SetCourse>, ITurnExecutor
+	public interface ISetCourseProxy : IActionBaseProxy<SetCourse>
 	{
 		Collided? Collided { get; set; }
 
 		Course Course { get; set; }
 	}
 
-	internal sealed class SetCourseProxy : ProxyBase<SetCourse>, ISetCourseProxy
+	internal sealed class SetCourseProxy : ActionBaseProxy<SetCourse>, ISetCourseProxy
 	{
 		public SetCourseProxy(PlayMaster owner, SetCourse target) : base(owner, target)
 		{
@@ -22,9 +24,7 @@ namespace StepFlow.Master.Proxies.Components
 
 		public Course Course { get => Target.Course; set => SetValue(value); }
 
-		Subject IProxyBase<Subject>.Target => throw new System.NotImplementedException();
-
-		public void Execute()
+		public override void Execute()
 		{
 			if (Collided is { })
 			{

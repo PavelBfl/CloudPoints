@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using StepFlow.Core;
+using StepFlow.Core.Actions;
 using StepFlow.Core.Commands.Accessors;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
@@ -12,6 +13,7 @@ using StepFlow.Core.Schedulers;
 using StepFlow.Intersection;
 using StepFlow.Master.Commands;
 using StepFlow.Master.Proxies;
+using StepFlow.Master.Proxies.Actions;
 using StepFlow.Master.Proxies.Collections;
 using StepFlow.Master.Proxies.Components;
 using StepFlow.Master.Proxies.Elements;
@@ -63,7 +65,7 @@ namespace StepFlow.Master
 		public CreatePlace CreatePlace { get; }
 
 		public void Execute(string commandName, IReadOnlyDictionary<string, object>? parameters = null)
-			=> Executors[commandName].Execute(parameters); 
+			=> Executors[commandName].Execute(parameters);
 		#endregion
 
 		public TransactionAxis TimeAxis { get; } = new TransactionAxis();
@@ -88,7 +90,7 @@ namespace StepFlow.Master
 				Intersection.ShapeCell instance => new ShapeCellProxy(this, instance),
 				Intersection.ShapeContainer instance => new ShapeContainerProxy(this, instance),
 				SchedulerVector instance => new SchedulerVectorProxy(this, instance),
-				RemoveProjectile instance => new RemoveProjectileProxy(this, instance),
+				RemoveItem instance => new RemoveProjectileProxy(this, instance),
 				SchedulerLimit instance => new SchedulerLimitProxy(this, instance),
 				SchedulerCollection instance => new SchedulerCollectionProxy(this, instance),
 				SchedulerUnion instance => new SchedulerUnionProxy(this, instance),
@@ -186,9 +188,9 @@ namespace StepFlow.Master
 						{
 							new Turn(
 								0,
-								new RemoveProjectile()
+								new RemoveItem()
 								{
-									Projectile = projectile,
+									Item = projectile,
 								}
 							)
 						},
