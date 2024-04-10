@@ -121,7 +121,7 @@ namespace StepFlow.Markup
 
 		private void CreateProjectile(Course course)
 		{
-			PlayMaster.CreateProjectile.Execute(new() { Course = course, });
+			PlayMaster.PlayerCharacterCreateProjectile.Execute(new() { Course = course, });
 		}
 
 		private void CreateEnemy(Rectangle bounds, int visionSize, Strategy strategy, Vector2 beginVector)

@@ -3,9 +3,9 @@ using StepFlow.Master.Proxies.Elements;
 
 namespace StepFlow.Master.Scripts
 {
-	public sealed class CreateProjectile : Executor<CreateProjectile.Parameters>
+	public sealed class PlayerCharacterCreateProjectile : Executor<PlayerCharacterCreateProjectile.Parameters>
 	{
-		public CreateProjectile(PlayMaster playMaster) : base(playMaster, nameof(CreateProjectile))
+		public PlayerCharacterCreateProjectile(PlayMaster playMaster) : base(playMaster, nameof(PlayerCharacterCreateProjectile))
 		{
 		}
 
@@ -18,6 +18,10 @@ namespace StepFlow.Master.Scripts
 		public struct Parameters
 		{
 			public Course Course { get; set; }
+
+			public int DefaultDamage { get; set; }
+
+			public int Duration { get; set; }
 		}
 	}
 }

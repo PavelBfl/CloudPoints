@@ -139,80 +139,36 @@ namespace StepFlow.Master.Proxies.Elements
 			controlVectorProxy.Value = newVector;
 		}
 
+		private static Vector2 GetCenter(Material material)
+		{
+			var bounds = material.GetBodyRequired().Current.Bounds;
+
+			return new Vector2(
+				bounds.X + bounds.Width / 2f,
+				bounds.Y + bounds.Height / 2f
+			);
+		}
+
 		private void CreateProjectile(Material other)
 		{
+			const int SIZE = 10;
+
 			if (Cooldown.Value == 0)
 			{
-				var border = Body.Current.Bounds;
-				var center = new Point(
-					border.X + border.Width / 2,
-					border.Y + border.Height / 2
-				);
+				var center = GetCenter(Target);
+				var otherCenter = GetCenter(other);
+				var course = otherCenter - center;
+				course = Vector2.Normalize(course);
 
-				var otherBorder = other.GetBodyRequired().Current.Bounds;
-				var otherCenter = new Point(
-					otherBorder.X + otherBorder.Width / 2,
-					otherBorder.Y + otherBorder.Height / 2
-				);
-
-				const int SIZE = 10;
-				var projectile = (IProjectileProxy)Owner.CreateProxy(new Projectile()
-				{
-					Creator = Target,
-					Body = new Collided(),
-					Damage = new Damage()
-					{
-						Value = 10,
-					},
-					Speed = 5,
-				});
-
-				projectile.Body.Current.Add(new Rectangle(
-					center.X - SIZE / 2,
-					center.Y - SIZE / 2,
+				Owner.CreateProjectileC(
+					Body.Current.Bounds.GetCenter(),
 					SIZE,
-					SIZE
-				));
+					course,
+					new Damage() { Value = 10, },
+					TimeTick.FromSeconds(2),
+					Target
+				);
 
-				var courseVector = Vector2.Normalize(new Vector2(otherCenter.X - center.X, otherCenter.Y - center.Y)) * 5;
-
-				var scheduler = new SchedulerVector()
-				{
-					Collided = projectile.Body,
-					Vectors = { new CourseVector() { Value = courseVector } },
-				};
-				var schedulerLimit = new SchedulerLimit()
-				{
-					Source = scheduler,
-					Range = new Scale()
-					{
-						Max = 12000,
-					},
-				};
-				var schedulerCompletion = new SchedulerCollection()
-				{
-					Turns =
-					{
-						new Turn(
-							0,
-							new RemoveProjectile()
-							{
-								Projectile = projectile.Target,
-							}
-						)
-					},
-				};
-				var schedulerUnion = new SchedulerUnion()
-				{
-					Schedulers = { schedulerLimit, schedulerCompletion },
-				};
-
-				projectile.Schedulers.Add(new SchedulerRunner()
-				{
-					Scheduler = schedulerUnion,
-				});
-
-				Owner.GetPlaygroundItemsProxy().Add(projectile.Target);
 				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);
 				cooldownProxy.SetMax();
 			}

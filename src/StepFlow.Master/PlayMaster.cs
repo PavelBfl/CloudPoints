@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using StepFlow.Core;
 using StepFlow.Core.Commands.Accessors;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.Schedulers;
+using StepFlow.Intersection;
 using StepFlow.Master.Commands;
 using StepFlow.Master.Proxies;
 using StepFlow.Master.Proxies.Collections;
@@ -30,7 +33,7 @@ namespace StepFlow.Master
 			AddExecutor(PlayerCharacterCreate = new PlayerCharacterCreate(this));
 			AddExecutor(PlayerCharacterSetCourse = new PlayerCharacterSetCourse(this));
 			AddExecutor(CreateObstruction = new CreateObstruction(this));
-			AddExecutor(CreateProjectile = new CreateProjectile(this));
+			AddExecutor(PlayerCharacterCreateProjectile = new PlayerCharacterCreateProjectile(this));
 			AddExecutor(CreateItem = new CreateItem(this));
 			AddExecutor(CreateEnemy = new CreateEnemy(this));
 			AddExecutor(CreatePlace = new CreatePlace(this));
@@ -51,7 +54,7 @@ namespace StepFlow.Master
 
 		public CreateObstruction CreateObstruction { get; }
 
-		public CreateProjectile CreateProjectile { get; }
+		public PlayerCharacterCreateProjectile PlayerCharacterCreateProjectile { get; }
 
 		public CreateItem CreateItem { get; }
 
@@ -146,6 +149,59 @@ namespace StepFlow.Master
 			{
 				collision.Move();
 			}
+		}
+
+		public void CreateProjectileC(Point center, int radius, Vector2 course, Damage damage, int duration, Subject? creator)
+		{
+			var projectile = new Projectile()
+			{
+				Creator = creator,
+				Body = new Collided()
+				{
+					Current = { RectangleExtensions.Create(center, radius) },
+				},
+				Damage = damage,
+				Speed = 5,
+			};
+
+			var schedulerUnion = new SchedulerUnion()
+			{
+				Schedulers =
+				{
+					new SchedulerLimit()
+					{
+						Source = new SchedulerVector()
+						{
+							Collided = projectile.Body,
+							Vectors = { new CourseVector() { Value = course } },
+						},
+						Range = new Scale()
+						{
+							Max = duration,
+						},
+					},
+					new SchedulerCollection()
+					{
+						Turns =
+						{
+							new Turn(
+								0,
+								new RemoveProjectile()
+								{
+									Projectile = projectile,
+								}
+							)
+						},
+					},
+				},
+			};
+
+			projectile.Schedulers.Add(new SchedulerRunner()
+			{
+				Scheduler = schedulerUnion,
+			});
+
+			GetPlaygroundItemsProxy().Add(projectile);
 		}
 
 		#region Accessors

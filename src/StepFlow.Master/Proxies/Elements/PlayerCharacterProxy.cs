@@ -6,6 +6,7 @@ using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.Schedulers;
+using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
 
 namespace StepFlow.Master.Proxies.Elements
@@ -70,67 +71,15 @@ namespace StepFlow.Master.Proxies.Elements
 
 			if (Cooldown.Value == 0)
 			{
-				var border = Body.Current.Bounds;
-				var center = new Point(
-					border.X + border.Width / 2,
-					border.Y + border.Height / 2
-				);
-
-				var projectile = (IProjectileProxy)Owner.CreateProxy(new Projectile()
-				{
-					Creator = Target,
-					Body = new Collided(),
-					Damage = AggregateDamage(10),
-					Speed = 5,
-				});
-
-				projectile.Body.Current.Add(
-					new Rectangle(
-						center.X - SIZE / 2,
-						center.Y - SIZE / 2,
-						SIZE,
-						SIZE
-					)
-				);
-
 				var courseVector = course.ToOffset();
-				var scheduler = new SchedulerVector()
-				{
-					Collided = projectile.Body,
-					Vectors = { new CourseVector() { Value = new Vector2(courseVector.X, courseVector.Y) } },
-				};
-				var schedulerLimit = new SchedulerLimit()
-				{
-					Source = scheduler,
-					Range = new Scale()
-					{
-						Max = 12000,
-					},
-				};
-				var schedulerCompletion = new SchedulerCollection()
-				{
-					Turns =
-					{
-						new Turn(
-							0,
-							new RemoveProjectile()
-							{
-								Projectile = projectile.Target,
-							}
-						)
-					},
-				};
-				var schedulerUnion = new SchedulerUnion()
-				{
-					Schedulers = { schedulerLimit, schedulerCompletion },
-				};
-
-				projectile.Schedulers.Add(new SchedulerRunner()
-				{
-					Scheduler = schedulerUnion,
-				});
-
-				Owner.GetPlaygroundItemsProxy().Add(projectile.Target);
+				Owner.CreateProjectileC(
+					Body.Current.Bounds.GetCenter(),
+					SIZE,
+					new Vector2(courseVector.X, courseVector.Y),
+					AggregateDamage(10),
+					TimeTick.FromSeconds(2),
+					Target
+				);
 
 				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);
 				cooldownProxy.SetMax();
