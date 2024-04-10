@@ -18,7 +18,13 @@ namespace StepFlow.Master.Proxies.Collections
 
 		public virtual void Add(TItem item) => Owner.TimeAxis.Add(new AddItemCommand<TItem>(Target, item));
 
-		public virtual void Clear() => Owner.TimeAxis.Add(new ClearCommand<TItem>(Target));
+		public virtual void Clear()
+		{
+			if (Target.Count > 0)
+			{
+				Owner.TimeAxis.Add(new ClearCommand<TItem>(Target));
+			}
+		}
 
 		public bool Contains(TItem item) => Target.Contains(item);
 
