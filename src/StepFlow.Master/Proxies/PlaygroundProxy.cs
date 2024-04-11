@@ -16,8 +16,6 @@ namespace StepFlow.Master.Proxies
 
 		ICollection<Material> ItemsProxy => Owner.CreateCollectionUsedProxy(Items);
 
-		void CreateObstruction(IEnumerable<Rectangle> bounds, int? strength, ObstructionKind kind);
-		void CreatePlayerCharacter(Rectangle bounds, int strength);
 		void CreateEnemy(Rectangle bounds, Rectangle vision, Strategy strategy, ItemKind releaseItem, Vector2 beginVector);
 		void CreateItem(Point position, ItemKind kind);
 		void CreatePlace(Rectangle bounds);
@@ -30,74 +28,6 @@ namespace StepFlow.Master.Proxies
 		}
 
 		public ICollection<Material> Items => Target.Items;
-
-		public void CreatePlayerCharacter(Rectangle bounds, int strength)
-		{
-			var body = new Collided()
-			{
-				Current = { bounds },
-				IsRigid = true,
-			};
-
-			var playerCharacter = new PlayerCharacter()
-			{
-				Name = "Player",
-				Strength = new Scale()
-				{
-					Max = strength,
-					Value = strength,
-				},
-				Cooldown = new Scale()
-				{
-					Max = TimeTick.FromFrames(10),
-					Value = TimeTick.FromFrames(10),
-				},
-				Body = body,
-				Schedulers =
-				{
-					new SchedulerRunner()
-					{
-						Scheduler = new SchedulerVector()
-						{
-							Collided = body,
-							Vectors =
-							{
-								new CourseVector()
-								{
-									Name = Material.SHEDULER_CONTROL_NAME,
-								},
-							},
-						}
-					},
-				},
-				Speed = 10,
-			};
-
-			Owner.GetPlaygroundItemsProxy().Add(playerCharacter);
-		}
-
-		public void CreateObstruction(IEnumerable<Rectangle> bounds, int? strength, ObstructionKind kind)
-		{
-			var barrier = new Obstruction()
-			{
-				Name = "Obstruction",
-				Kind = kind,
-				Body = new Collided()
-				{
-					Current = { bounds },
-					IsRigid = true,
-				},
-				Strength = strength is { } ?
-					new Scale()
-					{
-						Max = strength.Value,
-						Value = strength.Value,
-					} :
-					null,
-			};
-
-			Owner.GetPlaygroundItemsProxy().Add(barrier);
-		}
 
 		public void CreateProjectile(Rectangle bounds, int value, DamageKind kind)
 		{
@@ -177,9 +107,7 @@ namespace StepFlow.Master.Proxies
 				return;
 			}
 
-			const int RADIUS = 7;
-
-			var bounds = RectangleExtensions.Create(position, RADIUS);
+			var bounds = new Rectangle(position, new Size(Playground.CELL_SIZE_DEFAULT, Playground.CELL_SIZE_DEFAULT));
 
 			var item = kind switch
 			{
@@ -229,7 +157,7 @@ namespace StepFlow.Master.Proxies
 						Current = { bounds },
 						IsRigid = true,
 					},
-					AttackCooldown = 1000,
+					AttackCooldown = 500,
 				}),
 				ItemKind.AddStrength => (IItemProxy)Owner.CreateProxy(new Item()
 				{

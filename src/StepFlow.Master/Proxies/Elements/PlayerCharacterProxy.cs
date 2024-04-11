@@ -70,12 +70,12 @@ namespace StepFlow.Master.Proxies.Elements
 			if (Cooldown.Value == 0)
 			{
 				var courseVector = course.ToOffset();
-				Owner.CreateProjectileC(
+				Owner.CreateProjectile(
 					Body.Current.Bounds.GetCenter(),
 					SIZE,
-					new Vector2(courseVector.X, courseVector.Y),
+					new Vector2(courseVector.X, courseVector.Y) * 80,
 					AggregateDamage(10),
-					TimeTick.FromSeconds(2),
+					TimeTick.FromSeconds(4),
 					Target
 				);
 

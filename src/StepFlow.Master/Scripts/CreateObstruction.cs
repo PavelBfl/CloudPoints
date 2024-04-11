@@ -1,5 +1,7 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Linq;
+using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Master.Proxies;
 
@@ -13,13 +15,20 @@ namespace StepFlow.Master.Scripts
 
 		public override void Execute(Parameters parameters)
 		{
-			var playgroundProxy = (IPlaygroundProxy)PlayMaster.CreateProxy(PlayMaster.Playground);
+			var barrier = new Obstruction()
+			{
+				Name = "Obstruction",
+				Kind = parameters.Kind,
+				View = parameters.View,
+				Body = new Collided()
+				{
+					Current = { parameters.Bounds ?? Array.Empty<Rectangle>() },
+					IsRigid = true,
+				},
+				Strength = parameters.Strength is { } strength ? Scale.CreateByMax(strength) : null,
+			};
 
-			playgroundProxy.CreateObstruction(
-				parameters.Bounds ?? Enumerable.Empty<Rectangle>(),
-				parameters.Strength,
-				parameters.Kind
-			);
+			PlayMaster.GetPlaygroundItemsProxy().Add(barrier);
 		}
 
 		public struct Parameters
@@ -29,6 +38,8 @@ namespace StepFlow.Master.Scripts
 			public int? Strength { get; set; }
 
 			public ObstructionKind Kind { get; set; }
+
+			public ObstructionView View { get; set; }
 		}
 	}
 }

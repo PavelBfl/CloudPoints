@@ -1,4 +1,7 @@
 ﻿using System.Drawing;
+using StepFlow.Core.Components;
+using StepFlow.Core.Elements;
+using StepFlow.Core.Schedulers;
 using StepFlow.Master.Proxies;
 
 namespace StepFlow.Master.Scripts
@@ -11,24 +14,50 @@ namespace StepFlow.Master.Scripts
 
 		public override void Execute(Parameters parameters)
 		{
-			var playgroundProxy = (IPlaygroundProxy)PlayMaster.CreateProxy(PlayMaster.Playground);
-			playgroundProxy.CreatePlayerCharacter(
-				new Rectangle(parameters.X, parameters.Y, parameters.Width, parameters.Height),
-				parameters.Strength
-			);
+			var body = new Collided()
+			{
+				Current = { parameters.Bounds },
+				IsRigid = true,
+			};
+
+			var playerCharacter = new PlayerCharacter()
+			{
+				Name = "Player",
+				Strength = Scale.CreateByMax(parameters.Strength),
+				Cooldown = Scale.Create(parameters.Cooldown),
+				Body = body,
+				Schedulers =
+				{
+					new SchedulerRunner()
+					{
+						Scheduler = new SchedulerVector()
+						{
+							Collided = body,
+							Vectors =
+							{
+								new CourseVector()
+								{
+									Name = Material.SHEDULER_CONTROL_NAME,
+								},
+							},
+						}
+					},
+				},
+				Speed = parameters.Speed,
+			};
+
+			PlayMaster.GetPlaygroundItemsProxy().Add(playerCharacter);
 		}
 
 		public struct Parameters
 		{
-			public int X { get; set; }
-
-			public int Y { get; set; }
-
-			public int Width { get; set; }
-
-			public int Height { get; set; }
+			public Rectangle Bounds { get; set; }
 
 			public int Strength { get; set; }
+
+			public int Speed { get; set; }
+
+			public int Cooldown { get; set; }
 		}
 	}
 }

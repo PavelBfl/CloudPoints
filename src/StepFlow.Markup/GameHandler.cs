@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.Metrics;
 using System.Drawing;
 using System.Numerics;
+using System.Runtime.Serialization;
 using StepFlow.Common.Exceptions;
 using StepFlow.Core;
 using StepFlow.Core.Components;
@@ -41,35 +42,43 @@ namespace StepFlow.Markup
 
 		public RectangleF Place { get; }
 
+		private static Size CellSize => new(Playground.CELL_SIZE_DEFAULT, Playground.CELL_SIZE_DEFAULT);
+
+		private static int PlaygroundToGlobal(int value) => (value + 1) * Playground.CELL_SIZE_DEFAULT;
+
+		private static Point PlaygroundToGlobal(int x, int y) => new(PlaygroundToGlobal(x), PlaygroundToGlobal(y));
+
+		private static Point PlaygroundToGlobal(Point position) => PlaygroundToGlobal(position.X, position.Y);
+
+		private static Rectangle CreateCell(int x, int y) => new(PlaygroundToGlobal(x, y), CellSize);
+
+		private static Rectangle CreateCell(Point position) => CreateCell(position.X, position.Y);
+
 		public void Init()
 		{
-			CreateRoom(new(5, 5), new(40, 20), 15);
+			CreateRoom(Point.Empty, new(15, 9), Playground.CELL_SIZE_DEFAULT);
 
-			PlayMaster.CreateItem.Execute(new() { X = 130, Y = 50, Kind = ItemKind.Fire });
-			PlayMaster.CreateItem.Execute(new() { X = 200, Y = 50, Kind = ItemKind.Poison });
-			PlayMaster.CreateItem.Execute(new() { X = 270, Y = 50, Kind = ItemKind.Speed });
-			PlayMaster.CreateItem.Execute(new() { X = 340, Y = 50, Kind = ItemKind.AttackSpeed });
-			PlayMaster.CreateItem.Execute(new() { X = 410, Y = 50, Kind = ItemKind.AddStrength });
+			PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(1, 0), Kind = ItemKind.Fire });
+			PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(2, 0), Kind = ItemKind.Poison });
+			PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(3, 0), Kind = ItemKind.Speed });
+			PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(4, 0), Kind = ItemKind.AttackSpeed });
 
-			PlayMaster.CreatePlace.Execute(new() { Bounds = new(400, 150, 50, 50) });
+			//PlayMaster.CreatePlace.Execute(new() { Bounds = new(400, 150, 50, 50) });
 
-			CreateEnemy(new(500, 180, 20, 20), 50, Strategy.Reflection, new(2, 1));
-			CreateEnemy(new(200, 180, 20, 20), 50, Strategy.CW, new(1, 0));
+			CreateEnemy(CreateCell(6, 0), 300, Strategy.Reflection, new(2, 1));
+			CreateEnemy(CreateCell(6, 1), 150, Strategy.CW, new(1, 0));
 
-			CreateObstruction(new(50, 100, 40, 40), 150);
+			CreateCellObstruction(new Point(5, 0), 150, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(5, 1), 150, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(5, 2), 150, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(5, 3), 150, ObstructionView.Boards);
 
-			CreatePlayerCharacter(new(100, 100, 20, 20), 1000);
-		}
-
-		private void CreatePlayerCharacter(Rectangle bounds, int strength)
-		{
 			PlayMaster.PlayerCharacterCreate.Execute(new()
 			{
-				X = bounds.X,
-				Y = bounds.Y,
-				Width = bounds.Width,
-				Height = bounds.Height,
-				Strength = strength,
+				Bounds = CreateCell(0, 0),
+				Strength = 1000,
+				Speed = 60,
+				Cooldown = TimeTick.FromSeconds(1),
 			});
 		}
 
@@ -91,10 +100,10 @@ namespace StepFlow.Markup
 				right[iY] = CreatePixel(new(size.Width, iY));
 			}
 
-			PlayMaster.CreateObstruction.Execute(new() { Bounds = top, Kind = ObstructionKind.Tiles, });
-			PlayMaster.CreateObstruction.Execute(new() { Bounds = bottom, Kind = ObstructionKind.Tiles, });
-			PlayMaster.CreateObstruction.Execute(new() { Bounds = left, Kind = ObstructionKind.Tiles, });
-			PlayMaster.CreateObstruction.Execute(new() { Bounds = right, Kind = ObstructionKind.Tiles, });
+			PlayMaster.CreateObstruction.Execute(new() { Bounds = top, Kind = ObstructionKind.Tiles, View = ObstructionView.DarkWall, });
+			PlayMaster.CreateObstruction.Execute(new() { Bounds = bottom, Kind = ObstructionKind.Tiles, View = ObstructionView.DarkWall, });
+			PlayMaster.CreateObstruction.Execute(new() { Bounds = left, Kind = ObstructionKind.Tiles, View = ObstructionView.DarkWall, });
+			PlayMaster.CreateObstruction.Execute(new() { Bounds = right, Kind = ObstructionKind.Tiles, View = ObstructionView.DarkWall, });
 
 			Rectangle CreatePixel(Point position) => new Rectangle(
 				location.X + position.X * width,
@@ -104,13 +113,14 @@ namespace StepFlow.Markup
 			);
 		}
 
-		private void CreateObstruction(Rectangle bounds, int? strength)
+		private void CreateCellObstruction(Point position, int? strength, ObstructionView view)
 		{
 			PlayMaster.CreateObstruction.Execute(new()
 			{
-				Bounds = new[] { bounds },
+				Bounds = new[] { CreateCell(position) },
 				Strength = strength,
 				Kind = ObstructionKind.Single,
+				View = view,
 			});
 		}
 
@@ -197,15 +207,16 @@ namespace StepFlow.Markup
 
 			foreach (var barrier in playground.Items.OfType<Obstruction>())
 			{
+				var textureView = ToTexture(barrier.View);
 				switch (barrier.Kind)
 				{
 					case ObstructionKind.Single:
-						CreateTexture(barrier.Body?.Current.Bounds ?? Rectangle.Empty, Texture.Wall, barrier.Strength);
+						CreateTexture(barrier.Body?.Current.Bounds ?? Rectangle.Empty, textureView, barrier.Strength);
 						break;
 					case ObstructionKind.Tiles:
 						foreach (var bounds in barrier.Body?.Current ?? Enumerable.Empty<Rectangle>())
 						{
-							CreateTexture(bounds, Texture.Wall, barrier.Strength);
+							CreateTexture(bounds, textureView, barrier.Strength);
 						}
 						break;
 					default: throw EnumNotSupportedException.Create<ObstructionKind>(barrier.Kind);
@@ -248,6 +259,15 @@ namespace StepFlow.Markup
 				CreateBorder(enemy.Vision, Color.Yellow);
 			}
 		}
+
+		private static Texture ToTexture(ObstructionView view) => view switch
+		{
+			ObstructionView.None => Texture.ObstructionNone,
+			ObstructionView.DarkWall => Texture.ObstructionDarkWall,
+			ObstructionView.Bricks => Texture.ObstructionBricks,
+			ObstructionView.Boards => Texture.ObstructionBoards,
+			_ => throw EnumNotSupportedException.Create(view),
+		};
 
 		private void CreateTexture(Rectangle bounds, Texture texture, Scale? strength)
 		{

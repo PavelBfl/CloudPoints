@@ -14,16 +14,14 @@ namespace StepFlow.Master.Scripts
 		{
 			var playgroundProxy = (IPlaygroundProxy)PlayMaster.CreateProxy(PlayMaster.Playground);
 			playgroundProxy.CreateItem(
-				new Point(parameters.X, parameters.Y),
+				parameters.Position,
 				parameters.Kind
 			);
 		}
 
 		public struct Parameters
 		{
-			public int X { get; set; }
-
-			public int Y { get; set; }
+			public Point Position { get; set; }
 
 			public ItemKind Kind { get; set; }
 		}

@@ -38,7 +38,6 @@ namespace StepFlow.Master.Proxies.Schedulers
 				IndexCourse = 0;
 			}
 
-
 			if (CourseExtensions.GetCourseStep(sum, IndexCourse) is { } course)
 			{
 				var length = (int)sum.Length();

@@ -153,7 +153,7 @@ namespace StepFlow.Master
 			}
 		}
 
-		public void CreateProjectileC(Point center, int radius, Vector2 course, Damage damage, int duration, Subject? creator)
+		public void CreateProjectile(Point center, int radius, Vector2 course, Damage damage, int duration, Subject? creator)
 		{
 			var projectile = new Projectile()
 			{
@@ -163,7 +163,7 @@ namespace StepFlow.Master
 					Current = { RectangleExtensions.Create(center, radius) },
 				},
 				Damage = damage,
-				Speed = 5,
+				Speed = 100,
 			};
 
 			var schedulerUnion = new SchedulerUnion()
@@ -177,10 +177,7 @@ namespace StepFlow.Master
 							Collided = projectile.Body,
 							Vectors = { new CourseVector() { Value = course } },
 						},
-						Range = new Scale()
-						{
-							Max = duration,
-						},
+						Range = Scale.Create(duration),
 					},
 					new SchedulerCollection()
 					{

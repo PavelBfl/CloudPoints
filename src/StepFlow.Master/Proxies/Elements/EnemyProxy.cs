@@ -37,8 +37,7 @@ namespace StepFlow.Master.Proxies.Elements
 				var itemPosition = Body.Current.Bounds.GetCenter();
 				Owner.CreateItem.Execute(new Scripts.CreateItem.Parameters()
 				{
-					X = itemPosition.X,
-					Y = itemPosition.Y,
+					Position = itemPosition,
 					Kind = Target.ReleaseItem
 				});
 
@@ -54,7 +53,7 @@ namespace StepFlow.Master.Proxies.Elements
 				cooldownProxy.Decrement();
 
 				var center = Body.Current.Bounds.GetCenter();
-				var visionPlace = RectangleExtensions.Create(center, 50);
+				var visionPlace = RectangleExtensions.Create(center, 100);
 				var visionProxy = (IShapeContainerProxy)Owner.CreateProxy(Vision.Current);
 				visionProxy.Reset(visionPlace);
 			}
@@ -156,9 +155,9 @@ namespace StepFlow.Master.Proxies.Elements
 				var center = GetCenter(Target);
 				var otherCenter = GetCenter(other);
 				var course = otherCenter - center;
-				course = Vector2.Normalize(course);
+				course = Vector2.Normalize(course) * 65;
 
-				Owner.CreateProjectileC(
+				Owner.CreateProjectile(
 					Body.Current.Bounds.GetCenter(),
 					SIZE,
 					course,
