@@ -31,10 +31,13 @@ namespace StepFlow.View.Services
 			Sprites.Add(Markup.Services.Texture.ProjectilePoison, new(DefaultTiles, new(51, 256, 20, 19)));
 			Sprites.Add(Markup.Services.Texture.ProjectileAll, new(DefaultTiles, new(147, 256, 20, 19)));
 			Sprites.Add(Markup.Services.Texture.Enemy, new(DefaultTiles, new(662, 22, 56, 81)));
+
 			Sprites.Add(Markup.Services.Texture.ObstructionNone, new(DefaultTiles, new(768, 704, 32, 32)));
 			Sprites.Add(Markup.Services.Texture.ObstructionDarkWall, new(DefaultTiles, new(518, 690, 32, 32)));
-			Sprites.Add(Markup.Services.Texture.ObstructionBricks, new(DefaultTiles, new(550, 658, 32, 32)));
+			Sprites.Add(Markup.Services.Texture.ObstructionBricks, new(PlaceTiles, new(384, 320, 32, 32)));
+			Sprites.Add(Markup.Services.Texture.ObstructionBricksDamaged, new(PlaceTiles, new(480, 384, 32, 32)));
 			Sprites.Add(Markup.Services.Texture.ObstructionBoards, new(PlaceTiles, new(64, 256, 32, 32)));
+
 			Sprites.Add(Markup.Services.Texture.ItemPoison, new(DefaultTiles, new(523, 827, 22, 21)));
 			Sprites.Add(Markup.Services.Texture.ItemFire, new(DefaultTiles, new(552, 833, 29, 16)));
 			Sprites.Add(Markup.Services.Texture.ItemUnknown, new(DefaultTiles, new(517, 561, 13, 13)));

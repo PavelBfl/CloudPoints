@@ -63,5 +63,23 @@ namespace StepFlow.View.Services
 		public bool IsKeyOnPress(Keys key) => Keyboard.GetState().IsKeyDown(key) && !PrevKeyboardState.IsKeyDown(key);
 
 		public void Update() => PrevKeyboardState = Keyboard.GetState();
+
+		public TimeOffset GetTimeOffset()
+		{
+			if (IsKeyOnPress(Keys.OemMinus))
+			{
+				return TimeOffset.Down;
+			}
+			else if (IsKeyOnPress(Keys.OemPlus))
+			{
+				return TimeOffset.Up;
+			}
+			else
+			{
+				return TimeOffset.None;
+			}
+		}
+
+		public bool OnSwitchDebug() => IsKeyOnPress(Keys.Tab);
 	}
 }

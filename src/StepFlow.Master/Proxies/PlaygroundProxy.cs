@@ -147,7 +147,7 @@ namespace StepFlow.Master.Proxies
 						Current = { bounds },
 						IsRigid = true,
 					},
-					Speed = 10,
+					Speed = 2,
 				}),
 				ItemKind.AttackSpeed => (IItemProxy)Owner.CreateProxy(new Item()
 				{
@@ -157,7 +157,7 @@ namespace StepFlow.Master.Proxies
 						Current = { bounds },
 						IsRigid = true,
 					},
-					AttackCooldown = 500,
+					AttackCooldown = 3000,
 				}),
 				ItemKind.AddStrength => (IItemProxy)Owner.CreateProxy(new Item()
 				{

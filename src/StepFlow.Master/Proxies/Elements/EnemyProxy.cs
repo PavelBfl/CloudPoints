@@ -155,7 +155,7 @@ namespace StepFlow.Master.Proxies.Elements
 				var center = GetCenter(Target);
 				var otherCenter = GetCenter(other);
 				var course = otherCenter - center;
-				course = Vector2.Normalize(course) * 65;
+				course = Vector2.Normalize(course) * 5;
 
 				Owner.CreateProjectile(
 					Body.Current.Bounds.GetCenter(),

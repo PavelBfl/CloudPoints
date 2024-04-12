@@ -42,7 +42,7 @@ namespace StepFlow.Master.Proxies.Schedulers
 			{
 				var length = (int)sum.Length();
 				Current = new Turn(
-					100 - length,
+					100 / length,
 					new SetCourse()
 					{
 						Collided = Collided,

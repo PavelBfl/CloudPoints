@@ -11,6 +11,7 @@
 		ObstructionNone,
 		ObstructionDarkWall,
 		ObstructionBricks,
+		ObstructionBricksDamaged,
 		ObstructionBoards,
 		ItemPoison,
 		ItemFire,

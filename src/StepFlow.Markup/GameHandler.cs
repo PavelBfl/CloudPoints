@@ -68,16 +68,16 @@ namespace StepFlow.Markup
 			CreateEnemy(CreateCell(6, 0), 300, Strategy.Reflection, new(2, 1));
 			CreateEnemy(CreateCell(6, 1), 150, Strategy.CW, new(1, 0));
 
-			CreateCellObstruction(new Point(5, 0), 150, ObstructionView.Bricks);
-			CreateCellObstruction(new Point(5, 1), 150, ObstructionView.Bricks);
-			CreateCellObstruction(new Point(5, 2), 150, ObstructionView.Bricks);
-			CreateCellObstruction(new Point(5, 3), 150, ObstructionView.Boards);
+			CreateCellObstruction(new Point(5, 0), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(5, 1), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(5, 2), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(5, 3), 50, ObstructionView.Boards);
 
 			PlayMaster.PlayerCharacterCreate.Execute(new()
 			{
 				Bounds = CreateCell(0, 0),
 				Strength = 1000,
-				Speed = 60,
+				Speed = 3,
 				Cooldown = TimeTick.FromSeconds(1),
 			});
 		}
@@ -151,11 +151,52 @@ namespace StepFlow.Markup
 			});
 		}
 
+		private const int TIME_TICKS_STEP = 10;
+
+		private int currentTicks = TimeTick.TICKS_PER_FRAME;
+
+		private int CurrentTicks
+		{
+			get => currentTicks;
+			set
+			{
+				currentTicks = value;
+
+				if (currentTicks < 0)
+				{
+					currentTicks = 0;
+				}
+				else if (currentTicks > TimeTick.TICKS_PER_FRAME)
+				{
+					currentTicks = TimeTick.TICKS_PER_FRAME;
+				}
+			}
+		}
+
 		public void Update()
 		{
+			if (Keyboard.OnSwitchDebug())
+			{
+				IsDebug = !IsDebug;
+			}
+
+			var timeOffset = Keyboard.GetTimeOffset();
+			switch (timeOffset)
+			{
+				case TimeOffset.None:
+					break;
+				case TimeOffset.Up:
+					CurrentTicks += TIME_TICKS_STEP;
+					break;
+				case TimeOffset.Down:
+					CurrentTicks -= TIME_TICKS_STEP;
+					break;
+				default: throw EnumNotSupportedException.Create(timeOffset);
+			}
+
 			if (Keyboard.IsUndo())
 			{
-				for (var i = 0; i < TimeTick.TICKS_PER_FRAME; i++)
+				for (var i = 0; i < CurrentTicks; i++)
 				{
 					PlayMaster.TimeAxis.Revert();
 				}
@@ -163,7 +204,7 @@ namespace StepFlow.Markup
 			else
 			{
 				var sw = System.Diagnostics.Stopwatch.StartNew();
-				for (var i = 0; i < TimeTick.TICKS_PER_FRAME; i++)
+				for (var i = 0; i < CurrentTicks; i++)
 				{
 					var transaction = PlayMaster.TimeAxis.BeginTransaction();
 
@@ -182,6 +223,8 @@ namespace StepFlow.Markup
 				Frame = sw.Elapsed;
 			}
 		}
+
+		private bool IsDebug { get; set; } = true;
 
 		public void Draw()
 		{
@@ -207,7 +250,7 @@ namespace StepFlow.Markup
 
 			foreach (var barrier in playground.Items.OfType<Obstruction>())
 			{
-				var textureView = ToTexture(barrier.View);
+				var textureView = ToTexture(barrier.View, barrier.Strength);
 				switch (barrier.Kind)
 				{
 					case ObstructionKind.Single:
@@ -260,21 +303,23 @@ namespace StepFlow.Markup
 			}
 		}
 
-		private static Texture ToTexture(ObstructionView view) => view switch
+		private static Texture ToTexture(ObstructionView view, Scale? scale) => view switch
 		{
 			ObstructionView.None => Texture.ObstructionNone,
 			ObstructionView.DarkWall => Texture.ObstructionDarkWall,
-			ObstructionView.Bricks => Texture.ObstructionBricks,
+			ObstructionView.Bricks => ToPct(scale) > 0.5f ? Texture.ObstructionBricks : Texture.ObstructionBricksDamaged,
 			ObstructionView.Boards => Texture.ObstructionBoards,
 			_ => throw EnumNotSupportedException.Create(view),
 		};
+
+		private static float ToPct(Scale? scale) => scale is not null ? (float)scale.Value / scale.Max : 0;
 
 		private void CreateTexture(Rectangle bounds, Texture texture, Scale? strength)
 		{
 			if (!bounds.IsEmpty)
 			{
 				Drawer.Draw(texture, bounds);
-				if (strength is not null)
+				if (strength is not null && IsDebug)
 				{
 					var strengthBounds = new Rectangle(
 						bounds.Left,
@@ -282,6 +327,7 @@ namespace StepFlow.Markup
 						bounds.Width,
 						0
 					);
+
 					Drawer.DrawString(
 						strength.Value.ToString(),
 						strengthBounds,
@@ -295,7 +341,7 @@ namespace StepFlow.Markup
 
 		private void CreateBorder(Collided? collided, Color color)
 		{
-			if (collided is { })
+			if (collided is { } && IsDebug)
 			{
 				var bounds = collided.Current.Bounds;
 				Drawer.Polygon(

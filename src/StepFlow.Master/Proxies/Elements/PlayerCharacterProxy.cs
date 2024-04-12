@@ -73,7 +73,7 @@ namespace StepFlow.Master.Proxies.Elements
 				Owner.CreateProjectile(
 					Body.Current.Bounds.GetCenter(),
 					SIZE,
-					new Vector2(courseVector.X, courseVector.Y) * 80,
+					new Vector2(courseVector.X, courseVector.Y) * 5,
 					AggregateDamage(10),
 					TimeTick.FromSeconds(4),
 					Target
