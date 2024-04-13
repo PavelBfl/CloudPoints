@@ -56,26 +56,61 @@ namespace StepFlow.Markup
 
 		public void Init()
 		{
-			CreateRoom(Point.Empty, new(15, 9), Playground.CELL_SIZE_DEFAULT);
+			CreateRoom(Point.Empty, new(14, 8), Playground.CELL_SIZE_DEFAULT);
 
-			PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(1, 0), Kind = ItemKind.Fire });
-			PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(2, 0), Kind = ItemKind.Poison });
-			PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(3, 0), Kind = ItemKind.Speed });
-			PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(4, 0), Kind = ItemKind.AttackSpeed });
+			PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(12, 6), Kind = ItemKind.Fire });
+			PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(12, 0), Kind = ItemKind.Poison });
+			PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(1, 1), Kind = ItemKind.Speed });
+			PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(1, 5), Kind = ItemKind.AttackSpeed });
 
-			//PlayMaster.CreatePlace.Execute(new() { Bounds = new(400, 150, 50, 50) });
+			PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(8, 0) });
+			PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(8, 1) });
+			PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(10, 1) });
+			PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(10, 2) });
+			PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(11, 2) });
+			PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(12, 2) });
 
-			CreateEnemy(CreateCell(6, 0), 300, Strategy.Reflection, new(2, 1));
-			CreateEnemy(CreateCell(6, 1), 150, Strategy.CW, new(1, 0));
+			CreateEnemy(CreateCell(10, 6), 300, Strategy.Reflection, new(2, 1));
+			CreateEnemy(CreateCell(0, 0), 150, Strategy.CW, new(1, 0));
 
-			CreateCellObstruction(new Point(5, 0), 50, ObstructionView.Bricks);
-			CreateCellObstruction(new Point(5, 1), 50, ObstructionView.Bricks);
-			CreateCellObstruction(new Point(5, 2), 50, ObstructionView.Bricks);
-			CreateCellObstruction(new Point(5, 3), 50, ObstructionView.Boards);
+			CreateCellObstruction(new Point(3, 0), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(3, 1), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(3, 2), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(3, 3), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(3, 4), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(3, 5), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(3, 6), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(0, 3), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(1, 3), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(2, 3), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(11, 0), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(12, 1), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(8, 3), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(9, 3), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(10, 3), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(11, 3), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(12, 3), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(12, 5), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(11, 6), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(6, 4), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(7, 4), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(8, 4), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(6, 5), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(5, 6), 50, ObstructionView.Bricks);
+			CreateCellObstruction(new Point(6, 6), 50, ObstructionView.Bricks);
+
+			CreateCellObstruction(new Point(0, 4), 50, ObstructionView.Boards);
+			CreateCellObstruction(new Point(1, 4), 50, ObstructionView.Boards);
+			CreateCellObstruction(new Point(2, 4), 50, ObstructionView.Boards);
+			CreateCellObstruction(new Point(0, 5), 50, ObstructionView.Boards);
+			CreateCellObstruction(new Point(2, 5), 50, ObstructionView.Boards);
+			CreateCellObstruction(new Point(0, 6), 50, ObstructionView.Boards);
+			CreateCellObstruction(new Point(1, 6), 50, ObstructionView.Boards);
+			CreateCellObstruction(new Point(2, 6), 50, ObstructionView.Boards);
 
 			PlayMaster.PlayerCharacterCreate.Execute(new()
 			{
-				Bounds = CreateCell(0, 0),
+				Bounds = CreateCell(6, 0),
 				Strength = 1000,
 				Speed = 3,
 				Cooldown = TimeTick.FromSeconds(1),
@@ -196,7 +231,7 @@ namespace StepFlow.Markup
 
 			if (Keyboard.IsUndo())
 			{
-				for (var i = 0; i < CurrentTicks; i++)
+				for (var i = 0; i < TimeTick.TICKS_PER_FRAME * 2; i++)
 				{
 					PlayMaster.TimeAxis.Revert();
 				}
@@ -224,7 +259,7 @@ namespace StepFlow.Markup
 			}
 		}
 
-		private bool IsDebug { get; set; } = true;
+		private bool IsDebug { get; set; } = false;
 
 		public void Draw()
 		{
