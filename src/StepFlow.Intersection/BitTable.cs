@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace StepFlow.Intersection
 {
@@ -87,9 +89,9 @@ namespace StepFlow.Intersection
 			}
 		}
 
-		public ShapeContainer CreateBordered()
+		public IEnumerable<Rectangle> CreateBordered()
 		{
-			//var result = new ShapeContainer();
+			var result = new List<Rectangle>();
 
 			for (var iX = 0; iX < Size.Width; iX++)
 			{
@@ -98,23 +100,18 @@ namespace StepFlow.Intersection
 					var prevLeft = new Point(iX - 1, iY);
 					var prevTop = new Point(iX, iY - 1);
 
-					// TODO Доделать
-					//if (
-					//	(!GetSafeFlag(prevLeft) || result.Contains(prevLeft)) &&
-					//	(!GetSafeFlag(prevTop) || result.Contains(prevTop)) &&
-					//	GetSafeFlag(new Point(iX, iY))
-					//)
-					//{
-					//	var cell = new Cell()
-					//	{
-					//		Border = ExpandFromLeft(new Point(iX, iY)),
-					//	};
-					//	result.Childs.Add(cell);
-					//}
+					if (
+						(!GetSafeFlag(prevLeft) || result.Any(x => x.Contains(prevLeft))) &&
+						(!GetSafeFlag(prevTop) || result.Any(x => x.Contains(prevTop))) &&
+						GetSafeFlag(new Point(iX, iY))
+					)
+					{
+						result.Add(ExpandFromLeft(new Point(iX, iY)));
+					}
 				}
 			}
 
-			return null;
+			return result;
 		}
 
 		private Rectangle ExpandFromLeft(Point begin)

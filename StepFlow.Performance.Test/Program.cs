@@ -43,7 +43,11 @@ public class Program
 
 		public Course? GetPlayerShot() => PlayerShot;
 
+		public TimeOffset GetTimeOffset() => TimeOffset.None;
+
 		public bool IsUndo() => false;
+
+		public bool OnSwitchDebug() => false;
 	}
 
 	private sealed class Drawer : IDrawer

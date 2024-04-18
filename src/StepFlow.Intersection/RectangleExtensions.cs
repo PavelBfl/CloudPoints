@@ -44,5 +44,28 @@ namespace StepFlow.Intersection
 				yield return rectangle;
 			}
 		}
+
+		public static IEnumerable<Rectangle> Scale(this IEnumerable<Rectangle> rectangles, Point scale)
+		{
+			if (rectangles is null)
+			{
+				throw new ArgumentNullException(nameof(rectangles));
+			}
+
+			if (scale.X < 0 || scale.Y < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(scale));
+			}
+
+			foreach (var rectangle in rectangles)
+			{
+				yield return new Rectangle(
+					rectangle.X * scale.X,
+					rectangle.Y * scale.Y,
+					rectangle.Width * scale.X,
+					rectangle.Height * scale.Y
+				);
+			}
+		}
 	}
 }
