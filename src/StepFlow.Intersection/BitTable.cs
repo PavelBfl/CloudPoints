@@ -8,29 +8,49 @@ namespace StepFlow.Intersection
 {
 	public sealed class BitTable
 	{
-		public static BitTable CreateCircle(int radius)
+		public static BitTable CreateCircle(int size)
 		{
-			if (radius < 0)
+			if (size <= 0)
 			{
-				throw new ArgumentOutOfRangeException(nameof(radius));
+				throw new ArgumentOutOfRangeException(nameof(size));
 			}
 
-			var result = new BitTable(new Size(radius * 2 + 1, radius * 2 + 1));
+			const int SCALE = 100;
+			const int OFFSET = 45;
 
+			var radius = (size * SCALE) / 2;
 			var sqrRadius = radius * radius;
-			for (var iX = -radius; iX <= radius; iX++)
+
+			var result = new BitTable(new Size(size, size));
+			for (var iX = 0; iX < size; iX++)
 			{
-				for (var iY = -radius; iY <= radius; iY++)
+				for (var iY = 0; iY < size; iY++)
 				{
-					var sqrDistance = (iX * iX) + (iY * iY);
-					if (sqrDistance < sqrRadius)
+					var rect = new Rectangle(
+						iX * SCALE - radius + OFFSET,
+						iY * SCALE - radius + OFFSET,
+						SCALE - OFFSET * 2,
+						SCALE - OFFSET * 2
+					);
+
+					if (Contains(rect.Left, rect.Top) ||
+						Contains(rect.Right, rect.Top) ||
+						Contains(rect.Right, rect.Bottom) ||
+						Contains(rect.Left, rect.Bottom)
+					)
 					{
-						result[iX + radius, iY + radius] = true;
+						result[iX, iY] = true;
 					}
 				}
 			}
 
 			return result;
+
+			bool Contains(int x, int y)
+			{
+				var sqrDistance = (x * x) + (y * y);
+				return sqrDistance <= sqrRadius;
+			}
 		}
 
 		public BitTable(Size size)
