@@ -24,6 +24,8 @@ namespace StepFlow.Core.Elements
 
 		public int Speed { get; set; }
 
+		public int Weight { get; set; }
+
 		public ICollection<SchedulerRunner> Schedulers { get; } = new HashSet<SchedulerRunner>();
 
 		public ControlVector? GetControlVector()

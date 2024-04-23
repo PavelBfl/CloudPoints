@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using StepFlow.Core;
@@ -74,7 +75,7 @@ namespace StepFlow.Master.Proxies.Elements
 					Body.Current.Bounds.GetCenter(),
 					SIZE,
 					new Vector2(courseVector.X, courseVector.Y) * 5,
-					AggregateDamage(10),
+					AggregateDamage(value: 10, push: courseVector),
 					TimeTick.FromSeconds(4),
 					Target
 				);
@@ -84,7 +85,7 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 		}
 
-		private Damage AggregateDamage(int value = 0, DamageKind kind = DamageKind.None)
+		private Damage AggregateDamage(int value = 0, DamageKind kind = DamageKind.None, Point push = default)
 		{
 			foreach (var settings in Target.Items.Select(x => x.DamageSetting))
 			{
@@ -95,6 +96,7 @@ namespace StepFlow.Master.Proxies.Elements
 			return new Damage()
 			{
 				Value = value,
+				Push = new Vector2(push.X, push.Y) * 5,
 				Kind = kind,
 			};
 		}

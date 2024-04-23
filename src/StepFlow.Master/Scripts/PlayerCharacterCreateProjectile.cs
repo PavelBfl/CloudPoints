@@ -1,4 +1,5 @@
-﻿using StepFlow.Core;
+﻿using System.Drawing;
+using StepFlow.Core;
 using StepFlow.Master.Proxies.Elements;
 
 namespace StepFlow.Master.Scripts
@@ -18,6 +19,8 @@ namespace StepFlow.Master.Scripts
 		public struct Parameters
 		{
 			public Course Course { get; set; }
+
+			public Point Push { get; set; }
 
 			public int DefaultDamage { get; set; }
 

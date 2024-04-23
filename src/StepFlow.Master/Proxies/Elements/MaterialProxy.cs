@@ -20,6 +20,8 @@ namespace StepFlow.Master.Proxies.Elements
 
 		int Speed { get; set; }
 
+		int Weight { get; set; }
+
 		ICollection<SchedulerRunner> Schedulers { get; }
 
 		void OnTick();
@@ -58,6 +60,14 @@ namespace StepFlow.Master.Proxies.Elements
 			{
 				scheduler.OnTick();
 			}
+
+			if (Weight > 0 && Target.GetControlVector() is { } controlVector)
+			{
+				var factor = 1f - (Weight / 1000f);
+
+				var courseVector = (ICourseVectorProxy)Owner.CreateProxy(controlVector.CourseVector);
+				courseVector.Value *= factor;
+			}
 		}
 
 		public virtual void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
@@ -93,5 +103,7 @@ namespace StepFlow.Master.Proxies.Elements
 		}
 
 		public int Speed { get => Target.Speed; set => SetValue(value); }
+
+		public int Weight { get => Target.Weight; set => SetValue(value); }
 	}
 }

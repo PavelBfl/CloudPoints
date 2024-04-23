@@ -110,11 +110,12 @@ namespace StepFlow.Markup
 
 			PlayMaster.PlayerCharacterCreate.Execute(new()
 			{
-				Bounds = CreateCell(6, 0),
+				Bounds = CreateCell(5, 0),
 				Strength = 1000,
 				Speed = 3,
 				Cooldown = TimeTick.FromSeconds(1),
 			});
+			CreateCellObstruction(new Point(5, 1), 50, ObstructionView.Boards);
 		}
 
 		private void CreateRoom(Point location, Size size, int width)

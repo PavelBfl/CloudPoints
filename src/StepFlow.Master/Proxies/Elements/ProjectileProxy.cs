@@ -1,7 +1,11 @@
-﻿using StepFlow.Core;
+﻿using System.Collections.Generic;
+using System.Numerics;
+using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
+using StepFlow.Core.Schedulers;
 using StepFlow.Master.Proxies.Components;
+using StepFlow.Master.Proxies.Schedulers;
 
 namespace StepFlow.Master.Proxies.Elements
 {
@@ -32,8 +36,44 @@ namespace StepFlow.Master.Proxies.Elements
 					strengthProxy.Add(-Damage.Value);
 				}
 
+				if (Damage.Push != Vector2.Zero)
+				{
+					var controlVector = GetOrCreateControlVector(otherMaterial);
+					var courseVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(controlVector.CourseVector);
+					courseVectorProxy.Value = Damage.Push;
+				}
+
 				Owner.GetPlaygroundItemsProxy().Remove(Target);
 			}
+		}
+
+		private Material.ControlVector GetOrCreateControlVector(Material material)
+		{
+			var result = material.GetControlVector();
+			if (result is null)
+			{
+				var schedulersProxy = Owner.CreateCollectionProxy(material.Schedulers);
+				var courseVector = new CourseVector()
+				{
+					Name = Material.SHEDULER_CONTROL_NAME,
+				};
+
+				var schedulerVector = new SchedulerVector()
+				{
+					Collided = material.Body,
+					Vectors = { courseVector },
+				};
+
+				var schedulerRunner = new SchedulerRunner()
+				{
+					Scheduler = schedulerVector,
+				};
+
+				result = new Material.ControlVector(schedulerRunner, schedulerVector, courseVector);
+				schedulersProxy.Add(schedulerRunner);
+			}
+
+			return result;
 		}
 	}
 }

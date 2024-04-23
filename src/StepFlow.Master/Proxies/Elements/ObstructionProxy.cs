@@ -8,7 +8,7 @@ namespace StepFlow.Master.Proxies.Elements
 		new Scale? Strength { get; set; }
 	}
 
-	internal class ObstructionProxy : MaterialProxy<Obstruction>, IObstructionProxy
+	internal sealed class ObstructionProxy : MaterialProxy<Obstruction>, IObstructionProxy
 	{
 		public ObstructionProxy(PlayMaster owner, Obstruction target) : base(owner, target)
 		{

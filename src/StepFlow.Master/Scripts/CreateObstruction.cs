@@ -20,6 +20,7 @@ namespace StepFlow.Master.Scripts
 				Name = "Obstruction",
 				Kind = parameters.Kind,
 				View = parameters.View,
+				Weight = 1,
 				Body = new Collided()
 				{
 					Current = { parameters.Bounds ?? Array.Empty<Rectangle>() },
