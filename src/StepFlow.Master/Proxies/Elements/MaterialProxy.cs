@@ -52,7 +52,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public Collided Body { get => Target.GetBodyRequired(); }
 
-		public ICollection<SchedulerRunner> Schedulers => Owner.CreateCollectionProxy(Target.Schedulers);
+		public ICollection<SchedulerRunner> Schedulers => Target.Schedulers;
 
 		public virtual void OnTick()
 		{
@@ -61,12 +61,25 @@ namespace StepFlow.Master.Proxies.Elements
 				scheduler.OnTick();
 			}
 
-			if (Weight > 0 && Target.GetControlVector() is { } controlVector)
+			if (Weight > 0 && Target.GetCourseVector(Material.SHEDULER_INERTIA_NAME) is { } path)
 			{
+				// TODO Доработать обработку веса
 				var factor = 1f - (Weight / 1000f);
 
-				var courseVector = (ICourseVectorProxy)Owner.CreateProxy(controlVector.CourseVector);
+				var courseVector = (ICourseVectorProxy)Owner.CreateProxy(path.CourseVector);
 				courseVector.Value *= factor;
+
+				if (courseVector.Value.LengthSquared() < 1)
+				{
+					if (path.Scheduler.Vectors.Count == 1)
+					{
+						Owner.CreateCollectionProxy(Schedulers).Remove(path.Runner);
+					}
+					else
+					{
+						Owner.CreateCollectionProxy(path.Scheduler.Vectors).Remove(path.CourseVector);
+					}
+				}
 			}
 		}
 
@@ -80,12 +93,12 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public void SetCourse(Course? course)
 		{
-			if (Target.GetControlVector() is { } controlVector)
+			if (Target.GetCourseVector(Material.SHEDULER_CONTROL_NAME) is { } path)
 			{
 				var offset = course?.ToOffset() ?? Point.Empty;
 				var vector = new Vector2(offset.X, offset.Y) * Speed;
 
-				var controlVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(controlVector.CourseVector);
+				var controlVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(path.CourseVector);
 				controlVectorProxy.Value = vector;
 			}
 		}

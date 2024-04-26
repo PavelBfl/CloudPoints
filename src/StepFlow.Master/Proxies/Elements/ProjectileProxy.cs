@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Numerics;
+﻿using System.Numerics;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
@@ -38,7 +37,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 				if (Damage.Push != Vector2.Zero)
 				{
-					var controlVector = GetOrCreateControlVector(otherMaterial);
+					var controlVector = GetOrCreateControlVector(otherMaterial, Material.SHEDULER_INERTIA_NAME);
 					var courseVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(controlVector.CourseVector);
 					courseVectorProxy.Value = Damage.Push;
 				}
@@ -47,15 +46,15 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 		}
 
-		private Material.ControlVector GetOrCreateControlVector(Material material)
+		private Material.CourseVectorPath GetOrCreateControlVector(Material material, string vectorName)
 		{
-			var result = material.GetControlVector();
+			var result = material.GetCourseVector(vectorName);
 			if (result is null)
 			{
 				var schedulersProxy = Owner.CreateCollectionProxy(material.Schedulers);
 				var courseVector = new CourseVector()
 				{
-					Name = Material.SHEDULER_CONTROL_NAME,
+					Name = vectorName,
 				};
 
 				var schedulerVector = new SchedulerVector()
@@ -69,7 +68,7 @@ namespace StepFlow.Master.Proxies.Elements
 					Scheduler = schedulerVector,
 				};
 
-				result = new Material.ControlVector(schedulerRunner, schedulerVector, courseVector);
+				result = new Material.CourseVectorPath(schedulerRunner, schedulerVector, courseVector);
 				schedulersProxy.Add(schedulerRunner);
 			}
 

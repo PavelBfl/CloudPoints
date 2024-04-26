@@ -71,22 +71,22 @@ namespace StepFlow.Master.Proxies.Elements
 				}
 				else if (otherCollided.Collided.IsRigid &&
 					thisCollided.Collided == Body &&
-					Target.GetControlVector() is { } controlVector &&
-					controlVector.Runner.Current is { })
+					Target.GetCourseVector(Material.SHEDULER_CONTROL_NAME) is { } path &&
+					path.Runner.Current is { })
 				{
 					switch (Target.Strategy)
 					{
 						case Strategy.None:
-							StrategyNone(controlVector);
+							StrategyNone(path);
 							break;
 						case Strategy.CW:
-							StrategyClock(true, controlVector);
+							StrategyClock(true, path);
 							break;
 						case Strategy.CWW:
-							StrategyClock(false, controlVector);
+							StrategyClock(false, path);
 							break;
 						case Strategy.Reflection:
-							StrategyReflection(thisCollided.Collided.Current, otherCollided.Collided.Current, controlVector);
+							StrategyReflection(thisCollided.Collided.Current, otherCollided.Collided.Current, path);
 							break;
 						default: throw EnumNotSupportedException.Create(Target.Strategy);
 					}
@@ -94,7 +94,7 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 		}
 
-		private void StrategyNone(Material.ControlVector controlVector)
+		private void StrategyNone(Material.CourseVectorPath controlVector)
 		{
 			var runnerProxy = (ISchedulerRunnerProxy)Owner.CreateProxy(controlVector.Runner);
 			runnerProxy.Current = null;
@@ -103,7 +103,7 @@ namespace StepFlow.Master.Proxies.Elements
 			controlVectorProxy.Value = Vector2.Zero;
 		}
 
-		private void StrategyClock(bool cw, Material.ControlVector controlVector)
+		private void StrategyClock(bool cw, Material.CourseVectorPath controlVector)
 		{
 			var runnerProxy = (ISchedulerRunnerProxy)Owner.CreateProxy(controlVector.Runner);
 			runnerProxy.Current = null;
@@ -113,7 +113,7 @@ namespace StepFlow.Master.Proxies.Elements
 			controlVectorProxy.Value = Vector2.Transform(controlVector.CourseVector.Value, rotate);
 		}
 
-		private void StrategyReflection(ShapeContainer shape, ShapeContainer otherShape, Material.ControlVector controlVector)
+		private void StrategyReflection(ShapeContainer shape, ShapeContainer otherShape, Material.CourseVectorPath controlVector)
 		{
 			Vector2 newVector = controlVector.CourseVector.Value;
 			if (shape.Bounds.Right <= otherShape.Bounds.Left || shape.Bounds.Left >= otherShape.Bounds.Right)

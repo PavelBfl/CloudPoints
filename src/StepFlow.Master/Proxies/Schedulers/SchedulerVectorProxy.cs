@@ -41,16 +41,23 @@ namespace StepFlow.Master.Proxies.Schedulers
 			if (CourseExtensions.GetCourseStep(sum, IndexCourse) is { } course)
 			{
 				var length = (int)sum.Length();
-				Current = new Turn(
-					100 / length,
-					new SetCourse()
-					{
-						Collided = Collided,
-						Course = course
-					}
-				);
+				if (length > 0)
+				{
+					Current = new Turn(
+						100 / length,
+						new SetCourse()
+						{
+							Collided = Collided,
+							Course = course
+						}
+					);
 
-				IndexCourse++;
+					IndexCourse++;
+				}
+				else
+				{
+					Current = new Turn(1, null);
+				}
 			}
 			else
 			{

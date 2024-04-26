@@ -8,6 +8,7 @@ namespace StepFlow.Core.Elements
 	public class Material : ElementBase
 	{
 		public const string SHEDULER_CONTROL_NAME = "Control";
+		public const string SHEDULER_INERTIA_NAME = "Inertia";
 
 		public int Ordinal { get; set; }
 
@@ -28,17 +29,22 @@ namespace StepFlow.Core.Elements
 
 		public ICollection<SchedulerRunner> Schedulers { get; } = new HashSet<SchedulerRunner>();
 
-		public ControlVector? GetControlVector()
+		public CourseVectorPath? GetCourseVector(string vectorName)
 		{
+			if (vectorName is null)
+			{
+				throw new ArgumentNullException(nameof(vectorName));
+			}
+
 			foreach (var localRunner in Schedulers)
 			{
 				if (localRunner.Scheduler is SchedulerVector schedulerVector)
 				{
 					foreach (var vector in schedulerVector.Vectors)
 					{
-						if (vector.Name == SHEDULER_CONTROL_NAME)
+						if (vector.Name == vectorName)
 						{
-							return new ControlVector(localRunner, schedulerVector, vector);
+							return new CourseVectorPath(localRunner, schedulerVector, vector);
 						}
 					}
 				}
@@ -47,9 +53,9 @@ namespace StepFlow.Core.Elements
 			return null;
 		}
 
-		public sealed class ControlVector
+		public sealed class CourseVectorPath
 		{
-			public ControlVector(SchedulerRunner runner, SchedulerVector scheduler, CourseVector courseVector)
+			public CourseVectorPath(SchedulerRunner runner, SchedulerVector scheduler, CourseVector courseVector)
 			{
 				Runner = runner ?? throw new ArgumentNullException(nameof(runner));
 				Scheduler = scheduler ?? throw new ArgumentNullException(nameof(scheduler));
