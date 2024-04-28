@@ -19,40 +19,43 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public override void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
 		{
-			var placeScheduler = otherMaterial.Schedulers
-				.Select(x => x.Scheduler)
-				.OfType<SchedulerLimit>()
-				.SingleOrDefault(x => x.Name == Place.PLACE_SCHEDULER);
-
-			if (placeScheduler is null)
+			if (otherMaterial.Body == otherCollided.Collided && otherCollided.PropertyName == nameof(Collided.Current))
 			{
-				placeScheduler = new SchedulerLimit()
+				var placeScheduler = otherMaterial.Schedulers
+						.Select(x => x.Scheduler)
+						.OfType<SchedulerLimit>()
+						.SingleOrDefault(x => x.Name == Place.PLACE_SCHEDULER);
+
+				if (placeScheduler is null)
 				{
-					Name = Place.PLACE_SCHEDULER,
-					Range = new Scale()
+					placeScheduler = new SchedulerLimit()
 					{
-						Max = 1,
-					},
-					Source = new SchedulerDamage()
-					{
-						Material = otherMaterial,
-						Damage = new Damage()
+						Name = Place.PLACE_SCHEDULER,
+						Range = new Scale()
 						{
-							Value = 10,
+							Max = 1,
 						},
-					},
-				};
+						Source = new SchedulerDamage()
+						{
+							Material = otherMaterial,
+							Damage = new Damage()
+							{
+								Value = 10,
+							},
+						},
+					};
 
-				otherMaterial.Schedulers.Add(new SchedulerRunner()
+					otherMaterial.Schedulers.Add(new SchedulerRunner()
+					{
+						Scheduler = placeScheduler,
+					});
+				}
+
+				if (placeScheduler.Current is null)
 				{
-					Scheduler = placeScheduler,
-				});
-			}
-
-			if (placeScheduler.Current is null)
-			{
-				var rangeProxy = (IScaleProxy)Owner.CreateProxy(placeScheduler.GetRangeRequired());
-				rangeProxy.Value = 0;
+					var rangeProxy = (IScaleProxy)Owner.CreateProxy(placeScheduler.GetRangeRequired());
+					rangeProxy.Value = 0;
+				} 
 			}
 		}
 	}
