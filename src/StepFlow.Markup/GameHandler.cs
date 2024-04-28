@@ -99,14 +99,14 @@ namespace StepFlow.Markup
 			CreateCellObstruction(new Point(5, 6), 50, ObstructionView.Bricks);
 			CreateCellObstruction(new Point(6, 6), 50, ObstructionView.Bricks);
 
-			CreateCellObstruction(new Point(0, 4), 50, ObstructionView.Boards);
-			CreateCellObstruction(new Point(1, 4), 50, ObstructionView.Boards);
-			CreateCellObstruction(new Point(2, 4), 50, ObstructionView.Boards);
-			CreateCellObstruction(new Point(0, 5), 50, ObstructionView.Boards);
-			CreateCellObstruction(new Point(2, 5), 50, ObstructionView.Boards);
-			CreateCellObstruction(new Point(0, 6), 50, ObstructionView.Boards);
-			CreateCellObstruction(new Point(1, 6), 50, ObstructionView.Boards);
-			CreateCellObstruction(new Point(2, 6), 50, ObstructionView.Boards);
+			CreateCellObstruction(new Point(0, 4), 50, ObstructionView.Boards, 1);
+			CreateCellObstruction(new Point(1, 4), 50, ObstructionView.Boards, 1);
+			CreateCellObstruction(new Point(2, 4), 50, ObstructionView.Boards, 1);
+			CreateCellObstruction(new Point(0, 5), 50, ObstructionView.Boards, 1);
+			CreateCellObstruction(new Point(2, 5), 50, ObstructionView.Boards, 1);
+			CreateCellObstruction(new Point(0, 6), 50, ObstructionView.Boards, 1);
+			CreateCellObstruction(new Point(1, 6), 50, ObstructionView.Boards, 1);
+			CreateCellObstruction(new Point(2, 6), 50, ObstructionView.Boards, 1);
 
 			PlayMaster.PlayerCharacterCreate.Execute(new()
 			{
@@ -115,7 +115,7 @@ namespace StepFlow.Markup
 				Speed = 3,
 				Cooldown = TimeTick.FromSeconds(1),
 			});
-			CreateCellObstruction(new Point(5, 1), 50, ObstructionView.Boards);
+			CreateCellObstruction(new Point(5, 1), 50, ObstructionView.Boards, 1);
 		}
 
 		private void CreateRoom(Point location, Size size, int width)
@@ -149,7 +149,7 @@ namespace StepFlow.Markup
 			);
 		}
 
-		private void CreateCellObstruction(Point position, int? strength, ObstructionView view)
+		private void CreateCellObstruction(Point position, int? strength, ObstructionView view, int weight = Material.MAX_WEIGHT)
 		{
 			PlayMaster.CreateObstruction.Execute(new()
 			{
@@ -157,6 +157,7 @@ namespace StepFlow.Markup
 				Strength = strength,
 				Kind = ObstructionKind.Single,
 				View = view,
+				Weight = weight,
 			});
 		}
 

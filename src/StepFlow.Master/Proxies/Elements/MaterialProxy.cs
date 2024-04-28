@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
@@ -63,8 +64,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 			if (Weight > 0 && Target.GetCourseVector(Material.SHEDULER_INERTIA_NAME) is { } path)
 			{
-				// TODO Доработать обработку веса
-				var factor = 1f - (Weight / 1000f);
+				var factor = 1f - (Weight / (float)Material.MAX_WEIGHT);
 
 				var courseVector = (ICourseVectorProxy)Owner.CreateProxy(path.CourseVector);
 				courseVector.Value *= factor;
@@ -117,6 +117,18 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public int Speed { get => Target.Speed; set => SetValue(value); }
 
-		public int Weight { get => Target.Weight; set => SetValue(value); }
+		public int Weight
+		{
+			get => Target.Weight;
+			set
+			{
+				if (value < 0 || Material.MAX_WEIGHT < value)
+				{
+					throw new ArgumentOutOfRangeException(nameof(value));
+				}
+
+				SetValue(value);
+			}
+		}
 	}
 }
