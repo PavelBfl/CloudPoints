@@ -118,10 +118,11 @@ namespace StepFlow.Master
 
 		private void TakeStepInner()
 		{
-			foreach (var collision in Playground.Items
+			var materials = Playground.Items
 				.Select(x => (IMaterialProxy<Material>)CreateProxy(x))
-				.ToArray()
-			)
+				.ToArray();
+
+			foreach (var collision in materials)
 			{
 				collision.OnTick();
 			}

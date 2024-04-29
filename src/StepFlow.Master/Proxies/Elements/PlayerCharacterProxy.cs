@@ -14,7 +14,7 @@ namespace StepFlow.Master.Proxies.Elements
 	{
 		new Scale Strength { get; }
 
-		void CreateProjectile(Course course);
+		void CreateProjectile(float radians);
 	}
 
 	internal sealed class PlayerCharacterProxy : MaterialProxy<PlayerCharacter>, IPlayerCharacterProxy
@@ -64,18 +64,21 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 		}
 
-		public void CreateProjectile(Course course)
+		public void CreateProjectile(float radians)
 		{
 			const int SIZE = 10;
 
 			if (Cooldown.Value == 0)
 			{
-				var courseVector = course.ToOffset();
+				var center = Body.Current.Bounds.GetCenter();
+				var matrixRotation = Matrix3x2.CreateRotation(radians);
+				var courseVector = Vector2.Transform(new Vector2(1, 0), matrixRotation);
+
 				Owner.CreateProjectile(
-					Body.Current.Bounds.GetCenter(),
+					center,
 					SIZE,
-					new Vector2(courseVector.X, courseVector.Y) * 5,
-					AggregateDamage(value: 10, push: courseVector),
+					courseVector * 5,
+					AggregateDamage(value: 10, push: courseVector * 10),
 					TimeTick.FromSeconds(4),
 					Target
 				);
@@ -85,7 +88,7 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 		}
 
-		private Damage AggregateDamage(int value = 0, DamageKind kind = DamageKind.None, Point push = default)
+		private Damage AggregateDamage(int value = 0, DamageKind kind = DamageKind.None, Vector2 push = default)
 		{
 			foreach (var settings in Target.Items.Select(x => x.DamageSetting))
 			{
@@ -96,7 +99,7 @@ namespace StepFlow.Master.Proxies.Elements
 			return new Damage()
 			{
 				Value = value,
-				Push = new Vector2(push.X, push.Y) * 5,
+				Push = push,
 				Kind = kind,
 			};
 		}

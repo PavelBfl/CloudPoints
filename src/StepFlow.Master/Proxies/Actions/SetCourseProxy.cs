@@ -28,7 +28,7 @@ namespace StepFlow.Master.Proxies.Actions
 		{
 			if (Collided is { })
 			{
-				var offset = Course.ToOffset();
+				var offset = Course.ToPoint();
 				var next = Collided.Current.AsEnumerable().Offset(offset);
 
 				var collidedProxy = (ICollidedProxy)Owner.CreateProxy(Collided);

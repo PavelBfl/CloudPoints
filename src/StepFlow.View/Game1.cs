@@ -22,13 +22,11 @@ namespace StepFlow.View
 		protected override void LoadContent()
 		{
 			var spriteBatch = new SpriteBatch(GraphicsDevice);
-			var keyboard = new KeyboardService();
-			var mouse = new MouseService();
+			var keyboard = new ControlService();
 			var drawer = new Drawer(spriteBatch, GraphicsDevice, Content);
 			Runner = new(
 				spriteBatch,
 				keyboard,
-				mouse,
 				new(
 					new System.Drawing.RectangleF(0, 0, Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight),
 					drawer,
@@ -58,19 +56,16 @@ namespace StepFlow.View
 
 		private sealed class GameRunner
 		{
-			public GameRunner(SpriteBatch spriteBatch, KeyboardService keyboardService, MouseService mouseService, Markup.GameHandler handler)
+			public GameRunner(SpriteBatch spriteBatch, ControlService controlService, Markup.GameHandler handler)
 			{
 				SpriteBatch = spriteBatch ?? throw new ArgumentNullException(nameof(spriteBatch));
-				KeyboardService = keyboardService ?? throw new ArgumentNullException(nameof(keyboardService));
-				MouseService = mouseService ?? throw new ArgumentNullException(nameof(mouseService));
+				ControlService = controlService ?? throw new ArgumentNullException(nameof(controlService));
 				Handler = handler ?? throw new ArgumentNullException(nameof(handler));
 			}
 
 			public SpriteBatch SpriteBatch { get; }
 
-			public KeyboardService KeyboardService { get; }
-
-			public MouseService MouseService { get; }
+			public ControlService ControlService { get; }
 
 			public Markup.GameHandler Handler { get; }
 
@@ -78,8 +73,7 @@ namespace StepFlow.View
 			{
 				Handler.Update();
 
-				KeyboardService.Update();
-				MouseService.Update();
+				ControlService.Update();
 			}
 
 			public void Draw()

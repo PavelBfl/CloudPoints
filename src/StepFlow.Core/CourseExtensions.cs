@@ -24,7 +24,7 @@ namespace StepFlow.Core
 			_ => throw EnumNotSupportedException.Create(course),
 		};
 
-		public static Point ToOffset(this Course course) => course switch
+		public static Point ToPoint(this Course course) => course switch
 		{
 			Course.Left => new Point(-1, 0),
 			Course.LeftTop => new Point(-1, -1),
@@ -36,6 +36,12 @@ namespace StepFlow.Core
 			Course.LeftBottom => new Point(-1, 1),
 			_ => throw EnumNotSupportedException.Create(course),
 		};
+
+		public static Vector2 ToVector(this Course course)
+		{
+			var point = course.ToPoint();
+			return new Vector2(point.X, point.Y);
+		}
 
 		public static Course Invert(this Course course) => course switch
 		{

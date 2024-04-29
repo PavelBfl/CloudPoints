@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Numerics;
 using StepFlow.Core;
 using StepFlow.Markup;
 using StepFlow.Markup.Services;
@@ -33,13 +34,23 @@ public class Program
 		}
 	}
 
-	private sealed class Keyboard : IKeyboard
+	private sealed class Keyboard : IControl
 	{
 		public Course? PlayerCourse { get; set; }
 
 		public Course? PlayerShot { get; set; }
 
+		public PlayerAction GetPlayerAction()
+		{
+			throw new NotImplementedException();
+		}
+
 		public Course? GetPlayerCourse() => PlayerCourse;
+
+		public float GetPlayerRotate(Vector2 center)
+		{
+			throw new NotImplementedException();
+		}
 
 		public Course? GetPlayerShot() => PlayerShot;
 

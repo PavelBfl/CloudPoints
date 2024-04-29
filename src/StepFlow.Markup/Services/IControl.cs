@@ -9,11 +9,19 @@ namespace StepFlow.Markup.Services
 		Down,
 	}
 
-	public interface IKeyboard
+	public enum PlayerAction
+	{
+		None,
+		Default,
+	}
+
+	public interface IControl
 	{
 		Course? GetPlayerCourse();
 
-		Course? GetPlayerShot();
+		float GetPlayerRotate(System.Numerics.Vector2 center);
+
+		PlayerAction GetPlayerAction();
 
 		bool IsUndo();
 

@@ -6,6 +6,7 @@ using StepFlow.Common.Exceptions;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
+using StepFlow.Intersection;
 using StepFlow.Markup.Services;
 using StepFlow.Master;
 
@@ -16,11 +17,11 @@ namespace StepFlow.Markup
 		public GameHandler(
 			RectangleF placeBounds,
 			IDrawer drawer,
-			IKeyboard keyboard
+			IControl control
 		)
 		{
 			Drawer = drawer ?? throw new ArgumentNullException(nameof(drawer));
-			Keyboard = keyboard ?? throw new ArgumentNullException(nameof(keyboard));
+			Control = control ?? throw new ArgumentNullException(nameof(control));
 			Place = placeBounds;
 
 			Meter.CreateObservableGauge("Time", () => PlayMaster.TimeAxis.Current);
@@ -36,7 +37,7 @@ namespace StepFlow.Markup
 
 		private PlayMaster PlayMaster { get; } = new PlayMaster();
 
-		private IKeyboard Keyboard { get; }
+		private IControl Control { get; }
 
 		public IDrawer Drawer { get; }
 
@@ -115,7 +116,7 @@ namespace StepFlow.Markup
 				Speed = 3,
 				Cooldown = TimeTick.FromSeconds(1),
 			});
-			CreateCellObstruction(new Point(5, 1), 50, ObstructionView.Boards, 1);
+			CreateCellObstruction(new Point(5, 1), 1000, ObstructionView.Boards, 1);
 		}
 
 		private void CreateRoom(Point location, Size size, int width)
@@ -166,9 +167,9 @@ namespace StepFlow.Markup
 			PlayMaster.PlayerCharacterSetCourse.Execute(new() { Course = course, });
 		}
 
-		private void CreateProjectile(Course course)
+		private void CreateProjectile(float radians)
 		{
-			PlayMaster.PlayerCharacterCreateProjectile.Execute(new() { Course = course, });
+			PlayMaster.PlayerCharacterCreateProjectile.Execute(new() { Radians = radians, });
 		}
 
 		private void CreateEnemy(Rectangle bounds, int visionSize, Strategy strategy, Vector2 beginVector)
@@ -212,12 +213,12 @@ namespace StepFlow.Markup
 
 		public void Update()
 		{
-			if (Keyboard.OnSwitchDebug())
+			if (Control.OnSwitchDebug())
 			{
 				IsDebug = !IsDebug;
 			}
 
-			var timeOffset = Keyboard.GetTimeOffset();
+			var timeOffset = Control.GetTimeOffset();
 			switch (timeOffset)
 			{
 				case TimeOffset.None:
@@ -231,7 +232,7 @@ namespace StepFlow.Markup
 				default: throw EnumNotSupportedException.Create(timeOffset);
 			}
 
-			if (Keyboard.IsUndo())
+			if (Control.IsUndo())
 			{
 				for (var i = 0; i < TimeTick.TICKS_PER_FRAME * 2; i++)
 				{
@@ -245,12 +246,20 @@ namespace StepFlow.Markup
 				{
 					var transaction = PlayMaster.TimeAxis.BeginTransaction();
 
-					PlayerCharacterSetCourse(Keyboard.GetPlayerCourse());
+					PlayerCharacterSetCourse(Control.GetPlayerCourse());
 
-					if (Keyboard.GetPlayerShot() is { } playerShot)
+					var playerAction = Control.GetPlayerAction();
+					switch (playerAction)
 					{
-						CreateProjectile(playerShot);
-					}
+						case PlayerAction.None:
+							break;
+						case PlayerAction.Default:
+							var playerCharacter = PlayMaster.Playground.GetPlayerCharacterRequired();
+							var center = playerCharacter.GetBodyRequired().Current.Bounds.GetCenter();
+							CreateProjectile(Control.GetPlayerRotate(new(center.X, center.Y)));
+							break;
+						default: throw EnumNotSupportedException.Create(playerAction);
+					};
 
 					PlayMaster.TakeStep.Execute(null);
 

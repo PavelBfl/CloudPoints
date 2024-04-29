@@ -13,12 +13,12 @@ namespace StepFlow.Master.Scripts
 		public override void Execute(Parameters parameters)
 		{
 			var playerCharacterProxy = (IPlayerCharacterProxy)PlayMaster.CreateProxy(PlayMaster.Playground.GetPlayerCharacterRequired());
-			playerCharacterProxy.CreateProjectile(parameters.Course);
+			playerCharacterProxy.CreateProjectile(parameters.Radians);
 		}
 
 		public struct Parameters
 		{
-			public Course Course { get; set; }
+			public float Radians { get; set; }
 
 			public Point Push { get; set; }
 

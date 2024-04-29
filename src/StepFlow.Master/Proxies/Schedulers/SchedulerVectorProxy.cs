@@ -1,7 +1,9 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using StepFlow.Core;
 using StepFlow.Core.Actions;
 using StepFlow.Core.Components;
+using StepFlow.Core.Elements;
 using StepFlow.Core.Schedulers;
 
 namespace StepFlow.Master.Proxies.Schedulers
@@ -19,7 +21,7 @@ namespace StepFlow.Master.Proxies.Schedulers
 
 		public Collided Collided { get => Target.GetCollidedRequired(); set => SetValue(Subject.PropertyRequired(value, nameof(Target.Collided))); }
 
-		public Vector2 CorrectVector { get => Target.CorrectVector; set => SetValue(value); }
+		public float CorrectFactor { get => Target.CorrectFactor; set => SetValue(value); }
 
 		public int IndexCourse { get => Target.IndexCourse; set => SetValue(value); }
 
@@ -32,9 +34,10 @@ namespace StepFlow.Master.Proxies.Schedulers
 				sum += vector.Value;
 			}
 
-			if (sum != CorrectVector)
+			var factor = sum.X / sum.Y;
+			if (MathF.Abs(factor - CorrectFactor) > 0.00001f)
 			{
-				CorrectVector = sum;
+				CorrectFactor = factor;
 				IndexCourse = 0;
 			}
 

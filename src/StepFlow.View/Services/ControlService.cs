@@ -1,12 +1,15 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using System;
+using Microsoft.Xna.Framework.Input;
 using StepFlow.Core;
 using StepFlow.Markup.Services;
 
 namespace StepFlow.View.Services
 {
-	public class KeyboardService : IKeyboard
+	public sealed class ControlService : IControl
 	{
 		private KeyboardState PrevKeyboardState { get; set; }
+
+		private MouseState PrevMouseState { get; set; }
 
 		public Course? GetPlayerCourse()
 		{
@@ -32,27 +35,27 @@ namespace StepFlow.View.Services
 			}
 		}
 
-		public Course? GetPlayerShot()
+		public float GetPlayerRotate(System.Numerics.Vector2 center)
 		{
-			if (IsKeyDown(Keys.A))
+			var position = Mouse.GetState().Position;
+
+			var result = MathF.Atan2(
+				position.Y - center.Y,
+				position.X - center.X
+			);
+
+			return result;
+		}
+
+		public PlayerAction GetPlayerAction()
+		{
+			if (LeftButtonOnPress)
 			{
-				return Course.Left;
-			}
-			else if (IsKeyDown(Keys.W))
-			{
-				return Course.Top;
-			}
-			else if (IsKeyDown(Keys.D))
-			{
-				return Course.Right;
-			}
-			else if (IsKeyDown(Keys.S))
-			{
-				return Course.Bottom;
+				return PlayerAction.Default;
 			}
 			else
 			{
-				return null;
+				return PlayerAction.None;
 			}
 		}
 
@@ -62,7 +65,13 @@ namespace StepFlow.View.Services
 
 		public bool IsKeyOnPress(Keys key) => Keyboard.GetState().IsKeyDown(key) && !PrevKeyboardState.IsKeyDown(key);
 
-		public void Update() => PrevKeyboardState = Keyboard.GetState();
+		private bool LeftButtonOnPress => Mouse.GetState().LeftButton == ButtonState.Pressed && PrevMouseState.LeftButton != ButtonState.Pressed;
+
+		public void Update()
+		{
+			PrevKeyboardState = Keyboard.GetState();
+			PrevMouseState = Mouse.GetState();
+		}
 
 		public TimeOffset GetTimeOffset()
 		{

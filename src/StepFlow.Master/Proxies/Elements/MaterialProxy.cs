@@ -95,7 +95,7 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			if (Target.GetCourseVector(Material.SHEDULER_CONTROL_NAME) is { } path)
 			{
-				var offset = course?.ToOffset() ?? Point.Empty;
+				var offset = course?.ToPoint() ?? Point.Empty;
 				var vector = new Vector2(offset.X, offset.Y) * Speed;
 
 				var controlVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(path.CourseVector);
