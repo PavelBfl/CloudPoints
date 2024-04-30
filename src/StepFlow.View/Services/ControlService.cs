@@ -2,37 +2,46 @@
 using Microsoft.Xna.Framework.Input;
 using StepFlow.Core;
 using StepFlow.Markup.Services;
+using StepFlow.Master.Proxies.Elements;
 
 namespace StepFlow.View.Services
 {
 	public sealed class ControlService : IControl
 	{
+		[Flags]
+		private enum PlayerCourse
+		{
+			None = 0,
+			Left = 0x1,
+			Top = 0x2,
+			Right = 0x4,
+			Bottom = 0x8,
+		}
+
 		private KeyboardState PrevKeyboardState { get; set; }
 
 		private MouseState PrevMouseState { get; set; }
 
-		public Course? GetPlayerCourse()
+		public float? GetPlayerCourse()
 		{
-			if (IsKeyDown(Keys.Left))
+			var result = PlayerCourse.None;
+			result |= IsKeyDown(Keys.A) ? PlayerCourse.Left : PlayerCourse.None;
+			result |= IsKeyDown(Keys.W) ? PlayerCourse.Top : PlayerCourse.None;
+			result |= IsKeyDown(Keys.D) ? PlayerCourse.Right : PlayerCourse.None;
+			result |= IsKeyDown(Keys.S) ? PlayerCourse.Bottom : PlayerCourse.None;
+
+			return result switch
 			{
-				return Course.Left;
-			}
-			else if (IsKeyDown(Keys.Up))
-			{
-				return Course.Top;
-			}
-			else if (IsKeyDown(Keys.Right))
-			{
-				return Course.Right;
-			}
-			else if (IsKeyDown(Keys.Down))
-			{
-				return Course.Bottom;
-			}
-			else
-			{
-				return null;
-			}
+				PlayerCourse.Left => MathF.PI,
+				PlayerCourse.Left | PlayerCourse.Top => -MathF.PI * 3f / 4f,
+				PlayerCourse.Top => -MathF.PI / 2,
+				PlayerCourse.Right | PlayerCourse.Top => -MathF.PI / 4f,
+				PlayerCourse.Right => 0,
+				PlayerCourse.Right | PlayerCourse.Bottom => MathF.PI / 4f,
+				PlayerCourse.Bottom => MathF.PI / 2,
+				PlayerCourse.Left | PlayerCourse.Bottom => MathF.PI * 3f / 4f,
+				_ => null,
+			};
 		}
 
 		public float GetPlayerRotate(System.Numerics.Vector2 center)
@@ -51,7 +60,11 @@ namespace StepFlow.View.Services
 		{
 			if (LeftButtonOnPress)
 			{
-				return PlayerAction.Default;
+				return PlayerAction.Main;
+			}
+			else if (RightButtonOnPress)
+			{
+				return PlayerAction.Auxiliary;
 			}
 			else
 			{
@@ -66,6 +79,8 @@ namespace StepFlow.View.Services
 		public bool IsKeyOnPress(Keys key) => Keyboard.GetState().IsKeyDown(key) && !PrevKeyboardState.IsKeyDown(key);
 
 		private bool LeftButtonOnPress => Mouse.GetState().LeftButton == ButtonState.Pressed && PrevMouseState.LeftButton != ButtonState.Pressed;
+
+		private bool RightButtonOnPress => Mouse.GetState().RightButton == ButtonState.Pressed && PrevMouseState.RightButton != ButtonState.Pressed;
 
 		public void Update()
 		{

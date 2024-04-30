@@ -1,4 +1,5 @@
-﻿using StepFlow.Core;
+﻿using System.Numerics;
+using StepFlow.Core;
 using StepFlow.Master.Proxies.Elements;
 
 namespace StepFlow.Master.Scripts
@@ -17,7 +18,7 @@ namespace StepFlow.Master.Scripts
 
 		public struct Parameters
 		{
-			public Course? Course { get; set; }
+			public float? Course { get; set; }
 		}
 	}
 }

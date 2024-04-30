@@ -3,6 +3,7 @@ using System.Numerics;
 using StepFlow.Core;
 using StepFlow.Markup;
 using StepFlow.Markup.Services;
+using StepFlow.Master.Proxies.Elements;
 
 public class Program
 {
@@ -59,6 +60,11 @@ public class Program
 		public bool IsUndo() => false;
 
 		public bool OnSwitchDebug() => false;
+
+		float? IControl.GetPlayerCourse()
+		{
+			throw new NotImplementedException();
+		}
 	}
 
 	private sealed class Drawer : IDrawer

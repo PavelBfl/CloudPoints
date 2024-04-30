@@ -1,4 +1,6 @@
-﻿namespace StepFlow.Master
+﻿using System;
+
+namespace StepFlow.Master
 {
 	public readonly struct TimeTick
 	{
@@ -10,7 +12,17 @@
 
 		public static TimeTick FromSeconds(int seconds) => new TimeTick(seconds * TICKS_PER_SECOND);
 
-		public TimeTick(int ticks) => Ticks = ticks;
+		public static TimeTick FromSeconds(float seconds) => new TimeTick((int)(seconds * TICKS_PER_SECOND));
+
+		public TimeTick(int ticks)
+		{
+			if (ticks < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(ticks));
+			}
+
+			Ticks = ticks;
+		}
 
 		public int Ticks { get; }
 

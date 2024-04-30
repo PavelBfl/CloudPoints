@@ -27,7 +27,8 @@ namespace StepFlow.Master.Proxies.Elements
 
 		void OnTick();
 
-		void SetCourse(Course? course);
+		void SetCourse(float? radian);
+
 
 		void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided);
 
@@ -91,15 +92,19 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 		}
 
-		public void SetCourse(Course? course)
+		public void SetCourse(float? radians)
 		{
 			if (Target.GetCourseVector(Material.SHEDULER_CONTROL_NAME) is { } path)
 			{
-				var offset = course?.ToPoint() ?? Point.Empty;
-				var vector = new Vector2(offset.X, offset.Y) * Speed;
+				var courseVector = Vector2.Zero;
+				if (radians is { })
+				{
+					var matrixRotation = Matrix3x2.CreateRotation(radians.Value);
+					courseVector = Vector2.Transform(new Vector2(1, 0), matrixRotation);
+				}
 
 				var controlVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(path.CourseVector);
-				controlVectorProxy.Value = vector;
+				controlVectorProxy.Value = courseVector * Speed;
 			}
 		}
 

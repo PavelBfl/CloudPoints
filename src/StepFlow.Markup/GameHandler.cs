@@ -9,6 +9,7 @@ using StepFlow.Core.Elements;
 using StepFlow.Intersection;
 using StepFlow.Markup.Services;
 using StepFlow.Master;
+using StepFlow.Master.Proxies.Elements;
 
 namespace StepFlow.Markup
 {
@@ -162,14 +163,14 @@ namespace StepFlow.Markup
 			});
 		}
 
-		private void PlayerCharacterSetCourse(Course? course)
+		private void PlayerCharacterSetCourse(float? course)
 		{
 			PlayMaster.PlayerCharacterSetCourse.Execute(new() { Course = course, });
 		}
 
-		private void CreateProjectile(float radians)
+		private void CreateProjectile(float radians, PlayerAction action)
 		{
-			PlayMaster.PlayerCharacterCreateProjectile.Execute(new() { Radians = radians, });
+			PlayMaster.PlayerCharacterCreateProjectile.Execute(new() { Radians = radians, Action = action });
 		}
 
 		private void CreateEnemy(Rectangle bounds, int visionSize, Strategy strategy, Vector2 beginVector)
@@ -253,10 +254,11 @@ namespace StepFlow.Markup
 					{
 						case PlayerAction.None:
 							break;
-						case PlayerAction.Default:
+						case PlayerAction.Main:
+						case PlayerAction.Auxiliary:
 							var playerCharacter = PlayMaster.Playground.GetPlayerCharacterRequired();
 							var center = playerCharacter.GetBodyRequired().Current.Bounds.GetCenter();
-							CreateProjectile(Control.GetPlayerRotate(new(center.X, center.Y)));
+							CreateProjectile(Control.GetPlayerRotate(new(center.X, center.Y)), playerAction);
 							break;
 						default: throw EnumNotSupportedException.Create(playerAction);
 					};

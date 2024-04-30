@@ -1,4 +1,5 @@
-﻿using StepFlow.Core;
+﻿using System.Numerics;
+using StepFlow.Master.Proxies.Elements;
 
 namespace StepFlow.Markup.Services
 {
@@ -9,17 +10,11 @@ namespace StepFlow.Markup.Services
 		Down,
 	}
 
-	public enum PlayerAction
-	{
-		None,
-		Default,
-	}
-
 	public interface IControl
 	{
-		Course? GetPlayerCourse();
+		float? GetPlayerCourse();
 
-		float GetPlayerRotate(System.Numerics.Vector2 center);
+		float GetPlayerRotate(Vector2 center);
 
 		PlayerAction GetPlayerAction();
 
