@@ -117,7 +117,7 @@ namespace StepFlow.Markup
 				Speed = 3,
 				Cooldown = TimeTick.FromSeconds(1),
 			});
-			CreateCellObstruction(new Point(5, 1), 1000, ObstructionView.Boards, 1);
+			CreateCellObstruction(new Point(5, 1), 1000, ObstructionView.Boards, 100);
 		}
 
 		private void CreateRoom(Point location, Size size, int width)

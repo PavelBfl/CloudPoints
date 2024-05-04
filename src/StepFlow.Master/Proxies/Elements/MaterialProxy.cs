@@ -58,28 +58,22 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public virtual void OnTick()
 		{
+			var removedSchedulers = new List<SchedulerRunner>();
+
 			foreach (var scheduler in Schedulers.Select(Owner.CreateProxy).Cast<ISchedulerRunnerProxy>())
 			{
-				scheduler.OnTick();
+				if (scheduler.OnTick())
+				{
+					removedSchedulers.Add(scheduler.Target);
+				}
 			}
 
-			if (Weight > 0 && Target.GetCourseVector(Material.SHEDULER_INERTIA_NAME) is { } path)
+			if (removedSchedulers.Count > 0)
 			{
-				var factor = 1f - (Weight / (float)Material.MAX_WEIGHT);
-
-				var courseVector = (ICourseVectorProxy)Owner.CreateProxy(path.CourseVector);
-				courseVector.Value *= factor;
-
-				if (courseVector.Value.LengthSquared() < 1)
+				var schedulersProxy = Owner.CreateCollectionProxy(Schedulers);
+				foreach (var scheduler in removedSchedulers)
 				{
-					if (path.Scheduler.Vectors.Count == 1)
-					{
-						Owner.CreateCollectionProxy(Schedulers).Remove(path.Runner);
-					}
-					else
-					{
-						Owner.CreateCollectionProxy(path.Scheduler.Vectors).Remove(path.CourseVector);
-					}
+					schedulersProxy.Remove(scheduler);
 				}
 			}
 		}

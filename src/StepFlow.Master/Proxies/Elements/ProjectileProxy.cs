@@ -40,6 +40,9 @@ namespace StepFlow.Master.Proxies.Elements
 					var controlVector = GetOrCreateControlVector(otherMaterial, Material.SHEDULER_INERTIA_NAME);
 					var courseVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(controlVector.CourseVector);
 					courseVectorProxy.Value = Damage.Push;
+					var factor = 1f - (otherMaterial.Weight / (float)Material.MAX_WEIGHT);
+					courseVectorProxy.Delta = new Vector2(factor);
+					courseVectorProxy.Operation = DeltaOperation.Mul;
 				}
 
 				Owner.GetPlaygroundItemsProxy().Remove(Target);

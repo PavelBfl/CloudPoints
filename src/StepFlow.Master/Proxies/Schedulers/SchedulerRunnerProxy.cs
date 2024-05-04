@@ -1,4 +1,5 @@
-﻿using StepFlow.Core.Actions;
+﻿using StepFlow.Common.Exceptions;
+using StepFlow.Core.Actions;
 using StepFlow.Core.Components;
 using StepFlow.Core.Schedulers;
 using StepFlow.Master.Proxies.Actions;
@@ -11,11 +12,18 @@ namespace StepFlow.Master.Proxies.Schedulers
 
 		Scheduler? Scheduler { get; set; }
 
-		void OnTick();
+		bool OnTick();
 	}
 
 	internal sealed class SchedulerRunnerProxy : ProxyBase<SchedulerRunner>, ISchedulerRunnerProxy
 	{
+		private enum TickResult
+		{
+			Execute,
+			Wait,
+			Complete,
+		}
+
 		public SchedulerRunnerProxy(PlayMaster owner, SchedulerRunner target) : base(owner, target)
 		{
 		}
@@ -24,12 +32,23 @@ namespace StepFlow.Master.Proxies.Schedulers
 
 		public Scheduler? Scheduler { get => Target.Scheduler; set => SetValue(value); }
 
-		public void OnTick()
+		public bool OnTick()
 		{
-			while (SingleTick()) ;
+			while (true)
+			{
+				var tickResult = SingleTick();
+				switch (tickResult)
+				{
+					case TickResult.Execute:
+						break;
+					case TickResult.Wait: return false;
+					case TickResult.Complete: return true;
+					default: throw EnumNotSupportedException.Create(tickResult);
+				}
+			}
 		}
 
-		private bool SingleTick()
+		private TickResult SingleTick()
 		{
 			if (Current is null)
 			{
@@ -46,15 +65,18 @@ namespace StepFlow.Master.Proxies.Schedulers
 					executor?.Execute();
 
 					Current = null;
-					return true;
+					return TickResult.Execute;
 				}
 				else
 				{
 					Current = current.Decrement();
+					return TickResult.Wait;
 				}
 			}
-
-			return false;
+			else
+			{
+				return TickResult.Complete;
+			}
 		}
 	}
 }
