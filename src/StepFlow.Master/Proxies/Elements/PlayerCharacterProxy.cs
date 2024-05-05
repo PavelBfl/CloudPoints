@@ -6,6 +6,7 @@ using StepFlow.Common.Exceptions;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
+using StepFlow.Core.Schedulers;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
 
@@ -97,14 +98,34 @@ namespace StepFlow.Master.Proxies.Elements
 						);
 						break;
 					case PlayerAction.Auxiliary:
-						Owner.CreateProjectile(
-							center,
-							SIZE,
-							courseVector * 10,
-							new Damage() { Push = courseVector * 10 },
-							TimeTick.FromFrames(5),
-							Target
-						);
+						var schedulersProxy = Owner.CreateCollectionProxy(Schedulers);
+						schedulersProxy.Add(new SchedulerRunner()
+						{
+							Scheduler = new SchedulerLimit()
+							{
+								Range = Scale.Create(TimeTick.FromSeconds(0.1f)),
+								Source = new SchedulerVector()
+								{
+									Collided = Target.Body,
+									Vectors =
+									{
+										new CourseVector()
+										{
+											Value = courseVector * 20,
+										},
+									},
+								},
+							},
+						});
+
+						//Owner.CreateProjectile(
+						//	center,
+						//	SIZE,
+						//	courseVector * 10,
+						//	new Damage() { Push = courseVector * 10 },
+						//	TimeTick.FromFrames(5),
+						//	Target
+						//);
 						break;
 					default: throw EnumNotSupportedException.Create(action);
 				}
