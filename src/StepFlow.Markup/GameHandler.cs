@@ -117,7 +117,7 @@ namespace StepFlow.Markup
 				Speed = 3,
 				Cooldown = TimeTick.FromSeconds(1),
 			});
-			CreateCellObstruction(new Point(5, 1), 1000, ObstructionView.Boards, 100);
+			CreateCellObstruction(new Point(5, 1), 1000, ObstructionView.Boards, 1);
 		}
 
 		private void CreateRoom(Point location, Size size, int width)
@@ -235,7 +235,7 @@ namespace StepFlow.Markup
 
 			if (Control.IsUndo())
 			{
-				for (var i = 0; i < TimeTick.TICKS_PER_FRAME * 2; i++)
+				for (var i = 0; i < TimeTick.TICKS_PER_FRAME * 5; i++)
 				{
 					PlayMaster.TimeAxis.Revert();
 				}

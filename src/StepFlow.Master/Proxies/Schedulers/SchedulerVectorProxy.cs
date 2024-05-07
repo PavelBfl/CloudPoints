@@ -5,7 +5,6 @@ using StepFlow.Common.Exceptions;
 using StepFlow.Core;
 using StepFlow.Core.Actions;
 using StepFlow.Core.Components;
-using StepFlow.Core.Elements;
 using StepFlow.Core.Schedulers;
 
 namespace StepFlow.Master.Proxies.Schedulers
@@ -23,8 +22,6 @@ namespace StepFlow.Master.Proxies.Schedulers
 
 		public Collided Collided { get => Target.GetCollidedRequired(); set => SetValue(Subject.PropertyRequired(value, nameof(Target.Collided))); }
 
-		public float CorrectFactor { get => Target.CorrectFactor; set => SetValue(value); }
-
 		public int IndexCourse { get => Target.IndexCourse; set => SetValue(value); }
 
 		public override void Next()
@@ -40,15 +37,6 @@ namespace StepFlow.Master.Proxies.Schedulers
 			foreach (var vector in Target.Vectors)
 			{
 				sum += vector.Value;
-			}
-
-			OffsetAndClearVectors();
-
-			var factor = sum.X / sum.Y;
-			if (MathF.Abs(factor - CorrectFactor) > 0.00001f)
-			{
-				CorrectFactor = factor;
-				IndexCourse = 0;
 			}
 
 			if (CourseExtensions.GetCourseStep(sum, IndexCourse) is { } course)
@@ -76,45 +64,26 @@ namespace StepFlow.Master.Proxies.Schedulers
 			{
 				Current = new Turn(1, null);
 			}
+
+			OffsetAndClearVectors(Current.Value.Duration);
 		}
 
-		private void OffsetAndClearVectors()
+		private void OffsetAndClearVectors(int duration)
 		{
-			var removedVectors = new List<CourseVector>();
 			foreach (var vector in Target.Vectors)
 			{
-				switch (vector.Operation)
+				var deltaPower = Matrix3x2.Identity;
+				for (var i = 0; i < duration; i++)
 				{
-					case DeltaOperation.Sum:
-						SetValue(vector, vector.Value + vector.Delta);
-						break;
-					case DeltaOperation.Mul:
-						SetValue(vector, vector.Value * vector.Delta);
-						if (vector.Value.LengthSquared() < 1)
-						{
-							removedVectors.Add(vector);
-						}
-						break;
-					default: throw EnumNotSupportedException.Create(vector.Operation);
+					deltaPower *= vector.Delta;
 				}
-			}
 
-			if (removedVectors.Count > 0)
-			{
-				var vectors = Owner.CreateCollectionProxy(Target.Vectors);
-				foreach (var vector in removedVectors)
+				var newValue = Vector2.Transform(vector.Value, deltaPower);
+				if (vector.Value != newValue)
 				{
-					vectors.Remove(vector);
+					var courseVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(vector);
+					courseVectorProxy.Value = newValue;
 				}
-			}
-		}
-
-		private void SetValue(CourseVector courseVector, Vector2 newValue)
-		{
-			if (courseVector.Value != newValue)
-			{
-				var courseVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(courseVector);
-				courseVectorProxy.Value = newValue;
 			}
 		}
 	}

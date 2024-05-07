@@ -4,13 +4,13 @@ namespace StepFlow.Core.Components
 {
 	public readonly struct Turn : IEquatable<Turn>
 	{
-		public Turn(long duration, Subject? executor = null)
+		public Turn(int duration, Subject? executor = null)
 		{
 			Duration = duration >= 0 ? duration : throw new ArgumentOutOfRangeException(nameof(duration));
 			Executor = executor;
 		}
 
-		public long Duration { get; }
+		public int Duration { get; }
 
 		public Subject? Executor { get; }
 

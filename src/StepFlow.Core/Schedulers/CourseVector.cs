@@ -14,6 +14,6 @@ namespace StepFlow.Core.Schedulers
 
 		public DeltaOperation Operation { get; set; }
 
-		public Vector2 Delta { get; set; }
+		public Matrix3x2 Delta { get; set; } = Matrix3x2.Identity;
 	}
 }

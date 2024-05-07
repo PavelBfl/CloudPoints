@@ -12,8 +12,6 @@ namespace StepFlow.Core.Schedulers
 
 		public ICollection<CourseVector> Vectors { get; } = new List<CourseVector>();
 
-		public float CorrectFactor { get; set; }
-
 		public int IndexCourse { get; set; }
 	}
 }

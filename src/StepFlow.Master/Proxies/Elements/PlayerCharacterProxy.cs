@@ -4,11 +4,13 @@ using System.Linq;
 using System.Numerics;
 using StepFlow.Common.Exceptions;
 using StepFlow.Core;
+using StepFlow.Core.Actions;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.Schedulers;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace StepFlow.Master.Proxies.Elements
 {
@@ -98,34 +100,46 @@ namespace StepFlow.Master.Proxies.Elements
 						);
 						break;
 					case PlayerAction.Auxiliary:
-						var schedulersProxy = Owner.CreateCollectionProxy(Schedulers);
-						schedulersProxy.Add(new SchedulerRunner()
-						{
-							Scheduler = new SchedulerLimit()
-							{
-								Range = Scale.Create(TimeTick.FromSeconds(0.1f)),
-								Source = new SchedulerVector()
-								{
-									Collided = Target.Body,
-									Vectors =
-									{
-										new CourseVector()
-										{
-											Value = courseVector * 20,
-										},
-									},
-								},
-							},
-						});
-
-						//Owner.CreateProjectile(
+						// TODO Дуга
+						//CreateArc(
 						//	center,
 						//	SIZE,
 						//	courseVector * 10,
-						//	new Damage() { Push = courseVector * 10 },
-						//	TimeTick.FromFrames(5),
+						//	AggregateDamage(value: 10),
+						//	TimeTick.FromSeconds(0.1f),
 						//	Target
 						//);
+
+						// TODO Рывок
+						//var schedulersProxy = Owner.CreateCollectionProxy(Schedulers);
+						//schedulersProxy.Add(new SchedulerRunner()
+						//{
+						//	Scheduler = new SchedulerLimit()
+						//	{
+						//		Range = Scale.Create(TimeTick.FromSeconds(0.1f)),
+						//		Source = new SchedulerVector()
+						//		{
+						//			Collided = Target.Body,
+						//			Vectors =
+						//			{
+						//				new CourseVector()
+						//				{
+						//					Value = courseVector * 20,
+						//				},
+						//			},
+						//		},
+						//	},
+						//});
+
+						// TODO Толчок
+						Owner.CreateProjectile(
+							center,
+							SIZE,
+							courseVector * 10,
+							new Damage() { Push = courseVector * 10 },
+							TimeTick.FromFrames(5),
+							Target
+						);
 						break;
 					default: throw EnumNotSupportedException.Create(action);
 				}
@@ -133,6 +147,64 @@ namespace StepFlow.Master.Proxies.Elements
 				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);
 				cooldownProxy.SetMax();
 			}
+		}
+
+		private void CreateArc(Point center, int radius, Vector2 course, Damage damage, int duration, Subject? creator)
+		{
+			var projectile = new Projectile()
+			{
+				Name = "Projectile",
+				Creator = creator,
+				Body = new Collided()
+				{
+					Current = { RectangleExtensions.Create(center, radius) },
+				},
+				Damage = damage,
+				Speed = 100,
+			};
+
+			var schedulerUnion = new SchedulerUnion()
+			{
+				Schedulers =
+				{
+					new SchedulerLimit()
+					{
+						Source = new SchedulerVector()
+						{
+							Collided = projectile.Body,
+							Vectors =
+							{
+								new CourseVector()
+								{
+									Value = course,
+									Delta = Matrix3x2.CreateRotation((MathF.PI / 2) / duration),
+								},
+							},
+						},
+						Range = Scale.Create(duration),
+					},
+					new SchedulerCollection()
+					{
+						Turns =
+						{
+							new Turn(
+								0,
+								new RemoveItem()
+								{
+									Item = projectile,
+								}
+							)
+						},
+					},
+				},
+			};
+
+			projectile.Schedulers.Add(new SchedulerRunner()
+			{
+				Scheduler = schedulerUnion,
+			});
+
+			Owner.GetPlaygroundItemsProxy().Add(projectile);
 		}
 
 		private Damage AggregateDamage(int value = 0, DamageKind kind = DamageKind.None, Vector2 push = default)

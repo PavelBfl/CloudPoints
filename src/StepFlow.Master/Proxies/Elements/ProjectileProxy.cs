@@ -41,8 +41,7 @@ namespace StepFlow.Master.Proxies.Elements
 					var courseVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(controlVector.CourseVector);
 					courseVectorProxy.Value = Damage.Push;
 					var factor = 1f - (otherMaterial.Weight / (float)Material.MAX_WEIGHT);
-					courseVectorProxy.Delta = new Vector2(factor);
-					courseVectorProxy.Operation = DeltaOperation.Mul;
+					courseVectorProxy.Delta = Matrix3x2.CreateScale(factor);
 				}
 
 				Owner.GetPlaygroundItemsProxy().Remove(Target);

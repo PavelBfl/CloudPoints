@@ -9,7 +9,7 @@ namespace StepFlow.Master.Proxies.Schedulers
 
 		DeltaOperation Operation { get; set; }
 
-		Vector2 Delta { get; set; }
+		Matrix3x2 Delta { get; set; }
 	}
 
 	internal class CourseVectorProxy : ProxyBase<CourseVector>, ICourseVectorProxy
@@ -22,6 +22,6 @@ namespace StepFlow.Master.Proxies.Schedulers
 
 		public DeltaOperation Operation { get => Target.Operation; set => SetValue(value); }
 
-		public Vector2 Delta { get => Target.Delta; set => SetValue(value); }
+		public Matrix3x2 Delta { get => Target.Delta; set => SetValue(value); }
 	}
 }
