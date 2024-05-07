@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
-using StepFlow.Common.Exceptions;
+﻿using System.Numerics;
 using StepFlow.Core;
 using StepFlow.Core.Actions;
 using StepFlow.Core.Components;
@@ -39,31 +36,14 @@ namespace StepFlow.Master.Proxies.Schedulers
 				sum += vector.Value;
 			}
 
-			if (CourseExtensions.GetCourseStep(sum, IndexCourse) is { } course)
-			{
-				var length = (int)sum.Length();
-				if (length > 0)
+			Current = new Turn(
+				1,
+				new SetCourse()
 				{
-					Current = new Turn(
-						100 / length,
-						new SetCourse()
-						{
-							Collided = Collided,
-							Course = course
-						}
-					);
-
-					IndexCourse++;
+					Collided = Collided,
+					Course = sum,
 				}
-				else
-				{
-					Current = new Turn(1, null);
-				}
-			}
-			else
-			{
-				Current = new Turn(1, null);
-			}
+			);
 
 			OffsetAndClearVectors(Current.Value.Duration);
 		}

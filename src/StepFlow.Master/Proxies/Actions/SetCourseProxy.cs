@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using StepFlow.Core;
+using System.Numerics;
 using StepFlow.Core.Actions;
 using StepFlow.Core.Components;
 using StepFlow.Intersection;
@@ -11,7 +11,7 @@ namespace StepFlow.Master.Proxies.Actions
 	{
 		Collided? Collided { get; set; }
 
-		Course Course { get; set; }
+		Vector2 Course { get; set; }
 	}
 
 	internal sealed class SetCourseProxy : ActionBaseProxy<SetCourse>, ISetCourseProxy
@@ -22,14 +22,13 @@ namespace StepFlow.Master.Proxies.Actions
 
 		public Collided? Collided { get => Target.Collided; set => SetValue(value); }
 
-		public Course Course { get => Target.Course; set => SetValue(value); }
+		public Vector2 Course { get => Target.Course; set => SetValue(value); }
 
 		public override void Execute()
 		{
 			if (Collided is { })
 			{
-				var offset = Course.ToVector();
-				var next = Collided.Current.AsEnumerable().Offset(offset);
+				var next = Collided.Current.AsEnumerable().Offset(Course);
 
 				var collidedProxy = (ICollidedProxy)Owner.CreateProxy(Collided);
 				collidedProxy.NextProxy.Reset(next);
