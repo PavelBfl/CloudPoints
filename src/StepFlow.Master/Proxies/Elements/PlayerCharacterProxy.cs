@@ -83,7 +83,7 @@ namespace StepFlow.Master.Proxies.Elements
 			{
 				var center = Body.Current.Bounds.GetCenter();
 				var matrixRotation = Matrix3x2.CreateRotation(radians);
-				var courseVector = Vector2.Transform(new Vector2(1, 0), matrixRotation);
+				var courseVector = Vector2.Transform(new Vector2(0.05f, 0), matrixRotation);
 
 				switch (action)
 				{
@@ -93,7 +93,7 @@ namespace StepFlow.Master.Proxies.Elements
 						Owner.CreateProjectile(
 							center,
 							SIZE,
-							courseVector * 5,
+							courseVector,
 							AggregateDamage(value: 10),
 							TimeTick.FromSeconds(4),
 							Target
@@ -137,7 +137,7 @@ namespace StepFlow.Master.Proxies.Elements
 							SIZE,
 							courseVector * 10,
 							new Damage() { Push = courseVector * 10 },
-							TimeTick.FromFrames(5),
+							TimeTick.FromFrames(1),
 							Target
 						);
 						break;
