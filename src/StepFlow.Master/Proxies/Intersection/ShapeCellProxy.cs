@@ -5,7 +5,7 @@ namespace StepFlow.Master.Proxies.Intersection
 {
 	public interface IShapeCellProxy : IShapeBaseProxy<ShapeCell>
 	{
-		Rectangle Border { get; set; }
+		RectangleF Border { get; set; }
 	}
 
 	internal sealed class ShapeCellProxy : ShapeBaseProxy<ShapeCell>, IShapeCellProxy
@@ -14,6 +14,6 @@ namespace StepFlow.Master.Proxies.Intersection
 		{
 		}
 
-		public Rectangle Border { get => Target.Border; set => SetValue(value); }
+		public RectangleF Border { get => Target.Border; set => SetValue(value); }
 	}
 }

@@ -5,10 +5,10 @@ using StepFlow.Intersection;
 
 namespace StepFlow.Master.Proxies.Intersection
 {
-	public interface IShapeBaseProxy<out TTarget> : IProxyBase<TTarget>, IReadOnlyCollection<Rectangle>
+	public interface IShapeBaseProxy<out TTarget> : IProxyBase<TTarget>, IReadOnlyCollection<RectangleF>
 		where TTarget : ShapeBase
 	{
-		Rectangle Bounds { get; }
+		RectangleF Bounds { get; }
 
 		void Offset(Point value);
 		void Register();
@@ -22,13 +22,13 @@ namespace StepFlow.Master.Proxies.Intersection
 		{
 		}
 
-		public Rectangle Bounds => Target.Bounds;
+		public RectangleF Bounds => Target.Bounds;
 
 		public int Count => Target.Count;
 
 		public void Offset(Point value) => Owner.TimeAxis.Add(new ShapeOffsetCommand(Target, value));
 
-		public IEnumerator<Rectangle> GetEnumerator() => Target.GetEnumerator();
+		public IEnumerator<RectangleF> GetEnumerator() => Target.GetEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 

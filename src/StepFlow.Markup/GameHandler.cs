@@ -60,10 +60,10 @@ namespace StepFlow.Markup
 		{
 			CreateRoom(Point.Empty, new(14, 8), Playground.CELL_SIZE_DEFAULT);
 
-			PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(12, 6), Kind = ItemKind.Fire });
-			PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(12, 0), Kind = ItemKind.Poison });
-			PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(1, 1), Kind = ItemKind.Speed });
-			PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(1, 5), Kind = ItemKind.AttackSpeed });
+			PlayMaster.CreateItem.Execute(new() { Position = (Vector2)(PointF)PlaygroundToGlobal(12, 6), Kind = ItemKind.Fire });
+			PlayMaster.CreateItem.Execute(new() { Position = (Vector2)(PointF)PlaygroundToGlobal(12, 0), Kind = ItemKind.Poison });
+			PlayMaster.CreateItem.Execute(new() { Position = (Vector2)(PointF)PlaygroundToGlobal(1, 1), Kind = ItemKind.Speed });
+			PlayMaster.CreateItem.Execute(new() { Position = (Vector2)(PointF)PlaygroundToGlobal(1, 5), Kind = ItemKind.AttackSpeed });
 
 			PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(8, 0) });
 			PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(8, 1) });
@@ -122,16 +122,16 @@ namespace StepFlow.Markup
 
 		private void CreateRoom(Point location, Size size, int width)
 		{
-			var top = new Rectangle[size.Width + 1];
-			var bottom = new Rectangle[size.Width + 1];
+			var top = new RectangleF[size.Width + 1];
+			var bottom = new RectangleF[size.Width + 1];
 			for (var iX = 0; iX <= size.Width; iX++)
 			{
 				top[iX] = CreatePixel(new(iX, 0));
 				bottom[iX] = CreatePixel(new(iX, size.Height));
 			}
 
-			var left = new Rectangle[size.Height + 1];
-			var right = new Rectangle[size.Height + 1];
+			var left = new RectangleF[size.Height + 1];
+			var right = new RectangleF[size.Height + 1];
 			for (var iY = 0; iY <= size.Height; iY++)
 			{
 				left[iY] = CreatePixel(new(0, iY));
@@ -155,7 +155,7 @@ namespace StepFlow.Markup
 		{
 			PlayMaster.CreateObstruction.Execute(new()
 			{
-				Bounds = new[] { CreateCell(position) },
+				Bounds = new[] { (RectangleF)CreateCell(position) },
 				Strength = strength,
 				Kind = ObstructionKind.Single,
 				View = view,
@@ -289,7 +289,7 @@ namespace StepFlow.Markup
 
 			foreach (var place in playground.Items.OfType<Place>())
 			{
-				CreateTexture(place.Body?.Current.Bounds ?? Rectangle.Empty, Texture.PoisonPlace, null);
+				CreateTexture(place.Body?.Current.Bounds ?? RectangleF.Empty, Texture.PoisonPlace, null);
 			}
 
 			var playerCharacter = playground.GetPlayerCharacterRequired();
@@ -305,7 +305,7 @@ namespace StepFlow.Markup
 						CreateTexture(barrier.Body?.Current.Bounds ?? Rectangle.Empty, textureView, barrier.Strength);
 						break;
 					case ObstructionKind.Tiles:
-						foreach (var bounds in barrier.Body?.Current ?? Enumerable.Empty<Rectangle>())
+						foreach (var bounds in barrier.Body?.Current ?? Enumerable.Empty<RectangleF>())
 						{
 							CreateTexture(bounds, textureView, barrier.Strength);
 						}
@@ -362,14 +362,22 @@ namespace StepFlow.Markup
 
 		private static float ToPct(Scale? scale) => scale is not null ? (float)scale.Value / scale.Max : 0;
 
-		private void CreateTexture(Rectangle bounds, Texture texture, Scale? strength)
+		private void CreateTexture(RectangleF bounds, Texture texture, Scale? strength)
 		{
 			if (!bounds.IsEmpty)
 			{
-				Drawer.Draw(texture, bounds);
+				Drawer.Draw(
+					texture,
+					new Rectangle(
+						(int)bounds.X,
+						(int)bounds.Y,
+						(int)bounds.Width,
+						(int)bounds.Height
+					)
+				);
 				if (strength is not null && IsDebug)
 				{
-					var strengthBounds = new Rectangle(
+					var strengthBounds = new RectangleF(
 						bounds.Left,
 						bounds.Top,
 						bounds.Width,

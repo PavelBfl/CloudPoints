@@ -6,9 +6,9 @@ using StepFlow.Intersection;
 
 namespace StepFlow.Master.Proxies.Intersection
 {
-	public interface IShapeContainerProxy : IShapeBaseProxy<ShapeContainer>, ICollection<Rectangle>
+	public interface IShapeContainerProxy : IShapeBaseProxy<ShapeContainer>, ICollection<RectangleF>
 	{
-		void Reset(Rectangle rectangle, bool force = false)
+		void Reset(RectangleF rectangle, bool force = false)
 		{
 			if (force || !Equal(new[] { rectangle }))
 			{
@@ -17,7 +17,7 @@ namespace StepFlow.Master.Proxies.Intersection
 			}
 		}
 
-		void Reset(IEnumerable<Rectangle> rectangles, bool force = false)
+		void Reset(IEnumerable<RectangleF> rectangles, bool force = false)
 		{
 			if (rectangles is null)
 			{
@@ -34,7 +34,7 @@ namespace StepFlow.Master.Proxies.Intersection
 			}
 		}
 
-		bool Equal(ICollection<Rectangle> rectangles)
+		bool Equal(ICollection<RectangleF> rectangles)
 		{
 			if (rectangles is null)
 			{
@@ -65,18 +65,18 @@ namespace StepFlow.Master.Proxies.Intersection
 			ItemsProxy = Owner.CreateCollectionProxy(Target);
 		}
 
-		private ICollection<Rectangle> ItemsProxy { get; }
+		private ICollection<RectangleF> ItemsProxy { get; }
 
 		public bool IsReadOnly => ItemsProxy.IsReadOnly;
 
-		public void Add(Rectangle item) => ItemsProxy.Add(item);
+		public void Add(RectangleF item) => ItemsProxy.Add(item);
 
 		public void Clear() => ItemsProxy.Clear();
 
-		public bool Contains(Rectangle item) => ItemsProxy.Contains(item);
+		public bool Contains(RectangleF item) => ItemsProxy.Contains(item);
 
-		public void CopyTo(Rectangle[] array, int arrayIndex) => ItemsProxy.CopyTo(array, arrayIndex);
+		public void CopyTo(RectangleF[] array, int arrayIndex) => ItemsProxy.CopyTo(array, arrayIndex);
 
-		public bool Remove(Rectangle item) => ItemsProxy.Remove(item);
+		public bool Remove(RectangleF item) => ItemsProxy.Remove(item);
 	}
 }

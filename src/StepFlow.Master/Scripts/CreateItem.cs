@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Numerics;
 using StepFlow.Core.Elements;
 using StepFlow.Master.Proxies;
 
@@ -21,7 +22,7 @@ namespace StepFlow.Master.Scripts
 
 		public struct Parameters
 		{
-			public Point Position { get; set; }
+			public Vector2 Position { get; set; }
 
 			public ItemKind Kind { get; set; }
 		}

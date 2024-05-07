@@ -17,7 +17,7 @@ namespace StepFlow.Master.Proxies
 		ICollection<Material> ItemsProxy => Owner.CreateCollectionUsedProxy(Items);
 
 		void CreateEnemy(Rectangle bounds, Rectangle vision, Strategy strategy, ItemKind releaseItem, Vector2 beginVector);
-		void CreateItem(Point position, ItemKind kind);
+		void CreateItem(Vector2 position, ItemKind kind);
 		void CreatePlace(Rectangle bounds);
 	}
 
@@ -100,14 +100,14 @@ namespace StepFlow.Master.Proxies
 			Owner.GetPlaygroundItemsProxy().Add(enemy);
 		}
 
-		public void CreateItem(Point position, ItemKind kind)
+		public void CreateItem(Vector2 position, ItemKind kind)
 		{
 			if (kind == ItemKind.None)
 			{
 				return;
 			}
 
-			var bounds = new Rectangle(position, new Size(Playground.CELL_SIZE_DEFAULT, Playground.CELL_SIZE_DEFAULT));
+			var bounds = new RectangleF(position.X, position.Y, Playground.CELL_SIZE_DEFAULT, Playground.CELL_SIZE_DEFAULT);
 
 			var item = kind switch
 			{

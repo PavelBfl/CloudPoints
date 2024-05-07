@@ -5,7 +5,7 @@ using System.Drawing;
 
 namespace StepFlow.Intersection
 {
-	public abstract class ShapeBase : IReadOnlyCollection<Rectangle>, ICloneable
+	public abstract class ShapeBase : IReadOnlyCollection<RectangleF>, ICloneable
 	{
 		protected ShapeBase(Context context)
 		{
@@ -30,13 +30,13 @@ namespace StepFlow.Intersection
 
 		internal int Index { get; set; } = -1;
 
-		public abstract Rectangle Bounds { get; }
+		public abstract RectangleF Bounds { get; }
 
 		protected virtual void Reset() => Context.Reset(this);
 
 		public abstract void Offset(Point value);
 
-		public abstract IEnumerator<Rectangle> GetEnumerator();
+		public abstract IEnumerator<RectangleF> GetEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 

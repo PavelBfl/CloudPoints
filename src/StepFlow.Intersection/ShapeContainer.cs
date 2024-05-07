@@ -5,13 +5,13 @@ using System.Linq;
 
 namespace StepFlow.Intersection
 {
-	public sealed class ShapeContainer : ShapeBase, ICollection<Rectangle>
+	public sealed class ShapeContainer : ShapeBase, ICollection<RectangleF>
 	{
 		public ShapeContainer(Context context) : base(context)
 		{
 		}
 
-		public ShapeContainer(Context context, IEnumerable<Rectangle> rectangles) : base(context)
+		public ShapeContainer(Context context, IEnumerable<RectangleF> rectangles) : base(context)
 		{
 			SubRectangles.UnionWith(rectangles);
 		}
@@ -21,25 +21,25 @@ namespace StepFlow.Intersection
 			SubRectangles.UnionWith(original);
 		}
 
-		private HashSet<Rectangle> SubRectangles { get; } = new HashSet<Rectangle>();
+		private HashSet<RectangleF> SubRectangles { get; } = new HashSet<RectangleF>();
 
 		public override int Count => SubRectangles.Count;
 
 		public bool IsReadOnly => false;
 
-		private Rectangle? bounds;
+		private RectangleF? bounds;
 
-		public override Rectangle Bounds => bounds ??= CreateBorder();
+		public override RectangleF Bounds => bounds ??= CreateBorder();
 
-		private Rectangle CreateBorder()
+		private RectangleF CreateBorder()
 		{
-			Rectangle? result = null;
+			RectangleF? result = null;
 
 			foreach (var rectangle in this)
 			{
 				if (result is { } instance)
 				{
-					result = Rectangle.Union(instance, rectangle);
+					result = RectangleF.Union(instance, rectangle);
 				}
 				else
 				{
@@ -47,7 +47,7 @@ namespace StepFlow.Intersection
 				}
 			}
 
-			return result ?? Rectangle.Empty;
+			return result ?? RectangleF.Empty;
 		}
 
 		protected override void Reset()
@@ -57,16 +57,16 @@ namespace StepFlow.Intersection
 			base.Reset();
 		}
 
-		public override IEnumerator<Rectangle> GetEnumerator() => SubRectangles.GetEnumerator();
+		public override IEnumerator<RectangleF> GetEnumerator() => SubRectangles.GetEnumerator();
 
-		public void Add(Rectangle item)
+		public void Add(RectangleF item)
 		{
 			SubRectangles.Add(item);
 			Reset();
 		}
 
 		// TODO Реализован для добавления элементов в инициализаторе, не уверен что он нужен
-		public void Add(IEnumerable<Rectangle> items)
+		public void Add(IEnumerable<RectangleF> items)
 		{
 			if (items is null)
 			{
@@ -85,11 +85,11 @@ namespace StepFlow.Intersection
 			Reset();
 		}
 
-		public bool Contains(Rectangle item) => SubRectangles.Contains(item);
+		public bool Contains(RectangleF item) => SubRectangles.Contains(item);
 
-		public void CopyTo(Rectangle[] array, int arrayIndex) => SubRectangles.CopyTo(array, arrayIndex);
+		public void CopyTo(RectangleF[] array, int arrayIndex) => SubRectangles.CopyTo(array, arrayIndex);
 
-		public bool Remove(Rectangle item)
+		public bool Remove(RectangleF item)
 		{
 			var removed = SubRectangles.Remove(item);
 			if (removed)

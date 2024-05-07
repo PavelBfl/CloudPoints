@@ -23,7 +23,7 @@ namespace StepFlow.Master.Scripts
 				Weight = parameters.Weight,
 				Body = new Collided()
 				{
-					Current = { parameters.Bounds ?? Array.Empty<Rectangle>() },
+					Current = { parameters.Bounds ?? Array.Empty<RectangleF>() },
 					IsRigid = true,
 				},
 				Strength = parameters.Strength is { } strength ? Scale.CreateByMax(strength) : null,
@@ -34,7 +34,7 @@ namespace StepFlow.Master.Scripts
 
 		public struct Parameters
 		{
-			public Rectangle[]? Bounds { get; set; }
+			public RectangleF[]? Bounds { get; set; }
 
 			public int? Strength { get; set; }
 

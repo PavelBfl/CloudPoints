@@ -154,7 +154,7 @@ namespace StepFlow.Master
 			}
 		}
 
-		public void CreateProjectile(Point center, int radius, Vector2 course, Damage damage, int duration, Subject? creator)
+		public void CreateProjectile(Vector2 center, int radius, Vector2 course, Damage damage, int duration, Subject? creator)
 		{
 			var projectile = new Projectile()
 			{

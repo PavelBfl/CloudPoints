@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Numerics;
 
 namespace StepFlow.Intersection
 {
@@ -14,6 +15,19 @@ namespace StepFlow.Intersection
 			}
 
 			return new Point(
+				rectangle.X + rectangle.Width / 2,
+				rectangle.Y + rectangle.Height / 2
+			);
+		}
+
+		public static Vector2 GetCenter(this RectangleF rectangle)
+		{
+			if (rectangle.IsEmpty)
+			{
+				throw new InvalidOperationException();
+			}
+
+			return new Vector2(
 				rectangle.X + rectangle.Width / 2,
 				rectangle.Y + rectangle.Height / 2
 			);
@@ -36,11 +50,41 @@ namespace StepFlow.Intersection
 			);
 		}
 
+		public static RectangleF Create(Vector2 center, float radius)
+		{
+			if (radius < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(radius));
+			}
+			else if (radius == 0)
+			{
+				return RectangleF.Empty;
+			}
+			else
+			{
+				return new RectangleF(
+					center.X - radius,
+					center.Y - radius,
+					radius * 2,
+					radius * 2
+				);
+			}
+		}
+
 		public static IEnumerable<Rectangle> Offset(this IEnumerable<Rectangle> rectangles, Point value)
 		{
 			foreach (var rectangle in rectangles)
 			{
 				rectangle.Offset(value);
+				yield return rectangle;
+			}
+		}
+
+		public static IEnumerable<RectangleF> Offset(this IEnumerable<RectangleF> rectangles, Vector2 value)
+		{
+			foreach (var rectangle in rectangles)
+			{
+				rectangle.Offset(value.X, value.Y);
 				yield return rectangle;
 			}
 		}

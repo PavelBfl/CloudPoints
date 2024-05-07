@@ -20,9 +20,9 @@ namespace StepFlow.Intersection
 			Border = original.Border;
 		}
 
-		private Rectangle border;
+		private RectangleF border;
 
-		public Rectangle Border
+		public RectangleF Border
 		{
 			get => border;
 			set
@@ -34,11 +34,11 @@ namespace StepFlow.Intersection
 				}
 			}
 		}
-		public override Rectangle Bounds => Border;
+		public override RectangleF Bounds => Border;
 
 		public override int Count => 1;
 
-		public override IEnumerator<Rectangle> GetEnumerator() => new[] { Border }.AsEnumerable().GetEnumerator();
+		public override IEnumerator<RectangleF> GetEnumerator() => new[] { Border }.AsEnumerable().GetEnumerator();
 
 		public override void Offset(Point value) => border.Offset(value);
 
