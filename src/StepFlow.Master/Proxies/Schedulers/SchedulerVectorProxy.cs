@@ -42,7 +42,7 @@ namespace StepFlow.Master.Proxies.Schedulers
 				if (length > 0)
 				{
 					Current = new Turn(
-						100 / length,
+						SchedulerVector.MAX_DURATION / length,
 						new SetCourse()
 						{
 							Collided = Collided,

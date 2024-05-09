@@ -100,14 +100,18 @@ namespace StepFlow.Master.Proxies.Elements
 						break;
 					case PlayerAction.Auxiliary:
 						// TODO Дуга
-						//CreateArc(
-						//	center,
-						//	SIZE,
-						//	courseVector * 10,
-						//	AggregateDamage(value: 10),
-						//	TimeTick.FromSeconds(0.1f),
-						//	Target
-						//);
+						var arcCourse = courseVector * 10;
+						var arcDuration = TimeTick.FromSeconds(0.1f);
+						var arcDistance = arcDuration.Ticks / (SchedulerVector.MAX_DURATION / arcCourse.Length());
+						var arcOffset = Vector2.Transform(courseVector * arcDistance, Matrix3x2.CreateRotation(MathF.PI / -4));
+						CreateArc(
+							center + new Size((int)arcOffset.X, (int)arcOffset.Y),
+							SIZE,
+							Vector2.Transform(arcCourse, Matrix3x2.CreateRotation(MathF.PI / 4)),
+							AggregateDamage(value: 10),
+							arcDuration,
+							Target
+						);
 
 						// TODO Рывок
 						//var schedulersProxy = Owner.CreateCollectionProxy(Schedulers);
@@ -131,14 +135,14 @@ namespace StepFlow.Master.Proxies.Elements
 						//});
 
 						// TODO Толчок
-						Owner.CreateProjectile(
-							center,
-							SIZE,
-							courseVector * 10,
-							new Damage() { Push = courseVector * 10 },
-							TimeTick.FromFrames(5),
-							Target
-						);
+						//Owner.CreateProjectile(
+						//	center,
+						//	SIZE,
+						//	courseVector * 10,
+						//	new Damage() { Push = courseVector * 10 },
+						//	TimeTick.FromFrames(5),
+						//	Target
+						//);
 						break;
 					default: throw EnumNotSupportedException.Create(action);
 				}

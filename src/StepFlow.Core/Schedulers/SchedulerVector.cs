@@ -5,6 +5,8 @@ namespace StepFlow.Core.Schedulers
 {
 	public sealed class SchedulerVector : Scheduler
 	{
+		public const int MAX_DURATION = 100;
+
 		public Collided? Collided { get; set; }
 
 		public Collided GetCollidedRequired() => PropertyRequired(Collided, nameof(Collided));
