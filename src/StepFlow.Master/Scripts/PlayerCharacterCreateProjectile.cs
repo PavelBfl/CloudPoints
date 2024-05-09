@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using StepFlow.Core;
 using StepFlow.Master.Proxies.Elements;
 
 namespace StepFlow.Master.Scripts

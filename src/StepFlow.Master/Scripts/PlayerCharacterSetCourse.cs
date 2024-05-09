@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-using StepFlow.Core;
-using StepFlow.Master.Proxies.Elements;
+﻿using StepFlow.Master.Proxies.Elements;
 
 namespace StepFlow.Master.Scripts
 {

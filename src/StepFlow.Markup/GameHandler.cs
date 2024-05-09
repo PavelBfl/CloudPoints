@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.Metrics;
 using System.Drawing;
 using System.Numerics;
-using System.Runtime.Serialization;
 using StepFlow.Common.Exceptions;
 using StepFlow.Core;
 using StepFlow.Core.Components;

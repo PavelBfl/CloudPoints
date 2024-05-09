@@ -10,7 +10,6 @@ using StepFlow.Core.Elements;
 using StepFlow.Core.Schedulers;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace StepFlow.Master.Proxies.Elements
 {

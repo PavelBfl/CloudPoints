@@ -2,7 +2,6 @@
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.Schedulers;
-using StepFlow.Master.Proxies;
 
 namespace StepFlow.Master.Scripts
 {

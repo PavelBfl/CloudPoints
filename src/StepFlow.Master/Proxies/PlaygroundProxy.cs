@@ -5,7 +5,6 @@ using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.Schedulers;
-using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Elements;
 
 namespace StepFlow.Master.Proxies

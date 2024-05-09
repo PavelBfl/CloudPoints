@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Xna.Framework.Input;
-using StepFlow.Core;
 using StepFlow.Markup.Services;
 using StepFlow.Master.Proxies.Elements;
 

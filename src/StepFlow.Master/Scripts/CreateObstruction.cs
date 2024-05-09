@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Drawing;
-using System.Linq;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
-using StepFlow.Master.Proxies;
 
 namespace StepFlow.Master.Scripts
 {
