@@ -31,6 +31,8 @@ namespace StepFlow.Core.Elements
 
 		public ICollection<SchedulerRunner> Schedulers { get; } = new HashSet<SchedulerRunner>();
 
+		public Track? Track { get; set; }
+
 		public CourseVectorPath? GetCourseVector(string vectorName)
 		{
 			if (vectorName is null)

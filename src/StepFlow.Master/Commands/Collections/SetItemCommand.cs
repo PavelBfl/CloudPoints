@@ -9,6 +9,7 @@ namespace StepFlow.Master.Commands.Collections
 		{
 			NewItem = newItem;
 			OldItem = Target[index];
+			Index = index;
 		}
 
 		private TItem NewItem { get; }

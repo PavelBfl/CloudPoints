@@ -99,6 +99,7 @@ namespace StepFlow.Master
 				Place instance => new PlaceProxy(this, instance),
 				SchedulerDamage instance => new SchedulerDamageProxy(this, instance),
 				ChangeStrength instance => new ChangeStrengthProxy(this, instance),
+				Track instance => new TrackProxy(this, instance),
 				null => null,
 				_ => throw new InvalidOperationException(),
 			};
@@ -165,6 +166,11 @@ namespace StepFlow.Master
 				},
 				Damage = damage,
 				Speed = 100,
+				Track = new Track()
+				{
+					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(0.1f)),
+					ScaleOffset = 0.003f,
+				},
 			};
 
 			var schedulerUnion = new SchedulerUnion()

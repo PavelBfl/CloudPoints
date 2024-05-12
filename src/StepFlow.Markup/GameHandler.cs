@@ -264,6 +264,12 @@ namespace StepFlow.Markup
 
 					PlayMaster.TakeStep.Execute(null);
 
+					foreach (var material in PlayMaster.Playground.Items.OfType<Material>())
+					{
+						var trackProxy = (ITrackProxy?)PlayMaster.CreateProxy(material.Track);
+						trackProxy?.Offset(material.Body.Current.Bounds);
+					}
+
 					transaction.Commit();
 				}
 
@@ -323,6 +329,15 @@ namespace StepFlow.Markup
 					DamageKind.Fire | DamageKind.Poison => Texture.ProjectileAll,
 					_ => Texture.Projectile,
 				};
+
+				foreach (var step in projectile.Track?.Steps ?? Enumerable.Empty<RectangleF>())
+				{
+					CreateTexture(
+						new Rectangle((int)step.X, (int)step.Y, (int)step.Width, (int)step.Height),
+						textureName,
+						null
+					);
+				}
 
 				CreateTexture(projectile.Body?.Current.Bounds ?? Rectangle.Empty, textureName, null);
 			}
