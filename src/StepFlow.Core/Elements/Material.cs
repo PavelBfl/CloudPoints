@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using StepFlow.Core.Components;
 using StepFlow.Core.Schedulers;
+using StepFlow.Core.Tracks;
 
 namespace StepFlow.Core.Elements
 {
@@ -31,7 +32,7 @@ namespace StepFlow.Core.Elements
 
 		public ICollection<SchedulerRunner> Schedulers { get; } = new HashSet<SchedulerRunner>();
 
-		public Track? Track { get; set; }
+		public TrackBuilder? Track { get; set; }
 
 		public CourseVectorPath? GetCourseVector(string vectorName)
 		{

@@ -10,6 +10,7 @@ using StepFlow.Core.Commands.Accessors;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.Schedulers;
+using StepFlow.Core.Tracks;
 using StepFlow.Intersection;
 using StepFlow.Master.Commands;
 using StepFlow.Master.Proxies;
@@ -19,6 +20,7 @@ using StepFlow.Master.Proxies.Components;
 using StepFlow.Master.Proxies.Elements;
 using StepFlow.Master.Proxies.Intersection;
 using StepFlow.Master.Proxies.Schedulers;
+using StepFlow.Master.Proxies.Tracks;
 using StepFlow.Master.Scripts;
 using StepFlow.TimeLine;
 using StepFlow.TimeLine.Transactions;
@@ -100,6 +102,8 @@ namespace StepFlow.Master
 				SchedulerDamage instance => new SchedulerDamageProxy(this, instance),
 				ChangeStrength instance => new ChangeStrengthProxy(this, instance),
 				Track instance => new TrackProxy(this, instance),
+				TrackBuilder instance => new TrackBuilderProxy(this, instance),
+				TrackUnit instance => new TrackUnitProxy(this, instance),
 				null => null,
 				_ => throw new InvalidOperationException(),
 			};
@@ -166,10 +170,14 @@ namespace StepFlow.Master
 				},
 				Damage = damage,
 				Speed = 100,
-				Track = new Track()
+				Track = new TrackBuilder()
 				{
-					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(0.1f)),
-					ScaleOffset = 0.003f,
+					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(0.05f)),
+					Change = new TrackChange()
+					{
+						Size = new Vector2(-0.004f),
+						View = TrackView.None,
+					},
 				},
 			};
 

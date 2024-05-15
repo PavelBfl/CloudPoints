@@ -5,10 +5,12 @@ using StepFlow.Common.Exceptions;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
+using StepFlow.Core.Tracks;
 using StepFlow.Intersection;
 using StepFlow.Markup.Services;
 using StepFlow.Master;
 using StepFlow.Master.Proxies.Elements;
+using StepFlow.Master.Proxies.Tracks;
 
 namespace StepFlow.Markup
 {
@@ -264,16 +266,47 @@ namespace StepFlow.Markup
 
 					PlayMaster.TakeStep.Execute(null);
 
-					foreach (var material in PlayMaster.Playground.Items.OfType<Material>())
-					{
-						var trackProxy = (ITrackProxy?)PlayMaster.CreateProxy(material.Track);
-						trackProxy?.Offset(material.Body.Current.Bounds);
-					}
+					UpdateTrack();
 
 					transaction.Commit();
 				}
 
 				Frame = sw.Elapsed;
+			}
+		}
+
+		private List<TrackUnit> TrackUnits { get; } = new();
+
+		private void UpdateTrack()
+		{
+			var trackUnitsProxy = PlayMaster.CreateListProxy(TrackUnits);
+
+			foreach (var material in PlayMaster.Playground.Items)
+			{
+				var trackBuilderProxy = (ITrackBuilderProxy?)PlayMaster.CreateProxy(material.Track);
+
+				if (trackBuilderProxy?.GetTrackForBuild() is { } trackChange && material.Body?.Current is { } bounds)
+				{
+					trackUnitsProxy.Add(new()
+					{
+						Bounds = bounds.Bounds,
+						Change = trackBuilderProxy.Change,
+					});
+				}
+			}
+
+			var index = 0;
+			while (index < trackUnitsProxy.Count)
+			{
+				var trackUnitProxy = (ITrackUnitProxy)PlayMaster.CreateProxy(trackUnitsProxy[index]);
+				if (trackUnitProxy.Change())
+				{
+					index++;
+				}
+				else
+				{
+					trackUnitsProxy.RemoveAt(index);
+				}
 			}
 		}
 
@@ -330,15 +363,6 @@ namespace StepFlow.Markup
 					_ => Texture.Projectile,
 				};
 
-				foreach (var step in projectile.Track?.Steps ?? Enumerable.Empty<RectangleF>())
-				{
-					CreateTexture(
-						new Rectangle((int)step.X, (int)step.Y, (int)step.Width, (int)step.Height),
-						textureName,
-						null
-					);
-				}
-
 				CreateTexture(projectile.Body?.Current.Bounds ?? Rectangle.Empty, textureName, null);
 			}
 
@@ -362,6 +386,16 @@ namespace StepFlow.Markup
 				CreateTexture(enemy.Body?.Current.Bounds ?? Rectangle.Empty, Texture.Enemy, enemy.Strength);
 				CreateBorder(enemy.Body, Color.Red);
 				CreateBorder(enemy.Vision, Color.Yellow);
+			}
+
+			foreach (var trackUnit in TrackUnits)
+			{
+				var bounds = trackUnit.Bounds;
+				CreateTexture(
+					new Rectangle((int)bounds.X, (int)bounds.Y, (int)bounds.Width, (int)bounds.Height),
+					Texture.Projectile,
+					null
+				);
 			}
 		}
 
