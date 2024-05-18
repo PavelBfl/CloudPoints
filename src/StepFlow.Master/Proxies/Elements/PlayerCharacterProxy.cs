@@ -8,6 +8,7 @@ using StepFlow.Core.Actions;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.Schedulers;
+using StepFlow.Core.Tracks;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
 
@@ -164,6 +165,15 @@ namespace StepFlow.Master.Proxies.Elements
 				},
 				Damage = damage,
 				Speed = 100,
+				Track = new TrackBuilder()
+				{
+					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(0.01f)),
+					Change = new TrackChange()
+					{
+						Size = new Vector2(-0.005f),
+						View = TrackView.None,
+					},
+				},
 			};
 
 			var schedulerUnion = new SchedulerUnion()

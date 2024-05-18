@@ -285,11 +285,16 @@ namespace StepFlow.Markup
 			{
 				var trackBuilderProxy = (ITrackBuilderProxy?)PlayMaster.CreateProxy(material.Track);
 
-				if (trackBuilderProxy?.GetTrackForBuild() is { } trackChange && material.Body?.Current is { } bounds)
+				if (trackBuilderProxy?.GetTrackForBuild() is { } trackChange && material.Body?.Current is { } shape)
 				{
+					RectangleF bounds = shape.Bounds;
+					var location = (Vector2)bounds.Location;
+					var size = (Vector2)bounds.Size;
+					var radius = size / 2;
 					trackUnitsProxy.Add(new()
 					{
-						Bounds = bounds.Bounds,
+						Center = location + radius,
+						Radius = radius,
 						Change = trackBuilderProxy.Change,
 					});
 				}
@@ -390,7 +395,10 @@ namespace StepFlow.Markup
 
 			foreach (var trackUnit in TrackUnits)
 			{
-				var bounds = trackUnit.Bounds;
+				var bounds = new RectangleF(
+					(PointF)(trackUnit.Center - trackUnit.Radius),
+					(SizeF)(trackUnit.Radius * 2)
+				);
 				CreateTexture(
 					new Rectangle((int)bounds.X, (int)bounds.Y, (int)bounds.Width, (int)bounds.Height),
 					Texture.Projectile,

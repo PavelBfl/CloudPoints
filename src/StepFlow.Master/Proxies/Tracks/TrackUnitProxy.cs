@@ -1,33 +1,23 @@
 ﻿using System.Drawing;
+using System.Numerics;
 using StepFlow.Core.Tracks;
 
 namespace StepFlow.Master.Proxies.Tracks
 {
 	public interface ITrackUnitProxy : IProxyBase<TrackUnit>
 	{
-		RectangleF Bounds { get; set; }
+		Vector2 Center { get; set; }
+
+		Vector2 Radius { get; set; }
 
 		bool Change()
 		{
 			var change = Target.GetChangeRequired();
 
-			var size = new SizeF(
-				Bounds.Width + change.Size.X,
-				Bounds.Height + change.Size.Y
-			);
+			Radius = Radius + change.Size;
+			Center = Center + change.Position;
 
-			if (size.Width < 1 || size.Height < 1)
-			{
-				return false;
-			}
-
-			var location = new PointF(
-				Bounds.X + change.Position.X,
-				Bounds.Y + change.Position.Y
-			);
-
-			Bounds = new RectangleF(location, size);
-			return true;
+			return Radius.X > 1 && Radius.Y > 1;
 		}
 	}
 
@@ -37,6 +27,8 @@ namespace StepFlow.Master.Proxies.Tracks
 		{
 		}
 
-		public RectangleF Bounds { get => Target.Bounds; set => SetValue(value); }
+		public Vector2 Center { get => Target.Center; set => SetValue(value); }
+
+		public Vector2 Radius { get => Target.Radius; set => SetValue(value); }
 	}
 }
