@@ -170,6 +170,7 @@ namespace StepFlow.Master.Proxies.Elements
 					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(0.01f)),
 					Change = new TrackChange()
 					{
+						Thickness = 2,
 						Size = new Vector2(-0.005f),
 						View = TrackView.None,
 					},

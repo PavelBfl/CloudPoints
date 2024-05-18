@@ -25,6 +25,8 @@ namespace StepFlow.View.Services
 			DefaultTiles = content.Load<Texture2D>(DEFAULT_TILES_KEY);
 			PlaceTiles = content.Load<Texture2D>(PLACE_TILES_KEY);
 
+			Sprites.Add(Markup.Services.Texture.Circle, new(DefaultTiles, new(18, 673, 32, 32)));
+
 			Sprites.Add(Markup.Services.Texture.Character, new(DefaultTiles, new(414, 53, 44, 59)));
 			Sprites.Add(Markup.Services.Texture.Projectile, new(DefaultTiles, new(243, 256, 20, 19)));
 			Sprites.Add(Markup.Services.Texture.ProjectileFire, new(DefaultTiles, new(211, 256, 20, 19)));

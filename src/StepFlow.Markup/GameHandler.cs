@@ -393,19 +393,23 @@ namespace StepFlow.Markup
 				CreateBorder(enemy.Vision, Color.Yellow);
 			}
 
+			foreach (var trackUnit in TrackUnits.Where(x => x.GetChangeRequired().Thickness > 0))
+			{
+				var bounds = CreateRectangle(trackUnit.Center, trackUnit.Radius + new Vector2(trackUnit.GetChangeRequired().Thickness));
+				CreateTexture(bounds, Texture.Circle, Color.Black);
+			}
+
 			foreach (var trackUnit in TrackUnits)
 			{
-				var bounds = new RectangleF(
-					(PointF)(trackUnit.Center - trackUnit.Radius),
-					(SizeF)(trackUnit.Radius * 2)
-				);
-				CreateTexture(
-					new Rectangle((int)bounds.X, (int)bounds.Y, (int)bounds.Width, (int)bounds.Height),
-					Texture.Projectile,
-					null
-				);
+				var bounds = CreateRectangle(trackUnit.Center, trackUnit.Radius);
+				CreateTexture(bounds, Texture.Circle);
 			}
 		}
+
+		private static RectangleF CreateRectangle(Vector2 center, Vector2 radius) => new(
+			(PointF)(center - radius),
+			(SizeF)(radius * 2)
+		);
 
 		private static Texture ToTexture(ObstructionView view, Scale? scale) => view switch
 		{
@@ -441,6 +445,15 @@ namespace StepFlow.Markup
 					);
 				}
 			}
+		}
+
+		private void CreateTexture(RectangleF bounds, Texture texture, Color? color = null)
+		{
+			Drawer.Draw(
+				texture,
+				new Rectangle((int)bounds.X, (int)bounds.Y, (int)bounds.Width, (int)bounds.Height),
+				color
+			);
 		}
 
 		private void CreateBorder(Collided? collided, Color color)

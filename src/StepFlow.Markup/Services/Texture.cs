@@ -2,6 +2,7 @@
 {
 	public enum Texture
 	{
+		Circle,
 		Character,
 		Projectile,
 		ProjectileFire,
