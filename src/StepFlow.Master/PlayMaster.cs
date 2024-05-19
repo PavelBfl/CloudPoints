@@ -163,7 +163,6 @@ namespace StepFlow.Master
 		{
 			var projectile = new Projectile()
 			{
-				Creator = creator,
 				Body = new Collided()
 				{
 					Current = { RectangleExtensions.Create(center, radius) },
@@ -181,6 +180,11 @@ namespace StepFlow.Master
 					},
 				},
 			};
+
+			if (creator is { })
+			{
+				projectile.Immunity.Add(creator);
+			}
 
 			var schedulerUnion = new SchedulerUnion()
 			{

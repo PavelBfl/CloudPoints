@@ -69,7 +69,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 				Strength.Value += item.AddStrength;
 			}
-			else if ((otherMaterial as Projectile)?.Creator != Target)
+			else if ((otherMaterial as Projectile)?.Immunity.Contains(Target) != true)
 			{
 				base.Collision(thisCollided, otherMaterial, otherCollided);
 			}
@@ -95,7 +95,7 @@ namespace StepFlow.Master.Proxies.Elements
 							SIZE,
 							courseVector * 5,
 							AggregateDamage(value: 10),
-							TimeTick.FromSeconds(4),
+							TimeTick.FromSeconds(1),
 							Target
 						);
 						break;
@@ -158,12 +158,12 @@ namespace StepFlow.Master.Proxies.Elements
 			var projectile = new Projectile()
 			{
 				Name = "Projectile",
-				Creator = creator,
 				Body = new Collided()
 				{
 					Current = { RectangleExtensions.Create(center, radius) },
 				},
 				Damage = damage,
+				Reusable = true,
 				Speed = 100,
 				Track = new TrackBuilder()
 				{
@@ -176,6 +176,11 @@ namespace StepFlow.Master.Proxies.Elements
 					},
 				},
 			};
+
+			if (creator is { })
+			{
+				projectile.Immunity.Add(creator);
+			}
 
 			var schedulerUnion = new SchedulerUnion()
 			{

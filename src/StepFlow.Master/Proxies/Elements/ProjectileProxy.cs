@@ -10,8 +10,6 @@ namespace StepFlow.Master.Proxies.Elements
 {
 	public interface IProjectileProxy : IMaterialProxy<Projectile>
 	{
-		Subject? Creator { get; set; }
-
 		Damage Damage { get; set; }
 	}
 
@@ -21,13 +19,11 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 		}
 
-		public Subject? Creator { get => Target.Creator; set => SetValue(value); }
-
 		public Damage Damage { get => Target.Damage; set => SetValue(value); }
 
 		public override void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
 		{
-			if (Creator != otherMaterial && otherCollided.Collided.IsRigid)
+			if (!Target.Immunity.Contains(otherMaterial) && otherCollided.Collided.IsRigid)
 			{
 				if (otherMaterial.Strength is { } strength)
 				{
@@ -44,7 +40,14 @@ namespace StepFlow.Master.Proxies.Elements
 					courseVectorProxy.Delta = Matrix3x2.CreateScale(factor);
 				}
 
-				Owner.GetPlaygroundItemsProxy().Remove(Target);
+				if (Target.Reusable)
+				{
+					Owner.CreateCollectionProxy(Target.Immunity).Add(otherMaterial);
+				}
+				else
+				{
+					Owner.GetPlaygroundItemsProxy().Remove(Target);
+				}
 			}
 		}
 
