@@ -451,7 +451,7 @@ namespace StepFlow.Markup
 		{
 			Drawer.Draw(
 				texture,
-				new Rectangle((int)bounds.X, (int)bounds.Y, (int)bounds.Width, (int)bounds.Height),
+				bounds,
 				color
 			);
 		}

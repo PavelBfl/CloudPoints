@@ -13,5 +13,7 @@ namespace StepFlow.Markup.Services
 		void Polygon(IReadOnlyList<PointF> vertices, Color color, float thickness = 2);
 
 		void Draw(Texture texture, Rectangle rectangle, Color? color = null);
+
+		void Draw(Texture texture, RectangleF rectangle, Color? color = null);
 	}
 }

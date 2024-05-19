@@ -175,7 +175,8 @@ namespace StepFlow.Master
 					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(0.05f)),
 					Change = new TrackChange()
 					{
-						Size = new Vector2(-0.004f),
+						Size = new Vector2(-0.003f),
+						Position = course * 0.002f,
 						View = TrackView.None,
 					},
 				},

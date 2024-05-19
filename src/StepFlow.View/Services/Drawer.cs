@@ -145,6 +145,23 @@ namespace StepFlow.View.Services
 			);
 		}
 
+		public void Draw(Markup.Services.Texture texture, System.Drawing.RectangleF rectangle, System.Drawing.Color? color)
+		{
+			var sprite = Sprites[texture];
+
+			SpriteBatch.Draw(
+				sprite.Texture,
+				new(rectangle.X, rectangle.Y),
+				sprite.SourceRectangle,
+				ToMonoColor(color ?? System.Drawing.Color.White),
+				0,
+				Vector2.Zero,
+				((System.Numerics.Vector2)rectangle.Size) / sprite.SourceRectangle.Size.ToVector2(),
+				SpriteEffects.None,
+				0
+			);
+		}
+
 		private readonly struct Sprite
 		{
 			public Sprite(Texture2D texture, Rectangle sourceRectangle)
