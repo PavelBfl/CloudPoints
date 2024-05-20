@@ -36,26 +36,16 @@ namespace StepFlow.Master.Proxies.Schedulers
 				sum += vector.Value;
 			}
 
-			if (CourseExtensions.GetCourseStep(sum, IndexCourse) is { } course)
+			if (sum != Vector2.Zero)
 			{
-				var length = (int)sum.Length();
-				if (length > 0)
-				{
-					Current = new Turn(
-						SchedulerVector.MAX_DURATION / length,
-						new SetCourse()
-						{
-							Collided = Collided,
-							Course = course
-						}
-					);
-
-					IndexCourse++;
-				}
-				else
-				{
-					Current = new Turn(1, null);
-				}
+				Current = new Turn(
+					1,
+					new SetCourse()
+					{
+						Collided = Collided,
+						Course = sum
+					}
+				);
 			}
 			else
 			{

@@ -161,11 +161,13 @@ namespace StepFlow.Master
 
 		public void CreateProjectile(Point center, int radius, Vector2 course, Damage damage, int duration, Subject? creator)
 		{
+			var bodyCurrent = RectangleExtensions.Create(center, radius);
 			var projectile = new Projectile()
 			{
 				Body = new Collided()
 				{
-					Current = { RectangleExtensions.Create(center, radius) },
+					Current = { bodyCurrent },
+					Position = new Vector2(bodyCurrent.X, bodyCurrent.Y),
 				},
 				Damage = damage,
 				Speed = 100,

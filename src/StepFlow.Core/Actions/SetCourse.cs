@@ -1,4 +1,5 @@
-﻿using StepFlow.Core.Components;
+﻿using System.Numerics;
+using StepFlow.Core.Components;
 
 namespace StepFlow.Core.Actions
 {
@@ -6,6 +7,8 @@ namespace StepFlow.Core.Actions
 	{
 		public Collided? Collided { get; set; }
 
-		public Course Course { get; set; }
+		public Collided GetCollidedRequired() => PropertyRequired(Collided, nameof(Collided));
+
+		public Vector2 Course { get; set; }
 	}
 }

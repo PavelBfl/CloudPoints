@@ -77,13 +77,14 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public void CreateProjectile(float radians, PlayerAction action)
 		{
+			return;
 			const int SIZE = 10;
 
 			if (action != PlayerAction.None && Cooldown.Value == 0)
 			{
 				var center = Body.Current.Bounds.GetCenter();
 				var matrixRotation = Matrix3x2.CreateRotation(radians);
-				var courseVector = Vector2.Transform(new Vector2(1, 0), matrixRotation);
+				var courseVector = Vector2.Transform(new Vector2(0.05f, 0), matrixRotation);
 
 				switch (action)
 				{
@@ -93,7 +94,7 @@ namespace StepFlow.Master.Proxies.Elements
 						Owner.CreateProjectile(
 							center,
 							SIZE,
-							courseVector * 5,
+							courseVector,
 							AggregateDamage(value: 10),
 							TimeTick.FromSeconds(1),
 							Target
@@ -155,12 +156,14 @@ namespace StepFlow.Master.Proxies.Elements
 
 		private void CreateArc(Point center, int radius, Vector2 course, Damage damage, int duration, Subject? creator)
 		{
+			var bodyCurrent = RectangleExtensions.Create(center, radius);
 			var projectile = new Projectile()
 			{
 				Name = "Projectile",
 				Body = new Collided()
 				{
-					Current = { RectangleExtensions.Create(center, radius) },
+					Current = { bodyCurrent },
+					Position = new Vector2(bodyCurrent.X, bodyCurrent.Y),
 				},
 				Damage = damage,
 				Reusable = true,

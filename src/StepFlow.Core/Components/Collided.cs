@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using StepFlow.Intersection;
 
 namespace StepFlow.Core.Components
@@ -27,6 +28,8 @@ namespace StepFlow.Core.Components
 		public ShapeContainer Current { get; } = new ShapeContainer(Playground.IntersectionContext);
 
 		public ShapeContainer Next { get; } = new ShapeContainer(Playground.IntersectionContext);
+
+		public Vector2 Position { get; set; }
 
 		public bool IsMove { get; set; }
 

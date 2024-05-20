@@ -73,6 +73,11 @@ public class Program
 		{
 		}
 
+		public void Draw(Texture texture, RectangleF rectangle, Color? color = null)
+		{
+			throw new NotImplementedException();
+		}
+
 		public void DrawString(string text, PointF position, Color color)
 		{
 		}
