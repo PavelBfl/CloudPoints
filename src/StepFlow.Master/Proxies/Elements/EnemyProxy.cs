@@ -65,7 +65,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 			if (Target != otherMaterial)
 			{
-				if (thisCollided.Collided == Vision && otherMaterial == Owner.Playground.GetPlayerCharacterRequired())
+				if (thisCollided.Collided == Vision && otherMaterial is PlayerCharacter)
 				{
 					CreateProjectile(otherMaterial);
 				}

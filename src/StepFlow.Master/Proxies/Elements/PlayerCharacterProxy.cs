@@ -77,7 +77,6 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public void CreateProjectile(float radians, PlayerAction action)
 		{
-			return;
 			const int SIZE = 10;
 
 			if (action != PlayerAction.None && Cooldown.Value == 0)

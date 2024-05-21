@@ -150,9 +150,8 @@ namespace StepFlow.Master
 
 			foreach (var collision in Playground.Items
 				.Select(x => x.Body)
-				.OfType<Collided>()
-				.Select(x => (ICollidedProxy)CreateProxy(x))
-				.ToArray()
+				.Select(CreateProxy)
+				.Cast<ICollidedProxy>()
 			)
 			{
 				collision.Move();

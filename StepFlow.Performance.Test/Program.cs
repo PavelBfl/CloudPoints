@@ -9,62 +9,32 @@ public class Program
 {
 	private static void Main(string[] args)
 	{
-		var keyboard = new Keyboard()
-		{
-			PlayerShot = Course.Left,
-		};
-
 		var handler = new GameHandler(
 			new RectangleF(0, 0, 1000, 1000),
 			new Drawer(),
-			keyboard
+			new Control()
 		);
 
 		const int FRAMES_COUNT = 10000;
-		var sw = new System.Diagnostics.Stopwatch();
 		for (var i = 0; i < FRAMES_COUNT; i++)
 		{
-			var range = i / 120;
-			keyboard.PlayerCourse = range % 2 == 0 ? Course.Right : Course.Left;
-
-			sw.Start();
 			handler.Update();
-			sw.Stop();
-			Console.WriteLine(i + ": " + sw.Elapsed);
-			sw.Reset();
 		}
 	}
 
-	private sealed class Keyboard : IControl
+	private sealed class Control : IControl
 	{
-		public Course? PlayerCourse { get; set; }
+		public PlayerAction GetPlayerAction() => PlayerAction.None;
 
-		public Course? PlayerShot { get; set; }
+		public float? GetPlayerCourse() => null;
 
-		public PlayerAction GetPlayerAction()
-		{
-			throw new NotImplementedException();
-		}
-
-		public Course? GetPlayerCourse() => PlayerCourse;
-
-		public float GetPlayerRotate(Vector2 center)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Course? GetPlayerShot() => PlayerShot;
+		public float GetPlayerRotate(Vector2 center) => 0;
 
 		public TimeOffset GetTimeOffset() => TimeOffset.None;
 
 		public bool IsUndo() => false;
 
 		public bool OnSwitchDebug() => false;
-
-		float? IControl.GetPlayerCourse()
-		{
-			throw new NotImplementedException();
-		}
 	}
 
 	private sealed class Drawer : IDrawer
@@ -75,7 +45,6 @@ public class Program
 
 		public void Draw(Texture texture, RectangleF rectangle, Color? color = null)
 		{
-			throw new NotImplementedException();
 		}
 
 		public void DrawString(string text, PointF position, Color color)
