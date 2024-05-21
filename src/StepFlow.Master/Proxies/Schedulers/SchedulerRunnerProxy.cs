@@ -34,48 +34,54 @@ namespace StepFlow.Master.Proxies.Schedulers
 
 		public bool OnTick()
 		{
+			var current = Current;
 			while (true)
 			{
-				var tickResult = SingleTick();
+				SingleTick(out var tickResult, ref current);
 				switch (tickResult)
 				{
 					case TickResult.Execute:
 						break;
-					case TickResult.Wait: return false;
-					case TickResult.Complete: return true;
+					case TickResult.Wait:
+						Current = current;
+						return false;
+					case TickResult.Complete:
+						Current = current;
+						return true;
 					default: throw EnumNotSupportedException.Create(tickResult);
 				}
 			}
 		}
 
-		private TickResult SingleTick()
+		private void SingleTick(out TickResult tickResult, ref Turn? current)
 		{
-			if (Current is null)
+			if (current is null)
 			{
 				var schedulerProxy = (ISchedulerProxy<Scheduler>?)Owner.CreateProxy(Scheduler);
 				schedulerProxy?.Next();
-				Current = schedulerProxy?.Current;
+				current = schedulerProxy?.Current;
 			}
 
-			if (Current is { } current)
+			if (current is { } currentInstance)
 			{
-				if (current.Duration == 0)
+				if (currentInstance.Duration == 0)
 				{
-					var executor = (IActionBaseProxy<ActionBase>?)Owner.CreateProxy(current.Executor);
+					var executor = (IActionBaseProxy<ActionBase>?)Owner.CreateProxy(currentInstance.Executor);
 					executor?.Execute();
 
-					Current = null;
-					return TickResult.Execute;
+					tickResult = TickResult.Execute;
+					current = null;
 				}
 				else
 				{
-					Current = current.Decrement();
-					return TickResult.Wait;
+					tickResult = TickResult.Wait;
+					current = currentInstance.Decrement();
 				}
 			}
 			else
 			{
-				return TickResult.Complete;
+				tickResult = TickResult.Complete;
+				current = null;
 			}
 		}
 	}
