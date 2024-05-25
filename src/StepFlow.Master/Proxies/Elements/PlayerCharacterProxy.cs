@@ -101,14 +101,23 @@ namespace StepFlow.Master.Proxies.Elements
 						break;
 					case PlayerAction.Auxiliary:
 						// TODO Дуга
-						var arcCourse = courseVector * 10;
-						var arcDuration = TimeTick.FromSeconds(0.1f);
-						var arcDistance = arcDuration.Ticks / (SchedulerVector.MAX_DURATION / arcCourse.Length());
-						var arcOffset = Vector2.Transform(courseVector * arcDistance, Matrix3x2.CreateRotation(MathF.PI / -4));
+						var arcDuration = TimeTick.FromSeconds(0.2f);
+						var arcRadius = 40;
+						var arcSpeed = 0.05f;
+						var arcRouteDistance = arcDuration.Ticks * arcSpeed;
+
+						var m = Matrix3x2.CreateTranslation(0, -arcRadius) *
+							Matrix3x2.CreateRotation(MathF.PI / 2) *
+							Matrix3x2.CreateRotation(-(arcRouteDistance / arcRadius / 2)) *
+							Matrix3x2.CreateRotation(radians) *
+							Matrix3x2.CreateTranslation(center.X, center.Y);
+
+						var arcPosition = Vector2.Transform(Vector2.Zero, m);
+						var arcCourse = Vector2.Transform(new Vector2(arcSpeed, 0), m);
 						CreateArc(
-							center + new Size((int)arcOffset.X, (int)arcOffset.Y),
+							new Point((int)arcPosition.X, (int)arcPosition.Y),
 							SIZE,
-							Vector2.Transform(arcCourse, Matrix3x2.CreateRotation(MathF.PI / 4)),
+							arcCourse - arcPosition,
 							AggregateDamage(value: 10),
 							arcDuration,
 							Target
