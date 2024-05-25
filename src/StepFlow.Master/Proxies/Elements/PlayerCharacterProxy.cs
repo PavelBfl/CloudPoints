@@ -101,27 +101,27 @@ namespace StepFlow.Master.Proxies.Elements
 						break;
 					case PlayerAction.Auxiliary:
 						// TODO Дуга
-						var arcDuration = TimeTick.FromSeconds(0.2f);
-						var arcRadius = 40;
-						var arcSpeed = 0.05f;
-						var arcRouteDistance = arcDuration.Ticks * arcSpeed;
+						//var arcDuration = TimeTick.FromSeconds(0.2f);
+						//var arcRadius = 40;
+						//var arcSpeed = 0.05f;
+						//var arcRouteDistance = arcDuration.Ticks * arcSpeed;
 
-						var m = Matrix3x2.CreateTranslation(0, -arcRadius) *
-							Matrix3x2.CreateRotation(MathF.PI / 2) *
-							Matrix3x2.CreateRotation(-(arcRouteDistance / arcRadius / 2)) *
-							Matrix3x2.CreateRotation(radians) *
-							Matrix3x2.CreateTranslation(center.X, center.Y);
+						//var m = Matrix3x2.CreateTranslation(0, -arcRadius) *
+						//	Matrix3x2.CreateRotation(MathF.PI / 2) *
+						//	Matrix3x2.CreateRotation(-(arcRouteDistance / arcRadius / 2)) *
+						//	Matrix3x2.CreateRotation(radians) *
+						//	Matrix3x2.CreateTranslation(center.X, center.Y);
 
-						var arcPosition = Vector2.Transform(Vector2.Zero, m);
-						var arcCourse = Vector2.Transform(new Vector2(arcSpeed, 0), m);
-						CreateArc(
-							new Point((int)arcPosition.X, (int)arcPosition.Y),
-							SIZE,
-							arcCourse - arcPosition,
-							AggregateDamage(value: 10),
-							arcDuration,
-							Target
-						);
+						//var arcPosition = Vector2.Transform(Vector2.Zero, m);
+						//var arcCourse = Vector2.Transform(new Vector2(arcSpeed, 0), m);
+						//CreateArc(
+						//	new Point((int)arcPosition.X, (int)arcPosition.Y),
+						//	SIZE,
+						//	arcCourse - arcPosition,
+						//	AggregateDamage(value: 10),
+						//	arcDuration,
+						//	Target
+						//);
 
 						// TODO Рывок
 						//var schedulersProxy = Owner.CreateCollectionProxy(Schedulers);
@@ -137,7 +137,7 @@ namespace StepFlow.Master.Proxies.Elements
 						//			{
 						//				new CourseVector()
 						//				{
-						//					Value = courseVector * 20,
+						//					Value = courseVector * 10,
 						//				},
 						//			},
 						//		},
@@ -145,14 +145,14 @@ namespace StepFlow.Master.Proxies.Elements
 						//});
 
 						// TODO Толчок
-						//Owner.CreateProjectile(
-						//	center,
-						//	SIZE,
-						//	courseVector * 10,
-						//	new Damage() { Push = courseVector * 10 },
-						//	TimeTick.FromFrames(5),
-						//	Target
-						//);
+						Owner.CreateProjectile(
+							center,
+							SIZE,
+							courseVector,
+							new Damage() { Push = courseVector },
+							TimeTick.FromFrames(5),
+							Target
+						);
 						break;
 					default: throw EnumNotSupportedException.Create(action);
 				}
