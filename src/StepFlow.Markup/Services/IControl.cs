@@ -16,12 +16,13 @@ namespace StepFlow.Markup.Services
 
 		float GetPlayerRotate(Vector2 center);
 
-		PlayerAction GetPlayerAction();
+		PlayerAction? GetPlayerAction();
 
 		bool IsUndo();
 
 		TimeOffset GetTimeOffset();
 
 		bool OnSwitchDebug();
+		bool ShowSelector();
 	}
 }

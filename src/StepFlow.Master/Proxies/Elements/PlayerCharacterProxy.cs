@@ -16,7 +16,6 @@ namespace StepFlow.Master.Proxies.Elements
 {
 	public enum PlayerAction
 	{
-		None,
 		Main,
 		Auxiliary,
 	}
@@ -37,6 +36,10 @@ namespace StepFlow.Master.Proxies.Elements
 		public new Scale Strength => base.Strength ?? throw new InvalidOperationException();
 
 		public Scale Cooldown => Target.GetCooldownRequired();
+
+		public CharacterSkill MainSkill { get => Target.MainSkill; set => SetValue(value); }
+
+		public CharacterSkill AuxiliarySkill { get => Target.AuxiliarySkill; set => SetValue(value); }
 
 		public override void OnTick()
 		{
@@ -79,17 +82,22 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			const int SIZE = 10;
 
-			if (action != PlayerAction.None && Cooldown.Value == 0)
+			if (Cooldown.Value == 0)
 			{
+				var skill = action switch
+				{
+					PlayerAction.Main => MainSkill,
+					PlayerAction.Auxiliary => AuxiliarySkill,
+					_ => throw EnumNotSupportedException.Create(action),
+				};
+
 				var center = Body.Current.Bounds.GetCenter();
 				var matrixRotation = Matrix3x2.CreateRotation(radians);
 				var courseVector = Vector2.Transform(new Vector2(0.05f, 0), matrixRotation);
 
-				switch (action)
+				switch (skill)
 				{
-					case PlayerAction.None:
-						break;
-					case PlayerAction.Main:
+					case CharacterSkill.Projectile:
 						Owner.CreateProjectile(
 							center,
 							SIZE,
@@ -99,52 +107,30 @@ namespace StepFlow.Master.Proxies.Elements
 							Target
 						);
 						break;
-					case PlayerAction.Auxiliary:
-						// TODO Дуга
-						//var arcDuration = TimeTick.FromSeconds(0.2f);
-						//var arcRadius = 40;
-						//var arcSpeed = 0.05f;
-						//var arcRouteDistance = arcDuration.Ticks * arcSpeed;
+					case CharacterSkill.Arc:
+						var arcDuration = TimeTick.FromSeconds(0.2f);
+						var arcRadius = 40;
+						var arcSpeed = 0.05f;
+						var arcRouteDistance = arcDuration.Ticks * arcSpeed;
 
-						//var m = Matrix3x2.CreateTranslation(0, -arcRadius) *
-						//	Matrix3x2.CreateRotation(MathF.PI / 2) *
-						//	Matrix3x2.CreateRotation(-(arcRouteDistance / arcRadius / 2)) *
-						//	Matrix3x2.CreateRotation(radians) *
-						//	Matrix3x2.CreateTranslation(center.X, center.Y);
+						var m = Matrix3x2.CreateTranslation(0, -arcRadius) *
+							Matrix3x2.CreateRotation(MathF.PI / 2) *
+							Matrix3x2.CreateRotation(-(arcRouteDistance / arcRadius / 2)) *
+							Matrix3x2.CreateRotation(radians) *
+							Matrix3x2.CreateTranslation(center.X, center.Y);
 
-						//var arcPosition = Vector2.Transform(Vector2.Zero, m);
-						//var arcCourse = Vector2.Transform(new Vector2(arcSpeed, 0), m);
-						//CreateArc(
-						//	new Point((int)arcPosition.X, (int)arcPosition.Y),
-						//	SIZE,
-						//	arcCourse - arcPosition,
-						//	AggregateDamage(value: 10),
-						//	arcDuration,
-						//	Target
-						//);
-
-						// TODO Рывок
-						//var schedulersProxy = Owner.CreateCollectionProxy(Schedulers);
-						//schedulersProxy.Add(new SchedulerRunner()
-						//{
-						//	Scheduler = new SchedulerLimit()
-						//	{
-						//		Range = Scale.Create(TimeTick.FromSeconds(0.1f)),
-						//		Source = new SchedulerVector()
-						//		{
-						//			Collided = Target.Body,
-						//			Vectors =
-						//			{
-						//				new CourseVector()
-						//				{
-						//					Value = courseVector * 10,
-						//				},
-						//			},
-						//		},
-						//	},
-						//});
-
-						// TODO Толчок
+						var arcPosition = Vector2.Transform(Vector2.Zero, m);
+						var arcCourse = Vector2.Transform(new Vector2(arcSpeed, 0), m);
+						CreateArc(
+							new Point((int)arcPosition.X, (int)arcPosition.Y),
+							SIZE,
+							arcCourse - arcPosition,
+							AggregateDamage(value: 10),
+							arcDuration,
+							Target
+						);
+						break;
+					case CharacterSkill.Push:
 						Owner.CreateProjectile(
 							center,
 							SIZE,
@@ -154,7 +140,28 @@ namespace StepFlow.Master.Proxies.Elements
 							Target
 						);
 						break;
-					default: throw EnumNotSupportedException.Create(action);
+					case CharacterSkill.Dash:
+						var schedulersProxy = Owner.CreateCollectionProxy(Schedulers);
+						schedulersProxy.Add(new SchedulerRunner()
+						{
+							Scheduler = new SchedulerLimit()
+							{
+								Range = Scale.Create(TimeTick.FromSeconds(0.1f)),
+								Source = new SchedulerVector()
+								{
+									Collided = Target.Body,
+									Vectors =
+									{
+										new CourseVector()
+										{
+											Value = courseVector * 10,
+										},
+									},
+								},
+							},
+						});
+						break;
+					default: throw EnumNotSupportedException.Create(skill);
 				}
 
 				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);

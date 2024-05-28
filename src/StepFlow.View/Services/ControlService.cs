@@ -55,7 +55,7 @@ namespace StepFlow.View.Services
 			return result;
 		}
 
-		public PlayerAction GetPlayerAction()
+		public PlayerAction? GetPlayerAction()
 		{
 			if (LeftButtonOnPress)
 			{
@@ -67,7 +67,7 @@ namespace StepFlow.View.Services
 			}
 			else
 			{
-				return PlayerAction.None;
+				return null;
 			}
 		}
 
@@ -104,5 +104,7 @@ namespace StepFlow.View.Services
 		}
 
 		public bool OnSwitchDebug() => IsKeyOnPress(Keys.Tab);
+
+		public bool ShowSelector() => IsKeyDown(Keys.LeftControl);
 	}
 }
