@@ -105,6 +105,8 @@ namespace StepFlow.View.Services
 
 		public bool OnSwitchDebug() => IsKeyOnPress(Keys.Tab);
 
-		public bool ShowSelector() => IsKeyDown(Keys.LeftControl);
+		public bool OnTactic() => IsKeyDown(Keys.Space);
+
+		public System.Numerics.Vector2? FreeSelect() => Mouse.GetState().Position.ToVector2().ToNumerics();
 	}
 }

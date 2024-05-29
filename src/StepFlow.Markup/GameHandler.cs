@@ -45,8 +45,6 @@ public sealed class GameHandler
 
 	public RectangleF Place { get; }
 
-	public Selector? Selector { get; set; }
-
 	private static Size CellSize => new(Playground.CELL_SIZE_DEFAULT, Playground.CELL_SIZE_DEFAULT);
 
 	private static int PlaygroundToGlobal(int value) => (value + 1) * Playground.CELL_SIZE_DEFAULT;
@@ -217,25 +215,14 @@ public sealed class GameHandler
 
 	public void Update()
 	{
-		if (Control.ShowSelector())
-		{
-			Selector ??= new Selector(Drawer, Control, PlayMaster);
-		}
-		else
-		{
-			Selector = null;
-		}
-
-		if (Selector is not null)
-		{
-			Selector.Update();
-			return;
-		}
-
 		if (Control.OnSwitchDebug())
 		{
 			IsDebug = !IsDebug;
 		}
+
+		var tactic = Control.OnTactic();
+
+		var currentTicks = tactic ? 0 : CurrentTicks;
 
 		var timeOffset = Control.GetTimeOffset();
 		switch (timeOffset)
@@ -261,7 +248,7 @@ public sealed class GameHandler
 		else
 		{
 			var sw = System.Diagnostics.Stopwatch.StartNew();
-			for (var i = 0; i < CurrentTicks; i++)
+			for (var i = 0; i < currentTicks; i++)
 			{
 				var transaction = PlayMaster.TimeAxis.BeginTransaction();
 
@@ -290,6 +277,49 @@ public sealed class GameHandler
 
 			Frame = sw.Elapsed;
 		}
+
+		var skills = tactic ? Enum.GetValues<CharacterSkill>() : Array.Empty<CharacterSkill>();
+
+		while (skills.Length < SkillsPanel.Count)
+		{
+			SkillsPanel.RemoveAt(SkillsPanel.Count - 1);
+		}
+
+		while (skills.Length > SkillsPanel.Count)
+		{
+			SkillsPanel.Add(new());
+		}
+
+		const float SIZE = 50;
+		for (var i = 0; i < skills.Length; i++)
+		{
+			var button = SkillsPanel[i];
+			button.Skill = skills[i];
+			button.Bounds = new(0, i * SIZE, SIZE, SIZE);
+		}
+
+		if (Control.FreeSelect() is { } freeSelect)
+		{
+			foreach (var button in SkillsPanel)
+			{
+				button.IsSelect = button.Bounds.Contains((PointF)freeSelect);
+			}
+		}
+		else
+		{
+			// TODO Сделать ручное управление
+		}
+	}
+
+	private List<SkillButton> SkillsPanel { get; } = new();
+
+	private sealed class SkillButton
+	{
+		public CharacterSkill Skill { get; set; }
+
+		public RectangleF Bounds { get; set; }
+
+		public bool IsSelect { get; set; }
 	}
 
 	private List<TrackUnit> TrackUnits { get; } = new();
@@ -336,12 +366,6 @@ public sealed class GameHandler
 
 	public void Draw()
 	{
-		if (Selector is not null)
-		{
-			Selector.Draw();
-			return;
-		}
-
 		var floorTileSize = new Size(40, 40);
 		for (var iX = 0; iX < Place.Width; iX += floorTileSize.Width)
 		{
@@ -427,6 +451,11 @@ public sealed class GameHandler
 			var bounds = CreateRectangle(trackUnit.Center, trackUnit.Radius);
 			CreateTexture(bounds, Texture.Circle);
 		}
+
+		foreach (var button in SkillsPanel)
+		{
+			Drawer.Button(Texture.ItemFire, button.Bounds, button.IsSelect);
+		}
 	}
 
 	private static RectangleF CreateRectangle(Vector2 center, Vector2 radius) => new(
@@ -495,5 +524,44 @@ public sealed class GameHandler
 				color
 			);
 		}
+	}
+}
+
+public static class DrawerExtensions
+{
+	public static void Button(this IDrawer drawer, Texture texture, RectangleF bounds, bool isSelect = false)
+	{
+		const float GAP = 5;
+
+		ArgumentNullException.ThrowIfNull(drawer);
+
+		var content = RectangleF.FromLTRB(
+			bounds.Left + GAP,
+			bounds.Top + GAP,
+			bounds.Right - GAP,
+			bounds.Bottom - GAP
+		);
+
+		var color = isSelect ? Color.Green : Color.White;
+		drawer.Draw(bounds, color, GAP);
+
+		drawer.Draw(texture, content);
+	}
+
+	public static void Draw(this IDrawer drawer, RectangleF bounds, Color color, float thickness = 2)
+	{
+		ArgumentNullException.ThrowIfNull(drawer);
+
+		drawer.Polygon(
+			new PointF[]
+			{
+				new(bounds.Left, bounds.Top),
+				new(bounds.Right, bounds.Top),
+				new(bounds.Right, bounds.Bottom),
+				new(bounds.Left, bounds.Bottom),
+			},
+			color,
+			thickness
+		);
 	}
 }

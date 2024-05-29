@@ -23,6 +23,9 @@ namespace StepFlow.Markup.Services
 		TimeOffset GetTimeOffset();
 
 		bool OnSwitchDebug();
-		bool ShowSelector();
+
+		bool OnTactic();
+
+		Vector2? FreeSelect();
 	}
 }
