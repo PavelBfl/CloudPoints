@@ -31,6 +31,8 @@ public sealed class GameHandler
 		Meter.CreateObservableGauge("Frame", () => Frame.TotalMilliseconds);
 		Meter.CreateObservableGauge("Shapes", () => Playground.IntersectionContext.Count);
 		Init();
+
+		TacticPanel = new(Control, Drawer, Place, PlayMaster);
 	}
 
 	private Meter Meter { get; } = new Meter("Game.Gameplay");
@@ -44,6 +46,8 @@ public sealed class GameHandler
 	public IDrawer Drawer { get; }
 
 	public RectangleF Place { get; }
+
+	private TacticPanel TacticPanel { get; }
 
 	private static Size CellSize => new(Playground.CELL_SIZE_DEFAULT, Playground.CELL_SIZE_DEFAULT);
 
@@ -220,9 +224,7 @@ public sealed class GameHandler
 			IsDebug = !IsDebug;
 		}
 
-		var tactic = Control.OnTactic();
-
-		var currentTicks = tactic ? 0 : CurrentTicks;
+		var currentTicks = Control.OnTactic() ? 0 : CurrentTicks;
 
 		var timeOffset = Control.GetTimeOffset();
 		switch (timeOffset)
@@ -278,80 +280,7 @@ public sealed class GameHandler
 			Frame = sw.Elapsed;
 		}
 
-		var skills = tactic ? Enum.GetValues<CharacterSkill>() : Array.Empty<CharacterSkill>();
-
-		while (skills.Length < SkillsPanel.Count)
-		{
-			SkillsPanel.RemoveAt(SkillsPanel.Count - 1);
-		}
-
-		while (skills.Length > SkillsPanel.Count)
-		{
-			SkillsPanel.Add(new());
-		}
-
-		const float SIZE = 50;
-		for (var i = 0; i < skills.Length; i++)
-		{
-			var button = SkillsPanel[i];
-			button.Skill = skills[i];
-			button.Bounds = new(0, i * SIZE, SIZE, SIZE);
-		}
-
-		var playerCharacterGui = (IPlayerCharacterProxy)PlayMaster.CreateProxy(PlayMaster.Playground.GetPlayerCharacterRequired());
-		if (Control.FreeSelect() is { } freeSelect)
-		{
-			foreach (var button in SkillsPanel)
-			{
-				button.IsSelect = button.Bounds.Contains((PointF)freeSelect);
-				if (button.IsSelect)
-				{
-					if (Control.SelectMain())
-					{
-						playerCharacterGui.MainSkill = button.Skill;
-					}
-
-					if (Control.SelectAuxiliary())
-					{
-						playerCharacterGui.AuxiliarySkill = button.Skill;
-					}
-				}
-			}
-		}
-		else
-		{
-			// TODO Сделать ручное управление
-		}
-
-		foreach (var button in SkillsPanel)
-		{
-			button.IsMain = button.Skill == playerCharacterGui.MainSkill;
-			button.IsAuxiliary = button.Skill == playerCharacterGui.AuxiliarySkill;
-		}
-	}
-
-	private List<SkillButton> SkillsPanel { get; } = new();
-
-	private sealed class SkillButton
-	{
-		public CharacterSkill Skill { get; set; }
-
-		public RectangleF Bounds { get; set; }
-
-		public bool IsSelect { get; set; }
-
-		public bool IsMain { get; set; }
-
-		public bool IsAuxiliary { get; set; }
-
-		public Texture Icon => Skill switch
-		{
-			CharacterSkill.Projectile => Texture.ItemFire,
-			CharacterSkill.Arc => Texture.ItemPoison,
-			CharacterSkill.Push => Texture.ItemSpeed,
-			CharacterSkill.Dash => Texture.ItemUnknown,
-			_ => throw EnumNotSupportedException.Create(Skill),
-		};
+		TacticPanel.Update();
 	}
 
 	private List<TrackUnit> TrackUnits { get; } = new();
@@ -484,19 +413,7 @@ public sealed class GameHandler
 			CreateTexture(bounds, Texture.Circle);
 		}
 
-		foreach (var button in SkillsPanel)
-		{
-			Drawer.Button(button.Icon, button.Bounds, button.IsSelect);
-			if (button.IsMain)
-			{
-				Drawer.Draw(new RectangleF(button.Bounds.Location, new SizeF(10, 10)), Color.Red);
-			}
-
-			if (button.IsAuxiliary)
-			{
-				Drawer.Draw(new RectangleF(new PointF(button.Bounds.Right - 10, button.Bounds.Y), new SizeF(10, 10)), Color.Red);
-			}
-		}
+		TacticPanel.Draw();
 	}
 
 	private static RectangleF CreateRectangle(Vector2 center, Vector2 radius) => new(
