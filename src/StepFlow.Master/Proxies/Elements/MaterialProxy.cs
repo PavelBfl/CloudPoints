@@ -92,7 +92,7 @@ namespace StepFlow.Master.Proxies.Elements
 				if (radians is { })
 				{
 					var matrixRotation = Matrix3x2.CreateRotation(radians.Value);
-					courseVector = Vector2.Transform(new Vector2(0.1f, 0), matrixRotation);
+					courseVector = Vector2.Transform(new Vector2(0.05f, 0), matrixRotation);
 				}
 
 				var controlVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(path.CourseVector);

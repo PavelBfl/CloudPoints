@@ -61,6 +61,14 @@ public sealed class GameHandler
 
 	private static Rectangle CreateCell(Point position) => CreateCell(position.X, position.Y);
 
+	private static Vector2 CreateRotate(float radians)
+	{
+		return Vector2.Transform(
+			new Vector2(1, 0),
+			Matrix3x2.CreateRotation(radians)
+		);
+	}
+
 	public void Init()
 	{
 		CreateRoom(Point.Empty, new(14, 8), Playground.CELL_SIZE_DEFAULT);
@@ -77,8 +85,8 @@ public sealed class GameHandler
 		PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(11, 2) });
 		PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(12, 2) });
 
-		CreateEnemy(CreateCell(10, 6), 300, Strategy.Reflection, new Vector2(2, 1) * 0.05f);
-		CreateEnemy(CreateCell(0, 0), 150, Strategy.CW, new Vector2(1, 0) * 0.05f);
+		CreateEnemy(CreateCell(10, 6), 300, Strategy.Reflection, CreateRotate(MathF.PI / 4) * 0.02f);
+		CreateEnemy(CreateCell(0, 0), 150, Strategy.CW, CreateRotate(0) * 0.02f);
 
 		CreateCellObstruction(new Point(3, 0), 50, ObstructionView.Bricks);
 		CreateCellObstruction(new Point(3, 1), 50, ObstructionView.Bricks);

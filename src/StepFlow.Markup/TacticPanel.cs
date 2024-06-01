@@ -50,7 +50,7 @@ public sealed class TacticPanel
 		{
 			var button = Buttoms[i];
 			button.Skill = skills[i];
-			button.Bounds = new(0, i * SIZE, SIZE, SIZE);
+			button.Bounds = new(Place.X, Place.Y + i * SIZE, SIZE, SIZE);
 		}
 
 		var playerCharacterGui = (IPlayerCharacterProxy)PlayMaster.CreateProxy(PlayMaster.Playground.GetPlayerCharacterRequired());
