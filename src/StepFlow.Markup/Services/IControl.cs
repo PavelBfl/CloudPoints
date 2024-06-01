@@ -27,5 +27,9 @@ namespace StepFlow.Markup.Services
 		bool OnTactic();
 
 		Vector2? FreeSelect();
+
+		bool SelectMain();
+
+		bool SelectAuxiliary();
 	}
 }

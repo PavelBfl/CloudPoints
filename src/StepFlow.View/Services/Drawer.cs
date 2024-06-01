@@ -162,6 +162,21 @@ namespace StepFlow.View.Services
 			);
 		}
 
+		public void Draw(System.Drawing.RectangleF rectangle, System.Drawing.Color color)
+		{
+			SpriteBatch.Draw(
+				Pixel,
+				new Vector2(rectangle.X, rectangle.Y),
+				null,
+				ToMonoColor(color),
+				0,
+				Vector2.Zero,
+				new Vector2(rectangle.Width, rectangle.Height),
+				SpriteEffects.None,
+				0f
+			);
+		}
+
 		private readonly struct Sprite
 		{
 			public Sprite(Texture2D texture, Rectangle sourceRectangle)

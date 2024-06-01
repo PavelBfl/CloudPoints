@@ -298,16 +298,35 @@ public sealed class GameHandler
 			button.Bounds = new(0, i * SIZE, SIZE, SIZE);
 		}
 
+		var playerCharacterGui = (IPlayerCharacterProxy)PlayMaster.CreateProxy(PlayMaster.Playground.GetPlayerCharacterRequired());
 		if (Control.FreeSelect() is { } freeSelect)
 		{
 			foreach (var button in SkillsPanel)
 			{
 				button.IsSelect = button.Bounds.Contains((PointF)freeSelect);
+				if (button.IsSelect)
+				{
+					if (Control.SelectMain())
+					{
+						playerCharacterGui.MainSkill = button.Skill;
+					}
+
+					if (Control.SelectAuxiliary())
+					{
+						playerCharacterGui.AuxiliarySkill = button.Skill;
+					}
+				}
 			}
 		}
 		else
 		{
 			// TODO Сделать ручное управление
+		}
+
+		foreach (var button in SkillsPanel)
+		{
+			button.IsMain = button.Skill == playerCharacterGui.MainSkill;
+			button.IsAuxiliary = button.Skill == playerCharacterGui.AuxiliarySkill;
 		}
 	}
 
@@ -320,6 +339,19 @@ public sealed class GameHandler
 		public RectangleF Bounds { get; set; }
 
 		public bool IsSelect { get; set; }
+
+		public bool IsMain { get; set; }
+
+		public bool IsAuxiliary { get; set; }
+
+		public Texture Icon => Skill switch
+		{
+			CharacterSkill.Projectile => Texture.ItemFire,
+			CharacterSkill.Arc => Texture.ItemPoison,
+			CharacterSkill.Push => Texture.ItemSpeed,
+			CharacterSkill.Dash => Texture.ItemUnknown,
+			_ => throw EnumNotSupportedException.Create(Skill),
+		};
 	}
 
 	private List<TrackUnit> TrackUnits { get; } = new();
@@ -454,7 +486,16 @@ public sealed class GameHandler
 
 		foreach (var button in SkillsPanel)
 		{
-			Drawer.Button(Texture.ItemFire, button.Bounds, button.IsSelect);
+			Drawer.Button(button.Icon, button.Bounds, button.IsSelect);
+			if (button.IsMain)
+			{
+				Drawer.Draw(new RectangleF(button.Bounds.Location, new SizeF(10, 10)), Color.Red);
+			}
+
+			if (button.IsAuxiliary)
+			{
+				Drawer.Draw(new RectangleF(new PointF(button.Bounds.Right - 10, button.Bounds.Y), new SizeF(10, 10)), Color.Red);
+			}
 		}
 	}
 
@@ -543,25 +584,12 @@ public static class DrawerExtensions
 		);
 
 		var color = isSelect ? Color.Green : Color.White;
-		drawer.Draw(bounds, color, GAP);
+
+		drawer.Draw(new RectangleF(bounds.Location, new SizeF(bounds.Width, GAP)), color);
+		drawer.Draw(new RectangleF(bounds.Location, new SizeF(GAP, bounds.Height)), color);
+		drawer.Draw(new RectangleF(bounds.Right - GAP, bounds.Y, GAP, bounds.Height), color);
+		drawer.Draw(new RectangleF(bounds.X, bounds.Bottom - GAP, bounds.Width, GAP), color);
 
 		drawer.Draw(texture, content);
-	}
-
-	public static void Draw(this IDrawer drawer, RectangleF bounds, Color color, float thickness = 2)
-	{
-		ArgumentNullException.ThrowIfNull(drawer);
-
-		drawer.Polygon(
-			new PointF[]
-			{
-				new(bounds.Left, bounds.Top),
-				new(bounds.Right, bounds.Top),
-				new(bounds.Right, bounds.Bottom),
-				new(bounds.Left, bounds.Bottom),
-			},
-			color,
-			thickness
-		);
 	}
 }

@@ -22,6 +22,10 @@ namespace StepFlow.Master.Proxies.Elements
 
 	public interface IPlayerCharacterProxy : IMaterialProxy<PlayerCharacter>
 	{
+		CharacterSkill MainSkill { get; set; }
+
+		CharacterSkill AuxiliarySkill { get; set; }
+
 		new Scale Strength { get; }
 
 		void CreateProjectile(float radians, PlayerAction action);
