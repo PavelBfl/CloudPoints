@@ -9,10 +9,10 @@
 
 		public Thickness(float left, float top, float right, float bottom, UnitKind kind = UnitKind.Pixels)
 		{
-			Left = new(left, kind);
-			Top = new(top, kind);
-			Right = new(right, kind);
-			Bottom = new(bottom, kind);
+			Left = new Unit(left, kind);
+			Top = new Unit(top, kind);
+			Right = new Unit(right, kind);
+			Bottom = new Unit(bottom, kind);
 		}
 
 		public Unit Left { get; set; }
