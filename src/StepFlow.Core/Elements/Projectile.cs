@@ -7,8 +7,15 @@ namespace StepFlow.Core.Elements
 	{
 		public Damage Damage { get; set; }
 
-		public bool Reusable { get; set; }
+		public ReusableKind Reusable { get; set; }
 
 		public ICollection<Subject> Immunity { get; } = new HashSet<Subject>();
+	}
+
+	public enum ReusableKind
+	{
+		None,
+		Save,
+		NotSave,
 	}
 }

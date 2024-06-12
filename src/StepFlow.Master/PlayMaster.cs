@@ -158,7 +158,7 @@ namespace StepFlow.Master
 			}
 		}
 
-		public void CreateProjectile(Point center, int radius, Vector2 course, Damage damage, int duration, Subject? creator)
+		public void CreateProjectile(Point center, int radius, Vector2 course, Damage damage, int duration, Subject? creator, ReusableKind reusable)
 		{
 			var bodyCurrent = RectangleExtensions.Create(center, radius);
 			var projectile = new Projectile()
@@ -169,6 +169,7 @@ namespace StepFlow.Master
 					Position = new Vector2(bodyCurrent.X, bodyCurrent.Y),
 				},
 				Damage = damage,
+				Reusable = reusable,
 				Speed = 100,
 				Track = new TrackBuilder()
 				{

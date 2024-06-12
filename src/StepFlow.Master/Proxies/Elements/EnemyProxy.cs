@@ -163,7 +163,8 @@ namespace StepFlow.Master.Proxies.Elements
 					course,
 					new Damage() { Value = 10, },
 					TimeTick.FromSeconds(2),
-					Target
+					Target,
+					ReusableKind.None
 				);
 
 				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);

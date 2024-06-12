@@ -40,13 +40,14 @@ namespace StepFlow.Master.Proxies.Elements
 					courseVectorProxy.Delta = Matrix3x2.CreateScale(factor);
 				}
 
-				if (Target.Reusable)
+				switch (Target.Reusable)
 				{
-					Owner.CreateCollectionProxy(Target.Immunity).Add(otherMaterial);
-				}
-				else
-				{
-					Owner.GetPlaygroundItemsProxy().Remove(Target);
+					case ReusableKind.None:
+						Owner.GetPlaygroundItemsProxy().Remove(Target);
+						break;
+					case ReusableKind.Save:
+						Owner.CreateCollectionProxy(Target.Immunity).Add(otherMaterial);
+						break;
 				}
 			}
 		}

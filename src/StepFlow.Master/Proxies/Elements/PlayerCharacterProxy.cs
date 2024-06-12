@@ -108,7 +108,8 @@ namespace StepFlow.Master.Proxies.Elements
 							courseVector,
 							AggregateDamage(value: 10),
 							TimeTick.FromSeconds(1),
-							Target
+							Target,
+							ReusableKind.None
 						);
 						break;
 					case CharacterSkill.Arc:
@@ -140,8 +141,9 @@ namespace StepFlow.Master.Proxies.Elements
 							SIZE,
 							courseVector,
 							new Damage() { Push = courseVector },
-							TimeTick.FromFrames(5),
-							Target
+							TimeTick.FromSeconds(1),
+							Target,
+							ReusableKind.NotSave
 						);
 						break;
 					case CharacterSkill.Dash:
@@ -185,7 +187,7 @@ namespace StepFlow.Master.Proxies.Elements
 					Position = new Vector2(bodyCurrent.X, bodyCurrent.Y),
 				},
 				Damage = damage,
-				Reusable = true,
+				Reusable = ReusableKind.Save,
 				Speed = 100,
 				Track = new TrackBuilder()
 				{
