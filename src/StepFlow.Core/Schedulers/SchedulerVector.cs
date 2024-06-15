@@ -10,7 +10,5 @@ namespace StepFlow.Core.Schedulers
 		public Collided GetCollidedRequired() => PropertyRequired(Collided, nameof(Collided));
 
 		public ICollection<CourseVector> Vectors { get; } = new List<CourseVector>();
-
-		public int IndexCourse { get; set; }
 	}
 }

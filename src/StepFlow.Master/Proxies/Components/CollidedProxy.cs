@@ -85,6 +85,7 @@ namespace StepFlow.Master.Proxies.Components
 		{
 			if (SetValue(value, nameof(Collided.Position)) && asMove)
 			{
+				// Скорректировать конвертацию в int
 				var newLocation = new Point(
 					(int)Position.X,
 					(int)Position.Y

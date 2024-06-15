@@ -7,8 +7,6 @@ namespace StepFlow.Master.Proxies.Schedulers
 	{
 		Vector2 Value { get; set; }
 
-		DeltaOperation Operation { get; set; }
-
 		Matrix3x2 Delta { get; set; }
 	}
 
@@ -19,8 +17,6 @@ namespace StepFlow.Master.Proxies.Schedulers
 		}
 
 		public Vector2 Value { get => Target.Value; set => SetValue(value); }
-
-		public DeltaOperation Operation { get => Target.Operation; set => SetValue(value); }
 
 		public Matrix3x2 Delta { get => Target.Delta; set => SetValue(value); }
 	}

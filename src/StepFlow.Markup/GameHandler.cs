@@ -71,7 +71,7 @@ public sealed class GameHandler
 
 	public void Init()
 	{
-		CreateRoom(Point.Empty, new(14, 8), Playground.CELL_SIZE_DEFAULT);
+		CreateRoom(Point.Empty, new(15, 9), Playground.CELL_SIZE_DEFAULT);
 
 		PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(12, 6), Kind = ItemKind.Fire });
 		PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(12, 0), Kind = ItemKind.Poison });
@@ -135,26 +135,26 @@ public sealed class GameHandler
 
 	private void CreateRoom(Point location, Size size, int width)
 	{
-		var top = new Rectangle[size.Width + 1];
-		var bottom = new Rectangle[size.Width + 1];
-		for (var iX = 0; iX <= size.Width; iX++)
+		var top = new Rectangle[size.Width];
+		var bottom = new Rectangle[size.Width];
+		for (var iX = 0; iX < size.Width; iX++)
 		{
 			top[iX] = CreatePixel(new(iX, 0));
-			bottom[iX] = CreatePixel(new(iX, size.Height));
+			bottom[iX] = CreatePixel(new(iX, size.Height - 1));
 		}
 
-		var left = new Rectangle[size.Height + 1];
-		var right = new Rectangle[size.Height + 1];
-		for (var iY = 0; iY <= size.Height; iY++)
+		var left = new Rectangle[size.Height - 2];
+		var right = new Rectangle[size.Height - 2];
+		for (var iY = 0; iY < size.Height - 2; iY++)
 		{
-			left[iY] = CreatePixel(new(0, iY));
-			right[iY] = CreatePixel(new(size.Width, iY));
+			left[iY] = CreatePixel(new(0, iY + 1));
+			right[iY] = CreatePixel(new(size.Width - 1, iY + 1));
 		}
 
-		PlayMaster.CreateObstruction.Execute(new() { Bounds = top, Kind = ObstructionKind.Tiles, View = ObstructionView.DarkWall, });
-		PlayMaster.CreateObstruction.Execute(new() { Bounds = bottom, Kind = ObstructionKind.Tiles, View = ObstructionView.DarkWall, });
-		PlayMaster.CreateObstruction.Execute(new() { Bounds = left, Kind = ObstructionKind.Tiles, View = ObstructionView.DarkWall, });
-		PlayMaster.CreateObstruction.Execute(new() { Bounds = right, Kind = ObstructionKind.Tiles, View = ObstructionView.DarkWall, });
+		PlayMaster.CreateObstruction.Execute(new() { Bounds = top, Kind = ObstructionKind.Tiles, View = ObstructionView.DarkWall, Weight = Material.MAX_WEIGHT, });
+		PlayMaster.CreateObstruction.Execute(new() { Bounds = bottom, Kind = ObstructionKind.Tiles, View = ObstructionView.DarkWall, Weight = Material.MAX_WEIGHT, });
+		PlayMaster.CreateObstruction.Execute(new() { Bounds = left, Kind = ObstructionKind.Tiles, View = ObstructionView.DarkWall, Weight = Material.MAX_WEIGHT, });
+		PlayMaster.CreateObstruction.Execute(new() { Bounds = right, Kind = ObstructionKind.Tiles, View = ObstructionView.DarkWall, Weight = Material.MAX_WEIGHT, });
 
 		Rectangle CreatePixel(Point position) => new Rectangle(
 			location.X + position.X * width,

@@ -19,8 +19,6 @@ namespace StepFlow.Master.Proxies.Schedulers
 
 		public Collided Collided { get => Target.GetCollidedRequired(); set => SetValue(Subject.PropertyRequired(value, nameof(Target.Collided))); }
 
-		public int IndexCourse { get => Target.IndexCourse; set => SetValue(value); }
-
 		public override void Next()
 		{
 			if (Target.Vectors.Count == 0)
@@ -30,7 +28,6 @@ namespace StepFlow.Master.Proxies.Schedulers
 			}
 
 			var sum = Vector2.Zero;
-
 			foreach (var vector in Target.Vectors)
 			{
 				sum += vector.Value;
@@ -52,20 +49,14 @@ namespace StepFlow.Master.Proxies.Schedulers
 				Current = new Turn(1, null);
 			}
 
-			OffsetAndClearVectors(Current.Value.Duration);
+			OffsetAndClearVectors();
 		}
 
-		private void OffsetAndClearVectors(int duration)
+		private void OffsetAndClearVectors()
 		{
 			foreach (var vector in Target.Vectors)
 			{
-				var deltaPower = Matrix3x2.Identity;
-				for (var i = 0; i < duration; i++)
-				{
-					deltaPower *= vector.Delta;
-				}
-
-				var newValue = Vector2.Transform(vector.Value, deltaPower);
+				var newValue = Vector2.Transform(vector.Value, vector.Delta);
 				if (vector.Value != newValue)
 				{
 					var courseVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(vector);

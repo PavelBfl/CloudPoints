@@ -31,7 +31,7 @@ namespace StepFlow.Master.Proxies.Elements
 					strengthProxy.Add(-Damage.Value);
 				}
 
-				if (Damage.Push != Vector2.Zero)
+				if (Damage.Push != Vector2.Zero && otherMaterial.Weight < Material.MAX_WEIGHT)
 				{
 					var controlVector = GetOrCreateControlVector(otherMaterial, Material.SHEDULER_INERTIA_NAME);
 					var courseVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(controlVector.CourseVector);

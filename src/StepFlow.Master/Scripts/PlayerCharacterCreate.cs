@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Numerics;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.Schedulers;
@@ -16,6 +17,7 @@ namespace StepFlow.Master.Scripts
 			var body = new Collided()
 			{
 				Current = { parameters.Bounds },
+				Position = new Vector2(parameters.Bounds.Location.X, parameters.Bounds.Location.Y),
 				IsRigid = true,
 			};
 
