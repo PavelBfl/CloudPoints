@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using StepFlow.Core.Components;
@@ -64,6 +65,11 @@ namespace StepFlow.Master.Proxies.Components
 
 		void Register()
 		{
+			if (Current.Bounds.Location != Target.PositionAsLocation)
+			{
+				throw new InvalidOperationException("Данные позиции и границ не синхронизирована с данными векторной позиции.");
+			}
+
 			CurrentProxy.Register();
 			NextProxy.Register();
 		}
@@ -85,11 +91,7 @@ namespace StepFlow.Master.Proxies.Components
 		{
 			if (SetValue(value, nameof(Collided.Position)) && asMove)
 			{
-				// Скорректировать конвертацию в int
-				var newLocation = new Point(
-					(int)Position.X,
-					(int)Position.Y
-				);
+				var newLocation = Target.PositionAsLocation;
 
 				if (Current.Bounds.Location != newLocation)
 				{

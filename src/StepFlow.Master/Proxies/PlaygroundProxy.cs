@@ -56,6 +56,9 @@ namespace StepFlow.Master.Proxies
 				Current = { bounds },
 				IsRigid = true,
 			};
+
+			body.PositionSync();
+
 			var enemy = new Enemy()
 			{
 				Body = body,
@@ -96,6 +99,8 @@ namespace StepFlow.Master.Proxies
 				Speed = 10,
 			};
 
+			enemy.Vision.PositionSync();
+
 			Owner.GetPlaygroundItemsProxy().Add(enemy);
 		}
 
@@ -110,7 +115,7 @@ namespace StepFlow.Master.Proxies
 
 			var item = kind switch
 			{
-				ItemKind.Fire => (IItemProxy)Owner.CreateProxy(new Item()
+				ItemKind.Fire => new Item()
 				{
 					Kind = ItemKind.Fire,
 					Body = new Collided()
@@ -123,8 +128,8 @@ namespace StepFlow.Master.Proxies
 						Value = 10,
 						Kind = DamageKind.Fire,
 					},
-				}),
-				ItemKind.Poison => (IItemProxy)Owner.CreateProxy(new Item()
+				},
+				ItemKind.Poison => new Item()
 				{
 					Kind = ItemKind.Poison,
 					Body = new Collided()
@@ -137,8 +142,8 @@ namespace StepFlow.Master.Proxies
 						Value = 10,
 						Kind = DamageKind.Poison,
 					},
-				}),
-				ItemKind.Speed => (IItemProxy)Owner.CreateProxy(new Item()
+				},
+				ItemKind.Speed => new Item()
 				{
 					Kind = ItemKind.Speed,
 					Body = new Collided()
@@ -147,8 +152,8 @@ namespace StepFlow.Master.Proxies
 						IsRigid = true,
 					},
 					Speed = 2,
-				}),
-				ItemKind.AttackSpeed => (IItemProxy)Owner.CreateProxy(new Item()
+				},
+				ItemKind.AttackSpeed => new Item()
 				{
 					Kind = ItemKind.AttackSpeed,
 					Body = new Collided()
@@ -157,8 +162,8 @@ namespace StepFlow.Master.Proxies
 						IsRigid = true,
 					},
 					AttackCooldown = 3000,
-				}),
-				ItemKind.AddStrength => (IItemProxy)Owner.CreateProxy(new Item()
+				},
+				ItemKind.AddStrength => new Item()
 				{
 					Kind = ItemKind.AddStrength,
 					Body = new Collided()
@@ -167,11 +172,13 @@ namespace StepFlow.Master.Proxies
 						IsRigid = true,
 					},
 					AddStrength = 20,
-				}),
+				},
 				_ => throw new System.InvalidOperationException(),
 			};
 
-			Owner.GetPlaygroundItemsProxy().Add(item.Target);
+			item.GetBodyRequired().PositionSync();
+
+			Owner.GetPlaygroundItemsProxy().Add(item);
 		}
 
 		public void CreatePlace(Rectangle bounds)
@@ -183,6 +190,8 @@ namespace StepFlow.Master.Proxies
 					Current = { bounds },
 				},
 			};
+
+			place.Body.PositionSync();
 
 			Owner.GetPlaygroundItemsProxy().Add(place);
 		}

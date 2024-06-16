@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Numerics;
 using StepFlow.Intersection;
 
@@ -30,6 +31,17 @@ namespace StepFlow.Core.Components
 		public ShapeContainer Next { get; } = new ShapeContainer(Playground.IntersectionContext);
 
 		public Vector2 Position { get; set; }
+
+		public Point PositionAsLocation => new Point(
+			(int)MathF.Floor(Position.X),
+			(int)MathF.Floor(Position.Y)
+		);
+
+		public void PositionSync()
+		{
+			var location = Current.Bounds.Location;
+			Position = new Vector2(location.X, location.Y);
+		}
 
 		public bool IsMove { get; set; }
 
