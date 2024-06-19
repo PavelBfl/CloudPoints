@@ -33,7 +33,7 @@ namespace StepFlow.Master.Proxies.Schedulers
 				sum += vector.Value;
 			}
 
-			if (sum != Vector2.Zero)
+			if (!SchedulerVector.IsZero(sum))
 			{
 				Current = new Turn(
 					1,
