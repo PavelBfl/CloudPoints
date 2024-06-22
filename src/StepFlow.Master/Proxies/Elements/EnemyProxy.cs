@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Numerics;
 using StepFlow.Common.Exceptions;
 using StepFlow.Core.Components;
@@ -56,6 +57,25 @@ namespace StepFlow.Master.Proxies.Elements
 				var visionPlace = RectangleExtensions.Create(center, 100);
 				var visionProxy = (IShapeContainerProxy)Owner.CreateProxy(Vision.Current);
 				visionProxy.Reset(visionPlace);
+
+				if (Cooldown.Value == 0)
+				{
+					switch (Target.AttackStrategy)
+					{
+						case AttackStrategy.Left:
+							CreateProjectile(new Vector2(-1, 0));
+							break;
+						case AttackStrategy.Top:
+							CreateProjectile(new Vector2(0, -1));
+							break;
+						case AttackStrategy.Right:
+							CreateProjectile(new Vector2(1, 0));
+							break;
+						case AttackStrategy.Bottom:
+							CreateProjectile(new Vector2(0, 1));
+							break;
+					}
+				}
 			}
 		}
 
@@ -170,6 +190,26 @@ namespace StepFlow.Master.Proxies.Elements
 				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);
 				cooldownProxy.SetMax();
 			}
+		}
+
+		private void CreateProjectile(Vector2 course)
+		{
+			const int SIZE = 10;
+
+			course = Vector2.Normalize(course) * 0.05f;
+
+			Owner.CreateProjectile(
+				Body.Current.Bounds.GetCenter(),
+				SIZE,
+				course,
+				new Damage() { Value = 10, },
+				TimeTick.FromSeconds(2),
+				Target,
+				ReusableKind.None
+			);
+
+			var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);
+			cooldownProxy.SetMax();
 		}
 
 		public override void Begin()

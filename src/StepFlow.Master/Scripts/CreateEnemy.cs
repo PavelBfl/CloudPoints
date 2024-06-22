@@ -28,6 +28,7 @@ namespace StepFlow.Master.Scripts
 			public Rectangle Bounds { get; set; }
 			public Rectangle Vision { get; set; }
 			public Strategy Strategy { get; set; }
+			public AttackStrategy AttackStrategy { get; set; }
 			public ItemKind ReleaseItem { get; set; }
 			public Vector2 BeginVector { get; set; }
 		}

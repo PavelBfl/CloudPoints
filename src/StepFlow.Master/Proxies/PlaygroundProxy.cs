@@ -77,6 +77,7 @@ namespace StepFlow.Master.Proxies
 					Max = 100,
 				},
 				Strategy = strategy,
+				AttackStrategy = AttackStrategy.Bottom,
 				ReleaseItem = releaseItem,
 				Schedulers =
 				{
