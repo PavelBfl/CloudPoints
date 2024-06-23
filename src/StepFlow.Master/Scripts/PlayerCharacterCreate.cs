@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Numerics;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.Schedulers;
@@ -44,6 +45,7 @@ namespace StepFlow.Master.Scripts
 					},
 				},
 				Speed = parameters.Speed,
+				Course = new Vector2(0.05f, 0),
 			};
 
 			PlayMaster.GetPlaygroundItemsProxy().Add(playerCharacter);

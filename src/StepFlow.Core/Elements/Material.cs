@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using StepFlow.Core.Components;
 using StepFlow.Core.Schedulers;
+using StepFlow.Core.States;
 using StepFlow.Core.Tracks;
 
 namespace StepFlow.Core.Elements
@@ -29,6 +31,10 @@ namespace StepFlow.Core.Elements
 		public int Speed { get; set; }
 
 		public int Weight { get; set; }
+
+		public Vector2 Course { get; set; }
+
+		public ICollection<State> States { get; } = new HashSet<State>();
 
 		public ICollection<SchedulerRunner> Schedulers { get; } = new HashSet<SchedulerRunner>();
 

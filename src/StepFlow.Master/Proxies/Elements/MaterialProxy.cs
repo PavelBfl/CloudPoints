@@ -22,6 +22,7 @@ namespace StepFlow.Master.Proxies.Elements
 		int Weight { get; set; }
 
 		ICollection<SchedulerRunner> Schedulers { get; }
+		Vector2 Course { get; set; }
 
 		void OnTick();
 
@@ -56,24 +57,14 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public virtual void OnTick()
 		{
-			var removedSchedulers = new List<SchedulerRunner>();
-
-			foreach (var scheduler in Schedulers.Select(Owner.CreateProxy).Cast<ISchedulerRunnerProxy>())
+			var course = Course;
+			foreach (var state in Target.States)
 			{
-				if (scheduler.OnTick())
-				{
-					removedSchedulers.Add(scheduler.Target);
-				}
+				
 			}
 
-			if (removedSchedulers.Count > 0)
-			{
-				var schedulersProxy = Owner.CreateCollectionProxy(Schedulers);
-				foreach (var scheduler in removedSchedulers)
-				{
-					schedulersProxy.Remove(scheduler);
-				}
-			}
+			var bodyProxy = (ICollidedProxy)Owner.CreateProxy(Body);
+			bodyProxy.SetPosition(bodyProxy.Position + course, true);
 		}
 
 		public virtual void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
@@ -86,18 +77,10 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public void SetCourse(float? radians)
 		{
-			if (Target.GetCourseVector(Material.SHEDULER_CONTROL_NAME) is { } path)
-			{
-				var courseVector = Vector2.Zero;
-				if (radians is { })
-				{
-					var matrixRotation = Matrix3x2.CreateRotation(radians.Value);
-					courseVector = Vector2.Transform(new Vector2(0.05f, 0), matrixRotation);
-				}
-
-				var controlVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(path.CourseVector);
-				controlVectorProxy.Value = courseVector * Speed;
-			}
+			Course = Vector2.Transform(
+				new Vector2(radians is { } ? 0.05f : 0, 0),
+				Matrix3x2.CreateRotation(radians ?? 0)
+			);
 		}
 
 		public virtual void Begin()
@@ -113,6 +96,8 @@ namespace StepFlow.Master.Proxies.Elements
 		}
 
 		public int Speed { get => Target.Speed; set => SetValue(value); }
+
+		public Vector2 Course { get => Target.Course; set => SetValue(value); }
 
 		public int Weight
 		{
