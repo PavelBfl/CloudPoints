@@ -5,7 +5,7 @@ namespace StepFlow.Master.Proxies.Elements
 {
 	public interface IObstructionProxy : IMaterialProxy<Obstruction>
 	{
-		new Scale? Strength { get; set; }
+		new Scale Strength { get; set; }
 	}
 
 	internal sealed class ObstructionProxy : MaterialProxy<Obstruction>, IObstructionProxy
@@ -14,13 +14,13 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 		}
 
-		public new Scale? Strength { get => base.Strength; set => base.Strength = value; }
+		public new Scale Strength { get => base.Strength; set => base.Strength = value; }
 
 		public override void OnTick()
 		{
 			base.OnTick();
 
-			if (Strength?.Value == 0)
+			if (Strength.Value == 0)
 			{
 				Owner.GetPlaygroundItemsProxy().Remove(Target);
 			}

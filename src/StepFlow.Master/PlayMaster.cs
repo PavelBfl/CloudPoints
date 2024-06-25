@@ -85,7 +85,6 @@ namespace StepFlow.Master
 				PlayerCharacter instance => new PlayerCharacterProxy(this, instance),
 				Obstruction instance => new ObstructionProxy(this, instance),
 				SetCourse instance => new SetCourseProxy(this, instance),
-				Scale instance => new ScaleProxy(this, instance),
 				Projectile instance => new ProjectileProxy(this, instance),
 				Item instance => new ItemProxy(this, instance),
 				Enemy instance => new EnemyProxy(this, instance),
@@ -202,7 +201,7 @@ namespace StepFlow.Master
 							Collided = projectile.Body,
 							Vectors = { new CourseVector() { Value = course } },
 						},
-						Range = Scale.Create(duration),
+						Range = Scale.CreateByMin(duration),
 					},
 					new SchedulerCollection()
 					{

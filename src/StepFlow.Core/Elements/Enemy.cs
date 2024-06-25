@@ -27,11 +27,7 @@ namespace StepFlow.Core.Elements
 
 		public Collided GetVisionRequired() => PropertyRequired(Vision, nameof(Vision));
 
-		private Scale? cooldown;
-
-		public Scale? Cooldown { get => cooldown; set => SetComponent(ref cooldown, value); }
-
-		public Scale GetCooldownRequired() => PropertyRequired(Cooldown, nameof(Cooldown));
+		public Scale Cooldown { get; set; }
 
 		public Strategy Strategy { get; set; }
 

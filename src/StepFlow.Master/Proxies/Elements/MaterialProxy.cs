@@ -16,7 +16,7 @@ namespace StepFlow.Master.Proxies.Elements
 	public interface IMaterialProxy<out TTarget> : IProxyBase<TTarget>, IPlaygroundUsed
 		where TTarget : Material
 	{
-		Scale? Strength { get; }
+		Scale Strength { get; set; }
 
 		Collided Body { get; }
 
@@ -44,14 +44,11 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 		}
 
-		public Scale? Strength { get => Target.Strength; protected set => SetValue(value); }
+		public Scale Strength { get => Target.Strength; set => SetValue(value); }
 
 		public virtual void ChangeStrength(Damage damage)
 		{
-			if ((IScaleProxy?)Owner.CreateProxy(Strength) is { } strengthProxy)
-			{
-				strengthProxy.Add(-damage.Value);
-			}
+			Strength -= damage.Value;
 		}
 
 		public Collided Body { get => Target.GetBodyRequired(); }
@@ -68,7 +65,7 @@ namespace StepFlow.Master.Proxies.Elements
 				switch (state.Kind)
 				{
 					case StateKind.Poison:
-						((IScaleProxy?)Owner.CreateProxy(Strength))?.Decrement();
+						Strength--;
 						break;
 					default: throw EnumNotSupportedException.Create(state.Kind);
 				}

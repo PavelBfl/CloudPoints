@@ -1,4 +1,5 @@
 ﻿using StepFlow.Core;
+using StepFlow.Core.Components;
 using StepFlow.Core.Tracks;
 using StepFlow.Master.Proxies.Components;
 
@@ -8,18 +9,18 @@ namespace StepFlow.Master.Proxies.Tracks
 	{
 		TrackChange Change { get; }
 
+		Scale Cooldown { get; set; }
+
 		TrackChange? GetTrackForBuild()
 		{
-			var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Target.GetCooldownRequired());
-
-			if (cooldownProxy.Value == 0)
+			if (Cooldown.Value == 0)
 			{
-				cooldownProxy.SetMax();
+				Cooldown = Cooldown.SetMax();
 				return Target.GetChangeRequired();
 			}
 			else
 			{
-				cooldownProxy.Decrement();
+				Cooldown--;
 				return null;
 			}
 		}
@@ -32,5 +33,7 @@ namespace StepFlow.Master.Proxies.Tracks
 		}
 
 		public TrackChange Change { get => Target.GetChangeRequired(); }
+
+		public Scale Cooldown { get; set; }
 	}
 }

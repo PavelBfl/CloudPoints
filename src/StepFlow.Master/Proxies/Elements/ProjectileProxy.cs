@@ -25,11 +25,8 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			if (!Target.Immunity.Contains(otherMaterial) && otherCollided.Collided.IsRigid)
 			{
-				if (otherMaterial.Strength is { } strength)
-				{
-					var strengthProxy = (IScaleProxy)Owner.CreateProxy(strength);
-					strengthProxy.Add(-Damage.Value);
-				}
+				var otherMaterialProxy = (IMaterialProxy<Material>)Owner.CreateProxy(otherMaterial);
+				otherMaterialProxy.Strength -= Damage.Value;
 
 				if (Damage.Push != Vector2.Zero && otherMaterial.Weight < Material.MAX_WEIGHT)
 				{

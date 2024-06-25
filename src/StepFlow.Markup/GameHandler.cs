@@ -438,7 +438,7 @@ public sealed class GameHandler
 		_ => throw EnumNotSupportedException.Create(view),
 	};
 
-	private static float ToPct(Scale? scale) => scale is not null ? (float)scale.Value / scale.Max : 0;
+	private static float ToPct(Scale? scale) => scale is { } instance ? (float)instance.Value / instance.Max : 0;
 
 	private void CreateTexture(Rectangle bounds, Texture texture, Scale? strength)
 	{

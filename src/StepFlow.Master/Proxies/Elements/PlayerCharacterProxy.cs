@@ -37,9 +37,7 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 		}
 
-		public new Scale Strength => base.Strength ?? throw new InvalidOperationException();
-
-		public Scale Cooldown => Target.GetCooldownRequired();
+		public Scale Cooldown { get => Target.Cooldown; set => SetValue(value); }
 
 		public CharacterSkill MainSkill { get => Target.MainSkill; set => SetValue(value); }
 
@@ -55,8 +53,7 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 			else
 			{
-				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);
-				cooldownProxy.Decrement();
+				Cooldown--;
 			}
 		}
 
@@ -70,11 +67,8 @@ namespace StepFlow.Master.Proxies.Elements
 				Owner.CreateListProxy(Target.Items).Add(item);
 
 				Speed += item.Speed;
-				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);
-				cooldownProxy.SetMin();
-				cooldownProxy.Max -= item.AttackCooldown;
-
-				Strength.Value += item.AddStrength;
+				Cooldown = Scale.CreateByMin(Cooldown.Max - item.AttackCooldown);
+				Strength += item.AddStrength;
 			}
 			else if ((otherMaterial as Projectile)?.Immunity.Contains(Target) != true)
 			{
@@ -152,7 +146,7 @@ namespace StepFlow.Master.Proxies.Elements
 						{
 							Scheduler = new SchedulerLimit()
 							{
-								Range = Scale.Create(TimeTick.FromSeconds(0.1f)),
+								Range = Scale.CreateByMin(TimeTick.FromSeconds(0.1f)),
 								Source = new SchedulerVector()
 								{
 									Collided = Target.Body,
@@ -170,8 +164,7 @@ namespace StepFlow.Master.Proxies.Elements
 					default: throw EnumNotSupportedException.Create(skill);
 				}
 
-				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);
-				cooldownProxy.SetMax();
+				Cooldown = Cooldown.SetMax();
 			}
 		}
 
@@ -224,7 +217,7 @@ namespace StepFlow.Master.Proxies.Elements
 								},
 							},
 						},
-						Range = Scale.Create(duration),
+						Range = Scale.CreateByMin(duration),
 					},
 					new SchedulerCollection()
 					{

@@ -13,11 +13,7 @@ namespace StepFlow.Core.Elements
 
 	public sealed class PlayerCharacter : Material
 	{
-		private Scale? cooldown;
-
-		public Scale? Cooldown { get => cooldown; set => SetComponent(ref cooldown, value); }
-
-		public Scale GetCooldownRequired() => PropertyRequired(Cooldown, nameof(Cooldown));
+		public Scale Cooldown { get; set; }
 
 		public CharacterSkill MainSkill { get; set; }
 

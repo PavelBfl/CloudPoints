@@ -12,7 +12,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		float ScaleOffset { get; set; }
 
-		Scale Cooldown { get; }
+		Scale Cooldown { get; set; }
 
 		void Offset(Rectangle current)
 		{
@@ -42,16 +42,15 @@ namespace StepFlow.Master.Proxies.Elements
 				}
 			}
 
-			var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);
 			if (Cooldown.Value == 0)
 			{
 				stepsProxy.Add(new RectangleF(current.Location, current.Size));
 
-				cooldownProxy.SetMax();
+				Cooldown = Cooldown.SetMax();
 			}
 			else
 			{
-				cooldownProxy.Decrement();
+				Cooldown--;
 			}
 		}
 	}
@@ -66,6 +65,6 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public float ScaleOffset { get => Target.ScaleOffset; set => SetValue(value); }
 
-		public Scale Cooldown { get => Target.GetCooldownRequired(); }
+		public Scale Cooldown { get => Target.Cooldown; set => SetValue(value); }
 	}
 }

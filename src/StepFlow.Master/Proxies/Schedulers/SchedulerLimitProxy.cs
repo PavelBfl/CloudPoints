@@ -18,7 +18,7 @@ namespace StepFlow.Master.Proxies.Schedulers
 
 		public Scheduler Source { get => Target.GetSourceRequired(); set => SetValue(Subject.PropertyRequired(value, nameof(Target.Source))); }
 
-		public Scale Range { get => Target.GetRangeRequired(); set => SetValue(Subject.PropertyRequired(value, nameof(Target.Range))); }
+		public Scale Range { get => Target.GetRangeRequired(); set => SetValue(value); }
 
 		public override void Next()
 		{
@@ -30,8 +30,7 @@ namespace StepFlow.Master.Proxies.Schedulers
 
 				if (Current is { } current)
 				{
-					var rangeProxy = (ScaleProxy)Owner.CreateProxy(Range);
-					rangeProxy.Add((int)current.Duration);
+					Range += (int)current.Duration;
 				}
 			}
 			else

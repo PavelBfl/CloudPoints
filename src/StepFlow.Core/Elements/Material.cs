@@ -17,10 +17,7 @@ namespace StepFlow.Core.Elements
 
 		public int Ordinal { get; set; }
 
-
-		private Scale? strength;
-
-		public Scale? Strength { get => strength; set => SetComponent(ref strength, value); }
+		public Scale Strength { get; set; }
 
 		private Collided? body;
 

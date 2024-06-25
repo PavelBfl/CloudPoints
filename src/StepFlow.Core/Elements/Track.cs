@@ -10,8 +10,6 @@ namespace StepFlow.Core.Elements
 
 		public float ScaleOffset { get; set; }
 
-		public Scale? Cooldown { get; set; }
-
-		public Scale GetCooldownRequired() => PropertyRequired(Cooldown);
+		public Scale Cooldown { get; set; }
 	}
 }

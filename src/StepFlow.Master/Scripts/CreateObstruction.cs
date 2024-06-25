@@ -24,7 +24,7 @@ namespace StepFlow.Master.Scripts
 					Current = { parameters.Bounds ?? Array.Empty<Rectangle>() },
 					IsRigid = true,
 				},
-				Strength = parameters.Strength is { } strength ? Scale.CreateByMax(strength) : null,
+				Strength = parameters.Strength is { } strength ? Scale.CreateByMax(strength) : new Scale(),
 			};
 			barrier.Body.PositionSync();
 

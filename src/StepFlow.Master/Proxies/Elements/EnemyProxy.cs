@@ -24,13 +24,13 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public Collided Vision => Target.GetVisionRequired();
 
-		public Scale Cooldown => Target.GetCooldownRequired();
+		public Scale Cooldown { get => Target.Cooldown; set => SetValue(value); }
 
 		public override void OnTick()
 		{
 			base.OnTick();
 
-			if (Strength?.Value == 0)
+			if (Strength.Value == 0)
 			{
 				var items = Owner.CreateCollectionUsedProxy(Owner.Playground.Items);
 				items.Remove(Target);
@@ -50,8 +50,7 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 			else
 			{
-				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);
-				cooldownProxy.Decrement();
+				Strength--;
 
 				var center = Body.Current.Bounds.GetCenter();
 				var visionPlace = RectangleExtensions.Create(center, 100);
@@ -187,8 +186,7 @@ namespace StepFlow.Master.Proxies.Elements
 					ReusableKind.None
 				);
 
-				var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);
-				cooldownProxy.SetMax();
+				Cooldown = Cooldown.SetMax();
 			}
 		}
 
@@ -208,8 +206,7 @@ namespace StepFlow.Master.Proxies.Elements
 				ReusableKind.None
 			);
 
-			var cooldownProxy = (IScaleProxy)Owner.CreateProxy(Cooldown);
-			cooldownProxy.SetMax();
+			Cooldown = Cooldown.SetMax();
 		}
 
 		public override void Begin()

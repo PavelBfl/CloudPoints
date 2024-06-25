@@ -8,8 +8,6 @@ namespace StepFlow.Core.Tracks
 
 		public TrackChange GetChangeRequired() => PropertyRequired(Change, nameof(Change));
 
-		public Scale? Cooldown { get; set; }
-
-		public Scale GetCooldownRequired() => PropertyRequired(Cooldown, nameof(Cooldown));
+		public Scale Cooldown { get; set; }
 	}
 }

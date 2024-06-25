@@ -25,7 +25,7 @@ namespace StepFlow.Master.Scripts
 			{
 				Name = "Player",
 				Strength = Scale.CreateByMax(parameters.Strength),
-				Cooldown = Scale.Create(parameters.Cooldown),
+				Cooldown = Scale.CreateByMin(parameters.Cooldown),
 				Body = body,
 				Schedulers =
 				{

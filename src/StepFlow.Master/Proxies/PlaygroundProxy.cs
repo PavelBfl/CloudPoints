@@ -66,16 +66,8 @@ namespace StepFlow.Master.Proxies
 				{
 					Current = { vision },
 				},
-				Cooldown = new Scale()
-				{
-					Value = 10000,
-					Max = 10000,
-				},
-				Strength = new Scale()
-				{
-					Value = 100,
-					Max = 100,
-				},
+				Cooldown = Scale.CreateByMax(10000),
+				Strength = Scale.CreateByMax(100),
 				Strategy = strategy,
 				AttackStrategy = AttackStrategy.Bottom,
 				ReleaseItem = releaseItem,

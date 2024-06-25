@@ -51,10 +51,7 @@ namespace StepFlow.Master.Proxies.Elements
 					placeScheduler = new SchedulerLimit()
 					{
 						Name = Place.PLACE_SCHEDULER,
-						Range = new Scale()
-						{
-							Max = 1,
-						},
+						Range = Scale.CreateByMin(1),
 						Source = new SchedulerDamage()
 						{
 							Material = otherMaterial,
@@ -70,12 +67,6 @@ namespace StepFlow.Master.Proxies.Elements
 						Scheduler = placeScheduler,
 					});
 				}
-
-				if (placeScheduler.Current is null)
-				{
-					var rangeProxy = (IScaleProxy)Owner.CreateProxy(placeScheduler.GetRangeRequired());
-					rangeProxy.Value = 0;
-				} 
 			}
 		}
 	}
