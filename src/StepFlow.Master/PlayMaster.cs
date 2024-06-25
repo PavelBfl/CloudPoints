@@ -10,6 +10,7 @@ using StepFlow.Core.Commands.Accessors;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.Schedulers;
+using StepFlow.Core.States;
 using StepFlow.Core.Tracks;
 using StepFlow.Intersection;
 using StepFlow.Master.Commands;
@@ -20,6 +21,7 @@ using StepFlow.Master.Proxies.Components;
 using StepFlow.Master.Proxies.Elements;
 using StepFlow.Master.Proxies.Intersection;
 using StepFlow.Master.Proxies.Schedulers;
+using StepFlow.Master.Proxies.States;
 using StepFlow.Master.Proxies.Tracks;
 using StepFlow.Master.Scripts;
 using StepFlow.TimeLine;
@@ -104,6 +106,7 @@ namespace StepFlow.Master
 				Track instance => new TrackProxy(this, instance),
 				TrackBuilder instance => new TrackBuilderProxy(this, instance),
 				TrackUnit instance => new TrackUnitProxy(this, instance),
+				State instance => new StateProxy<State>(this, instance),
 				null => null,
 				_ => throw new InvalidOperationException(),
 			};

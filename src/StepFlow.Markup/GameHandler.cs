@@ -78,12 +78,12 @@ public sealed class GameHandler
 		//PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(1, 1), Kind = ItemKind.Speed });
 		//PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(1, 5), Kind = ItemKind.AttackSpeed });
 
-		//PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(8, 0) });
-		//PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(8, 1) });
-		//PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(10, 1) });
-		//PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(10, 2) });
-		//PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(11, 2) });
-		//PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(12, 2) });
+		PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(8, 0) });
+		PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(8, 1) });
+		PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(10, 1) });
+		PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(10, 2) });
+		PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(11, 2) });
+		PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(12, 2) });
 
 		//CreateEnemy(CreateCell(10, 6), 300, Strategy.Reflection, CreateRotate(MathF.PI / 4) * 0.02f);
 		//CreateEnemy(CreateCell(0, 0), 150, Strategy.CW, CreateRotate(0) * 0.02f);
@@ -127,7 +127,7 @@ public sealed class GameHandler
 		PlayMaster.PlayerCharacterCreate.Execute(new()
 		{
 			Bounds = CreateCell(5, 0),
-			Strength = 1000,
+			Strength = 100000,
 			Speed = 1,
 			Cooldown = TimeTick.FromSeconds(1),
 		});

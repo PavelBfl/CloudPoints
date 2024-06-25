@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using StepFlow.Common.Exceptions;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.Schedulers;
+using StepFlow.Core.States;
 using StepFlow.Master.Proxies.Components;
 using StepFlow.Master.Proxies.Schedulers;
+using StepFlow.Master.Proxies.States;
 
 namespace StepFlow.Master.Proxies.Elements
 {
@@ -57,10 +60,30 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public virtual void OnTick()
 		{
+			var statesRemoved = new List<State>();
+
 			var course = Course;
 			foreach (var state in Target.States)
 			{
-				
+				switch (state.Kind)
+				{
+					case StateKind.Poison:
+						((IScaleProxy?)Owner.CreateProxy(Strength))?.Decrement();
+						break;
+					default: throw EnumNotSupportedException.Create(state.Kind);
+				}
+
+				((IStateProxy<State>)Owner.CreateProxy(state)).TotalCooldown--;
+				if (state.TotalCooldown == 0)
+				{
+					statesRemoved.Add(state);
+				}
+			}
+
+			var statesProxy = Owner.CreateCollectionProxy(Target.States);
+			foreach (var state in statesRemoved)
+			{
+				statesProxy.Remove(state);
 			}
 
 			var bodyProxy = (ICollidedProxy)Owner.CreateProxy(Body);

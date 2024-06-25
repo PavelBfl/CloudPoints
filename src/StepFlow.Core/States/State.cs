@@ -1,17 +1,13 @@
-﻿using StepFlow.Core.Components;
-
-namespace StepFlow.Core.States
+﻿namespace StepFlow.Core.States
 {
 	public enum StateKind
 	{
-		
+		Poison
 	}
 
 	public class State : Subject
 	{
 		public StateKind Kind { get; set; }
-
-		public Scale? Scale { get; set; }
 
 		public int? TotalCooldown { get; set; }
 
