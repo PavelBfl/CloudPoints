@@ -165,6 +165,7 @@ namespace StepFlow.Master
 			var bodyCurrent = RectangleExtensions.Create(center, radius);
 			var projectile = new Projectile()
 			{
+				Name = "Projectile",
 				Body = new Collided()
 				{
 					Current = { bodyCurrent },
@@ -173,6 +174,15 @@ namespace StepFlow.Master
 				Damage = damage,
 				Reusable = reusable,
 				Speed = 100,
+				Course = course,
+				States =
+				{
+					new State()
+					{
+						Kind = StateKind.Remove,
+						TotalCooldown = duration,
+					},
+				},
 				Track = new TrackBuilder()
 				{
 					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(0.05f)),

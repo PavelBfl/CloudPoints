@@ -2,7 +2,8 @@
 {
 	public enum StateKind
 	{
-		Poison
+		Remove,
+		Poison,
 	}
 
 	public class State : Subject

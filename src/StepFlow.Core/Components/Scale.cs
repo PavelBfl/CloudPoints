@@ -15,7 +15,7 @@ namespace StepFlow.Core.Components
 				throw new ArgumentOutOfRangeException(nameof(max));
 			}
 
-			if (value < 0 || max <= value)
+			if (value < 0 || max < value)
 			{
 				throw new ArgumentOutOfRangeException(nameof(value));
 			}

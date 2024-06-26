@@ -295,6 +295,9 @@ public sealed class GameHandler
 
 	private void UpdateTrack()
 	{
+		// TODO Debug, this freeze
+		return;
+
 		var trackUnitsProxy = PlayMaster.CreateListProxy(TrackUnits);
 
 		foreach (var material in PlayMaster.Playground.Items)

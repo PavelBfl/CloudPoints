@@ -8,6 +8,7 @@ using StepFlow.Core.Actions;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.Schedulers;
+using StepFlow.Core.States;
 using StepFlow.Core.Tracks;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
@@ -182,6 +183,15 @@ namespace StepFlow.Master.Proxies.Elements
 				Damage = damage,
 				Reusable = ReusableKind.Save,
 				Speed = 100,
+				Course = course,
+				States =
+				{
+					new State()
+					{
+						Kind = StateKind.Remove,
+						TotalCooldown = duration,
+					},
+				},
 				Track = new TrackBuilder()
 				{
 					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(0.01f)),

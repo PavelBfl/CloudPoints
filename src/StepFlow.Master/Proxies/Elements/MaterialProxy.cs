@@ -62,25 +62,35 @@ namespace StepFlow.Master.Proxies.Elements
 			var course = Course;
 			foreach (var state in Target.States)
 			{
+				((IStateProxy<State>)Owner.CreateProxy(state)).TotalCooldown--;
+
 				switch (state.Kind)
 				{
+					case StateKind.Remove:
+						if (state.TotalCooldown == 0)
+						{
+							Owner.GetPlaygroundItemsProxy().Remove(Target);
+						}
+						break;
 					case StateKind.Poison:
 						Strength--;
 						break;
 					default: throw EnumNotSupportedException.Create(state.Kind);
 				}
 
-				((IStateProxy<State>)Owner.CreateProxy(state)).TotalCooldown--;
 				if (state.TotalCooldown == 0)
 				{
 					statesRemoved.Add(state);
 				}
 			}
 
-			var statesProxy = Owner.CreateCollectionProxy(Target.States);
-			foreach (var state in statesRemoved)
+			if (statesRemoved.Count > 0)
 			{
-				statesProxy.Remove(state);
+				var statesProxy = Owner.CreateCollectionProxy(Target.States);
+				foreach (var state in statesRemoved)
+				{
+					statesProxy.Remove(state);
+				} 
 			}
 
 			var bodyProxy = (ICollidedProxy)Owner.CreateProxy(Body);

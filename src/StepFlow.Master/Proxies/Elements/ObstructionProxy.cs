@@ -20,7 +20,7 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			base.OnTick();
 
-			if (Strength.Value == 0)
+			if (Strength.Value == 0 && Strength.Max != 0)
 			{
 				Owner.GetPlaygroundItemsProxy().Remove(Target);
 			}

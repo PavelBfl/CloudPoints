@@ -34,6 +34,6 @@ namespace StepFlow.Master.Proxies.Tracks
 
 		public TrackChange Change { get => Target.GetChangeRequired(); }
 
-		public Scale Cooldown { get; set; }
+		public Scale Cooldown { get => Target.Cooldown; set => SetValue(value); }
 	}
 }
