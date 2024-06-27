@@ -136,7 +136,7 @@ namespace StepFlow.Master.Proxies.Elements
 							SIZE,
 							courseVector,
 							new Damage() { Push = courseVector },
-							TimeTick.FromSeconds(1),
+							TimeTick.FromSeconds(0.1f),
 							Target,
 							ReusableKind.NotSave
 						);
@@ -190,6 +190,10 @@ namespace StepFlow.Master.Proxies.Elements
 					{
 						Kind = StateKind.Remove,
 						TotalCooldown = duration,
+					},
+					new State()
+					{
+						Kind = StateKind.Arc,
 					},
 				},
 				Track = new TrackBuilder()

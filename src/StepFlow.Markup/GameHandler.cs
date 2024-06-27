@@ -123,7 +123,7 @@ public sealed class GameHandler
 		//CreateCellObstruction(new Point(1, 6), 50, ObstructionView.Boards, 1);
 		//CreateCellObstruction(new Point(2, 6), 50, ObstructionView.Boards, 1);
 
-		//CreateCellObstruction(new Point(5, 1), 1000, ObstructionView.Boards, 1);
+		CreateCellObstruction(new Point(5, 1), 1000, ObstructionView.Boards, 1);
 		PlayMaster.PlayerCharacterCreate.Execute(new()
 		{
 			Bounds = CreateCell(5, 0),

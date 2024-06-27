@@ -59,10 +59,11 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			var statesRemoved = new List<State>();
 
-			var course = Course;
+			var additionalCourse = Vector2.Zero;
 			foreach (var state in Target.States)
 			{
-				((IStateProxy<State>)Owner.CreateProxy(state)).TotalCooldown--;
+				var stateProxy = (IStateProxy<State>)Owner.CreateProxy(state);
+				stateProxy.TotalCooldown--;
 
 				switch (state.Kind)
 				{
@@ -74,6 +75,21 @@ namespace StepFlow.Master.Proxies.Elements
 						break;
 					case StateKind.Poison:
 						Strength--;
+						break;
+					case StateKind.Arc:
+						Course = Vector2.Transform(
+							Course,
+							Matrix3x2.CreateRotation(MathF.PI / 2400)
+						);
+						break;
+					case StateKind.Push:
+						var pushVector = stateProxy.Vector;
+						additionalCourse += pushVector;
+						var factor = 1f - (Weight / (float)Material.MAX_WEIGHT);
+						stateProxy.Vector = Vector2.Transform(
+							pushVector,
+							Matrix3x2.CreateScale(factor)
+						);
 						break;
 					default: throw EnumNotSupportedException.Create(state.Kind);
 				}
@@ -94,7 +110,7 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 
 			var bodyProxy = (ICollidedProxy)Owner.CreateProxy(Body);
-			bodyProxy.SetPosition(bodyProxy.Position + course, true);
+			bodyProxy.SetPosition(bodyProxy.Position + Course + additionalCourse, true);
 		}
 
 		public virtual void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)

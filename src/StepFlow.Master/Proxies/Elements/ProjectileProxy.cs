@@ -1,10 +1,13 @@
-﻿using System.Numerics;
+﻿using System.Linq;
+using System.Numerics;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.Schedulers;
+using StepFlow.Core.States;
 using StepFlow.Master.Proxies.Components;
 using StepFlow.Master.Proxies.Schedulers;
+using StepFlow.Master.Proxies.States;
 
 namespace StepFlow.Master.Proxies.Elements
 {
@@ -30,11 +33,31 @@ namespace StepFlow.Master.Proxies.Elements
 
 				if (Damage.Push != Vector2.Zero && otherMaterial.Weight < Material.MAX_WEIGHT)
 				{
-					var controlVector = GetOrCreateControlVector(otherMaterial, Material.SHEDULER_INERTIA_NAME);
-					var courseVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(controlVector.CourseVector);
-					courseVectorProxy.Value = Damage.Push;
-					var factor = 1f - (otherMaterial.Weight / (float)Material.MAX_WEIGHT);
-					courseVectorProxy.Delta = Matrix3x2.CreateScale(factor);
+					var totalCooldown = TimeTick.FromSeconds(1);
+					if (otherMaterial.States.SingleOrDefault(x => x.Kind == StateKind.Push) is { } pushState)
+					{
+						var pushStateProxy = (IStateProxy<State>)Owner.CreateProxy(pushState);
+						pushStateProxy.TotalCooldown = totalCooldown;
+						pushStateProxy.Vector = Damage.Push;
+					}
+					else
+					{
+						pushState = new State()
+						{
+							Kind = StateKind.Push,
+							TotalCooldown = totalCooldown,
+							Arg0 = Damage.Push.X,
+							Arg1 = Damage.Push.Y,
+						};
+						var statesProxy = Owner.CreateCollectionProxy(otherMaterial.States);
+						statesProxy.Add(pushState);
+					}
+
+					//var controlVector = GetOrCreateControlVector(otherMaterial, Material.SHEDULER_INERTIA_NAME);
+					//var courseVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(controlVector.CourseVector);
+					//courseVectorProxy.Value = Damage.Push;
+					//var factor = 1f - (otherMaterial.Weight / (float)Material.MAX_WEIGHT);
+					//courseVectorProxy.Delta = Matrix3x2.CreateScale(factor);
 				}
 
 				switch (Target.Reusable)
