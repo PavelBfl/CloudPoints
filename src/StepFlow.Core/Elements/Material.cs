@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Numerics;
 using StepFlow.Core.Components;
-using StepFlow.Core.Schedulers;
 using StepFlow.Core.States;
 using StepFlow.Core.Tracks;
 
@@ -33,48 +31,6 @@ namespace StepFlow.Core.Elements
 
 		public ICollection<State> States { get; } = new HashSet<State>();
 
-		public ICollection<SchedulerRunner> Schedulers { get; } = new HashSet<SchedulerRunner>();
-
 		public TrackBuilder? Track { get; set; }
-
-		public CourseVectorPath? GetCourseVector(string vectorName)
-		{
-			if (vectorName is null)
-			{
-				throw new ArgumentNullException(nameof(vectorName));
-			}
-
-			foreach (var localRunner in Schedulers)
-			{
-				if (localRunner.Scheduler is SchedulerVector schedulerVector)
-				{
-					foreach (var vector in schedulerVector.Vectors)
-					{
-						if (vector.Name == vectorName)
-						{
-							return new CourseVectorPath(localRunner, schedulerVector, vector);
-						}
-					}
-				}
-			}
-
-			return null;
-		}
-
-		public sealed class CourseVectorPath
-		{
-			public CourseVectorPath(SchedulerRunner runner, SchedulerVector scheduler, CourseVector courseVector)
-			{
-				Runner = runner ?? throw new ArgumentNullException(nameof(runner));
-				Scheduler = scheduler ?? throw new ArgumentNullException(nameof(scheduler));
-				CourseVector = courseVector ?? throw new ArgumentNullException(nameof(courseVector));
-			}
-
-			public SchedulerRunner Runner { get; }
-
-			public SchedulerVector Scheduler { get; }
-
-			public CourseVector CourseVector { get; }
-		}
 	}
 }

@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using StepFlow.Common.Exceptions;
 using StepFlow.Core;
-using StepFlow.Core.Actions;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
-using StepFlow.Core.Schedulers;
 using StepFlow.Core.States;
 using StepFlow.Core.Tracks;
 using StepFlow.Intersection;
@@ -160,25 +157,6 @@ namespace StepFlow.Master.Proxies.Elements
 								Arg1 = courseVector.Y * 5,
 							});
 						}
-						var schedulersProxy = Owner.CreateCollectionProxy(Schedulers);
-						schedulersProxy.Add(new SchedulerRunner()
-						{
-							Scheduler = new SchedulerLimit()
-							{
-								Range = Scale.CreateByMin(TimeTick.FromSeconds(0.1f)),
-								Source = new SchedulerVector()
-								{
-									Collided = Target.Body,
-									Vectors =
-									{
-										new CourseVector()
-										{
-											Value = courseVector * 10,
-										},
-									},
-								},
-							},
-						});
 						break;
 					default: throw EnumNotSupportedException.Create(skill);
 				}
@@ -230,47 +208,6 @@ namespace StepFlow.Master.Proxies.Elements
 			{
 				projectile.Immunity.Add(creator);
 			}
-
-			var schedulerUnion = new SchedulerUnion()
-			{
-				Schedulers =
-				{
-					new SchedulerLimit()
-					{
-						Source = new SchedulerVector()
-						{
-							Collided = projectile.Body,
-							Vectors =
-							{
-								new CourseVector()
-								{
-									Value = course,
-									Delta = Matrix3x2.CreateRotation((MathF.PI / 2) / duration),
-								},
-							},
-						},
-						Range = Scale.CreateByMin(duration),
-					},
-					new SchedulerCollection()
-					{
-						Turns =
-						{
-							new Turn(
-								0,
-								new RemoveItem()
-								{
-									Item = projectile,
-								}
-							)
-						},
-					},
-				},
-			};
-
-			projectile.Schedulers.Add(new SchedulerRunner()
-			{
-				Scheduler = schedulerUnion,
-			});
 
 			Owner.GetPlaygroundItemsProxy().Add(projectile);
 		}

@@ -9,7 +9,6 @@ using StepFlow.Core.Actions;
 using StepFlow.Core.Commands.Accessors;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
-using StepFlow.Core.Schedulers;
 using StepFlow.Core.States;
 using StepFlow.Core.Tracks;
 using StepFlow.Intersection;
@@ -20,7 +19,6 @@ using StepFlow.Master.Proxies.Collections;
 using StepFlow.Master.Proxies.Components;
 using StepFlow.Master.Proxies.Elements;
 using StepFlow.Master.Proxies.Intersection;
-using StepFlow.Master.Proxies.Schedulers;
 using StepFlow.Master.Proxies.States;
 using StepFlow.Master.Proxies.Tracks;
 using StepFlow.Master.Scripts;
@@ -89,18 +87,11 @@ namespace StepFlow.Master
 				Item instance => new ItemProxy(this, instance),
 				Enemy instance => new EnemyProxy(this, instance),
 				Collided instance => new CollidedProxy(this, instance),
-				Intersection.Context instance => new ContextProxy(this, instance),
-				Intersection.ShapeCell instance => new ShapeCellProxy(this, instance),
-				Intersection.ShapeContainer instance => new ShapeContainerProxy(this, instance),
-				SchedulerVector instance => new SchedulerVectorProxy(this, instance),
+				Context instance => new ContextProxy(this, instance),
+				ShapeCell instance => new ShapeCellProxy(this, instance),
+				ShapeContainer instance => new ShapeContainerProxy(this, instance),
 				RemoveItem instance => new RemoveProjectileProxy(this, instance),
-				SchedulerLimit instance => new SchedulerLimitProxy(this, instance),
-				SchedulerCollection instance => new SchedulerCollectionProxy(this, instance),
-				SchedulerUnion instance => new SchedulerUnionProxy(this, instance),
-				SchedulerRunner instance => new SchedulerRunnerProxy(this, instance),
-				CourseVector instance => new CourseVectorProxy(this, instance),
 				Place instance => new PlaceProxy(this, instance),
-				SchedulerDamage instance => new SchedulerDamageProxy(this, instance),
 				ChangeStrength instance => new ChangeStrengthProxy(this, instance),
 				Track instance => new TrackProxy(this, instance),
 				TrackBuilder instance => new TrackBuilderProxy(this, instance),
@@ -199,40 +190,6 @@ namespace StepFlow.Master
 			{
 				projectile.Immunity.Add(creator);
 			}
-
-			var schedulerUnion = new SchedulerUnion()
-			{
-				Schedulers =
-				{
-					new SchedulerLimit()
-					{
-						Source = new SchedulerVector()
-						{
-							Collided = projectile.Body,
-							Vectors = { new CourseVector() { Value = course } },
-						},
-						Range = Scale.CreateByMin(duration),
-					},
-					new SchedulerCollection()
-					{
-						Turns =
-						{
-							new Turn(
-								0,
-								new RemoveItem()
-								{
-									Item = projectile,
-								}
-							)
-						},
-					},
-				},
-			};
-
-			projectile.Schedulers.Add(new SchedulerRunner()
-			{
-				Scheduler = schedulerUnion,
-			});
 
 			GetPlaygroundItemsProxy().Add(projectile);
 		}

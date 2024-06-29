@@ -1,11 +1,4 @@
-﻿using System.Drawing;
-using System.Numerics;
-using StepFlow.Core;
-using StepFlow.Markup;
-using StepFlow.Markup.Services;
-using StepFlow.Master.Proxies.Elements;
-
-public class Program
+﻿public class Program
 {
 	private static void Main(string[] args)
 	{

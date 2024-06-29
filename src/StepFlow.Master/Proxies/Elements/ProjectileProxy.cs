@@ -1,12 +1,8 @@
 ﻿using System.Linq;
 using System.Numerics;
-using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
-using StepFlow.Core.Schedulers;
 using StepFlow.Core.States;
-using StepFlow.Master.Proxies.Components;
-using StepFlow.Master.Proxies.Schedulers;
 using StepFlow.Master.Proxies.States;
 
 namespace StepFlow.Master.Proxies.Elements
@@ -52,12 +48,6 @@ namespace StepFlow.Master.Proxies.Elements
 						var statesProxy = Owner.CreateCollectionProxy(otherMaterial.States);
 						statesProxy.Add(pushState);
 					}
-
-					//var controlVector = GetOrCreateControlVector(otherMaterial, Material.SHEDULER_INERTIA_NAME);
-					//var courseVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(controlVector.CourseVector);
-					//courseVectorProxy.Value = Damage.Push;
-					//var factor = 1f - (otherMaterial.Weight / (float)Material.MAX_WEIGHT);
-					//courseVectorProxy.Delta = Matrix3x2.CreateScale(factor);
 				}
 
 				switch (Target.Reusable)
@@ -70,35 +60,6 @@ namespace StepFlow.Master.Proxies.Elements
 						break;
 				}
 			}
-		}
-
-		private Material.CourseVectorPath GetOrCreateControlVector(Material material, string vectorName)
-		{
-			var result = material.GetCourseVector(vectorName);
-			if (result is null)
-			{
-				var schedulersProxy = Owner.CreateCollectionProxy(material.Schedulers);
-				var courseVector = new CourseVector()
-				{
-					Name = vectorName,
-				};
-
-				var schedulerVector = new SchedulerVector()
-				{
-					Collided = material.Body,
-					Vectors = { courseVector },
-				};
-
-				var schedulerRunner = new SchedulerRunner()
-				{
-					Scheduler = schedulerVector,
-				};
-
-				result = new Material.CourseVectorPath(schedulerRunner, schedulerVector, courseVector);
-				schedulersProxy.Add(schedulerRunner);
-			}
-
-			return result;
 		}
 	}
 }

@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using System.Numerics;
+﻿using System.Numerics;
 using StepFlow.Core.Tracks;
 
 namespace StepFlow.Master.Proxies.Tracks

@@ -2,7 +2,6 @@
 using System.Numerics;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
-using StepFlow.Core.Schedulers;
 
 namespace StepFlow.Master.Scripts
 {
@@ -27,23 +26,6 @@ namespace StepFlow.Master.Scripts
 				Strength = Scale.CreateByMax(parameters.Strength),
 				Cooldown = Scale.CreateByMin(parameters.Cooldown),
 				Body = body,
-				Schedulers =
-				{
-					new SchedulerRunner()
-					{
-						Scheduler = new SchedulerVector()
-						{
-							Collided = body,
-							Vectors =
-							{
-								new CourseVector()
-								{
-									Name = Material.SHEDULER_CONTROL_NAME,
-								},
-							},
-						}
-					},
-				},
 				Speed = parameters.Speed,
 				Course = new Vector2(0.05f, 0),
 			};

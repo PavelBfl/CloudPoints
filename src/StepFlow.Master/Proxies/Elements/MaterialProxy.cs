@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using StepFlow.Common.Exceptions;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
-using StepFlow.Core.Schedulers;
 using StepFlow.Core.States;
 using StepFlow.Master.Proxies.Components;
-using StepFlow.Master.Proxies.Schedulers;
 using StepFlow.Master.Proxies.States;
 
 namespace StepFlow.Master.Proxies.Elements
@@ -24,7 +21,6 @@ namespace StepFlow.Master.Proxies.Elements
 
 		int Weight { get; set; }
 
-		ICollection<SchedulerRunner> Schedulers { get; }
 		Vector2 Course { get; set; }
 
 		void OnTick();
@@ -52,8 +48,6 @@ namespace StepFlow.Master.Proxies.Elements
 		}
 
 		public Collided Body { get => Target.GetBodyRequired(); }
-
-		public ICollection<SchedulerRunner> Schedulers => Target.Schedulers;
 
 		public virtual void OnTick()
 		{

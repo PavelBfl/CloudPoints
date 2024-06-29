@@ -4,8 +4,6 @@ using System.Numerics;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
-using StepFlow.Core.Schedulers;
-using StepFlow.Master.Proxies.Elements;
 
 namespace StepFlow.Master.Proxies
 {
@@ -72,24 +70,6 @@ namespace StepFlow.Master.Proxies
 				AttackStrategy = AttackStrategy.Target,
 				ReleaseItem = releaseItem,
 				Course = beginVector,
-				Schedulers =
-				{
-					new SchedulerRunner()
-					{
-						Scheduler = new SchedulerVector()
-						{
-							Collided = body,
-							Vectors =
-							{
-								new CourseVector()
-								{
-									Name = Material.SHEDULER_CONTROL_NAME,
-									Value = beginVector,
-								},
-							},
-						}
-					},
-				},
 				Speed = 10,
 			};
 

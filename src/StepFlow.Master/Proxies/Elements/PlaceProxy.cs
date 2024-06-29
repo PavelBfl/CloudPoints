@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
-using StepFlow.Core.Schedulers;
 using StepFlow.Core.States;
-using StepFlow.Master.Proxies.Components;
 using StepFlow.Master.Proxies.States;
 
 namespace StepFlow.Master.Proxies.Elements
@@ -34,37 +31,6 @@ namespace StepFlow.Master.Proxies.Elements
 					{
 						Kind = StateKind.Poison,
 						TotalCooldown = 1,
-					});
-				}
-
-
-
-				var otherMaterialProxy = ((IMaterialProxy<Material>)Owner.CreateProxy(otherMaterial));
-
-				var placeScheduler = otherMaterial.Schedulers
-						.Select(x => x.Scheduler)
-						.OfType<SchedulerLimit>()
-						.SingleOrDefault(x => x.Name == Place.PLACE_SCHEDULER);
-
-				if (placeScheduler is null)
-				{
-					placeScheduler = new SchedulerLimit()
-					{
-						Name = Place.PLACE_SCHEDULER,
-						Range = Scale.CreateByMin(1),
-						Source = new SchedulerDamage()
-						{
-							Material = otherMaterial,
-							Damage = new Damage()
-							{
-								Value = 10,
-							},
-						},
-					};
-
-					otherMaterial.Schedulers.Add(new SchedulerRunner()
-					{
-						Scheduler = placeScheduler,
 					});
 				}
 			}
