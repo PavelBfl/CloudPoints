@@ -50,7 +50,7 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 			else
 			{
-				Strength--;
+				Cooldown--;
 
 				var center = Body.Current.Bounds.GetCenter();
 				var visionPlace = RectangleExtensions.Create(center, 100);
@@ -88,24 +88,21 @@ namespace StepFlow.Master.Proxies.Elements
 				{
 					CreateProjectile(otherMaterial);
 				}
-				else if (otherCollided.Collided.IsRigid &&
-					thisCollided.Collided == Body &&
-					Target.GetCourseVector(Material.SHEDULER_CONTROL_NAME) is { } path &&
-					path.Runner.Current is { })
+				else if (otherCollided.Collided.IsRigid && thisCollided.Collided == Body)
 				{
 					switch (Target.Strategy)
 					{
 						case Strategy.None:
-							StrategyNone(path);
+							StrategyNone();
 							break;
 						case Strategy.CW:
-							StrategyClock(true, path);
+							StrategyClock(true);
 							break;
 						case Strategy.CWW:
-							StrategyClock(false, path);
+							StrategyClock(false);
 							break;
 						case Strategy.Reflection:
-							StrategyReflection(thisCollided.Collided.Current, otherCollided.Collided.Current, path);
+							StrategyReflection(thisCollided.Collided.Current, otherCollided.Collided.Current);
 							break;
 						default: throw EnumNotSupportedException.Create(Target.Strategy);
 					}
@@ -113,46 +110,34 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 		}
 
-		private void StrategyNone(Material.CourseVectorPath controlVector)
+		private void StrategyNone()
 		{
-			var runnerProxy = (ISchedulerRunnerProxy)Owner.CreateProxy(controlVector.Runner);
-			runnerProxy.Current = null;
-
-			var controlVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(controlVector.CourseVector);
-			controlVectorProxy.Value = Vector2.Zero;
+			Course = Vector2.Zero;
 		}
 
-		private void StrategyClock(bool cw, Material.CourseVectorPath controlVector)
+		private void StrategyClock(bool cw)
 		{
-			var runnerProxy = (ISchedulerRunnerProxy)Owner.CreateProxy(controlVector.Runner);
-			runnerProxy.Current = null;
-
 			var rotate = Matrix3x2.CreateRotation(MathF.PI / (cw ? 2 : -2));
-			var controlVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(controlVector.CourseVector);
-			controlVectorProxy.Value = Vector2.Transform(controlVector.CourseVector.Value, rotate);
+			Course = Vector2.Transform(Course, rotate);
 		}
 
-		private void StrategyReflection(ShapeContainer shape, ShapeContainer otherShape, Material.CourseVectorPath controlVector)
+		private void StrategyReflection(ShapeContainer shape, ShapeContainer otherShape)
 		{
-			Vector2 newVector = controlVector.CourseVector.Value;
+			var newCourse = Course;
 			if (shape.Bounds.Right <= otherShape.Bounds.Left || shape.Bounds.Left >= otherShape.Bounds.Right)
 			{
-				newVector.X = -newVector.X;
+				newCourse.X = -newCourse.X;
 			}
 			else if (shape.Bounds.Top <= otherShape.Bounds.Bottom || shape.Bounds.Bottom >= otherShape.Bounds.Top)
 			{
-				newVector.Y = -newVector.Y;
+				newCourse.Y = -newCourse.Y;
 			}
 			else
 			{
 				throw new InvalidOperationException();
 			}
 
-			var runnerProxy = (ISchedulerRunnerProxy)Owner.CreateProxy(controlVector.Runner);
-			runnerProxy.Current = null;
-
-			var controlVectorProxy = (ICourseVectorProxy)Owner.CreateProxy(controlVector.CourseVector);
-			controlVectorProxy.Value = newVector;
+			Course = newCourse;
 		}
 
 		private static Vector2 GetCenter(Material material)

@@ -52,6 +52,12 @@ namespace StepFlow.Core.Components
 
 		public Scale Decrement() => Add(-1);
 
+		public bool IsEmpty() => Value == 0 && Max == 0;
+
+		public bool IsMin() => Value == 0 && Max != 0;
+
+		public bool IsMax() => Value == Max && Max != 0;
+
 		public bool Equals(Scale other) => Value == other.Value && Max == other.Max;
 
 		public override string ToString() => Value + "/" + Max;

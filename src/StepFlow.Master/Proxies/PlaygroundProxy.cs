@@ -69,8 +69,9 @@ namespace StepFlow.Master.Proxies
 				Cooldown = Scale.CreateByMax(10000),
 				Strength = Scale.CreateByMax(100),
 				Strategy = strategy,
-				AttackStrategy = AttackStrategy.Bottom,
+				AttackStrategy = AttackStrategy.Target,
 				ReleaseItem = releaseItem,
+				Course = beginVector,
 				Schedulers =
 				{
 					new SchedulerRunner()
