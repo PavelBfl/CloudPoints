@@ -16,6 +16,15 @@ namespace StepFlow.Core.Components
 		public string PropertyName { get; }
 
 		public Collided Collided { get; }
+
+		public ShapeContainer GetShape() => PropertyName switch
+		{
+			nameof(Collided.Current) => Collided.Current,
+			nameof(Collided.Next) => Collided.Next,
+			_ => throw new InvalidOperationException(),
+		};
+
+		public override string ToString() => PropertyName + ": " + GetShape();
 	}
 
 	public sealed class Collided : ComponentBase

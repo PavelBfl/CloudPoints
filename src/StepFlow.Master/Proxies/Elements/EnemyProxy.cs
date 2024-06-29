@@ -124,13 +124,21 @@ namespace StepFlow.Master.Proxies.Elements
 		private void StrategyReflection(ShapeContainer shape, ShapeContainer otherShape)
 		{
 			var newCourse = Course;
-			if (shape.Bounds.Right <= otherShape.Bounds.Left || shape.Bounds.Left >= otherShape.Bounds.Right)
+			if (shape.Bounds.Right <= otherShape.Bounds.Left)
 			{
-				newCourse.X = -newCourse.X;
+				Negative(ref newCourse.X);
 			}
-			else if (shape.Bounds.Top <= otherShape.Bounds.Bottom || shape.Bounds.Bottom >= otherShape.Bounds.Top)
+			else if (shape.Bounds.Left >= otherShape.Bounds.Right)
 			{
-				newCourse.Y = -newCourse.Y;
+				Positive(ref newCourse.X);
+			}
+			else if (shape.Bounds.Top >= otherShape.Bounds.Bottom)
+			{
+				Positive(ref newCourse.Y);
+			}
+			else if (shape.Bounds.Bottom <= otherShape.Bounds.Top)
+			{
+				Negative(ref newCourse.Y);
 			}
 			else
 			{
@@ -139,6 +147,10 @@ namespace StepFlow.Master.Proxies.Elements
 
 			Course = newCourse;
 		}
+
+		private static void Positive(ref float value) => value = value >= 0 ? value : -value;
+
+		private static void Negative(ref float value) => value = value <= 0 ? value : -value;
 
 		private static Vector2 GetCenter(Material material)
 		{
