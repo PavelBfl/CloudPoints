@@ -6,6 +6,7 @@
 		Poison,
 		Arc,
 		Push,
+		Dash,
 	}
 
 	public class State : Subject

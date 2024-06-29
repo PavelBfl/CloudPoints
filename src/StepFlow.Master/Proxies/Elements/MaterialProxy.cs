@@ -91,6 +91,9 @@ namespace StepFlow.Master.Proxies.Elements
 							Matrix3x2.CreateScale(factor)
 						);
 						break;
+					case StateKind.Dash:
+						additionalCourse += stateProxy.Vector;
+						break;
 					default: throw EnumNotSupportedException.Create(state.Kind);
 				}
 

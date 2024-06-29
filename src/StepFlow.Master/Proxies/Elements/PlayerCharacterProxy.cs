@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
@@ -12,6 +13,7 @@ using StepFlow.Core.States;
 using StepFlow.Core.Tracks;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
+using StepFlow.Master.Proxies.States;
 
 namespace StepFlow.Master.Proxies.Elements
 {
@@ -142,6 +144,22 @@ namespace StepFlow.Master.Proxies.Elements
 						);
 						break;
 					case CharacterSkill.Dash:
+						if (Target.States.SingleOrDefault(x => x.Kind == StateKind.Dash) is { } dashState)
+						{
+							var dashStateProxy = (IStateProxy<State>)Owner.CreateProxy(dashState);
+							dashStateProxy.Vector = courseVector;
+						}
+						else
+						{
+							var statesProxy = Owner.CreateCollectionProxy(Target.States);
+							statesProxy.Add(new State()
+							{
+								Kind = StateKind.Dash,
+								TotalCooldown = TimeTick.FromSeconds(0.1f),
+								Arg0 = courseVector.X * 5,
+								Arg1 = courseVector.Y * 5,
+							});
+						}
 						var schedulersProxy = Owner.CreateCollectionProxy(Schedulers);
 						schedulersProxy.Add(new SchedulerRunner()
 						{
