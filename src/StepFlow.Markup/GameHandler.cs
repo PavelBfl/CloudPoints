@@ -5,12 +5,14 @@ using StepFlow.Common.Exceptions;
 using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
+using StepFlow.Core.States;
 using StepFlow.Core.Tracks;
 using StepFlow.Intersection;
 using StepFlow.Markup.Services;
 using StepFlow.Master;
 using StepFlow.Master.Proxies.Elements;
 using StepFlow.Master.Proxies.Tracks;
+using StepFlow.Master.Scripts;
 
 namespace StepFlow.Markup;
 
@@ -73,57 +75,72 @@ public sealed class GameHandler
 	{
 		CreateRoom(Point.Empty, new(15, 9), Playground.CELL_SIZE_DEFAULT);
 
-		PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(12, 6), Kind = ItemKind.Fire });
-		PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(12, 0), Kind = ItemKind.Poison });
-		PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(1, 1), Kind = ItemKind.Speed });
-		PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(1, 5), Kind = ItemKind.AttackSpeed });
+		//PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(12, 6), Kind = ItemKind.Fire });
+		//PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(12, 0), Kind = ItemKind.Poison });
+		//PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(1, 1), Kind = ItemKind.Speed });
+		//PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(1, 5), Kind = ItemKind.AttackSpeed });
 
-		PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(8, 0) });
-		PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(8, 1) });
-		PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(10, 1) });
-		PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(10, 2) });
-		PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(11, 2) });
-		PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(12, 2) });
+		//PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(8, 0) });
+		//PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(8, 1) });
+		//PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(10, 1) });
+		//PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(10, 2) });
+		//PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(11, 2) });
+		//PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(12, 2) });
 
-		CreateEnemy(CreateCell(10, 6), 300, Strategy.Reflection, CreateRotate(MathF.PI / 4) * 0.02f);
-		CreateEnemy(CreateCell(0, 0), 150, Strategy.CW, CreateRotate(0) * 0.02f);
+		//CreateEnemy(CreateCell(10, 6), 300, Strategy.Reflection, CreateRotate(MathF.PI / 4) * 0.02f);
+		//CreateEnemy(CreateCell(0, 0), 150, Strategy.CW, CreateRotate(0) * 0.02f);
+		CreateEnemy(
+			CreateCell(0, 0),
+			300,
+			Strategy.Reflection,
+			new Vector2(0, 0.02f),
+			new StateParameters[]
+			{
+				new()
+				{
+					Kind = StateKind.CreatingProjectile,
+					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(1)),
+					Arg0 = 0,
+				},
+			}
+		);
 
-		CreateCellObstruction(new Point(3, 0), 50, ObstructionView.Bricks);
-		CreateCellObstruction(new Point(3, 1), 50, ObstructionView.Bricks);
-		CreateCellObstruction(new Point(3, 2), 50, ObstructionView.Bricks);
-		CreateCellObstruction(new Point(3, 3), 50, ObstructionView.Bricks);
-		CreateCellObstruction(new Point(3, 4), 50, ObstructionView.Bricks);
-		CreateCellObstruction(new Point(3, 5), 50, ObstructionView.Bricks);
-		CreateCellObstruction(new Point(3, 6), 50, ObstructionView.Bricks);
-		CreateCellObstruction(new Point(0, 3), 50, ObstructionView.Bricks);
-		CreateCellObstruction(new Point(1, 3), 50, ObstructionView.Bricks);
-		CreateCellObstruction(new Point(2, 3), 50, ObstructionView.Bricks);
-		CreateCellObstruction(new Point(11, 0), 50, ObstructionView.Bricks);
-		CreateCellObstruction(new Point(12, 1), 50, ObstructionView.Bricks);
-		CreateCellObstruction(new Point(8, 3), 50, ObstructionView.Bricks);
-		CreateCellObstruction(new Point(9, 3), 50, ObstructionView.Bricks);
-		CreateCellObstruction(new Point(10, 3), 50, ObstructionView.Bricks);
-		CreateCellObstruction(new Point(11, 3), 50, ObstructionView.Bricks);
-		CreateCellObstruction(new Point(12, 3), 50, ObstructionView.Bricks);
-		CreateCellObstruction(new Point(12, 5), 50, ObstructionView.Bricks);
-		CreateCellObstruction(new Point(11, 6), 50, ObstructionView.Bricks);
-		CreateCellObstruction(new Point(6, 4), 50, ObstructionView.Bricks);
-		CreateCellObstruction(new Point(7, 4), 50, ObstructionView.Bricks);
-		CreateCellObstruction(new Point(8, 4), 50, ObstructionView.Bricks);
-		CreateCellObstruction(new Point(6, 5), 50, ObstructionView.Bricks);
-		CreateCellObstruction(new Point(5, 6), 50, ObstructionView.Bricks);
-		CreateCellObstruction(new Point(6, 6), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(3, 0), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(3, 1), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(3, 2), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(3, 3), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(3, 4), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(3, 5), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(3, 6), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(0, 3), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(1, 3), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(2, 3), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(11, 0), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(12, 1), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(8, 3), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(9, 3), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(10, 3), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(11, 3), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(12, 3), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(12, 5), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(11, 6), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(6, 4), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(7, 4), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(8, 4), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(6, 5), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(5, 6), 50, ObstructionView.Bricks);
+		//CreateCellObstruction(new Point(6, 6), 50, ObstructionView.Bricks);
 
-		CreateCellObstruction(new Point(0, 4), 50, ObstructionView.Boards, 1);
-		CreateCellObstruction(new Point(1, 4), 50, ObstructionView.Boards, 1);
-		CreateCellObstruction(new Point(2, 4), 50, ObstructionView.Boards, 1);
-		CreateCellObstruction(new Point(0, 5), 50, ObstructionView.Boards, 1);
-		CreateCellObstruction(new Point(2, 5), 50, ObstructionView.Boards, 1);
-		CreateCellObstruction(new Point(0, 6), 50, ObstructionView.Boards, 1);
-		CreateCellObstruction(new Point(1, 6), 50, ObstructionView.Boards, 1);
-		CreateCellObstruction(new Point(2, 6), 50, ObstructionView.Boards, 1);
+		//CreateCellObstruction(new Point(0, 4), 50, ObstructionView.Boards, 1);
+		//CreateCellObstruction(new Point(1, 4), 50, ObstructionView.Boards, 1);
+		//CreateCellObstruction(new Point(2, 4), 50, ObstructionView.Boards, 1);
+		//CreateCellObstruction(new Point(0, 5), 50, ObstructionView.Boards, 1);
+		//CreateCellObstruction(new Point(2, 5), 50, ObstructionView.Boards, 1);
+		//CreateCellObstruction(new Point(0, 6), 50, ObstructionView.Boards, 1);
+		//CreateCellObstruction(new Point(1, 6), 50, ObstructionView.Boards, 1);
+		//CreateCellObstruction(new Point(2, 6), 50, ObstructionView.Boards, 1);
 
-		CreateCellObstruction(new Point(5, 1), 1000, ObstructionView.Boards, 1);
+		//CreateCellObstruction(new Point(5, 1), 1000, ObstructionView.Boards, 1);
 		PlayMaster.PlayerCharacterCreate.Execute(new()
 		{
 			Bounds = CreateCell(5, 0),
@@ -186,7 +203,7 @@ public sealed class GameHandler
 		PlayMaster.PlayerCharacterCreateProjectile.Execute(new() { Radians = radians, Action = action });
 	}
 
-	private void CreateEnemy(Rectangle bounds, int visionSize, Strategy strategy, Vector2 beginVector)
+	private void CreateEnemy(Rectangle bounds, int visionSize, Strategy strategy, Vector2 beginVector, StateParameters[]? states)
 	{
 		PlayMaster.CreateEnemy.Execute(new()
 		{
@@ -199,7 +216,8 @@ public sealed class GameHandler
 			),
 			Strategy = strategy,
 			ReleaseItem = ItemKind.AddStrength,
-			BeginVector = beginVector
+			Course = beginVector,
+			States = states
 		});
 	}
 

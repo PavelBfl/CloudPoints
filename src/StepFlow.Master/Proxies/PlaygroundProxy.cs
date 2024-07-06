@@ -13,7 +13,6 @@ namespace StepFlow.Master.Proxies
 
 		ICollection<Material> ItemsProxy => Owner.CreateCollectionUsedProxy(Items);
 
-		void CreateEnemy(Rectangle bounds, Rectangle vision, Strategy strategy, ItemKind releaseItem, Vector2 beginVector);
 		void CreateItem(Point position, ItemKind kind);
 		void CreatePlace(Rectangle bounds);
 	}
@@ -45,37 +44,6 @@ namespace StepFlow.Master.Proxies
 			};
 
 			Owner.GetPlaygroundItemsProxy().Add(projectile);
-		}
-
-		public void CreateEnemy(Rectangle bounds, Rectangle vision, Strategy strategy, ItemKind releaseItem, Vector2 beginVector)
-		{
-			var body = new Collided()
-			{
-				Current = { bounds },
-				IsRigid = true,
-			};
-
-			body.PositionSync();
-
-			var enemy = new Enemy()
-			{
-				Body = body,
-				Vision = new Collided()
-				{
-					Current = { vision },
-				},
-				Cooldown = Scale.CreateByMax(10000),
-				Strength = Scale.CreateByMax(100),
-				Strategy = strategy,
-				AttackStrategy = AttackStrategy.Target,
-				ReleaseItem = releaseItem,
-				Course = beginVector,
-				Speed = 10,
-			};
-
-			enemy.Vision.PositionSync();
-
-			Owner.GetPlaygroundItemsProxy().Add(enemy);
 		}
 
 		public void CreateItem(Point position, ItemKind kind)

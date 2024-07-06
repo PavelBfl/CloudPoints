@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Numerics;
+using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Master.Proxies;
 
@@ -14,13 +15,39 @@ namespace StepFlow.Master.Scripts
 		public override void Execute(Parameters parameters)
 		{
 			var playgroundProxy = (IPlaygroundProxy)PlayMaster.CreateProxy(PlayMaster.Playground);
-			playgroundProxy.CreateEnemy(
-				parameters.Bounds,
-				parameters.Vision,
-				parameters.Strategy,
-				parameters.ReleaseItem,
-				parameters.BeginVector
-			);
+
+			var enemy = new Enemy()
+			{
+				Body = new Collided()
+				{
+					Current = { parameters.Bounds },
+					IsRigid = true,
+				},
+				Vision = new Collided()
+				{
+					Current = { parameters.Vision },
+				},
+				Cooldown = Scale.CreateByMax(10000),
+				Strength = Scale.CreateByMax(100),
+				Strategy = parameters.Strategy,
+				AttackStrategy = AttackStrategy.Target,
+				ReleaseItem = parameters.ReleaseItem,
+				Course = parameters.Course,
+				Speed = 10,
+			};
+
+			enemy.Body.PositionSync();
+			enemy.Vision.PositionSync();
+
+			if (parameters.States is { } states)
+			{
+				foreach (var state in states)
+				{
+					enemy.States.Add(state.ToState());
+				}
+			}
+
+			PlayMaster.GetPlaygroundItemsProxy().Add(enemy);
 		}
 
 		public struct Parameters
@@ -30,7 +57,8 @@ namespace StepFlow.Master.Scripts
 			public Strategy Strategy { get; set; }
 			public AttackStrategy AttackStrategy { get; set; }
 			public ItemKind ReleaseItem { get; set; }
-			public Vector2 BeginVector { get; set; }
+			public Vector2 Course { get; set; }
+			public StateParameters[]? States { get; set; }
 		}
 	}
 }

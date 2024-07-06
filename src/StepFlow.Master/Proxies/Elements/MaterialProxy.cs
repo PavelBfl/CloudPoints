@@ -57,6 +57,7 @@ namespace StepFlow.Master.Proxies.Elements
 			foreach (var state in Target.States)
 			{
 				var stateProxy = (IStateProxy<State>)Owner.CreateProxy(state);
+				stateProxy.Cooldown--;
 				stateProxy.TotalCooldown--;
 
 				switch (state.Kind)
@@ -88,12 +89,22 @@ namespace StepFlow.Master.Proxies.Elements
 					case StateKind.Dash:
 						additionalCourse += stateProxy.Vector;
 						break;
+					case StateKind.CreatingProjectile:
+						if (state.Cooldown.IsMin())
+						{
+							CreateProjectile(stateProxy.Arg0);
+						}
+						break;
 					default: throw EnumNotSupportedException.Create(state.Kind);
 				}
 
 				if (state.TotalCooldown == 0)
 				{
 					statesRemoved.Add(state);
+				}
+				else if (state.Cooldown.IsMin())
+				{
+					stateProxy.Cooldown = state.Cooldown.SetMax();
 				}
 			}
 
@@ -124,6 +135,10 @@ namespace StepFlow.Master.Proxies.Elements
 				new Vector2(radians is { } ? 0.05f : 0, 0),
 				Matrix3x2.CreateRotation(radians ?? 0)
 			);
+		}
+
+		protected virtual void CreateProjectile(float radians)
+		{
 		}
 
 		public virtual void Begin()

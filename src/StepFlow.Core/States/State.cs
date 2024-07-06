@@ -1,4 +1,6 @@
-﻿namespace StepFlow.Core.States
+﻿using StepFlow.Core.Components;
+
+namespace StepFlow.Core.States
 {
 	public enum StateKind
 	{
@@ -7,11 +9,14 @@
 		Arc,
 		Push,
 		Dash,
+		CreatingProjectile,
 	}
 
 	public class State : Subject
 	{
 		public StateKind Kind { get; set; }
+
+		public Scale Cooldown { get; set; }
 
 		public int? TotalCooldown { get; set; }
 

@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using StepFlow.Core.Components;
 using StepFlow.Core.States;
 
 namespace StepFlow.Master.Proxies.States
@@ -6,6 +7,8 @@ namespace StepFlow.Master.Proxies.States
 	public interface IStateProxy<TState> : IProxyBase<TState>
 		where TState : State
 	{
+		Scale Cooldown { get; set; }
+
 		int? TotalCooldown { get; set; }
 
 		float Arg0 { get; set; }
@@ -29,6 +32,8 @@ namespace StepFlow.Master.Proxies.States
 		public StateProxy(PlayMaster owner, TState target) : base(owner, target)
 		{
 		}
+
+		public Scale Cooldown { get => Target.Cooldown; set => SetValue(value); }
 
 		public int? TotalCooldown { get => Target.TotalCooldown; set => SetValue(value); }
 
