@@ -29,8 +29,6 @@ namespace StepFlow.Master.Scripts
 				},
 				Cooldown = Scale.CreateByMax(10000),
 				Strength = Scale.CreateByMax(100),
-				Strategy = parameters.Strategy,
-				AttackStrategy = AttackStrategy.Target,
 				ReleaseItem = parameters.ReleaseItem,
 				Course = parameters.Course,
 				Speed = 10,
@@ -54,8 +52,6 @@ namespace StepFlow.Master.Scripts
 		{
 			public Rectangle Bounds { get; set; }
 			public Rectangle Vision { get; set; }
-			public Strategy Strategy { get; set; }
-			public AttackStrategy AttackStrategy { get; set; }
 			public ItemKind ReleaseItem { get; set; }
 			public Vector2 Course { get; set; }
 			public StateParameters[]? States { get; set; }

@@ -7,6 +7,8 @@ namespace StepFlow.Master.Proxies.States
 	public interface IStateProxy<TState> : IProxyBase<TState>
 		where TState : State
 	{
+		bool Enable { get; set; }
+
 		Scale Cooldown { get; set; }
 
 		int? TotalCooldown { get; set; }
@@ -32,6 +34,8 @@ namespace StepFlow.Master.Proxies.States
 		public StateProxy(PlayMaster owner, TState target) : base(owner, target)
 		{
 		}
+
+		public bool Enable { get => Target.Enable; set => SetValue(value); }
 
 		public Scale Cooldown { get => Target.Cooldown; set => SetValue(value); }
 

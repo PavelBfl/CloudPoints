@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Numerics;
 using StepFlow.Common.Exceptions;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
+using StepFlow.Core.States;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
 using StepFlow.Master.Proxies.Intersection;
@@ -54,25 +56,6 @@ namespace StepFlow.Master.Proxies.Elements
 				var visionPlace = RectangleExtensions.Create(center, 100);
 				var visionProxy = (IShapeContainerProxy)Owner.CreateProxy(Vision.Current);
 				visionProxy.Reset(visionPlace);
-
-				if (Cooldown.Value == 0)
-				{
-					switch (Target.AttackStrategy)
-					{
-						case AttackStrategy.Left:
-							CreateProjectile(new Vector2(-1, 0));
-							break;
-						case AttackStrategy.Top:
-							CreateProjectile(new Vector2(0, -1));
-							break;
-						case AttackStrategy.Right:
-							CreateProjectile(new Vector2(1, 0));
-							break;
-						case AttackStrategy.Bottom:
-							CreateProjectile(new Vector2(0, 1));
-							break;
-					}
-				}
 			}
 		}
 
@@ -98,21 +81,40 @@ namespace StepFlow.Master.Proxies.Elements
 				}
 				else if (otherCollided.Collided.IsRigid && thisCollided.Collided == Body)
 				{
-					switch (Target.Strategy)
+					var moveStrategy = Target.States
+						.Where(x => x.Enable)
+						.SingleOrDefault(x => x.Kind == StateKind.MoveReflection ||
+						x.Kind == StateKind.MoveCW ||
+						x.Kind == StateKind.MoveCCW ||
+						x.Kind == StateKind.EnemySerpentineForwardState ||
+						x.Kind == StateKind.EnemySerpentineForwardToBackward ||
+						x.Kind == StateKind.EnemySerpentineBackwardState ||
+						x.Kind == StateKind.EnemySerpentineBackwardToForward);
+
+					switch (moveStrategy?.Kind)
 					{
-						case Strategy.None:
+						case StateKind.MoveAndStop:
 							StrategyNone();
 							break;
-						case Strategy.CW:
-							StrategyClock(true);
+						case StateKind.EnemySerpentineForwardToBackward:
+						case StateKind.EnemySerpentineBackwardToForward:
+							StrategyNone();
+							moveStrategy.Cooldown = Scale.CreateByMin(1);
 							break;
-						case Strategy.CWW:
-							StrategyClock(false);
-							break;
-						case Strategy.Reflection:
+						case StateKind.EnemySerpentineForwardState:
+						case StateKind.EnemySerpentineBackwardState:
 							StrategyReflection(thisCollided.Collided.Current, otherCollided.Collided.Current);
 							break;
-						default: throw EnumNotSupportedException.Create(Target.Strategy);
+						case StateKind.MoveCW:
+							StrategyClock(true);
+							break;
+						case StateKind.MoveCCW:
+							StrategyClock(false);
+							break;
+						case StateKind.MoveReflection:
+							StrategyReflection(thisCollided.Collided.Current, otherCollided.Collided.Current);
+							break;
+						default: throw EnumNotSupportedException.Create(moveStrategy.Kind);
 					}
 				}
 			}

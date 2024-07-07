@@ -2,23 +2,6 @@
 
 namespace StepFlow.Core.Elements
 {
-	public enum Strategy
-	{
-		None,
-		CW,
-		CWW,
-		Reflection
-	}
-
-	public enum AttackStrategy
-	{
-		Target,
-		Left,
-		Top,
-		Right,
-		Bottom,
-	}
-
 	public sealed class Enemy : Material
 	{
 		private Collided? vision;
@@ -28,10 +11,6 @@ namespace StepFlow.Core.Elements
 		public Collided GetVisionRequired() => PropertyRequired(Vision, nameof(Vision));
 
 		public Scale Cooldown { get; set; }
-
-		public Strategy Strategy { get; set; }
-
-		public AttackStrategy AttackStrategy { get; set; }
 
 		public ItemKind ReleaseItem { get; set; }
 	}

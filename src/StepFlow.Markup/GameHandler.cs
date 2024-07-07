@@ -92,15 +92,35 @@ public sealed class GameHandler
 		CreateEnemy(
 			CreateCell(0, 0),
 			300,
-			Strategy.Reflection,
 			new Vector2(0, 0.02f),
 			new StateParameters[]
 			{
 				new()
 				{
-					Kind = StateKind.CreatingProjectile,
-					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(1)),
+					Kind = StateKind.EnemySerpentineForwardState,
+					Enable = true,
+					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(4)),
 					Arg0 = 0,
+					Arg1 = 0.02f,
+				},
+				new()
+				{
+					Kind = StateKind.EnemySerpentineForwardToBackward,
+					Arg0 = 0.04f,
+					Arg1 = 0,
+				},
+				new()
+				{
+					Kind = StateKind.EnemySerpentineBackwardState,
+					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(3)),
+					Arg0 = 0,
+					Arg1 = 0.02f,
+				},
+				new()
+				{
+					Kind = StateKind.EnemySerpentineBackwardToForward,
+					Arg0 = -0.04f,
+					Arg1 = 0,
 				},
 			}
 		);
@@ -203,7 +223,7 @@ public sealed class GameHandler
 		PlayMaster.PlayerCharacterCreateProjectile.Execute(new() { Radians = radians, Action = action });
 	}
 
-	private void CreateEnemy(Rectangle bounds, int visionSize, Strategy strategy, Vector2 beginVector, StateParameters[]? states)
+	private void CreateEnemy(Rectangle bounds, int visionSize, Vector2 beginVector, StateParameters[]? states)
 	{
 		PlayMaster.CreateEnemy.Execute(new()
 		{
@@ -214,7 +234,6 @@ public sealed class GameHandler
 				bounds.Right + visionSize,
 				bounds.Bottom + visionSize
 			),
-			Strategy = strategy,
 			ReleaseItem = ItemKind.AddStrength,
 			Course = beginVector,
 			States = states

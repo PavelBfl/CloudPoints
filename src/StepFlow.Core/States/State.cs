@@ -10,11 +10,23 @@ namespace StepFlow.Core.States
 		Push,
 		Dash,
 		CreatingProjectile,
+
+		MoveAndStop,
+		MoveReflection,
+		MoveCW,
+		MoveCCW,
+
+		EnemySerpentineForwardState,
+		EnemySerpentineForwardToBackward,
+		EnemySerpentineBackwardState,
+		EnemySerpentineBackwardToForward,
 	}
 
 	public class State : Subject
 	{
 		public StateKind Kind { get; set; }
+
+		public bool Enable { get; set; } = true;
 
 		public Scale Cooldown { get; set; }
 

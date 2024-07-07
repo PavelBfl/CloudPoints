@@ -7,6 +7,8 @@ namespace StepFlow.Master.Scripts
 	{
 		public StateKind Kind { get; set; }
 
+		public bool Enable { get; set; }
+
 		public Scale Cooldown { get; set; }
 
 		public int? TotalCooldown { get; set; }
@@ -18,6 +20,7 @@ namespace StepFlow.Master.Scripts
 		public readonly State ToState() => new State()
 		{
 			Kind = Kind,
+			Enable = Enable,
 			Cooldown = Cooldown,
 			TotalCooldown = TotalCooldown,
 			Arg0 = Arg0,
