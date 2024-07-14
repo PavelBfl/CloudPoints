@@ -105,6 +105,13 @@ public sealed class GameHandler
 				},
 				new()
 				{
+					Kind = StateKind.EnemySerpentineForwardStateAttack,
+					Enable = true,
+					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(1)),
+					Arg0 = 0,
+				},
+				new()
+				{
 					Kind = StateKind.EnemySerpentineForwardToBackward,
 					Arg0 = 0.04f,
 					Arg1 = 0,
@@ -115,6 +122,12 @@ public sealed class GameHandler
 					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(3)),
 					Arg0 = 0,
 					Arg1 = 0.02f,
+				},
+				new()
+				{
+					Kind = StateKind.EnemySerpentineBackwardStateAttack,
+					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(1)),
+					Arg0 = MathF.PI,
 				},
 				new()
 				{

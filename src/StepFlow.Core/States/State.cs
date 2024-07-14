@@ -17,8 +17,10 @@ namespace StepFlow.Core.States
 		MoveCCW,
 
 		EnemySerpentineForwardState,
+		EnemySerpentineForwardStateAttack,
 		EnemySerpentineForwardToBackward,
 		EnemySerpentineBackwardState,
+		EnemySerpentineBackwardStateAttack,
 		EnemySerpentineBackwardToForward,
 	}
 
@@ -39,5 +41,7 @@ namespace StepFlow.Core.States
 		public override bool Equals(object obj) => obj is State other && Kind == other.Kind;
 
 		public override int GetHashCode() => Kind.GetHashCode();
+
+		public override string ToString() => Kind.ToString();
 	}
 }

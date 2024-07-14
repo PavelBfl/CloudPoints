@@ -107,6 +107,16 @@ namespace StepFlow.Master.Proxies.Elements
 							enemySerpentineForwardToBackwardStateProxy.Enable = true;
 							enemySerpentineForwardToBackwardStateProxy.Cooldown = default;
 							Course = enemySerpentineForwardToBackwardStateProxy.Vector;
+
+							var enemySerpentineForwardStateAttack = Target.States.Single(x => x.Kind == StateKind.EnemySerpentineForwardStateAttack);
+							var enemySerpentineForwardStateAttackProxy = (IStateProxy<State>)Owner.CreateProxy(enemySerpentineForwardStateAttack);
+							enemySerpentineForwardStateAttackProxy.Enable = false;
+						}
+						break;
+					case StateKind.EnemySerpentineForwardStateAttack:
+						if (stateProxy.Cooldown.IsMin())
+						{
+							CreateProjectile(stateProxy.Arg0);
 						}
 						break;
 					case StateKind.EnemySerpentineForwardToBackward:
@@ -119,6 +129,10 @@ namespace StepFlow.Master.Proxies.Elements
 							enemySerpentineForwardToBackwardStateProxy.Enable = true;
 							enemySerpentineForwardToBackwardStateProxy.Cooldown = enemySerpentineForwardToBackwardStateProxy.Cooldown.SetMax();
 							Course = enemySerpentineForwardToBackwardStateProxy.Vector;
+
+							var enemySerpentineBackwardStateAttack = Target.States.Single(x => x.Kind == StateKind.EnemySerpentineBackwardStateAttack);
+							var enemySerpentineBackwardStateAttackProxy = (IStateProxy<State>)Owner.CreateProxy(enemySerpentineBackwardStateAttack);
+							enemySerpentineBackwardStateAttackProxy.Enable = true;
 						}
 						break;
 					case StateKind.EnemySerpentineBackwardState:
@@ -131,6 +145,16 @@ namespace StepFlow.Master.Proxies.Elements
 							enemySerpentineForwardToBackwardStateProxy.Enable = true;
 							enemySerpentineForwardToBackwardStateProxy.Cooldown = default;
 							Course = enemySerpentineForwardToBackwardStateProxy.Vector;
+
+							var enemySerpentineBackwardStateAttack = Target.States.Single(x => x.Kind == StateKind.EnemySerpentineBackwardStateAttack);
+							var enemySerpentineBackwardStateAttackProxy = (IStateProxy<State>)Owner.CreateProxy(enemySerpentineBackwardStateAttack);
+							enemySerpentineBackwardStateAttackProxy.Enable = false;
+						}
+						break;
+					case StateKind.EnemySerpentineBackwardStateAttack:
+						if (stateProxy.Cooldown.IsMin())
+						{
+							CreateProjectile(stateProxy.Arg0);
 						}
 						break;
 					case StateKind.EnemySerpentineBackwardToForward:
@@ -143,6 +167,10 @@ namespace StepFlow.Master.Proxies.Elements
 							enemySerpentineForwardToBackwardStateProxy.Enable = true;
 							enemySerpentineForwardToBackwardStateProxy.Cooldown = enemySerpentineForwardToBackwardStateProxy.Cooldown.SetMax();
 							Course = enemySerpentineForwardToBackwardStateProxy.Vector;
+
+							var enemySerpentineForwardStateAttack = Target.States.Single(x => x.Kind == StateKind.EnemySerpentineForwardStateAttack);
+							var enemySerpentineForwardStateAttackProxy = (IStateProxy<State>)Owner.CreateProxy(enemySerpentineForwardStateAttack);
+							enemySerpentineForwardStateAttackProxy.Enable = true;
 						}
 						break;
 					case StateKind.MoveReflection:
