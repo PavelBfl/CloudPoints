@@ -1,10 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Numerics;
-using StepFlow.Common.Exceptions;
+﻿using System.Numerics;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
-using StepFlow.Core.States;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
 using StepFlow.Master.Proxies.Intersection;
@@ -79,88 +75,8 @@ namespace StepFlow.Master.Proxies.Elements
 				{
 					CreateProjectile(otherMaterial);
 				}
-				else if (otherCollided.Collided.IsRigid && thisCollided.Collided == Body)
-				{
-					var moveStrategy = Target.States
-						.Where(x => x.Enable)
-						.SingleOrDefault(x => x.Kind == StateKind.MoveReflection ||
-						x.Kind == StateKind.MoveCW ||
-						x.Kind == StateKind.MoveCCW ||
-						x.Kind == StateKind.EnemySerpentineForwardState ||
-						x.Kind == StateKind.EnemySerpentineForwardToBackward ||
-						x.Kind == StateKind.EnemySerpentineBackwardState ||
-						x.Kind == StateKind.EnemySerpentineBackwardToForward);
-
-					switch (moveStrategy?.Kind)
-					{
-						case StateKind.MoveAndStop:
-							StrategyNone();
-							break;
-						case StateKind.EnemySerpentineForwardToBackward:
-						case StateKind.EnemySerpentineBackwardToForward:
-							StrategyNone();
-							moveStrategy.Cooldown = Scale.CreateByMin(1);
-							break;
-						case StateKind.EnemySerpentineForwardState:
-						case StateKind.EnemySerpentineBackwardState:
-							StrategyReflection(thisCollided.Collided.Current, otherCollided.Collided.Current);
-							break;
-						case StateKind.MoveCW:
-							StrategyClock(true);
-							break;
-						case StateKind.MoveCCW:
-							StrategyClock(false);
-							break;
-						case StateKind.MoveReflection:
-							StrategyReflection(thisCollided.Collided.Current, otherCollided.Collided.Current);
-							break;
-						default: throw EnumNotSupportedException.Create(moveStrategy.Kind);
-					}
-				}
 			}
 		}
-
-		private void StrategyNone()
-		{
-			Course = Vector2.Zero;
-		}
-
-		private void StrategyClock(bool cw)
-		{
-			var rotate = Matrix3x2.CreateRotation(MathF.PI / (cw ? 2 : -2));
-			Course = Vector2.Transform(Course, rotate);
-		}
-
-		private void StrategyReflection(ShapeContainer shape, ShapeContainer otherShape)
-		{
-			var newCourse = Course;
-			if (shape.Bounds.Right <= otherShape.Bounds.Left)
-			{
-				Negative(ref newCourse.X);
-			}
-			else if (shape.Bounds.Left >= otherShape.Bounds.Right)
-			{
-				Positive(ref newCourse.X);
-			}
-			else if (shape.Bounds.Top >= otherShape.Bounds.Bottom)
-			{
-				Positive(ref newCourse.Y);
-			}
-			else if (shape.Bounds.Bottom <= otherShape.Bounds.Top)
-			{
-				Negative(ref newCourse.Y);
-			}
-			else
-			{
-				throw new InvalidOperationException();
-			}
-
-			Course = newCourse;
-		}
-
-		private static void Positive(ref float value) => value = value >= 0 ? value : -value;
-
-		private static void Negative(ref float value) => value = value <= 0 ? value : -value;
 
 		private static Vector2 GetCenter(Material material)
 		{

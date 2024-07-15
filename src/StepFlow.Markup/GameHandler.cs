@@ -97,6 +97,15 @@ public sealed class GameHandler
 			{
 				new()
 				{
+					Kind = StateKind.MoveReflection,
+					Enable = true,
+				},
+				new()
+				{
+					Kind = StateKind.MoveAndStop,
+				},
+				new()
+				{
 					Kind = StateKind.EnemySerpentineForwardState,
 					Enable = true,
 					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(4)),

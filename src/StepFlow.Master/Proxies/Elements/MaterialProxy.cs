@@ -6,6 +6,7 @@ using StepFlow.Common.Exceptions;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.States;
+using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
 using StepFlow.Master.Proxies.States;
 
@@ -111,6 +112,14 @@ namespace StepFlow.Master.Proxies.Elements
 							var enemySerpentineForwardStateAttack = Target.States.Single(x => x.Kind == StateKind.EnemySerpentineForwardStateAttack);
 							var enemySerpentineForwardStateAttackProxy = (IStateProxy<State>)Owner.CreateProxy(enemySerpentineForwardStateAttack);
 							enemySerpentineForwardStateAttackProxy.Enable = false;
+
+							var moveReflectionState = Target.States.Single(x => x.Kind == StateKind.MoveReflection);
+							var moveReflectionStateProxy = (IStateProxy<State>)Owner.CreateProxy(moveReflectionState);
+							moveReflectionStateProxy.Enable = false;
+
+							var moveAndStopState = Target.States.Single(x => x.Kind == StateKind.MoveAndStop);
+							var moveAndStopStateProxy = (IStateProxy<State>)Owner.CreateProxy(moveAndStopState);
+							moveAndStopStateProxy.Enable = true;
 						}
 						break;
 					case StateKind.EnemySerpentineForwardStateAttack:
@@ -120,7 +129,7 @@ namespace StepFlow.Master.Proxies.Elements
 						}
 						break;
 					case StateKind.EnemySerpentineForwardToBackward:
-						if (stateProxy.Cooldown.IsMin())
+						if (Course == Vector2.Zero)
 						{
 							stateProxy.Enable = false;
 
@@ -133,6 +142,14 @@ namespace StepFlow.Master.Proxies.Elements
 							var enemySerpentineBackwardStateAttack = Target.States.Single(x => x.Kind == StateKind.EnemySerpentineBackwardStateAttack);
 							var enemySerpentineBackwardStateAttackProxy = (IStateProxy<State>)Owner.CreateProxy(enemySerpentineBackwardStateAttack);
 							enemySerpentineBackwardStateAttackProxy.Enable = true;
+
+							var moveReflectionState = Target.States.Single(x => x.Kind == StateKind.MoveReflection);
+							var moveReflectionStateProxy = (IStateProxy<State>)Owner.CreateProxy(moveReflectionState);
+							moveReflectionStateProxy.Enable = true;
+
+							var moveAndStopState = Target.States.Single(x => x.Kind == StateKind.MoveAndStop);
+							var moveAndStopStateProxy = (IStateProxy<State>)Owner.CreateProxy(moveAndStopState);
+							moveAndStopStateProxy.Enable = false;
 						}
 						break;
 					case StateKind.EnemySerpentineBackwardState:
@@ -149,6 +166,14 @@ namespace StepFlow.Master.Proxies.Elements
 							var enemySerpentineBackwardStateAttack = Target.States.Single(x => x.Kind == StateKind.EnemySerpentineBackwardStateAttack);
 							var enemySerpentineBackwardStateAttackProxy = (IStateProxy<State>)Owner.CreateProxy(enemySerpentineBackwardStateAttack);
 							enemySerpentineBackwardStateAttackProxy.Enable = false;
+
+							var moveReflectionState = Target.States.Single(x => x.Kind == StateKind.MoveReflection);
+							var moveReflectionStateProxy = (IStateProxy<State>)Owner.CreateProxy(moveReflectionState);
+							moveReflectionStateProxy.Enable = false;
+
+							var moveAndStopState = Target.States.Single(x => x.Kind == StateKind.MoveAndStop);
+							var moveAndStopStateProxy = (IStateProxy<State>)Owner.CreateProxy(moveAndStopState);
+							moveAndStopStateProxy.Enable = true;
 						}
 						break;
 					case StateKind.EnemySerpentineBackwardStateAttack:
@@ -158,7 +183,7 @@ namespace StepFlow.Master.Proxies.Elements
 						}
 						break;
 					case StateKind.EnemySerpentineBackwardToForward:
-						if (stateProxy.Cooldown.IsMin())
+						if (Course == Vector2.Zero)
 						{
 							stateProxy.Enable = false;
 
@@ -171,11 +196,20 @@ namespace StepFlow.Master.Proxies.Elements
 							var enemySerpentineForwardStateAttack = Target.States.Single(x => x.Kind == StateKind.EnemySerpentineForwardStateAttack);
 							var enemySerpentineForwardStateAttackProxy = (IStateProxy<State>)Owner.CreateProxy(enemySerpentineForwardStateAttack);
 							enemySerpentineForwardStateAttackProxy.Enable = true;
+
+							var moveReflectionState = Target.States.Single(x => x.Kind == StateKind.MoveReflection);
+							var moveReflectionStateProxy = (IStateProxy<State>)Owner.CreateProxy(moveReflectionState);
+							moveReflectionStateProxy.Enable = true;
+
+							var moveAndStopState = Target.States.Single(x => x.Kind == StateKind.MoveAndStop);
+							var moveAndStopStateProxy = (IStateProxy<State>)Owner.CreateProxy(moveAndStopState);
+							moveAndStopStateProxy.Enable = false;
 						}
 						break;
 					case StateKind.MoveReflection:
 					case StateKind.MoveCW:
 					case StateKind.MoveCCW:
+					case StateKind.MoveAndStop:
 						// Handle in Collision method
 						break;
 					default: throw EnumNotSupportedException.Create(state.Kind);
@@ -218,8 +252,78 @@ namespace StepFlow.Master.Proxies.Elements
 			if (Target != otherMaterial && otherCollided.Collided.IsRigid && thisCollided.Collided.IsRigid)
 			{
 				((ICollidedProxy)Owner.CreateProxy(Body)).Break();
+
+				var moveStrategy = Target.States
+						.Where(x => x.Enable)
+						.SingleOrDefault(x =>
+							x.Kind == StateKind.MoveReflection ||
+							x.Kind == StateKind.MoveCW ||
+							x.Kind == StateKind.MoveCCW ||
+							x.Kind == StateKind.MoveAndStop);
+
+				if (moveStrategy is { })
+				{
+					switch (moveStrategy.Kind)
+					{
+						case StateKind.MoveAndStop:
+							StrategyNone();
+							break;
+						case StateKind.MoveCW:
+							StrategyClock(true);
+							break;
+						case StateKind.MoveCCW:
+							StrategyClock(false);
+							break;
+						case StateKind.MoveReflection:
+							StrategyReflection(thisCollided.Collided.Current, otherCollided.Collided.Current);
+							break;
+						default: throw EnumNotSupportedException.Create(moveStrategy.Kind);
+					}
+				}
 			}
 		}
+
+		private void StrategyNone()
+		{
+			Course = Vector2.Zero;
+		}
+
+		private void StrategyClock(bool cw)
+		{
+			var rotate = Matrix3x2.CreateRotation(MathF.PI / (cw ? 2 : -2));
+			Course = Vector2.Transform(Course, rotate);
+		}
+
+		private void StrategyReflection(ShapeContainer shape, ShapeContainer otherShape)
+		{
+			var newCourse = Course;
+			if (shape.Bounds.Right <= otherShape.Bounds.Left)
+			{
+				Negative(ref newCourse.X);
+			}
+			else if (shape.Bounds.Left >= otherShape.Bounds.Right)
+			{
+				Positive(ref newCourse.X);
+			}
+			else if (shape.Bounds.Top >= otherShape.Bounds.Bottom)
+			{
+				Positive(ref newCourse.Y);
+			}
+			else if (shape.Bounds.Bottom <= otherShape.Bounds.Top)
+			{
+				Negative(ref newCourse.Y);
+			}
+			else
+			{
+				throw new InvalidOperationException();
+			}
+
+			Course = newCourse;
+		}
+
+		private static void Positive(ref float value) => value = value >= 0 ? value : -value;
+
+		private static void Negative(ref float value) => value = value <= 0 ? value : -value;
 
 		public void SetCourse(float? radians)
 		{
