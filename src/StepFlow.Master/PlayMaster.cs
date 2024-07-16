@@ -5,7 +5,6 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using StepFlow.Core;
-using StepFlow.Core.Actions;
 using StepFlow.Core.Commands.Accessors;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
@@ -14,7 +13,6 @@ using StepFlow.Core.Tracks;
 using StepFlow.Intersection;
 using StepFlow.Master.Commands;
 using StepFlow.Master.Proxies;
-using StepFlow.Master.Proxies.Actions;
 using StepFlow.Master.Proxies.Collections;
 using StepFlow.Master.Proxies.Components;
 using StepFlow.Master.Proxies.Elements;
@@ -82,7 +80,6 @@ namespace StepFlow.Master
 				Playground instance => new PlaygroundProxy(this, instance),
 				PlayerCharacter instance => new PlayerCharacterProxy(this, instance),
 				Obstruction instance => new ObstructionProxy(this, instance),
-				SetCourse instance => new SetCourseProxy(this, instance),
 				Projectile instance => new ProjectileProxy(this, instance),
 				Item instance => new ItemProxy(this, instance),
 				Enemy instance => new EnemyProxy(this, instance),
@@ -90,9 +87,7 @@ namespace StepFlow.Master
 				Context instance => new ContextProxy(this, instance),
 				ShapeCell instance => new ShapeCellProxy(this, instance),
 				ShapeContainer instance => new ShapeContainerProxy(this, instance),
-				RemoveItem instance => new RemoveProjectileProxy(this, instance),
 				Place instance => new PlaceProxy(this, instance),
-				ChangeStrength instance => new ChangeStrengthProxy(this, instance),
 				Track instance => new TrackProxy(this, instance),
 				TrackBuilder instance => new TrackBuilderProxy(this, instance),
 				TrackUnit instance => new TrackUnitProxy(this, instance),
