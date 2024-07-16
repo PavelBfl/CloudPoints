@@ -31,6 +31,7 @@ namespace StepFlow.Master.Scripts
 				Strength = Scale.CreateByMax(100),
 				ReleaseItem = parameters.ReleaseItem,
 				Course = parameters.Course,
+				CollisionBehavior = parameters.CollisionBehavior,
 				Speed = 10,
 			};
 
@@ -54,6 +55,7 @@ namespace StepFlow.Master.Scripts
 			public Rectangle Vision { get; set; }
 			public ItemKind ReleaseItem { get; set; }
 			public Vector2 Course { get; set; }
+			public CollisionBehavior CollisionBehavior { get; set; }
 			public StateParameters[]? States { get; set; }
 		}
 	}

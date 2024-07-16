@@ -6,6 +6,15 @@ using StepFlow.Core.Tracks;
 
 namespace StepFlow.Core.Elements
 {
+	public enum CollisionBehavior
+	{
+		None,
+		Stop,
+		Reflection,
+		CW,
+		CCW,
+	}
+
 	public class Material : ElementBase
 	{
 		public const string SHEDULER_CONTROL_NAME = "Control";
@@ -28,6 +37,8 @@ namespace StepFlow.Core.Elements
 		public int Weight { get; set; }
 
 		public Vector2 Course { get; set; }
+
+		public CollisionBehavior CollisionBehavior { get; set; }
 
 		public ICollection<State> States { get; } = new HashSet<State>();
 

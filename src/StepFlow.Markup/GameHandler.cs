@@ -93,17 +93,9 @@ public sealed class GameHandler
 			CreateCell(0, 0),
 			300,
 			new Vector2(0, 0.02f),
+			CollisionBehavior.Reflection,
 			new StateParameters[]
 			{
-				new()
-				{
-					Kind = StateKind.MoveReflection,
-					Enable = true,
-				},
-				new()
-				{
-					Kind = StateKind.MoveAndStop,
-				},
 				new()
 				{
 					Kind = StateKind.EnemySerpentineForwardState,
@@ -245,7 +237,7 @@ public sealed class GameHandler
 		PlayMaster.PlayerCharacterCreateProjectile.Execute(new() { Radians = radians, Action = action });
 	}
 
-	private void CreateEnemy(Rectangle bounds, int visionSize, Vector2 beginVector, StateParameters[]? states)
+	private void CreateEnemy(Rectangle bounds, int visionSize, Vector2 beginVector, CollisionBehavior collisionBehavior, StateParameters[]? states)
 	{
 		PlayMaster.CreateEnemy.Execute(new()
 		{
@@ -258,6 +250,7 @@ public sealed class GameHandler
 			),
 			ReleaseItem = ItemKind.AddStrength,
 			Course = beginVector,
+			CollisionBehavior = collisionBehavior,
 			States = states
 		});
 	}

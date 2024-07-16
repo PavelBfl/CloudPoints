@@ -24,6 +24,7 @@ namespace StepFlow.Master.Proxies.Elements
 		int Weight { get; set; }
 
 		Vector2 Course { get; set; }
+		CollisionBehavior CollisionBehavior { get; set; }
 
 		void OnTick();
 
@@ -113,13 +114,7 @@ namespace StepFlow.Master.Proxies.Elements
 							var enemySerpentineForwardStateAttackProxy = (IStateProxy<State>)Owner.CreateProxy(enemySerpentineForwardStateAttack);
 							enemySerpentineForwardStateAttackProxy.Enable = false;
 
-							var moveReflectionState = Target.States.Single(x => x.Kind == StateKind.MoveReflection);
-							var moveReflectionStateProxy = (IStateProxy<State>)Owner.CreateProxy(moveReflectionState);
-							moveReflectionStateProxy.Enable = false;
-
-							var moveAndStopState = Target.States.Single(x => x.Kind == StateKind.MoveAndStop);
-							var moveAndStopStateProxy = (IStateProxy<State>)Owner.CreateProxy(moveAndStopState);
-							moveAndStopStateProxy.Enable = true;
+							CollisionBehavior = CollisionBehavior.Stop;
 						}
 						break;
 					case StateKind.EnemySerpentineForwardStateAttack:
@@ -143,13 +138,7 @@ namespace StepFlow.Master.Proxies.Elements
 							var enemySerpentineBackwardStateAttackProxy = (IStateProxy<State>)Owner.CreateProxy(enemySerpentineBackwardStateAttack);
 							enemySerpentineBackwardStateAttackProxy.Enable = true;
 
-							var moveReflectionState = Target.States.Single(x => x.Kind == StateKind.MoveReflection);
-							var moveReflectionStateProxy = (IStateProxy<State>)Owner.CreateProxy(moveReflectionState);
-							moveReflectionStateProxy.Enable = true;
-
-							var moveAndStopState = Target.States.Single(x => x.Kind == StateKind.MoveAndStop);
-							var moveAndStopStateProxy = (IStateProxy<State>)Owner.CreateProxy(moveAndStopState);
-							moveAndStopStateProxy.Enable = false;
+							CollisionBehavior = CollisionBehavior.Reflection;
 						}
 						break;
 					case StateKind.EnemySerpentineBackwardState:
@@ -167,13 +156,7 @@ namespace StepFlow.Master.Proxies.Elements
 							var enemySerpentineBackwardStateAttackProxy = (IStateProxy<State>)Owner.CreateProxy(enemySerpentineBackwardStateAttack);
 							enemySerpentineBackwardStateAttackProxy.Enable = false;
 
-							var moveReflectionState = Target.States.Single(x => x.Kind == StateKind.MoveReflection);
-							var moveReflectionStateProxy = (IStateProxy<State>)Owner.CreateProxy(moveReflectionState);
-							moveReflectionStateProxy.Enable = false;
-
-							var moveAndStopState = Target.States.Single(x => x.Kind == StateKind.MoveAndStop);
-							var moveAndStopStateProxy = (IStateProxy<State>)Owner.CreateProxy(moveAndStopState);
-							moveAndStopStateProxy.Enable = true;
+							CollisionBehavior = CollisionBehavior.Stop;
 						}
 						break;
 					case StateKind.EnemySerpentineBackwardStateAttack:
@@ -197,20 +180,8 @@ namespace StepFlow.Master.Proxies.Elements
 							var enemySerpentineForwardStateAttackProxy = (IStateProxy<State>)Owner.CreateProxy(enemySerpentineForwardStateAttack);
 							enemySerpentineForwardStateAttackProxy.Enable = true;
 
-							var moveReflectionState = Target.States.Single(x => x.Kind == StateKind.MoveReflection);
-							var moveReflectionStateProxy = (IStateProxy<State>)Owner.CreateProxy(moveReflectionState);
-							moveReflectionStateProxy.Enable = true;
-
-							var moveAndStopState = Target.States.Single(x => x.Kind == StateKind.MoveAndStop);
-							var moveAndStopStateProxy = (IStateProxy<State>)Owner.CreateProxy(moveAndStopState);
-							moveAndStopStateProxy.Enable = false;
+							CollisionBehavior = CollisionBehavior.Reflection;
 						}
-						break;
-					case StateKind.MoveReflection:
-					case StateKind.MoveCW:
-					case StateKind.MoveCCW:
-					case StateKind.MoveAndStop:
-						// Handle in Collision method
 						break;
 					default: throw EnumNotSupportedException.Create(state.Kind);
 				}
@@ -253,32 +224,23 @@ namespace StepFlow.Master.Proxies.Elements
 			{
 				((ICollidedProxy)Owner.CreateProxy(Body)).Break();
 
-				var moveStrategy = Target.States
-						.Where(x => x.Enable)
-						.SingleOrDefault(x =>
-							x.Kind == StateKind.MoveReflection ||
-							x.Kind == StateKind.MoveCW ||
-							x.Kind == StateKind.MoveCCW ||
-							x.Kind == StateKind.MoveAndStop);
-
-				if (moveStrategy is { })
+				switch (CollisionBehavior)
 				{
-					switch (moveStrategy.Kind)
-					{
-						case StateKind.MoveAndStop:
-							StrategyNone();
-							break;
-						case StateKind.MoveCW:
-							StrategyClock(true);
-							break;
-						case StateKind.MoveCCW:
-							StrategyClock(false);
-							break;
-						case StateKind.MoveReflection:
-							StrategyReflection(thisCollided.Collided.Current, otherCollided.Collided.Current);
-							break;
-						default: throw EnumNotSupportedException.Create(moveStrategy.Kind);
-					}
+					case CollisionBehavior.None:
+						break;
+					case CollisionBehavior.Stop:
+						StrategyNone();
+						break;
+					case CollisionBehavior.Reflection:
+						StrategyReflection(thisCollided.Collided.Current, otherCollided.Collided.Current);
+						break;
+					case CollisionBehavior.CW:
+						StrategyClock(true);
+						break;
+					case CollisionBehavior.CCW:
+						StrategyClock(false);
+						break;
+					default: throw EnumNotSupportedException.Create(CollisionBehavior);
 				}
 			}
 		}
@@ -352,6 +314,8 @@ namespace StepFlow.Master.Proxies.Elements
 		public int Speed { get => Target.Speed; set => SetValue(value); }
 
 		public Vector2 Course { get => Target.Course; set => SetValue(value); }
+
+		public CollisionBehavior CollisionBehavior { get => Target.CollisionBehavior; set => SetValue(value); }
 
 		public int Weight
 		{

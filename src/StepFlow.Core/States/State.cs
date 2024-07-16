@@ -11,11 +11,6 @@ namespace StepFlow.Core.States
 		Dash,
 		CreatingProjectile,
 
-		MoveAndStop,
-		MoveReflection,
-		MoveCW,
-		MoveCCW,
-
 		EnemySerpentineForwardState,
 		EnemySerpentineForwardStateAttack,
 		EnemySerpentineForwardToBackward,
