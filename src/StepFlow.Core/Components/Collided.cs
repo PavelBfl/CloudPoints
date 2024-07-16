@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Numerics;
+using StepFlow.Domains.Components;
 using StepFlow.Intersection;
 
 namespace StepFlow.Core.Components
@@ -33,6 +34,17 @@ namespace StepFlow.Core.Components
 		{
 			Current.Attached = new CollidedAttached(nameof(Current), this);
 			Next.Attached = new CollidedAttached(nameof(Next), this);
+		}
+
+		public Collided(CollidedDto original)
+			: base(original)
+		{
+			ThrowIfOriginalNull(original);
+
+			Current.Attached = new CollidedAttached(nameof(Current), this);
+			Current.Add(original.Current);
+			Next.Attached = new CollidedAttached(nameof(Next), this);
+			Next.Add(original.Next);
 		}
 
 		public ShapeContainer Current { get; } = new ShapeContainer(Playground.IntersectionContext);

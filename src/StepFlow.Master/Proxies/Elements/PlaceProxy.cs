@@ -2,6 +2,7 @@
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.States;
+using StepFlow.Domains.States;
 using StepFlow.Master.Proxies.States;
 
 namespace StepFlow.Master.Proxies.Elements

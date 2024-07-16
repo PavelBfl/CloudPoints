@@ -2,6 +2,8 @@
 using System.Numerics;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
+using StepFlow.Domains.Components;
+using StepFlow.Domains.Elements;
 using StepFlow.Master.Proxies;
 
 namespace StepFlow.Master.Scripts

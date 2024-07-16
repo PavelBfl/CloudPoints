@@ -1,26 +1,27 @@
-﻿using StepFlow.Core.Components;
+﻿using StepFlow.Domains.Components;
+using StepFlow.Domains.States;
 
 namespace StepFlow.Core.States
 {
-	public enum StateKind
-	{
-		Remove,
-		Poison,
-		Arc,
-		Push,
-		Dash,
-		CreatingProjectile,
-
-		EnemySerpentineForwardState,
-		EnemySerpentineForwardStateAttack,
-		EnemySerpentineForwardToBackward,
-		EnemySerpentineBackwardState,
-		EnemySerpentineBackwardStateAttack,
-		EnemySerpentineBackwardToForward,
-	}
-
 	public class State : Subject
 	{
+		public State()
+		{
+		}
+
+		public State(StateDto original)
+			: base(original)
+		{
+			ThrowIfOriginalNull(original);
+
+			Kind = original.Kind;
+			Enable = original.Enable;
+			Cooldown = original.Cooldown;
+			TotalCooldown = original.TotalCooldown;
+			Arg0 = original.Arg0;
+			Arg1 = original.Arg1;
+		}
+
 		public StateKind Kind { get; set; }
 
 		public bool Enable { get; set; } = true;

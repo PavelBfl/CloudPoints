@@ -1,20 +1,25 @@
-﻿using StepFlow.Core.Components;
+﻿using StepFlow.Domains.Components;
+using StepFlow.Domains.Elements;
 
 namespace StepFlow.Core.Elements
 {
-	public enum ItemKind
-	{
-		None,
-		Fire,
-		Poison,
-		Speed,
-
-		AttackSpeed,
-		AddStrength,
-	}
-
 	public sealed class Item : Material
 	{
+		public Item()
+		{
+		}
+
+		public Item(ItemDto original)
+			: base(original)
+		{
+			ThrowIfOriginalNull(original);
+
+			Kind = original.Kind;
+			DamageSetting = original.DamageSetting;
+			AttackCooldown = original.AttackCooldown;
+			AddStrength = original.AddStrength;
+		}
+
 		public ItemKind Kind { get; set; }
 
 		public Damage DamageSetting { get; set; }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace StepFlow.Core.Components
+namespace StepFlow.Domains.Components
 {
 	public readonly struct Scale : IEquatable<Scale>
 	{

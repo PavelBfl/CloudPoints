@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
+using StepFlow.Domains.Components;
 
 namespace StepFlow.Master.Proxies.Elements
 {

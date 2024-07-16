@@ -2,6 +2,7 @@
 using System.Numerics;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
+using StepFlow.Domains.Components;
 
 namespace StepFlow.Master.Scripts
 {

@@ -1,5 +1,6 @@
 ﻿using System;
 using StepFlow.Core.Components;
+using StepFlow.Domains.Elements;
 
 namespace StepFlow.Core.Elements
 {
@@ -29,6 +30,16 @@ namespace StepFlow.Core.Elements
 			}
 
 			current = value;
+		}
+
+		public ElementBase()
+		{
+		}
+
+		public ElementBase(ElementBaseDto original)
+			: base(original)
+		{
+			ThrowIfOriginalNull(original);
 		}
 	}
 }

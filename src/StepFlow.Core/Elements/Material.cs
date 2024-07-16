@@ -1,20 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using StepFlow.Core.Components;
 using StepFlow.Core.States;
 using StepFlow.Core.Tracks;
+using StepFlow.Domains.Components;
+using StepFlow.Domains.Elements;
 
 namespace StepFlow.Core.Elements
 {
-	public enum CollisionBehavior
-	{
-		None,
-		Stop,
-		Reflection,
-		CW,
-		CCW,
-	}
-
 	public class Material : ElementBase
 	{
 		public const string SHEDULER_CONTROL_NAME = "Control";
@@ -22,7 +16,22 @@ namespace StepFlow.Core.Elements
 
 		public const int MAX_WEIGHT = 1000;
 
-		public int Ordinal { get; set; }
+		public Material()
+		{
+		}
+
+		public Material(MaterialDto original)
+			: base(original)
+		{
+			Strength = original.Strength;
+			Body = original.Body?.ToCollided();
+			Speed = original.Speed;
+			Weight = original.Weight;
+			Course = original.Course;
+			CollisionBehavior = original.CollisionBehavior;
+			States.AddUniqueRange(original.States.Select(CopyExtensions.ToState));
+			Track = original.Track?.ToTrackBuilder();
+		}
 
 		public Scale Strength { get; set; }
 

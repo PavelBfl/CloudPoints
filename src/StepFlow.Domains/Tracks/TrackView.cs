@@ -1,4 +1,4 @@
-﻿namespace StepFlow.Core.Tracks
+﻿namespace StepFlow.Domains.Tracks
 {
 	public enum TrackView
 	{

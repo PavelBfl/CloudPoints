@@ -1,5 +1,6 @@
-﻿using StepFlow.Core.Components;
-using StepFlow.Core.States;
+﻿using StepFlow.Core.States;
+using StepFlow.Domains.Components;
+using StepFlow.Domains.States;
 
 namespace StepFlow.Master.Scripts
 {

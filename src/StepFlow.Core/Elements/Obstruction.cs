@@ -1,21 +1,22 @@
-﻿namespace StepFlow.Core.Elements
+﻿using StepFlow.Domains.Elements;
+
+namespace StepFlow.Core.Elements
 {
-	public enum ObstructionKind
-	{
-		Single,
-		Tiles,
-	}
-
-	public enum ObstructionView
-	{
-		None,
-		DarkWall,
-		Bricks,
-		Boards,
-	}
-
 	public sealed class Obstruction : Material
 	{
+		public Obstruction()
+		{
+		}
+
+		public Obstruction(ObstructionDto original)
+			: base(original)
+		{
+			ThrowIfOriginalNull(original);
+
+			Kind = original.Kind;
+			View = original.View;
+		}
+
 		public ObstructionKind Kind { get; set; }
 
 		public ObstructionView View { get; set; }

@@ -1,5 +1,5 @@
-﻿using StepFlow.Core.Components;
-using StepFlow.Core.Tracks;
+﻿using StepFlow.Core.Tracks;
+using StepFlow.Domains.Components;
 
 namespace StepFlow.Master.Proxies.Tracks
 {
