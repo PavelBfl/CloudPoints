@@ -5,14 +5,15 @@ namespace StepFlow.Core.States
 {
 	public class State : Subject
 	{
-		public State()
+		public State(IContext context)
+			: base(context)
 		{
 		}
 
-		public State(StateDto original)
-			: base(original)
+		public State(IContext context, StateDto original)
+			: base(context, original)
 		{
-			ThrowIfOriginalNull(original);
+			CopyExtensions.ThrowIfOriginalNull(original);
 
 			Kind = original.Kind;
 			Enable = original.Enable;

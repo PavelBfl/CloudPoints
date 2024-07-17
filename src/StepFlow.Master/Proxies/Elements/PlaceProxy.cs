@@ -28,7 +28,7 @@ namespace StepFlow.Master.Proxies.Elements
 				}
 				else
 				{
-					Owner.CreateCollectionProxy(otherMaterial.States).Add(new State()
+					Owner.CreateCollectionProxy(otherMaterial.States).Add(new State(Owner.Playground.Context)
 					{
 						Kind = StateKind.Poison,
 						TotalCooldown = 1,

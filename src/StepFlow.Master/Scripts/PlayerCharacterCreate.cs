@@ -14,14 +14,14 @@ namespace StepFlow.Master.Scripts
 
 		public override void Execute(Parameters parameters)
 		{
-			var body = new Collided()
+			var body = new Collided(PlayMaster.Playground.Context)
 			{
 				Current = { parameters.Bounds },
 				IsRigid = true,
 			};
 			body.PositionSync();
 
-			var playerCharacter = new PlayerCharacter()
+			var playerCharacter = new PlayerCharacter(PlayMaster.Playground.Context)
 			{
 				Name = "Player",
 				Strength = Scale.CreateByMax(parameters.Strength),

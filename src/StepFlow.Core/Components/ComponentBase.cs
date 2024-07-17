@@ -5,13 +5,15 @@ namespace StepFlow.Core.Components
 {
 	public class ComponentBase : Subject
 	{
-		public ComponentBase()
+		public ComponentBase(IContext context)
+			: base(context)
 		{
 		}
 
-		public ComponentBase(ComponentBaseDto original)
+		public ComponentBase(IContext context, ComponentBaseDto original)
+			: base(context)
 		{
-			ThrowIfOriginalNull(original);
+			CopyExtensions.ThrowIfOriginalNull(original);
 		}
 
 		public ElementBase? Element { get; set; }

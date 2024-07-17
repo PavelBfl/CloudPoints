@@ -41,7 +41,7 @@ namespace StepFlow.Master.Proxies.Elements
 					}
 					else
 					{
-						pushState = new State()
+						pushState = new State(Owner.Playground.Context)
 						{
 							Kind = StateKind.Push,
 							TotalCooldown = totalCooldown,

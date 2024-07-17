@@ -28,12 +28,12 @@ namespace StepFlow.Master.Proxies
 
 		public void CreateProjectile(Rectangle bounds, int value, DamageKind kind)
 		{
-			var body = new Collided()
+			var body = new Collided(Owner.Playground.Context)
 			{
 				Current = { bounds },
 				IsRigid = true,
 			};
-			var projectile = new Projectile()
+			var projectile = new Projectile(Owner.Playground.Context)
 			{
 				Body = body,
 				Damage = new Damage()
@@ -58,10 +58,10 @@ namespace StepFlow.Master.Proxies
 
 			var item = kind switch
 			{
-				ItemKind.Fire => new Item()
+				ItemKind.Fire => new Item(Owner.Playground.Context)
 				{
 					Kind = ItemKind.Fire,
-					Body = new Collided()
+					Body = new Collided(Owner.Playground.Context)
 					{
 						Current = { bounds },
 						IsRigid = true,
@@ -72,10 +72,10 @@ namespace StepFlow.Master.Proxies
 						Kind = DamageKind.Fire,
 					},
 				},
-				ItemKind.Poison => new Item()
+				ItemKind.Poison => new Item(Owner.Playground.Context)
 				{
 					Kind = ItemKind.Poison,
-					Body = new Collided()
+					Body = new Collided(Owner.Playground.Context)
 					{
 						Current = { bounds },
 						IsRigid = true,
@@ -86,30 +86,30 @@ namespace StepFlow.Master.Proxies
 						Kind = DamageKind.Poison,
 					},
 				},
-				ItemKind.Speed => new Item()
+				ItemKind.Speed => new Item(Owner.Playground.Context)
 				{
 					Kind = ItemKind.Speed,
-					Body = new Collided()
+					Body = new Collided(Owner.Playground.Context)
 					{
 						Current = { bounds },
 						IsRigid = true,
 					},
 					Speed = 2,
 				},
-				ItemKind.AttackSpeed => new Item()
+				ItemKind.AttackSpeed => new Item(Owner.Playground.Context)
 				{
 					Kind = ItemKind.AttackSpeed,
-					Body = new Collided()
+					Body = new Collided(Owner.Playground.Context)
 					{
 						Current = { bounds },
 						IsRigid = true,
 					},
 					AttackCooldown = 3000,
 				},
-				ItemKind.AddStrength => new Item()
+				ItemKind.AddStrength => new Item(Owner.Playground.Context)
 				{
 					Kind = ItemKind.AddStrength,
-					Body = new Collided()
+					Body = new Collided(Owner.Playground.Context)
 					{
 						Current = { bounds },
 						IsRigid = true,
@@ -126,9 +126,9 @@ namespace StepFlow.Master.Proxies
 
 		public void CreatePlace(Rectangle bounds)
 		{
-			var place = new Place()
+			var place = new Place(Owner.Playground.Context)
 			{
-				Body = new Collided()
+				Body = new Collided(Owner.Playground.Context)
 				{
 					Current = { bounds },
 				},

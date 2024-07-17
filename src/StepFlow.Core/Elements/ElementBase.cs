@@ -32,14 +32,15 @@ namespace StepFlow.Core.Elements
 			current = value;
 		}
 
-		public ElementBase()
+		public ElementBase(IContext context)
+			: base(context)
 		{
 		}
 
-		public ElementBase(ElementBaseDto original)
-			: base(original)
+		public ElementBase(IContext context, ElementBaseDto original)
+			: base(context, original)
 		{
-			ThrowIfOriginalNull(original);
+			CopyExtensions.ThrowIfOriginalNull(original);
 		}
 	}
 }

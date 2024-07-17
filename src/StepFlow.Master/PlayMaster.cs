@@ -74,7 +74,7 @@ namespace StepFlow.Master
 
 		public TransactionAxis TimeAxis { get; } = new TransactionAxis();
 
-		public Playground Playground { get; } = new Playground();
+		public Playground Playground { get; } = new Playground(new Core.Context());
 
 		[return: NotNullIfNotNull("value")]
 		public object? CreateProxy(object? value)
@@ -88,7 +88,7 @@ namespace StepFlow.Master
 				Item instance => new ItemProxy(this, instance),
 				Enemy instance => new EnemyProxy(this, instance),
 				Collided instance => new CollidedProxy(this, instance),
-				Context instance => new ContextProxy(this, instance),
+				Intersection.Context instance => new ContextProxy(this, instance),
 				ShapeCell instance => new ShapeCellProxy(this, instance),
 				ShapeContainer instance => new ShapeContainerProxy(this, instance),
 				Place instance => new PlaceProxy(this, instance),
@@ -124,7 +124,7 @@ namespace StepFlow.Master
 				collision.OnTick();
 			}
 
-			var collisions = Playground.IntersectionContext.GetCollisions();
+			var collisions = Playground.Context.IntersectionContext.GetCollisions();
 			foreach (var collision in collisions)
 			{
 				if (collision.Left.Attached is { } leftAttached && collision.Right.Attached is { } rightAttached)
@@ -153,10 +153,10 @@ namespace StepFlow.Master
 		public void CreateProjectile(Point center, int radius, Vector2 course, Damage damage, int duration, Subject? creator, ReusableKind reusable)
 		{
 			var bodyCurrent = RectangleExtensions.Create(center, radius);
-			var projectile = new Projectile()
+			var projectile = new Projectile(Playground.Context)
 			{
 				Name = "Projectile",
-				Body = new Collided()
+				Body = new Collided(Playground.Context)
 				{
 					Current = { bodyCurrent },
 					Position = new Vector2(bodyCurrent.X, bodyCurrent.Y),
@@ -167,16 +167,16 @@ namespace StepFlow.Master
 				Course = course,
 				States =
 				{
-					new State()
+					new State(Playground.Context)
 					{
 						Kind = StateKind.Remove,
 						TotalCooldown = duration,
 					},
 				},
-				Track = new TrackBuilder()
+				Track = new TrackBuilder(Playground.Context)
 				{
 					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(0.05f)),
-					Change = new TrackChange()
+					Change = new TrackChange(Playground.Context)
 					{
 						Size = new Vector2(-0.003f),
 						Position = course * 0.002f,

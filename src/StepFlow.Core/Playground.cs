@@ -9,18 +9,17 @@ namespace StepFlow.Core
 	{
 		public const int CELL_SIZE_DEFAULT = 50;
 
-		public static Intersection.Context IntersectionContext { get; } = new Intersection.Context();
-
-		public Playground()
+		public Playground(IContext context)
+			: base(context)
 		{
 		}
 
-		public Playground(PlaygroundDto original)
-			: base(original)
+		public Playground(IContext context, PlaygroundDto original)
+			: base(context, original)
 		{
-			ThrowIfOriginalNull(original);
+			CopyExtensions.ThrowIfOriginalNull(original);
 
-			Items.AddUniqueRange(original.Items.Select(CopyExtensions.ToMaterial));
+			Items.AddUniqueRange(original.Items.Select(x => x.ToMaterial(Context)));
 		}
 
 		public PlayerCharacter GetPlayerCharacterRequired() => Items.OfType<PlayerCharacter>().Single();

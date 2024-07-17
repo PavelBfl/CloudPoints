@@ -1,4 +1,5 @@
-﻿using StepFlow.Core.States;
+﻿using StepFlow.Core;
+using StepFlow.Core.States;
 using StepFlow.Domains.Components;
 using StepFlow.Domains.States;
 
@@ -18,7 +19,7 @@ namespace StepFlow.Master.Scripts
 
 		public float Arg1 { get; set; }
 
-		public readonly State ToState() => new State()
+		public readonly State ToState(IContext context) => new State(context)
 		{
 			Kind = Kind,
 			Enable = Enable,

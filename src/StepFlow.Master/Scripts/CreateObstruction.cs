@@ -15,13 +15,13 @@ namespace StepFlow.Master.Scripts
 
 		public override void Execute(Parameters parameters)
 		{
-			var barrier = new Obstruction()
+			var barrier = new Obstruction(PlayMaster.Playground.Context)
 			{
 				Name = "Obstruction",
 				Kind = parameters.Kind,
 				View = parameters.View,
 				Weight = parameters.Weight,
-				Body = new Collided()
+				Body = new Collided(PlayMaster.Playground.Context)
 				{
 					Current = { parameters.Bounds ?? Array.Empty<Rectangle>() },
 					IsRigid = true,

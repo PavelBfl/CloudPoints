@@ -6,14 +6,15 @@ namespace StepFlow.Core.Elements
 	{
 		public const string PLACE_SCHEDULER = "Place";
 
-		public Place()
+		public Place(IContext context)
+			: base(context)
 		{
 		}
 
-		public Place(PlaceDto original)
-			: base(original)
+		public Place(IContext context, PlaceDto original)
+			: base(context, original)
 		{
-			ThrowIfOriginalNull(original);
+			CopyExtensions.ThrowIfOriginalNull(original);
 		}
 	}
 }

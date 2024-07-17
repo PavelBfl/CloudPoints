@@ -5,14 +5,15 @@ namespace StepFlow.Core.Elements
 {
 	public sealed class Item : Material
 	{
-		public Item()
+		public Item(IContext context)
+			: base(context)
 		{
 		}
 
-		public Item(ItemDto original)
-			: base(original)
+		public Item(IContext context, ItemDto original)
+			: base(context, original)
 		{
-			ThrowIfOriginalNull(original);
+			CopyExtensions.ThrowIfOriginalNull(original);
 
 			Kind = original.Kind;
 			DamageSetting = original.DamageSetting;

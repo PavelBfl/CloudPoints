@@ -6,16 +6,17 @@ namespace StepFlow.Core.Elements
 {
 	public sealed class Enemy : Material
 	{
-		public Enemy()
+		public Enemy(IContext context)
+			: base(context)
 		{
 		}
 
-		public Enemy(EnemyDto original)
-			: base(original)
+		public Enemy(IContext context, EnemyDto original)
+			: base(context, original)
 		{
-			ThrowIfOriginalNull(original);
+			CopyExtensions.ThrowIfOriginalNull(original);
 
-			Vision = original.Vision?.ToCollided();
+			Vision = original.Vision?.ToCollided(context);
 			Cooldown = original.Cooldown;
 			ReleaseItem = original.ReleaseItem;
 		}

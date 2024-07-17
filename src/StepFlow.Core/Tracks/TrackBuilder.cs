@@ -5,16 +5,17 @@ namespace StepFlow.Core.Tracks
 {
 	public class TrackBuilder : Subject
 	{
-		public TrackBuilder()
+		public TrackBuilder(IContext context)
+			: base(context)
 		{
 		}
 
-		public TrackBuilder(TrackBuilderDto original)
-			: base(original)
+		public TrackBuilder(IContext context, TrackBuilderDto original)
+			: base(context, original)
 		{
-			ThrowIfOriginalNull(original);
+			CopyExtensions.ThrowIfOriginalNull(original);
 
-			Change = original.Change?.ToTrackChange();
+			Change = original.Change?.ToTrackChange(Context);
 			Cooldown = original.Cooldown;
 		}
 

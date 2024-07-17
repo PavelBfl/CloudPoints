@@ -30,26 +30,35 @@ namespace StepFlow.Core.Components
 
 	public sealed class Collided : ComponentBase
 	{
-		public Collided()
+		public Collided(IContext context)
+			: base(context)
 		{
+			Current = new ShapeContainer(Context.IntersectionContext);
+			Next = new ShapeContainer(Context.IntersectionContext);
+
 			Current.Attached = new CollidedAttached(nameof(Current), this);
 			Next.Attached = new CollidedAttached(nameof(Next), this);
 		}
 
-		public Collided(CollidedDto original)
-			: base(original)
+		public Collided(IContext context, CollidedDto original)
+			: base(context, original)
 		{
-			ThrowIfOriginalNull(original);
+			CopyExtensions.ThrowIfContextNull(context);
+			CopyExtensions.ThrowIfOriginalNull(original);
+
+			Current = new ShapeContainer(Context.IntersectionContext);
+			Next = new ShapeContainer(Context.IntersectionContext);
 
 			Current.Attached = new CollidedAttached(nameof(Current), this);
-			Current.Add(original.Current);
 			Next.Attached = new CollidedAttached(nameof(Next), this);
+
+			Current.Add(original.Current);
 			Next.Add(original.Next);
 		}
 
-		public ShapeContainer Current { get; } = new ShapeContainer(Playground.IntersectionContext);
+		public ShapeContainer Current { get; }
 
-		public ShapeContainer Next { get; } = new ShapeContainer(Playground.IntersectionContext);
+		public ShapeContainer Next { get; }
 
 		public Vector2 Position { get; set; }
 

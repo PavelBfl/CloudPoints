@@ -5,18 +5,19 @@ namespace StepFlow.Core.Tracks
 {
 	public class TrackUnit : Subject
 	{
-		public TrackUnit()
+		public TrackUnit(IContext context)
+			: base(context)
 		{
 		}
 
-		public TrackUnit(TrackUnitDto original)
-			: base(original)
+		public TrackUnit(IContext context, TrackUnitDto original)
+			: base(context, original)
 		{
-			ThrowIfOriginalNull(original);
+			CopyExtensions.ThrowIfOriginalNull(original);
 
 			Center = original.Center;
 			Radius = original.Radius;
-			Change = original.Change?.ToTrackChange();
+			Change = original.Change?.ToTrackChange(Context);
 		}
 
 		public Vector2 Center { get; set; }

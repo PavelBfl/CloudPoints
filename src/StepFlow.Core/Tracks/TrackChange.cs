@@ -5,14 +5,15 @@ namespace StepFlow.Core.Tracks
 {
 	public class TrackChange : Subject
 	{
-		public TrackChange()
+		public TrackChange(IContext context)
+			: base(context)
 		{
 		}
 
-		public TrackChange(TrackChangeDto original)
-			: base(original)
+		public TrackChange(IContext context, TrackChangeDto original)
+			: base(context, original)
 		{
-			ThrowIfOriginalNull(original);
+			CopyExtensions.ThrowIfOriginalNull(original);
 
 			View = original.View;
 			Thickness = original.Thickness;

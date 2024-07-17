@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using StepFlow.Core.Exceptions;
 using StepFlow.Domains;
 
@@ -15,25 +14,22 @@ namespace StepFlow.Core
 			where T : struct
 			=> value ?? throw ExceptionBuilder.CreatePropertyIsNull(propertyName);
 
-		protected static void ThrowIfOriginalNull(object? original)
+		public Subject(IContext context)
 		{
-			if (original is null)
-			{
-				throw new ArgumentNullException(nameof(original));
-			}
+			CopyExtensions.ThrowIfArgumentNull(context, nameof(context));
+
+			Context = context;
 		}
 
-		public Subject()
+		public Subject(IContext context, SubjectDto original)
+			: this(context)
 		{
-		}
-
-		public Subject(SubjectDto original)
-		{
-			ThrowIfOriginalNull(original);
+			CopyExtensions.ThrowIfOriginalNull(original);
 
 			Name = original.Name;
 		}
 
+		public IContext Context { get; }
 
 		public string? Name { get; set; }
 	}

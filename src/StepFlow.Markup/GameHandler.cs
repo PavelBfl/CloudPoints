@@ -33,7 +33,7 @@ public sealed class GameHandler
 		Meter.CreateObservableGauge("Time", () => PlayMaster.TimeAxis.Current);
 		Meter.CreateObservableGauge("Commands", () => PlayMaster.TimeAxis.Source.Current);
 		Meter.CreateObservableGauge("Frame", () => Frame.TotalMilliseconds);
-		Meter.CreateObservableGauge("Shapes", () => Playground.IntersectionContext.Count);
+		Meter.CreateObservableGauge("Shapes", () => PlayMaster.Playground.Context.IntersectionContext.Count);
 		Init();
 
 		TacticPanel = new(Control, Drawer, Place, PlayMaster);
@@ -361,7 +361,7 @@ public sealed class GameHandler
 				var location = (Vector2)bounds.Location;
 				var size = (Vector2)bounds.Size;
 				var radius = size / 2;
-				trackUnitsProxy.Add(new()
+				trackUnitsProxy.Add(new(PlayMaster.Playground.Context)
 				{
 					Center = location + radius,
 					Radius = radius,

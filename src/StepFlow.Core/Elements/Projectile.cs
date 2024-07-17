@@ -7,18 +7,19 @@ namespace StepFlow.Core.Elements
 {
 	public sealed class Projectile : Material
 	{
-		public Projectile()
+		public Projectile(IContext context)
+			: base(context)
 		{
 		}
 
-		public Projectile(ProjectileDto original)
-			: base(original)
+		public Projectile(IContext context, ProjectileDto original)
+			: base(context, original)
 		{
-			ThrowIfOriginalNull(original);
+			CopyExtensions.ThrowIfOriginalNull(original);
 
 			Damage = original.Damage;
 			Reusable = original.Reusable;
-			Immunity.AddUniqueRange(original.Immunity.Select(CopyExtensions.ToSubject));
+			Immunity.AddUniqueRange(original.Immunity.Select(x => x.ToSubject(context)));
 		}
 
 		public Damage Damage { get; set; }

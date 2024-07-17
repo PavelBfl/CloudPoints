@@ -7,19 +7,20 @@ namespace StepFlow.Core.Elements
 {
 	public sealed class PlayerCharacter : Material
 	{
-		public PlayerCharacter()
+		public PlayerCharacter(IContext context)
+			: base(context)
 		{
 		}
 
-		public PlayerCharacter(PlayerCharacterDto original)
-			: base(original)
+		public PlayerCharacter(IContext context, PlayerCharacterDto original)
+			: base(context, original)
 		{
-			ThrowIfOriginalNull(original);
+			CopyExtensions.ThrowIfOriginalNull(original);
 
 			Cooldown = original.Cooldown;
 			MainSkill = original.MainSkill;
 			AuxiliarySkill = original.AuxiliarySkill;
-			Items.AddRange(original.Items.Select(CopyExtensions.ToItem));
+			Items.AddRange(original.Items.Select(x => CopyExtensions.ToItem(x, Context)));
 		}
 
 		public Scale Cooldown { get; set; }

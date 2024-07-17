@@ -16,21 +16,22 @@ namespace StepFlow.Core.Elements
 
 		public const int MAX_WEIGHT = 1000;
 
-		public Material()
+		public Material(IContext context)
+			: base(context)
 		{
 		}
 
-		public Material(MaterialDto original)
-			: base(original)
+		public Material(IContext context, MaterialDto original)
+			: base(context, original)
 		{
 			Strength = original.Strength;
-			Body = original.Body?.ToCollided();
+			Body = original.Body?.ToCollided(context);
 			Speed = original.Speed;
 			Weight = original.Weight;
 			Course = original.Course;
 			CollisionBehavior = original.CollisionBehavior;
-			States.AddUniqueRange(original.States.Select(CopyExtensions.ToState));
-			Track = original.Track?.ToTrackBuilder();
+			States.AddUniqueRange(original.States.Select(x => x.ToState(Context)));
+			Track = original.Track?.ToTrackBuilder(Context);
 		}
 
 		public Scale Strength { get; set; }

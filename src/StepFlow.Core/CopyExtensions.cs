@@ -10,65 +10,66 @@ using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
 using StepFlow.Domains.States;
 using StepFlow.Domains.Tracks;
+using StepFlow.Intersection;
 
 namespace StepFlow.Core
 {
 	internal static class CopyExtensions
 	{
-		public static Collided ToCollided(this CollidedDto original) => new Collided(original);
+		public static Collided ToCollided(this CollidedDto original, IContext context) => new Collided(context, original);
 
-		public static ComponentBase ToComponent(this ComponentBaseDto original) => original switch
+		public static ComponentBase ToComponent(this ComponentBaseDto original, IContext context) => original switch
 		{
-			CollidedDto collided => ToCollided(collided),
+			CollidedDto collided => ToCollided(collided, context),
 			null => throw new ArgumentNullException(nameof(original)),
 			_ => throw ExceptionBuilder.CreateUnknownTypeForCopy(original.GetType()),
 		};
 
-		public static TrackChange ToTrackChange(this TrackChangeDto original) => new TrackChange(original);
+		public static TrackChange ToTrackChange(this TrackChangeDto original, IContext context) => new TrackChange(context, original);
 
-		public static TrackUnit ToTrackUnit(this TrackUnitDto original) => new TrackUnit(original);
+		public static TrackUnit ToTrackUnit(this TrackUnitDto original, IContext context) => new TrackUnit(context, original);
 
-		public static TrackBuilder ToTrackBuilder(this TrackBuilderDto original) => new TrackBuilder(original);
+		public static TrackBuilder ToTrackBuilder(this TrackBuilderDto original, IContext context) => new TrackBuilder(context, original);
 
-		public static State ToState(this StateDto original) => new State(original);
+		public static State ToState(this StateDto original, IContext context) => new State(context, original);
 
-		public static Enemy ToEnemy(this EnemyDto original) => new Enemy(original);
+		public static Enemy ToEnemy(this EnemyDto original, IContext context) => new Enemy(context, original);
 
-		public static Item ToItem(this ItemDto original) => new Item(original);
+		public static Item ToItem(this ItemDto original, IContext context) => new Item(context, original);
 
-		public static Obstruction ToObstruction(this ObstructionDto original) => new Obstruction(original);
+		public static Obstruction ToObstruction(this ObstructionDto original, IContext context) => new Obstruction(context, original);
 
-		public static Place ToPlace(this PlaceDto original) => new Place(original);
+		public static Place ToPlace(this PlaceDto original, IContext context) => new Place(context, original);
 
-		public static PlayerCharacter ToPlayerCharacter(this PlayerCharacterDto original) => new PlayerCharacter(original);
+		public static PlayerCharacter ToPlayerCharacter(this PlayerCharacterDto original, IContext context) => new PlayerCharacter(context, original);
 
-		public static Projectile ToProjectile(this ProjectileDto original) => new Projectile(original);
+		public static Projectile ToProjectile(this ProjectileDto original, IContext context) => new Projectile(context, original);
 
-		public static Track ToTrack(this TrackDto original) => new Track(original);
+		public static Track ToTrack(this TrackDto original, IContext context) => new Track(context, original);
 
-		public static ElementBase ToElementBase(this ElementBaseDto original) => original switch
+		public static ElementBase ToElementBase(this ElementBaseDto original, IContext context) => original switch
 		{
-			MaterialDto material => ToMaterial(material),
+			MaterialDto material => ToMaterial(material, context),
 			null => throw new ArgumentNullException(nameof(original)),
 			_ => throw ExceptionBuilder.CreateUnknownTypeForCopy(original.GetType()),
 		};
 
-		public static Material ToMaterial(this MaterialDto original) => original switch
+		public static Material ToMaterial(this MaterialDto original, IContext context) => original switch
 		{
-			EnemyDto enemy => new Enemy(enemy),
-			ItemDto item => new Item(item),
-			ObstructionDto obstruction => new Obstruction(obstruction),
-			PlaceDto place => new Place(place),
-			PlayerCharacterDto player => new PlayerCharacter(player),
-			ProjectileDto projectile => new Projectile(projectile),
+			EnemyDto enemy => ToEnemy(enemy, context),
+			ItemDto item => ToItem(item, context),
+			ObstructionDto obstruction => ToObstruction(obstruction, context),
+			PlaceDto place => ToPlace(place, context),
+			PlayerCharacterDto player => ToPlayerCharacter(player, context),
+			ProjectileDto projectile => ToProjectile(projectile, context),
 			null => throw new ArgumentNullException(nameof(original)),
 			_ => throw ExceptionBuilder.CreateUnknownTypeForCopy(original.GetType()),
 		};
 
-		public static Subject ToSubject(this SubjectDto original) => original switch
+		public static Subject ToSubject(this SubjectDto original, IContext context) => original switch
 		{
-			ComponentBaseDto component => ToComponent(component),
-			ElementBaseDto element => ToElementBase(element),
+			ComponentBaseDto component => ToComponent(component, context),
+			ElementBaseDto element => ToElementBase(element, context),
 			null => throw new ArgumentNullException(nameof(original)),
 			_ => throw ExceptionBuilder.CreateUnknownTypeForCopy(original.GetType()),
 		};
@@ -115,5 +116,17 @@ namespace StepFlow.Core
 				}
 			}
 		}
+
+		internal static void ThrowIfArgumentNull(object? value, string name)
+		{
+			if (value is null)
+			{
+				throw new ArgumentNullException(name);
+			}
+		}
+
+		internal static void ThrowIfOriginalNull(object? original) => ThrowIfArgumentNull(original, nameof(original));
+
+		internal static void ThrowIfContextNull(IContext context) => ThrowIfArgumentNull(context, nameof(context));
 	}
 }

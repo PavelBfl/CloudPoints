@@ -153,7 +153,7 @@ namespace StepFlow.Master.Proxies.Elements
 						else
 						{
 							var statesProxy = Owner.CreateCollectionProxy(Target.States);
-							statesProxy.Add(new State()
+							statesProxy.Add(new State(Owner.Playground.Context)
 							{
 								Kind = StateKind.Dash,
 								TotalCooldown = TimeTick.FromSeconds(0.1f),
@@ -172,10 +172,10 @@ namespace StepFlow.Master.Proxies.Elements
 		private void CreateArc(Point center, int radius, Vector2 course, Damage damage, int duration, Subject? creator)
 		{
 			var bodyCurrent = RectangleExtensions.Create(center, radius);
-			var projectile = new Projectile()
+			var projectile = new Projectile(Owner.Playground.Context)
 			{
 				Name = "Projectile",
-				Body = new Collided()
+				Body = new Collided(Owner.Playground.Context)
 				{
 					Current = { bodyCurrent },
 					Position = new Vector2(bodyCurrent.X, bodyCurrent.Y),
@@ -186,20 +186,20 @@ namespace StepFlow.Master.Proxies.Elements
 				Course = course,
 				States =
 				{
-					new State()
+					new State(Owner.Playground.Context)
 					{
 						Kind = StateKind.Remove,
 						TotalCooldown = duration,
 					},
-					new State()
+					new State(Owner.Playground.Context)
 					{
 						Kind = StateKind.Arc,
 					},
 				},
-				Track = new TrackBuilder()
+				Track = new TrackBuilder(Owner.Playground.Context)
 				{
 					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(0.01f)),
-					Change = new TrackChange()
+					Change = new TrackChange(Owner.Playground.Context)
 					{
 						Thickness = 2,
 						Size = new Vector2(-0.005f),

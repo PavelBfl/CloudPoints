@@ -18,14 +18,14 @@ namespace StepFlow.Master.Scripts
 		{
 			var playgroundProxy = (IPlaygroundProxy)PlayMaster.CreateProxy(PlayMaster.Playground);
 
-			var enemy = new Enemy()
+			var enemy = new Enemy(PlayMaster.Playground.Context)
 			{
-				Body = new Collided()
+				Body = new Collided(PlayMaster.Playground.Context)
 				{
 					Current = { parameters.Bounds },
 					IsRigid = true,
 				},
-				Vision = new Collided()
+				Vision = new Collided(PlayMaster.Playground.Context)
 				{
 					Current = { parameters.Vision },
 				},
@@ -44,7 +44,7 @@ namespace StepFlow.Master.Scripts
 			{
 				foreach (var state in states)
 				{
-					enemy.States.Add(state.ToState());
+					enemy.States.Add(state.ToState(PlayMaster.Playground.Context));
 				}
 			}
 

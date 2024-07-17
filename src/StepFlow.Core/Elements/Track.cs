@@ -7,14 +7,15 @@ namespace StepFlow.Core.Elements
 {
 	public sealed class Track : Subject
 	{
-		public Track()
+		public Track(IContext context)
+			: base(context)
 		{
 		}
 
-		public Track(TrackDto original)
-			: base(original)
+		public Track(IContext context, TrackDto original)
+			: base(context, original)
 		{
-			ThrowIfOriginalNull(original);
+			CopyExtensions.ThrowIfOriginalNull(original);
 
 			Steps.AddRange(original.Steps);
 			ScaleOffset = original.ScaleOffset;
