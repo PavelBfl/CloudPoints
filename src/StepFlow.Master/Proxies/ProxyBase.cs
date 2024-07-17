@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using StepFlow.Core.Commands.Accessors;
-using StepFlow.Core.Components;
 
 namespace StepFlow.Master.Proxies
 {

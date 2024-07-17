@@ -10,7 +10,6 @@ using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
 using StepFlow.Domains.States;
 using StepFlow.Domains.Tracks;
-using StepFlow.Intersection;
 
 namespace StepFlow.Core
 {

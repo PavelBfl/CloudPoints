@@ -15,7 +15,6 @@ using StepFlow.Domains.Elements;
 using StepFlow.Domains.States;
 using StepFlow.Domains.Tracks;
 using StepFlow.Intersection;
-using StepFlow.Master.Commands;
 using StepFlow.Master.Proxies;
 using StepFlow.Master.Proxies.Collections;
 using StepFlow.Master.Proxies.Components;
@@ -24,7 +23,6 @@ using StepFlow.Master.Proxies.Intersection;
 using StepFlow.Master.Proxies.States;
 using StepFlow.Master.Proxies.Tracks;
 using StepFlow.Master.Scripts;
-using StepFlow.TimeLine;
 using StepFlow.TimeLine.Transactions;
 
 namespace StepFlow.Master
