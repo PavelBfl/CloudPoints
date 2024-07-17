@@ -63,7 +63,7 @@ namespace StepFlow.Master.Proxies.Elements
 			var additionalCourse = Vector2.Zero;
 			foreach (var state in Target.States.Where(x => x.Enable))
 			{
-				var stateProxy = (IStateProxy<State>)Owner.CreateProxy(state);
+				var stateProxy = (IStateProxy)Owner.CreateProxy(state);
 				stateProxy.Cooldown--;
 				stateProxy.TotalCooldown--;
 
@@ -108,13 +108,13 @@ namespace StepFlow.Master.Proxies.Elements
 							stateProxy.Enable = false;
 
 							var enemySerpentineForwardToBackwardState = Target.States.Single(x => x.Kind == StateKind.EnemySerpentineForwardToBackward);
-							var enemySerpentineForwardToBackwardStateProxy = (IStateProxy<State>)Owner.CreateProxy(enemySerpentineForwardToBackwardState);
+							var enemySerpentineForwardToBackwardStateProxy = (IStateProxy)Owner.CreateProxy(enemySerpentineForwardToBackwardState);
 							enemySerpentineForwardToBackwardStateProxy.Enable = true;
 							enemySerpentineForwardToBackwardStateProxy.Cooldown = default;
 							Course = enemySerpentineForwardToBackwardStateProxy.Vector;
 
 							var enemySerpentineForwardStateAttack = Target.States.Single(x => x.Kind == StateKind.EnemySerpentineForwardStateAttack);
-							var enemySerpentineForwardStateAttackProxy = (IStateProxy<State>)Owner.CreateProxy(enemySerpentineForwardStateAttack);
+							var enemySerpentineForwardStateAttackProxy = (IStateProxy)Owner.CreateProxy(enemySerpentineForwardStateAttack);
 							enemySerpentineForwardStateAttackProxy.Enable = false;
 
 							CollisionBehavior = CollisionBehavior.Stop;
@@ -132,13 +132,13 @@ namespace StepFlow.Master.Proxies.Elements
 							stateProxy.Enable = false;
 
 							var enemySerpentineForwardToBackwardState = Target.States.Single(x => x.Kind == StateKind.EnemySerpentineBackwardState);
-							var enemySerpentineForwardToBackwardStateProxy = (IStateProxy<State>)Owner.CreateProxy(enemySerpentineForwardToBackwardState);
+							var enemySerpentineForwardToBackwardStateProxy = (IStateProxy)Owner.CreateProxy(enemySerpentineForwardToBackwardState);
 							enemySerpentineForwardToBackwardStateProxy.Enable = true;
 							enemySerpentineForwardToBackwardStateProxy.Cooldown = enemySerpentineForwardToBackwardStateProxy.Cooldown.SetMax();
 							Course = enemySerpentineForwardToBackwardStateProxy.Vector;
 
 							var enemySerpentineBackwardStateAttack = Target.States.Single(x => x.Kind == StateKind.EnemySerpentineBackwardStateAttack);
-							var enemySerpentineBackwardStateAttackProxy = (IStateProxy<State>)Owner.CreateProxy(enemySerpentineBackwardStateAttack);
+							var enemySerpentineBackwardStateAttackProxy = (IStateProxy)Owner.CreateProxy(enemySerpentineBackwardStateAttack);
 							enemySerpentineBackwardStateAttackProxy.Enable = true;
 
 							CollisionBehavior = CollisionBehavior.Reflection;
@@ -150,13 +150,13 @@ namespace StepFlow.Master.Proxies.Elements
 							stateProxy.Enable = false;
 
 							var enemySerpentineForwardToBackwardState = Target.States.Single(x => x.Kind == StateKind.EnemySerpentineBackwardToForward);
-							var enemySerpentineForwardToBackwardStateProxy = (IStateProxy<State>)Owner.CreateProxy(enemySerpentineForwardToBackwardState);
+							var enemySerpentineForwardToBackwardStateProxy = (IStateProxy)Owner.CreateProxy(enemySerpentineForwardToBackwardState);
 							enemySerpentineForwardToBackwardStateProxy.Enable = true;
 							enemySerpentineForwardToBackwardStateProxy.Cooldown = default;
 							Course = enemySerpentineForwardToBackwardStateProxy.Vector;
 
 							var enemySerpentineBackwardStateAttack = Target.States.Single(x => x.Kind == StateKind.EnemySerpentineBackwardStateAttack);
-							var enemySerpentineBackwardStateAttackProxy = (IStateProxy<State>)Owner.CreateProxy(enemySerpentineBackwardStateAttack);
+							var enemySerpentineBackwardStateAttackProxy = (IStateProxy)Owner.CreateProxy(enemySerpentineBackwardStateAttack);
 							enemySerpentineBackwardStateAttackProxy.Enable = false;
 
 							CollisionBehavior = CollisionBehavior.Stop;
@@ -174,13 +174,13 @@ namespace StepFlow.Master.Proxies.Elements
 							stateProxy.Enable = false;
 
 							var enemySerpentineForwardToBackwardState = Target.States.Single(x => x.Kind == StateKind.EnemySerpentineForwardState);
-							var enemySerpentineForwardToBackwardStateProxy = (IStateProxy<State>)Owner.CreateProxy(enemySerpentineForwardToBackwardState);
+							var enemySerpentineForwardToBackwardStateProxy = (IStateProxy)Owner.CreateProxy(enemySerpentineForwardToBackwardState);
 							enemySerpentineForwardToBackwardStateProxy.Enable = true;
 							enemySerpentineForwardToBackwardStateProxy.Cooldown = enemySerpentineForwardToBackwardStateProxy.Cooldown.SetMax();
 							Course = enemySerpentineForwardToBackwardStateProxy.Vector;
 
 							var enemySerpentineForwardStateAttack = Target.States.Single(x => x.Kind == StateKind.EnemySerpentineForwardStateAttack);
-							var enemySerpentineForwardStateAttackProxy = (IStateProxy<State>)Owner.CreateProxy(enemySerpentineForwardStateAttack);
+							var enemySerpentineForwardStateAttackProxy = (IStateProxy)Owner.CreateProxy(enemySerpentineForwardStateAttack);
 							enemySerpentineForwardStateAttackProxy.Enable = true;
 
 							CollisionBehavior = CollisionBehavior.Reflection;

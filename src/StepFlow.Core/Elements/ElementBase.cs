@@ -4,7 +4,7 @@ using StepFlow.Domains.Elements;
 
 namespace StepFlow.Core.Elements
 {
-	public class ElementBase : Subject
+	public abstract class ElementBase : Subject
 	{
 		protected void SetComponent<T>(ref T current, T value)
 			where T : ComponentBase?
@@ -41,6 +41,13 @@ namespace StepFlow.Core.Elements
 			: base(context, original)
 		{
 			CopyExtensions.ThrowIfOriginalNull(original);
+		}
+
+		public void CopyTo(ElementBaseDto container)
+		{
+			CopyExtensions.ThrowIfArgumentNull(container, nameof(container));
+
+			base.CopyTo(container);
 		}
 	}
 }

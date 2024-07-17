@@ -1,9 +1,10 @@
-﻿using StepFlow.Domains.Components;
+﻿using StepFlow.Domains;
+using StepFlow.Domains.Components;
 using StepFlow.Domains.Tracks;
 
 namespace StepFlow.Core.Tracks
 {
-	public class TrackBuilder : Subject
+	public sealed class TrackBuilder : Subject
 	{
 		public TrackBuilder(IContext context)
 			: base(context)
@@ -24,5 +25,22 @@ namespace StepFlow.Core.Tracks
 		public TrackChange GetChangeRequired() => PropertyRequired(Change, nameof(Change));
 
 		public Scale Cooldown { get; set; }
+
+		public override SubjectDto ToDto()
+		{
+			var result = new SubjectDto();
+			CopyTo(result);
+			return result;
+		}
+
+		public void CopyTo(TrackBuilderDto container)
+		{
+			CopyExtensions.ThrowIfArgumentNull(container, nameof(container));
+
+			base.CopyTo(container);
+
+			container.Change = (TrackChangeDto?)Change?.ToDto();
+			container.Cooldown = Cooldown;
+		}
 	}
 }

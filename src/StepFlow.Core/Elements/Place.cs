@@ -1,4 +1,5 @@
-﻿using StepFlow.Domains.Elements;
+﻿using StepFlow.Domains;
+using StepFlow.Domains.Elements;
 
 namespace StepFlow.Core.Elements
 {
@@ -15,6 +16,20 @@ namespace StepFlow.Core.Elements
 			: base(context, original)
 		{
 			CopyExtensions.ThrowIfOriginalNull(original);
+		}
+
+		public override SubjectDto ToDto()
+		{
+			var result = new PlaceDto();
+			CopyTo(result);
+			return result;
+		}
+
+		public void CopyTo(PlaceDto container)
+		{
+			CopyExtensions.ThrowIfArgumentNull(container, nameof(container));
+
+			base.CopyTo(container);
 		}
 	}
 }

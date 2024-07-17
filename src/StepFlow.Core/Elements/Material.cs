@@ -9,7 +9,7 @@ using StepFlow.Domains.Elements;
 
 namespace StepFlow.Core.Elements
 {
-	public class Material : ElementBase
+	public abstract class Material : ElementBase
 	{
 		public const string SHEDULER_CONTROL_NAME = "Control";
 		public const string SHEDULER_INERTIA_NAME = "Inertia";
@@ -53,5 +53,19 @@ namespace StepFlow.Core.Elements
 		public ICollection<State> States { get; } = new HashSet<State>();
 
 		public TrackBuilder? Track { get; set; }
+
+		public void CopyTo(MaterialDto container)
+		{
+			CopyExtensions.ThrowIfArgumentNull(container, nameof(container));
+
+			base.CopyTo(container);
+
+			container.Strength = Strength;
+			container.Body = (CollidedDto?)Body?.ToDto();
+			container.Speed = Speed;
+			container.Weight = Weight;
+			container.Course = Course;
+			container.CollisionBehavior = CollisionBehavior;
+		}
 	}
 }

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using StepFlow.Domains;
 using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
 
@@ -27,5 +29,23 @@ namespace StepFlow.Core.Elements
 		public ReusableKind Reusable { get; set; }
 
 		public ICollection<Subject> Immunity { get; } = new HashSet<Subject>();
+
+		public override SubjectDto ToDto()
+		{
+			var result = new ProjectileDto();
+			CopyTo(result);
+			return result;
+		}
+
+		public void CopyTo(ProjectileDto container)
+		{
+			CopyExtensions.ThrowIfArgumentNull(container, nameof(container));
+
+			base.CopyTo(container);
+
+			container.Damage = Damage;
+			container.Reusable = Reusable;
+			container.Immunity.AddRange(Immunity.Select(x => x.ToDto()));
+		}
 	}
 }

@@ -4,7 +4,7 @@ using StepFlow.Domains;
 
 namespace StepFlow.Core
 {
-	public class Subject
+	public abstract class Subject
 	{
 		public static T PropertyRequired<T>(T? value, [CallerMemberName] string? propertyName = null)
 			where T : class
@@ -32,5 +32,14 @@ namespace StepFlow.Core
 		public IContext Context { get; }
 
 		public string? Name { get; set; }
+
+		public void CopyTo(SubjectDto container)
+		{
+			CopyExtensions.ThrowIfArgumentNull(container, nameof(container));
+
+			container.Name = Name;
+		}
+
+		public abstract SubjectDto ToDto();
 	}
 }

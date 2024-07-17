@@ -1,4 +1,5 @@
-﻿using StepFlow.Domains.Elements;
+﻿using StepFlow.Domains;
+using StepFlow.Domains.Elements;
 
 namespace StepFlow.Core.Elements
 {
@@ -21,5 +22,22 @@ namespace StepFlow.Core.Elements
 		public ObstructionKind Kind { get; set; }
 
 		public ObstructionView View { get; set; }
+
+		public override SubjectDto ToDto()
+		{
+			var result = new ObstructionDto();
+			CopyTo(result);
+			return result;
+		}
+
+		public void CopyTo(ObstructionDto container)
+		{
+			CopyExtensions.ThrowIfArgumentNull(container, nameof(container));
+
+			base.CopyTo(container);
+
+			container.Kind = Kind;
+			container.View = View;
+		}
 	}
 }

@@ -35,7 +35,7 @@ namespace StepFlow.Master.Proxies.Elements
 					var totalCooldown = TimeTick.FromSeconds(1);
 					if (otherMaterial.States.SingleOrDefault(x => x.Kind == StateKind.Push) is { } pushState)
 					{
-						var pushStateProxy = (IStateProxy<State>)Owner.CreateProxy(pushState);
+						var pushStateProxy = (IStateProxy)Owner.CreateProxy(pushState);
 						pushStateProxy.TotalCooldown = totalCooldown;
 						pushStateProxy.Vector = Damage.Push;
 					}

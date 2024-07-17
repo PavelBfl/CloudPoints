@@ -1,9 +1,10 @@
 ﻿using System.Numerics;
+using StepFlow.Domains;
 using StepFlow.Domains.Tracks;
 
 namespace StepFlow.Core.Tracks
 {
-	public class TrackUnit : Subject
+	public sealed class TrackUnit : Subject
 	{
 		public TrackUnit(IContext context)
 			: base(context)
@@ -27,5 +28,23 @@ namespace StepFlow.Core.Tracks
 		public TrackChange? Change { get; set; }
 
 		public TrackChange GetChangeRequired() => PropertyRequired(Change, nameof(Change));
+
+		public override SubjectDto ToDto()
+		{
+			var result = new TrackUnitDto();
+			CopyTo(result);
+			return result;
+		}
+
+		public void CopyTo(TrackUnitDto container)
+		{
+			CopyExtensions.ThrowIfArgumentNull(container, nameof(container));
+
+			base.CopyTo(container);
+
+			container.Center = Center;
+			container.Radius = Radius;
+			container.Change = (TrackChangeDto?)Change?.ToDto();
+		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using StepFlow.Domains.Components;
+﻿using StepFlow.Domains;
+using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
 
 namespace StepFlow.Core.Elements
@@ -28,5 +29,24 @@ namespace StepFlow.Core.Elements
 		public int AttackCooldown { get; set; }
 
 		public int AddStrength { get; set; }
+
+		public override SubjectDto ToDto()
+		{
+			var result = new ItemDto();
+			CopyTo(result);
+			return result;
+		}
+
+		public void CopyTo(ItemDto container)
+		{
+			CopyExtensions.ThrowIfArgumentNull(container, nameof(container));
+
+			base.CopyTo(container);
+
+			container.Kind = Kind;
+			container.DamageSetting = DamageSetting;
+			container.AttackCooldown = AttackCooldown;
+			container.AddStrength = AddStrength;
+		}
 	}
 }

@@ -147,7 +147,7 @@ namespace StepFlow.Master.Proxies.Elements
 					case CharacterSkill.Dash:
 						if (Target.States.SingleOrDefault(x => x.Kind == StateKind.Dash) is { } dashState)
 						{
-							var dashStateProxy = (IStateProxy<State>)Owner.CreateProxy(dashState);
+							var dashStateProxy = (IStateProxy)Owner.CreateProxy(dashState);
 							dashStateProxy.Vector = courseVector;
 						}
 						else

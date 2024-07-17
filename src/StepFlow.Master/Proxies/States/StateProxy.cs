@@ -4,8 +4,7 @@ using StepFlow.Domains.Components;
 
 namespace StepFlow.Master.Proxies.States
 {
-	public interface IStateProxy<TState> : IProxyBase<TState>
-		where TState : State
+	public interface IStateProxy : IProxyBase<State>
 	{
 		bool Enable { get; set; }
 
@@ -28,10 +27,9 @@ namespace StepFlow.Master.Proxies.States
 		}
 	}
 
-	internal class StateProxy<TState> : ProxyBase<TState>, IStateProxy<TState>
-		where TState : State
+	internal class StateProxy : ProxyBase<State>, IStateProxy
 	{
-		public StateProxy(PlayMaster owner, TState target) : base(owner, target)
+		public StateProxy(PlayMaster owner, State target) : base(owner, target)
 		{
 		}
 

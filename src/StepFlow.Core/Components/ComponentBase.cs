@@ -3,7 +3,7 @@ using StepFlow.Domains.Components;
 
 namespace StepFlow.Core.Components
 {
-	public class ComponentBase : Subject
+	public abstract class ComponentBase : Subject
 	{
 		public ComponentBase(IContext context)
 			: base(context)
@@ -19,5 +19,12 @@ namespace StepFlow.Core.Components
 		public ElementBase? Element { get; set; }
 
 		public ElementBase GetElementRequired() => PropertyRequired(Element, nameof(Element));
+
+		public void CopyTo(ComponentBaseDto container)
+		{
+			CopyExtensions.ThrowIfArgumentNull(container, nameof(container));
+
+			base.CopyTo(container);
+		}
 	}
 }

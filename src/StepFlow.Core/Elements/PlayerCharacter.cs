@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using StepFlow.Domains;
 using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
 
@@ -30,5 +31,24 @@ namespace StepFlow.Core.Elements
 		public CharacterSkill AuxiliarySkill { get; set; }
 
 		public IList<Item> Items { get; } = new List<Item>();
+
+		public override SubjectDto ToDto()
+		{
+			var result = new PlayerCharacterDto();
+			CopyTo(result);
+			return result;
+		}
+
+		public void CopyTo(PlayerCharacterDto container)
+		{
+			CopyExtensions.ThrowIfArgumentNull(container, nameof(container));
+
+			base.CopyTo(container);
+
+			container.Cooldown = Cooldown;
+			container.MainSkill = MainSkill;
+			container.AuxiliarySkill = AuxiliarySkill;
+			container.Items.AddRange(Items.Select(x => x.ToDto()).Cast<ItemDto>());
+		}
 	}
 }

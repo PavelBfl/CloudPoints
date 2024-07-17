@@ -1,4 +1,5 @@
 ﻿using StepFlow.Core.Components;
+using StepFlow.Domains;
 using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
 
@@ -30,5 +31,23 @@ namespace StepFlow.Core.Elements
 		public Scale Cooldown { get; set; }
 
 		public ItemKind ReleaseItem { get; set; }
+
+		public override SubjectDto ToDto()
+		{
+			var result = new EnemyDto();
+			CopyTo(result);
+			return result;
+		}
+
+		public void CopyTo(EnemyDto container)
+		{
+			CopyExtensions.ThrowIfArgumentNull(container, nameof(container));
+
+			base.CopyTo(container);
+
+			container.Vision = (CollidedDto?)Vision?.ToDto();
+			container.Cooldown = Cooldown;
+			container.ReleaseItem = ReleaseItem;
+		}
 	}
 }

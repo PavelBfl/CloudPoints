@@ -24,7 +24,7 @@ namespace StepFlow.Master.Proxies.Elements
 			{
 				if (otherMaterial.States.SingleOrDefault(x => x.Kind == StateKind.Poison) is { } poisonState)
 				{
-					((IStateProxy<State>)Owner.CreateProxy(poisonState)).TotalCooldown++;
+					((IStateProxy)Owner.CreateProxy(poisonState)).TotalCooldown++;
 				}
 				else
 				{

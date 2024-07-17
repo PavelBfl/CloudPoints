@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Numerics;
+using StepFlow.Domains;
 using StepFlow.Domains.Components;
 using StepFlow.Intersection;
 
@@ -76,5 +77,25 @@ namespace StepFlow.Core.Components
 		public bool IsMove { get; set; }
 
 		public bool IsRigid { get; set; }
+
+		public void CopyTo(CollidedDto container)
+		{
+			CopyExtensions.ThrowIfArgumentNull(container, nameof(container));
+
+			base.CopyTo(container);
+
+			container.Current.AddRange(Current);
+			container.Next.AddRange(Next);
+			container.Position = Position;
+			container.IsMove = IsMove;
+			container.IsRigid = IsRigid;
+		}
+
+		public override SubjectDto ToDto()
+		{
+			var result = new CollidedDto();
+			CopyTo(result);
+			return result;
+		}
 	}
 }

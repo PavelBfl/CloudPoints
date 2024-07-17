@@ -95,7 +95,7 @@ namespace StepFlow.Master
 				Track instance => new TrackProxy(this, instance),
 				TrackBuilder instance => new TrackBuilderProxy(this, instance),
 				TrackUnit instance => new TrackUnitProxy(this, instance),
-				State instance => new StateProxy<State>(this, instance),
+				State instance => new StateProxy(this, instance),
 				null => null,
 				_ => throw new InvalidOperationException(),
 			};
