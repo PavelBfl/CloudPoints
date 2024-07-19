@@ -43,8 +43,6 @@ namespace StepFlow.Master.Proxies.Elements
 
 		void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided);
 
-		void ChangeStrength(Damage damage);
-
 		void CopyFrom(MaterialDto original)
 		{
 			NullValidateExtensions.ThrowIfArgumentNull(original, nameof(original));
@@ -81,11 +79,6 @@ namespace StepFlow.Master.Proxies.Elements
 		}
 
 		public Scale Strength { get => Target.Strength; set => SetValue(value); }
-
-		public virtual void ChangeStrength(Damage damage)
-		{
-			Strength -= damage.Value;
-		}
 
 		public Collided Body { get => Target.GetBodyRequired(); }
 
