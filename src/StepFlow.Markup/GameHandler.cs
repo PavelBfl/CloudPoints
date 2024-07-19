@@ -177,13 +177,13 @@ public sealed class GameHandler
 		//CreateCellObstruction(new Point(2, 6), 50, ObstructionView.Boards, 1);
 
 		//CreateCellObstruction(new Point(5, 1), 1000, ObstructionView.Boards, 1);
-		PlayMaster.PlayerCharacterCreate.Execute(new()
-		{
-			Bounds = CreateCell(5, 0),
-			Strength = 100000,
-			Speed = 1,
-			Cooldown = TimeTick.FromSeconds(1),
-		});
+		//PlayMaster.PlayerCharacterCreate.Execute(new()
+		//{
+		//	Bounds = CreateCell(5, 0),
+		//	Strength = 100000,
+		//	Speed = 1,
+		//	Cooldown = TimeTick.FromSeconds(1),
+		//});
 	}
 
 	private void CreateRoom(Point location, Size size, int width)
@@ -316,20 +316,24 @@ public sealed class GameHandler
 			{
 				var transaction = PlayMaster.TimeAxis.BeginTransaction();
 
-				PlayerCharacterSetCourse(Control.GetPlayerCourse());
-
-				if (Control.GetPlayerAction() is { } playerAction)
+				// TODO
+				if (PlayMaster.Playground.Items.OfType<PlayerCharacter>().Any())
 				{
-					switch (playerAction)
+					PlayerCharacterSetCourse(Control.GetPlayerCourse());
+
+					if (Control.GetPlayerAction() is { } playerAction)
 					{
-						case PlayerAction.Main:
-						case PlayerAction.Auxiliary:
-							var playerCharacter = PlayMaster.Playground.GetPlayerCharacterRequired();
-							var center = playerCharacter.GetBodyRequired().Current.Bounds.GetCenter();
-							CreateProjectile(Control.GetPlayerRotate(new(center.X, center.Y)), playerAction);
-							break;
-						default: throw EnumNotSupportedException.Create(playerAction);
-					};
+						switch (playerAction)
+						{
+							case PlayerAction.Main:
+							case PlayerAction.Auxiliary:
+								var playerCharacter = PlayMaster.Playground.GetPlayerCharacterRequired();
+								var center = playerCharacter.GetBodyRequired().Current.Bounds.GetCenter();
+								CreateProjectile(Control.GetPlayerRotate(new(center.X, center.Y)), playerAction);
+								break;
+							default: throw EnumNotSupportedException.Create(playerAction);
+						};
+					} 
 				}
 
 				PlayMaster.TakeStep.Execute(null);
@@ -405,9 +409,13 @@ public sealed class GameHandler
 			CreateTexture(place.Body?.Current.Bounds ?? Rectangle.Empty, Texture.PoisonPlace, null);
 		}
 
-		var playerCharacter = playground.GetPlayerCharacterRequired();
-		CreateTexture(playerCharacter?.Body?.Current.Bounds ?? Rectangle.Empty, Texture.Character, playerCharacter?.Strength);
-		CreateBorder(playerCharacter?.Body, Color.Red);
+		// TODO Temp
+		if (PlayMaster.Playground.Items.OfType<PlayerCharacter>().Any())
+		{
+			var playerCharacter = playground.GetPlayerCharacterRequired();
+			CreateTexture(playerCharacter?.Body?.Current.Bounds ?? Rectangle.Empty, Texture.Character, playerCharacter?.Strength);
+			CreateBorder(playerCharacter?.Body, Color.Red); 
+		}
 
 		foreach (var barrier in playground.Items.OfType<Obstruction>())
 		{

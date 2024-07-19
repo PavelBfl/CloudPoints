@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using StepFlow.Common.Exceptions;
+using StepFlow.Core.Elements;
 using StepFlow.Domains.Elements;
 using StepFlow.Markup.Services;
 using StepFlow.Master;
@@ -51,6 +52,12 @@ public sealed class TacticPanel
 			var button = Buttoms[i];
 			button.Skill = skills[i];
 			button.Bounds = new(Place.X, Place.Y + i * SIZE, SIZE, SIZE);
+		}
+
+		// TODO Temp
+		if (!PlayMaster.Playground.Items.OfType<PlayerCharacter>().Any())
+		{
+			return;
 		}
 
 		var playerCharacterGui = (IPlayerCharacterProxy)PlayMaster.CreateProxy(PlayMaster.Playground.GetPlayerCharacterRequired());
