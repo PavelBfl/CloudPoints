@@ -2,7 +2,9 @@
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using StepFlow.Common;
 using StepFlow.Core.Components;
+using StepFlow.Domains.Components;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Intersection;
 
@@ -72,6 +74,17 @@ namespace StepFlow.Master.Proxies.Components
 
 			CurrentProxy.Register();
 			NextProxy.Register();
+		}
+
+		void CopyFrom(CollidedDto original)
+		{
+			NullValidateExtensions.ThrowIfArgumentNull(original, nameof(original));
+
+			CurrentProxy.Reset(original.Current);
+			NextProxy.Reset(original.Next);
+			SetPosition(original.Position, false);
+			IsMove = original.IsMove;
+			IsRigid = original.IsRigid;
 		}
 	}
 

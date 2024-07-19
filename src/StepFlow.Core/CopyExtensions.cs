@@ -13,7 +13,7 @@ using StepFlow.Domains.Tracks;
 
 namespace StepFlow.Core
 {
-	internal static class CopyExtensions
+	public static class CopyExtensions
 	{
 		public static Collided ToCollided(this CollidedDto original, IContext context) => new Collided(context, original);
 

@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using StepFlow.Common;
 using StepFlow.Common.Exceptions;
+using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.States;
+using StepFlow.Core.Tracks;
 using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
 using StepFlow.Domains.States;
@@ -27,16 +30,47 @@ namespace StepFlow.Master.Proxies.Elements
 		int Weight { get; set; }
 
 		Vector2 Course { get; set; }
+
+		ICollection<State> States { get; }
+
 		CollisionBehavior CollisionBehavior { get; set; }
+
+		TrackBuilder? Track { get; set; }
 
 		void OnTick();
 
 		void SetCourse(float? radian);
 
-
 		void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided);
 
 		void ChangeStrength(Damage damage);
+
+		void CopyFrom(MaterialDto original)
+		{
+			NullValidateExtensions.ThrowIfArgumentNull(original, nameof(original));
+
+			Strength = original.Strength;
+			var collidedProxy = ((ICollidedProxy)Owner.CreateProxy(Body));
+			if (original.Body is { })
+			{
+				collidedProxy.CopyFrom(original.Body);
+			}
+			else
+			{
+				collidedProxy.Clear();
+			}
+			Speed = original.Speed;
+			Weight = original.Weight;
+			Course = original.Course;
+			CollisionBehavior = original.CollisionBehavior;
+			var statesProxy = Owner.CreateCollectionProxy(States);
+			statesProxy.Clear();
+			foreach (var state in original.States)
+			{
+				statesProxy.Add(new State(Owner.Playground.Context, state));
+			}
+			Track = original.Track?.ToTrackBuilder(Owner.Playground.Context);
+		}
 	}
 
 	internal class MaterialProxy<TTarget> : ProxyBase<TTarget>, IMaterialProxy<TTarget>
@@ -333,5 +367,9 @@ namespace StepFlow.Master.Proxies.Elements
 				SetValue(value);
 			}
 		}
+
+		public ICollection<State> States => Target.States;
+
+		public TrackBuilder? Track { get => Target.Track; set => SetValue(value); }
 	}
 }

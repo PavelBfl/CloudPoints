@@ -13,8 +13,6 @@ namespace StepFlow.Domains.Elements
 
 		public const int MAX_WEIGHT = 1000;
 
-		public int Ordinal { get; set; }
-
 		public Scale Strength { get; set; }
 
 		public CollidedDto? Body { get; set; }

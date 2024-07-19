@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using StepFlow.Common;
 using StepFlow.Common.Exceptions;
 using StepFlow.Core;
 using StepFlow.Core.Components;
@@ -29,10 +31,26 @@ namespace StepFlow.Master.Proxies.Elements
 		CharacterSkill MainSkill { get; set; }
 
 		CharacterSkill AuxiliarySkill { get; set; }
-
-		new Scale Strength { get; }
+		Scale Cooldown { get; set; }
+		IList<Item> Items { get; }
 
 		void CreateProjectile(float radians, PlayerAction action);
+
+		void CopyFrom(PlayerCharacterDto original)
+		{
+			NullValidateExtensions.ThrowIfArgumentNull(original, nameof(original));
+
+			((IMaterialProxy<PlayerCharacter>)this).CopyFrom(original);
+			Cooldown = original.Cooldown;
+			MainSkill = original.MainSkill;
+			AuxiliarySkill = original.AuxiliarySkill;
+			var itemsProxy = Owner.CreateListProxy(Items);
+			itemsProxy.Clear();
+			foreach (var item in original.Items)
+			{
+				itemsProxy.Add(new Item(Owner.Playground.Context, item));
+			}
+		}
 	}
 
 	internal sealed class PlayerCharacterProxy : MaterialProxy<PlayerCharacter>, IPlayerCharacterProxy
@@ -46,6 +64,8 @@ namespace StepFlow.Master.Proxies.Elements
 		public CharacterSkill MainSkill { get => Target.MainSkill; set => SetValue(value); }
 
 		public CharacterSkill AuxiliarySkill { get => Target.AuxiliarySkill; set => SetValue(value); }
+
+		public IList<Item> Items => Target.Items;
 
 		public override void OnTick()
 		{
