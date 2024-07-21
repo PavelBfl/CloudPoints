@@ -4,12 +4,14 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using StepFlow.Common;
 using StepFlow.Core;
 using StepFlow.Core.Commands.Accessors;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.States;
 using StepFlow.Core.Tracks;
+using StepFlow.Domains;
 using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
 using StepFlow.Domains.States;
@@ -31,8 +33,12 @@ namespace StepFlow.Master
 	{
 		public const string TAKE_STEP_CALL = "TakeStep";
 
-		public PlayMaster()
+		public PlayMaster(PlaygroundDto init)
 		{
+			NullValidateExtensions.ThrowIfArgumentNull(init, nameof(init));
+
+			Playground = new Playground(new Core.Context(), init);
+
 			AddExecutor(TakeStep = new EmptyExecutor(TAKE_STEP_CALL, TakeStepInner));
 			AddExecutor(PlayerCharacterCreate = new PlayerCharacterCreate(this));
 			AddExecutor(PlayerCharacterSetCourse = new PlayerCharacterSetCourse(this));
@@ -72,7 +78,7 @@ namespace StepFlow.Master
 
 		public TransactionAxis TimeAxis { get; } = new TransactionAxis();
 
-		public Playground Playground { get; } = new Playground(new Core.Context());
+		public Playground Playground { get; }
 
 		[return: NotNullIfNotNull("value")]
 		public object? CreateProxy(object? value)

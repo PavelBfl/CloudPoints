@@ -30,6 +30,9 @@ public sealed class GameHandler
 		Control = control ?? throw new ArgumentNullException(nameof(control));
 		Place = placeBounds;
 
+		var builder = new PlaygroundBuilder();
+		PlayMaster = new PlayMaster(builder.CreateState0());
+
 		Meter.CreateObservableGauge("Time", () => PlayMaster.TimeAxis.Current);
 		Meter.CreateObservableGauge("Commands", () => PlayMaster.TimeAxis.Source.Current);
 		Meter.CreateObservableGauge("Frame", () => Frame.TotalMilliseconds);
@@ -43,7 +46,7 @@ public sealed class GameHandler
 
 	private TimeSpan Frame { get; set; }
 
-	private PlayMaster PlayMaster { get; } = new PlayMaster();
+	private PlayMaster PlayMaster { get; }
 
 	private IControl Control { get; }
 
@@ -75,7 +78,7 @@ public sealed class GameHandler
 
 	public void Init()
 	{
-		CreateRoom(Point.Empty, new(15, 9), Playground.CELL_SIZE_DEFAULT);
+		//CreateRoom(Point.Empty, new(15, 9), Playground.CELL_SIZE_DEFAULT);
 
 		//PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(12, 6), Kind = ItemKind.Fire });
 		//PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(12, 0), Kind = ItemKind.Poison });
@@ -91,55 +94,55 @@ public sealed class GameHandler
 
 		//CreateEnemy(CreateCell(10, 6), 300, Strategy.Reflection, CreateRotate(MathF.PI / 4) * 0.02f);
 		//CreateEnemy(CreateCell(0, 0), 150, Strategy.CW, CreateRotate(0) * 0.02f);
-		CreateEnemy(
-			CreateCell(0, 0),
-			300,
-			new Vector2(0, 0.02f),
-			CollisionBehavior.Reflection,
-			new StateParameters[]
-			{
-				new()
-				{
-					Kind = StateKind.EnemySerpentineForwardState,
-					Enable = true,
-					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(4)),
-					Arg0 = 0,
-					Arg1 = 0.02f,
-				},
-				new()
-				{
-					Kind = StateKind.EnemySerpentineForwardStateAttack,
-					Enable = true,
-					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(1)),
-					Arg0 = 0,
-				},
-				new()
-				{
-					Kind = StateKind.EnemySerpentineForwardToBackward,
-					Arg0 = 0.04f,
-					Arg1 = 0,
-				},
-				new()
-				{
-					Kind = StateKind.EnemySerpentineBackwardState,
-					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(3)),
-					Arg0 = 0,
-					Arg1 = 0.02f,
-				},
-				new()
-				{
-					Kind = StateKind.EnemySerpentineBackwardStateAttack,
-					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(1)),
-					Arg0 = MathF.PI,
-				},
-				new()
-				{
-					Kind = StateKind.EnemySerpentineBackwardToForward,
-					Arg0 = -0.04f,
-					Arg1 = 0,
-				},
-			}
-		);
+		//CreateEnemy(
+		//	CreateCell(0, 0),
+		//	300,
+		//	new Vector2(0, 0.02f),
+		//	CollisionBehavior.Reflection,
+		//	new StateParameters[]
+		//	{
+		//		new()
+		//		{
+		//			Kind = StateKind.EnemySerpentineForwardState,
+		//			Enable = true,
+		//			Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(4)),
+		//			Arg0 = 0,
+		//			Arg1 = 0.02f,
+		//		},
+		//		new()
+		//		{
+		//			Kind = StateKind.EnemySerpentineForwardStateAttack,
+		//			Enable = true,
+		//			Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(1)),
+		//			Arg0 = 0,
+		//		},
+		//		new()
+		//		{
+		//			Kind = StateKind.EnemySerpentineForwardToBackward,
+		//			Arg0 = 0.04f,
+		//			Arg1 = 0,
+		//		},
+		//		new()
+		//		{
+		//			Kind = StateKind.EnemySerpentineBackwardState,
+		//			Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(3)),
+		//			Arg0 = 0,
+		//			Arg1 = 0.02f,
+		//		},
+		//		new()
+		//		{
+		//			Kind = StateKind.EnemySerpentineBackwardStateAttack,
+		//			Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(1)),
+		//			Arg0 = MathF.PI,
+		//		},
+		//		new()
+		//		{
+		//			Kind = StateKind.EnemySerpentineBackwardToForward,
+		//			Arg0 = -0.04f,
+		//			Arg1 = 0,
+		//		},
+		//	}
+		//);
 
 		//CreateCellObstruction(new Point(3, 0), 50, ObstructionView.Bricks);
 		//CreateCellObstruction(new Point(3, 1), 50, ObstructionView.Bricks);

@@ -30,24 +30,57 @@ internal class PlaygroundBuilder
 		);
 	}
 
+	private static ObstructionDto CreateWall(Point p0, Point p1)
+	{
+		var xMin = Math.Min(p0.X, p1.X);
+		var xMax = Math.Max(p0.X, p1.X);
+		var yMin = Math.Min(p0.Y, p1.Y);
+		var yMax = Math.Max(p0.Y, p1.Y);
+
+		var tiles = new List<Rectangle>();
+		for (var iX = xMin; iX <= xMax; iX++)
+		{
+			for (var iY = yMin; iY <= yMax; iY++)
+			{
+				tiles.Add(CreateCell(iX, iY));
+			}
+		}
+
+		return new ObstructionDto()
+		{
+			Kind = ObstructionKind.Tiles,
+			View = ObstructionView.DarkWall,
+			Weight = Material.MAX_WEIGHT,
+			Body = new CollidedDto()
+			{
+				Current = { tiles },
+				IsRigid = true,
+			},
+		};
+	}
+
 	public PlaygroundDto CreateState0()
 	{
 		return new PlaygroundDto()
 		{
 			Items =
 			{
-				new ObstructionDto()
-				{
-					Kind = ObstructionKind.Tiles,
-					View = ObstructionView.DarkWall,
-					Weight = Material.MAX_WEIGHT,
-					Body = new CollidedDto()
-					{
-						Current = { CreateCell(0, 0) },
-						IsRigid = true,
-					},
-				},
+				CreateWall(new Point(0, 0), new Point(14, 0)),
+				CreateWall(new Point(0, 8), new Point(14, 8)),
+				CreateWall(new Point(0, 1), new Point(0, 7)),
+				CreateWall(new Point(14, 1), new Point(14, 7)),
 			}
 		};
+	}
+}
+
+internal static class CollectionExtensions
+{
+	public static void Add<T>(this ICollection<T> collection, IEnumerable<T> items)
+	{
+		foreach (var item in items)
+		{
+			collection.Add(item);
+		}
 	}
 }
