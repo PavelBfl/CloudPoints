@@ -69,6 +69,18 @@ internal class PlaygroundBuilder
 				CreateWall(new Point(0, 8), new Point(14, 8)),
 				CreateWall(new Point(0, 1), new Point(0, 7)),
 				CreateWall(new Point(14, 1), new Point(14, 7)),
+				new ObstructionDto()
+				{
+					Kind = ObstructionKind.Single,
+					View = ObstructionView.Bricks,
+					Strength = Scale.CreateByMax(50),
+					Weight = Material.MAX_WEIGHT,
+					Body = new CollidedDto()
+					{
+						Current = { CreateCell(1, 1), },
+						IsRigid= true,
+					},
+				},
 			}
 		};
 	}
