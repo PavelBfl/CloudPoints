@@ -59,6 +59,70 @@ internal class PlaygroundBuilder
 		};
 	}
 
+	private static ObstructionDto CreateBricks(int x, int y) => new ObstructionDto()
+	{
+		Kind = ObstructionKind.Single,
+		View = ObstructionView.Bricks,
+		Strength = Scale.CreateByMax(50),
+		Weight = Material.MAX_WEIGHT,
+		Body = new CollidedDto()
+		{
+			Current = { CreateCell(x, y), },
+			IsRigid = true,
+		},
+	};
+
+	private static ObstructionDto CreateBoards(int x, int y) => new ObstructionDto()
+	{
+		Kind = ObstructionKind.Single,
+		View = ObstructionView.Boards,
+		Strength = Scale.CreateByMax(50),
+		Weight = 1,
+		Body = new CollidedDto()
+		{
+			Current = { CreateCell(x, y), },
+			IsRigid = true,
+		},
+	};
+
+	private static ItemDto CreateItem(int x, int y, ItemKind kind) => new ItemDto()
+	{
+		Kind = kind,
+		Body = new CollidedDto()
+		{
+			Current = { CreateCell(x, y), },
+			IsRigid = true,
+		},
+	};
+
+	private static EnemyDto CreateEnemy(int x, int y, int visionSize, Vector2 course, CollisionBehavior collisionBehavior)
+	{
+		var bounds = CreateCell(x, y);
+		return new()
+		{
+			Body = new CollidedDto()
+			{
+				Current = { bounds, },
+				IsRigid = true,
+			},
+			Vision = new CollidedDto()
+			{
+				Current =
+				{
+					Rectangle.FromLTRB(
+						bounds.Left - visionSize,
+						bounds.Top - visionSize,
+						bounds.Right + visionSize,
+						bounds.Bottom + visionSize
+					),
+				},
+			},
+			ReleaseItem = ItemKind.AddStrength,
+			Course = course,
+			CollisionBehavior = collisionBehavior,
+		};
+	}
+
 	public PlaygroundDto CreateState0()
 	{
 		return new PlaygroundDto()
@@ -69,18 +133,45 @@ internal class PlaygroundBuilder
 				CreateWall(new Point(0, 8), new Point(14, 8)),
 				CreateWall(new Point(0, 1), new Point(0, 7)),
 				CreateWall(new Point(14, 1), new Point(14, 7)),
-				new ObstructionDto()
-				{
-					Kind = ObstructionKind.Single,
-					View = ObstructionView.Bricks,
-					Strength = Scale.CreateByMax(50),
-					Weight = Material.MAX_WEIGHT,
-					Body = new CollidedDto()
-					{
-						Current = { CreateCell(1, 1), },
-						IsRigid= true,
-					},
-				},
+				CreateBricks(4, 1),
+				CreateBricks(4, 2),
+				CreateBricks(4, 3),
+				CreateBricks(4, 4),
+				CreateBricks(4, 5),
+				CreateBricks(4, 6),
+				CreateBricks(4, 7),
+				CreateBricks(1, 4),
+				CreateBricks(2, 4),
+				CreateBricks(3, 4),
+				CreateBricks(12, 1),
+				CreateBricks(13, 2),
+				CreateBricks(9, 4),
+				CreateBricks(10, 4),
+				CreateBricks(11, 4),
+				CreateBricks(12, 4),
+				CreateBricks(13, 4),
+				CreateBricks(13, 6),
+				CreateBricks(12, 7),
+				CreateBricks(7, 5),
+				CreateBricks(8, 5),
+				CreateBricks(9, 5),
+				CreateBricks(7, 6),
+				CreateBricks(6, 7),
+				CreateBricks(7, 7),
+				CreateBoards(1, 5),
+				CreateBoards(2, 5),
+				CreateBoards(3, 5),
+				CreateBoards(1, 6),
+				CreateBoards(3, 6),
+				CreateBoards(1, 7),
+				CreateBoards(2, 7),
+				CreateBoards(3, 7),
+				CreateItem(13, 7, ItemKind.Fire),
+				CreateItem(13, 1, ItemKind.Poison),
+				CreateItem(2, 2, ItemKind.Speed),
+				CreateItem(2, 6, ItemKind.AttackSpeed),
+				//CreateEnemy(11, 7, 300, CreateRotate(MathF.PI / 4) * 0.02f, CollisionBehavior.Reflection),
+				//CreateEnemy(1, 1, 150, CreateRotate(0) * 0.02f, CollisionBehavior.CW),
 			}
 		};
 	}
