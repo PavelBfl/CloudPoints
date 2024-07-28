@@ -12,7 +12,7 @@ namespace StepFlow.Master.Proxies
 	{
 		ICollection<Material> Items { get; }
 
-		ICollection<Material> ItemsProxy => Owner.CreateCollectionUsedProxy(Items);
+		ICollection<Material> ItemsProxy => Owner.CreateCollectionProxy(Items);
 
 		void CreateItem(Point position, ItemKind kind);
 		void CreatePlace(Rectangle bounds);

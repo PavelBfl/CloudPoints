@@ -67,5 +67,15 @@ namespace StepFlow.Core.Elements
 			container.Course = Course;
 			container.CollisionBehavior = CollisionBehavior;
 		}
+
+		public virtual void Begin()
+		{
+			Body?.Begin();
+		}
+
+		public virtual void End()
+		{
+			Body?.End();
+		}
 	}
 }

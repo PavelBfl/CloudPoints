@@ -109,13 +109,9 @@ namespace StepFlow.Master
 
 		public ICollection<T> CreateCollectionProxy<T>(ICollection<T> target) => new CollectionProxy<T, ICollection<T>>(this, target);
 
-		public ICollection<T> CreateCollectionUsedProxy<T>(ICollection<T> target)
-			where T : Material
-			=> new PlaygroundUsedCollectionProxy<T, ICollection<T>>(this, target);
-
 		public IPlaygroundProxy GetPlaygroundProxy() => (IPlaygroundProxy)CreateProxy(Playground);
 
-		public ICollection<Material> GetPlaygroundItemsProxy() => CreateCollectionUsedProxy(Playground.Items);
+		public ICollection<Material> GetPlaygroundItemsProxy() => CreateCollectionProxy(Playground.Items);
 
 		private void TakeStepInner()
 		{

@@ -11,8 +11,6 @@ namespace StepFlow.Master.Proxies.Intersection
 		Rectangle Bounds { get; }
 
 		void Offset(Point value);
-		void Register();
-		void Unregister();
 	}
 
 	internal class ShapeBaseProxy<TTarget> : ProxyBase<TTarget>, IShapeBaseProxy<TTarget>
@@ -31,9 +29,5 @@ namespace StepFlow.Master.Proxies.Intersection
 		public IEnumerator<Rectangle> GetEnumerator() => Target.GetEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-		public void Register() => Owner.CreateCollectionProxy(Target.Context).Add(Target);
-
-		public void Unregister() => Owner.CreateCollectionProxy(Target.Context).Remove(Target);
 	}
 }

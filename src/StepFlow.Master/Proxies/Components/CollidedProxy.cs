@@ -59,23 +59,6 @@ namespace StepFlow.Master.Proxies.Components
 			SetPosition(Vector2.Zero, false);
 		}
 
-		void Unregister()
-		{
-			CurrentProxy.Unregister();
-			NextProxy.Unregister();
-		}
-
-		void Register()
-		{
-			if (Current.Bounds.Location != Target.PositionAsLocation)
-			{
-				throw new InvalidOperationException("Данные позиции и границ не синхронизирована с данными векторной позиции.");
-			}
-
-			CurrentProxy.Register();
-			NextProxy.Register();
-		}
-
 		void CopyFrom(CollidedDto original)
 		{
 			NullValidateExtensions.ThrowIfArgumentNull(original, nameof(original));

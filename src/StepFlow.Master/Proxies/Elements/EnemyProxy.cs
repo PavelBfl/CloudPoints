@@ -30,7 +30,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 			if (Strength.Value == 0)
 			{
-				var items = Owner.CreateCollectionUsedProxy(Owner.Playground.Items);
+				var items = Owner.CreateCollectionProxy(Owner.Playground.Items);
 				items.Remove(Target);
 
 				var itemPosition = Body.Current.Bounds.GetCenter();
@@ -132,22 +132,6 @@ namespace StepFlow.Master.Proxies.Elements
 			);
 
 			Cooldown = Cooldown.SetMax();
-		}
-
-		public override void Begin()
-		{
-			base.Begin();
-
-			var visionProxy = (ICollidedProxy)Owner.CreateProxy(Vision);
-			visionProxy.Register();
-		}
-
-		public override void End()
-		{
-			base.End();
-
-			var visionProxy = (ICollidedProxy)Owner.CreateProxy(Vision);
-			visionProxy.Unregister();
 		}
 	}
 }

@@ -18,7 +18,7 @@ using StepFlow.Master.Proxies.States;
 
 namespace StepFlow.Master.Proxies.Elements
 {
-	public interface IMaterialProxy<out TTarget> : IProxyBase<TTarget>, IPlaygroundUsed
+	public interface IMaterialProxy<out TTarget> : IProxyBase<TTarget>
 		where TTarget : Material
 	{
 		Scale Strength { get; set; }
@@ -327,18 +327,6 @@ namespace StepFlow.Master.Proxies.Elements
 
 		protected virtual void CreateProjectile(float radians)
 		{
-		}
-
-		public virtual void Begin()
-		{
-			var bodyProxy = (ICollidedProxy)Owner.CreateProxy(Body);
-			bodyProxy.Register();
-		}
-
-		public virtual void End()
-		{
-			var bodyProxy = (ICollidedProxy)Owner.CreateProxy(Body);
-			bodyProxy.Unregister();
 		}
 
 		public int Speed { get => Target.Speed; set => SetValue(value); }

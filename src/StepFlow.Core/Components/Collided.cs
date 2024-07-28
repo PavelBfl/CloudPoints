@@ -97,5 +97,22 @@ namespace StepFlow.Core.Components
 			CopyTo(result);
 			return result;
 		}
+
+		public void Begin()
+		{
+			if (Current.Bounds.Location != PositionAsLocation)
+			{
+				throw new InvalidOperationException("Данные позиции и границ не синхронизирована с данными векторной позиции.");
+			}
+
+			Current.Context.Add(Current);
+			Next.Context.Add(Next);
+		}
+
+		public void End()
+		{
+			Current.Context.Remove(Current);
+			Next.Context.Remove(Next);
+		}
 	}
 }

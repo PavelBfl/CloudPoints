@@ -1,4 +1,5 @@
-﻿using StepFlow.Core.Components;
+﻿using System.Numerics;
+using StepFlow.Core.Components;
 using StepFlow.Domains;
 using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
@@ -48,6 +49,20 @@ namespace StepFlow.Core.Elements
 			container.Vision = (CollidedDto?)Vision?.ToDto();
 			container.Cooldown = Cooldown;
 			container.ReleaseItem = ReleaseItem;
+		}
+
+		public override void Begin()
+		{
+			base.Begin();
+
+			Vision?.Begin();
+		}
+
+		public override void End()
+		{
+			base.End();
+
+			Vision?.End();
 		}
 	}
 }
