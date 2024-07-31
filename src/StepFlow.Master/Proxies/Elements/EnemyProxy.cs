@@ -94,7 +94,7 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			const int SIZE = 10;
 
-			if (Cooldown.Value == 0)
+			if (Cooldown.IsMin())
 			{
 				var center = GetCenter(Target);
 				var otherCenter = GetCenter(other);
