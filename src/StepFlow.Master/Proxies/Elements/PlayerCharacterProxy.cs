@@ -191,14 +191,12 @@ namespace StepFlow.Master.Proxies.Elements
 
 		private void CreateArc(Point center, int radius, Vector2 course, Damage damage, int duration, Subject? creator)
 		{
-			var bodyCurrent = RectangleExtensions.Create(center, radius);
 			var projectile = new Projectile(Owner.Playground.Context)
 			{
 				Name = "Projectile",
 				Body = new Collided(Owner.Playground.Context)
 				{
-					Current = { bodyCurrent },
-					Position = new Vector2(bodyCurrent.X, bodyCurrent.Y),
+					Current = { RectangleExtensions.Create(center, radius) },
 				},
 				Damage = damage,
 				Reusable = ReusableKind.Save,

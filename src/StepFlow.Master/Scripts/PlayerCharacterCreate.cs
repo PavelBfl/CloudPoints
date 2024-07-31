@@ -19,7 +19,6 @@ namespace StepFlow.Master.Scripts
 				Current = { parameters.Bounds },
 				IsRigid = true,
 			};
-			body.PositionSync();
 
 			var playerCharacter = new PlayerCharacter(PlayMaster.Playground.Context)
 			{

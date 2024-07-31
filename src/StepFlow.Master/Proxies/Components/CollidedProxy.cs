@@ -20,13 +20,11 @@ namespace StepFlow.Master.Proxies.Components
 
 		IShapeContainerProxy NextProxy => (IShapeContainerProxy)Owner.CreateProxy(Next);
 
-		Vector2 Position { get; }
-
-		void SetPosition(Vector2 value, bool asMove);
-
 		bool IsMove { get; set; }
 
 		bool IsRigid { get; set; }
+
+		Vector2 Offset { get; set; }
 
 		void Move()
 		{
@@ -42,21 +40,30 @@ namespace StepFlow.Master.Proxies.Components
 		{
 			NextProxy.Clear();
 			IsMove = false;
-
-			SetPosition(
-				new Vector2(
-					Current.Bounds.Location.X,
-					Current.Bounds.Location.Y
-				),
-				false
-			);
 		}
 
 		void Clear()
 		{
 			CurrentProxy.Clear();
 			NextProxy.Clear();
-			SetPosition(Vector2.Zero, false);
+			Offset = Vector2.Zero;
+		}
+
+		void SetOffset()
+		{
+			var localOffset = new Point(
+				(int)Offset.X,
+				(int)Offset.Y
+			);
+
+			if (Math.Abs(localOffset.X) > 0 || Math.Abs(localOffset.Y) > 0)
+			{
+				var next = Current.AsEnumerable().Offset(localOffset);
+				NextProxy.Reset(next);
+				IsMove = true;
+
+				Offset -= new Vector2(localOffset.X, localOffset.Y);
+			}
 		}
 
 		void CopyFrom(CollidedDto original)
@@ -65,7 +72,7 @@ namespace StepFlow.Master.Proxies.Components
 
 			CurrentProxy.Reset(original.Current);
 			NextProxy.Reset(original.Next);
-			SetPosition(original.Position, false);
+			Offset = original.Offset;
 			IsMove = original.IsMove;
 			IsRigid = original.IsRigid;
 		}
@@ -81,28 +88,7 @@ namespace StepFlow.Master.Proxies.Components
 
 		public ShapeContainer Next { get => Target.Next; }
 
-		public Vector2 Position => Target.Position;
-
-		public void SetPosition(Vector2 value, bool asMove)
-		{
-			if (SetValue(value, nameof(Collided.Position)) && asMove)
-			{
-				var newLocation = Target.PositionAsLocation;
-
-				if (Current.Bounds.Location != newLocation)
-				{
-					var offset = new Point(
-						newLocation.X - Current.Bounds.Location.X,
-						newLocation.Y - Current.Bounds.Location.Y
-					);
-
-					var next = Current.AsEnumerable().Offset(offset);
-					ICollidedProxy collidedProxy = this;
-					collidedProxy.NextProxy.Reset(next);
-					collidedProxy.IsMove = true;
-				}
-			}
-		}
+		public Vector2 Offset { get => Target.Offset; set => SetValue(value); }
 
 		public bool IsMove { get => Target.IsMove; set => SetValue(value); }
 

@@ -15,6 +15,7 @@ namespace StepFlow.Master.Proxies
 		ICollection<Material> ItemsProxy => Owner.CreateCollectionProxy(Items);
 
 		void CreateItem(Point position, ItemKind kind);
+
 		void CreatePlace(Rectangle bounds);
 	}
 
@@ -119,8 +120,6 @@ namespace StepFlow.Master.Proxies
 				_ => throw new System.InvalidOperationException(),
 			};
 
-			item.GetBodyRequired().PositionSync();
-
 			Owner.GetPlaygroundItemsProxy().Add(item);
 		}
 
@@ -133,8 +132,6 @@ namespace StepFlow.Master.Proxies
 					Current = { bounds },
 				},
 			};
-
-			place.Body.PositionSync();
 
 			Owner.GetPlaygroundItemsProxy().Add(place);
 		}

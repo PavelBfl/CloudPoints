@@ -37,9 +37,6 @@ namespace StepFlow.Master.Scripts
 				Speed = 10,
 			};
 
-			enemy.Body.PositionSync();
-			enemy.Vision.PositionSync();
-
 			if (parameters.States is { } states)
 			{
 				foreach (var state in states)

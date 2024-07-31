@@ -152,14 +152,12 @@ namespace StepFlow.Master
 
 		public void CreateProjectile(Point center, int radius, Vector2 course, Damage damage, int duration, Subject? creator, ReusableKind reusable)
 		{
-			var bodyCurrent = RectangleExtensions.Create(center, radius);
 			var projectile = new Projectile(Playground.Context)
 			{
 				Name = "Projectile",
 				Body = new Collided(Playground.Context)
 				{
-					Current = { bodyCurrent },
-					Position = new Vector2(bodyCurrent.X, bodyCurrent.Y),
+					Current = { RectangleExtensions.Create(center, radius) },
 				},
 				Damage = damage,
 				Reusable = reusable,

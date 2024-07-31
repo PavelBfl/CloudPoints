@@ -10,7 +10,7 @@ namespace StepFlow.Domains.Components
 
 		public IList<Rectangle> Next { get; } = new List<Rectangle>();
 
-		public Vector2 Position { get; set; }
+		public Vector2 Offset { get; set; }
 
 		public bool IsMove { get; set; }
 

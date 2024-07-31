@@ -245,7 +245,8 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 
 			var bodyProxy = (ICollidedProxy)Owner.CreateProxy(Body);
-			bodyProxy.SetPosition(bodyProxy.Position + Course + additionalCourse, true);
+			bodyProxy.Offset += Course + additionalCourse;
+			bodyProxy.SetOffset();
 		}
 
 		public virtual void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)

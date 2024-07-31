@@ -117,6 +117,7 @@ internal class PlaygroundBuilder
 					),
 				},
 			},
+			Strength = Scale.CreateByMax(50),
 			ReleaseItem = ItemKind.AddStrength,
 			Course = course,
 			CollisionBehavior = collisionBehavior,
@@ -170,8 +171,8 @@ internal class PlaygroundBuilder
 				CreateItem(13, 1, ItemKind.Poison),
 				CreateItem(2, 2, ItemKind.Speed),
 				CreateItem(2, 6, ItemKind.AttackSpeed),
-				//CreateEnemy(11, 7, 300, CreateRotate(MathF.PI / 4) * 0.02f, CollisionBehavior.Reflection),
-				//CreateEnemy(1, 1, 150, CreateRotate(0) * 0.02f, CollisionBehavior.CW),
+				CreateEnemy(11, 7, 300, CreateRotate(MathF.PI / 4) * 0.02f, CollisionBehavior.Reflection),
+				CreateEnemy(1, 1, 150, CreateRotate(0) * 0.02f, CollisionBehavior.CW),
 			}
 		};
 	}

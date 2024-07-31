@@ -28,7 +28,6 @@ namespace StepFlow.Master.Scripts
 				},
 				Strength = parameters.Strength is { } strength ? Scale.CreateByMax(strength) : new Scale(),
 			};
-			barrier.Body.PositionSync();
 
 			PlayMaster.GetPlaygroundItemsProxy().Add(barrier);
 		}

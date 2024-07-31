@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using System.Numerics;
 using StepFlow.Domains;
 using StepFlow.Domains.Components;
@@ -55,24 +54,17 @@ namespace StepFlow.Core.Components
 
 			Current.Add(original.Current);
 			Next.Add(original.Next);
+
+			Offset = original.Offset;
+			IsMove = original.IsMove;
+			IsRigid = original.IsRigid;
 		}
 
 		public ShapeContainer Current { get; }
 
 		public ShapeContainer Next { get; }
 
-		public Vector2 Position { get; set; }
-
-		public Point PositionAsLocation => new Point(
-			(int)MathF.Floor(Position.X),
-			(int)MathF.Floor(Position.Y)
-		);
-
-		public void PositionSync()
-		{
-			var location = Current.Bounds.Location;
-			Position = new Vector2(location.X, location.Y);
-		}
+		public Vector2 Offset { get; set; }
 
 		public bool IsMove { get; set; }
 
@@ -86,7 +78,7 @@ namespace StepFlow.Core.Components
 
 			container.Current.AddRange(Current);
 			container.Next.AddRange(Next);
-			container.Position = Position;
+			container.Offset = Offset;
 			container.IsMove = IsMove;
 			container.IsRigid = IsRigid;
 		}
@@ -100,11 +92,6 @@ namespace StepFlow.Core.Components
 
 		public void Begin()
 		{
-			if (Current.Bounds.Location != PositionAsLocation)
-			{
-				throw new InvalidOperationException("Данные позиции и границ не синхронизирована с данными векторной позиции.");
-			}
-
 			Current.Context.Add(Current);
 			Next.Context.Add(Next);
 		}
