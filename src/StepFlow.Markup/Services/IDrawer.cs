@@ -17,5 +17,7 @@ namespace StepFlow.Markup.Services
 		void Draw(Texture texture, Rectangle rectangle, Color? color = null);
 
 		void Draw(Texture texture, RectangleF rectangle, Color? color = null);
+
+		void Curve(PointF begin, PointF end, PointF anchor, int count, Color color, float thickness = 2);
 	}
 }

@@ -102,6 +102,28 @@ namespace StepFlow.View.Services
 			}
 		}
 
+		public void Curve(System.Drawing.PointF begin, System.Drawing.PointF end, System.Drawing.PointF anchor, int count, System.Drawing.Color color, float thickness = 2f)
+		{
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count);
+
+			var beginVector = begin.ToVector2();
+			var endVector = end.ToVector2();
+			var anchorVector = anchor.ToVector2();
+
+			var prev = beginVector;
+			for (var i = 0; i <= count; i++)
+			{
+				var offset = (float)i / count;
+				var beginToAnchor = System.Numerics.Vector2.Lerp(beginVector, anchorVector, offset);
+				var AnchorToEnd = System.Numerics.Vector2.Lerp(anchorVector, endVector, offset);
+				var current = System.Numerics.Vector2.Lerp(beginToAnchor, AnchorToEnd, offset);
+
+				Line(new(prev), new(current), color, thickness);
+
+				prev = current;
+			}
+		}
+
 		public void DrawString(string text, System.Drawing.PointF position, System.Drawing.Color color)
 			=> SpriteBatch.DrawString(
 				DefaultFont,
