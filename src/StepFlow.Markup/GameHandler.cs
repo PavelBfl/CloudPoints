@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics.Metrics;
+﻿using System.Diagnostics.Metrics;
 using System.Drawing;
 using System.Numerics;
 using StepFlow.Common.Exceptions;
@@ -9,7 +8,6 @@ using StepFlow.Core.Elements;
 using StepFlow.Core.Tracks;
 using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
-using StepFlow.Domains.States;
 using StepFlow.Intersection;
 using StepFlow.Markup.Services;
 using StepFlow.Master;
