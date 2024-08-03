@@ -80,6 +80,39 @@ namespace StepFlow.Master
 
 		public string? NextPlayground { get; set; }
 
+		public Vector2 NextPosition { get; set; }
+
+		public PlayerCharacterDto? PlayerCharacterPop()
+		{
+			if (Playground.Items.OfType<PlayerCharacter>().SingleOrDefault() is { } playerCharacter)
+			{
+				var itemsProxy = GetPlaygroundItemsProxy();
+				itemsProxy.Remove(playerCharacter);
+				return (PlayerCharacterDto)playerCharacter.ToDto();
+			}
+			else
+			{
+				return null;
+			}
+		}
+
+		public void PlayerCharacterPush(PlayerCharacterDto playerDto)
+		{
+			if (playerDto is null)
+			{
+				throw new ArgumentNullException(nameof(playerDto));
+			}
+
+			if (Playground.Items.OfType<PlayerCharacter>().SingleOrDefault() is { })
+			{
+				throw new InvalidOperationException();
+			}
+
+			var player = new PlayerCharacter(Playground.Context, playerDto);
+			var itemsProxy = GetPlaygroundItemsProxy();
+			itemsProxy.Add(player);
+		}
+
 		public Playground Playground { get; }
 
 		[return: NotNullIfNotNull("value")]
@@ -102,7 +135,7 @@ namespace StepFlow.Master
 				TrackBuilder instance => new TrackBuilderProxy(this, instance),
 				TrackUnit instance => new TrackUnitProxy(this, instance),
 				State instance => new StateProxy(this, instance),
-				PlaygroundSwitch instance => new PlaygroundSwitchProxy(this, instance),
+				WormholeSwitch instance => new WormholeProxy(this, instance),
 				null => null,
 				_ => throw new InvalidOperationException(),
 			};

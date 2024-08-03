@@ -236,25 +236,13 @@ internal class PlaygroundBuilder
 				CreateItem(2, 6, ItemKind.AttackSpeed),
 				CreateEnemy(11, 7, 300, CreateRotate(MathF.PI / 4) * 0.02f, CollisionBehavior.Reflection),
 				CreateEnemy(1, 1, 150, CreateRotate(0) * 0.02f, CollisionBehavior.CW),
-				new PlaygroundSwitchDto()
+				new WormholeDto()
 				{
 					Body = new CollidedDto()
 					{
 						Current = { CreateCell(7, 1) },
 					},
 					Destination = "Boss",
-				},
-				new PlayerCharacterDto()
-				{
-					Name = "Player",
-					Strength = Scale.CreateByMax(100000),
-					Cooldown = Scale.CreateByMin(TimeTick.FromSeconds(1)),
-					Speed = 1,
-					Body = new CollidedDto()
-					{
-						Current = { CreateCell(6, 1) },
-						IsRigid = true,
-					},
 				},
 			}
 		};
@@ -275,6 +263,19 @@ internal class PlaygroundBuilder
 			},
 		};
 	}
+
+	public PlayerCharacterDto CreatePlayerCharacter0() => new()
+	{
+		Name = "Player",
+		Strength = Scale.CreateByMax(100000),
+		Cooldown = Scale.CreateByMin(TimeTick.FromSeconds(1)),
+		Speed = 1,
+		Body = new CollidedDto()
+		{
+			Current = { CreateCell(6, 1) },
+			IsRigid = true,
+		},
+	};
 }
 
 internal static class CollectionExtensions

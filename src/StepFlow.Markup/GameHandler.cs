@@ -37,6 +37,8 @@ public sealed class GameHandler
 		}.ToDictionary(x => x.Name ?? throw new InvalidOperationException(), x => new PlayMaster(x));
 		playMasterName = PlayMasters.Keys.First();
 
+		PlayMaster.PlayerCharacterPush(builder.CreatePlayerCharacter0());
+
 		Meter.CreateObservableGauge("Time", () => PlayMaster.TimeAxis.Current);
 		Meter.CreateObservableGauge("Commands", () => PlayMaster.TimeAxis.Source.Current);
 		Meter.CreateObservableGauge("Frame", () => Frame.TotalMilliseconds);
@@ -265,9 +267,14 @@ public sealed class GameHandler
 				transaction.Commit();
 
 				// TODO Temp
-				if (PlayMaster.NextPlayground is { } nextPlayground)
+				if (PlayMaster.NextPlayground is { } nextPlayground && nextPlayground != PlayMasterName)
 				{
+					var playerDto = PlayMaster.PlayerCharacterPop();
 					PlayMasterName = nextPlayground;
+					if (playerDto is { })
+					{
+						PlayMaster.PlayerCharacterPush(playerDto);
+					}
 					break;
 				}
 			}
@@ -400,7 +407,7 @@ public sealed class GameHandler
 			CreateBorder(enemy.Vision, Color.Yellow);
 		}
 
-		foreach (var playgroundSwitch in playground.Items.OfType<PlaygroundSwitch>())
+		foreach (var playgroundSwitch in playground.Items.OfType<WormholeSwitch>())
 		{
 			CreateTexture(playgroundSwitch.Body?.Current.Bounds ?? Rectangle.Empty, Texture.PoisonPlace);
 		}
