@@ -14,6 +14,10 @@ namespace StepFlow.Core
 			where T : struct
 			=> value ?? throw ExceptionBuilder.CreatePropertyIsNull(propertyName);
 
+		public static T PropertyCopyRequired<T>(T? value, string propertyName)
+			where T : class
+			=> value ?? throw ExceptionBuilder.CreateCopiedPropertyIsNull(propertyName);
+
 		public Subject(IContext context)
 		{
 			CopyExtensions.ThrowIfArgumentNull(context, nameof(context));

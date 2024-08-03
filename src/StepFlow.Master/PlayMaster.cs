@@ -78,6 +78,8 @@ namespace StepFlow.Master
 
 		public TransactionAxis TimeAxis { get; } = new TransactionAxis();
 
+		public string? NextPlayground { get; set; }
+
 		public Playground Playground { get; }
 
 		[return: NotNullIfNotNull("value")]
@@ -100,6 +102,7 @@ namespace StepFlow.Master
 				TrackBuilder instance => new TrackBuilderProxy(this, instance),
 				TrackUnit instance => new TrackUnitProxy(this, instance),
 				State instance => new StateProxy(this, instance),
+				PlaygroundSwitch instance => new PlaygroundSwitchProxy(this, instance),
 				null => null,
 				_ => throw new InvalidOperationException(),
 			};

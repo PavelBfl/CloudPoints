@@ -3,6 +3,7 @@ using StepFlow.Core.Elements;
 using StepFlow.Domains;
 using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
+using StepFlow.Domains.States;
 using StepFlow.Master;
 using System.Drawing;
 using System.Numerics;
@@ -126,10 +127,70 @@ internal class PlaygroundBuilder
 		};
 	}
 
+	private static EnemyDto CreateBoss(int x, int y, Vector2 course)
+	{
+		return new()
+		{
+			Body = new CollidedDto()
+			{
+				Current = { CreateCell(x, y) },
+				IsRigid = true,
+			},
+			Strength = Scale.CreateByMax(50),
+			Course = course,
+			CollisionBehavior = CollisionBehavior.Reflection,
+			Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(1)),
+			States =
+			{
+				new()
+				{
+					Kind = StateKind.EnemySerpentineForwardState,
+					Enable = true,
+					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(4)),
+					Arg0 = 0,
+					Arg1 = 0.02f,
+				},
+				new()
+				{
+					Kind = StateKind.EnemySerpentineForwardStateAttack,
+					Enable = true,
+					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(1)),
+					Arg0 = 0,
+				},
+				new()
+				{
+					Kind = StateKind.EnemySerpentineForwardToBackward,
+					Arg0 = 0.04f,
+					Arg1 = 0,
+				},
+				new()
+				{
+					Kind = StateKind.EnemySerpentineBackwardState,
+					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(3)),
+					Arg0 = 0,
+					Arg1 = 0.02f,
+				},
+				new()
+				{
+					Kind = StateKind.EnemySerpentineBackwardStateAttack,
+					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(1)),
+					Arg0 = MathF.PI,
+				},
+				new()
+				{
+					Kind = StateKind.EnemySerpentineBackwardToForward,
+					Arg0 = -0.04f,
+					Arg1 = 0,
+				},
+			},
+		};
+	}
+
 	public PlaygroundDto CreateState0()
 	{
 		return new PlaygroundDto()
 		{
+			Name = "Default",
 			Items =
 			{
 				CreateWall(new Point(0, 0), new Point(14, 0)),
@@ -175,6 +236,14 @@ internal class PlaygroundBuilder
 				CreateItem(2, 6, ItemKind.AttackSpeed),
 				CreateEnemy(11, 7, 300, CreateRotate(MathF.PI / 4) * 0.02f, CollisionBehavior.Reflection),
 				CreateEnemy(1, 1, 150, CreateRotate(0) * 0.02f, CollisionBehavior.CW),
+				new PlaygroundSwitchDto()
+				{
+					Body = new CollidedDto()
+					{
+						Current = { CreateCell(7, 1) },
+					},
+					Destination = "Boss",
+				},
 				new PlayerCharacterDto()
 				{
 					Name = "Player",
@@ -188,6 +257,22 @@ internal class PlaygroundBuilder
 					},
 				},
 			}
+		};
+	}
+
+	public PlaygroundDto CreateState1()
+	{
+		return new PlaygroundDto()
+		{
+			Name = "Boss",
+			Items =
+			{
+				CreateWall(new Point(0, 0), new Point(14, 0)),
+				CreateWall(new Point(0, 8), new Point(14, 8)),
+				CreateWall(new Point(0, 1), new Point(0, 7)),
+				CreateWall(new Point(14, 1), new Point(14, 7)),
+				CreateBoss(1, 1, new Vector2(0, 0.02f)),
+			},
 		};
 	}
 }

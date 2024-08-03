@@ -7,9 +7,14 @@ namespace StepFlow.Core.Exceptions
 		public const string MESSAGE_FORMAT = "Property cannot be null. (Property '{0}')";
 
 		public PropertyNullException(string? propertyName)
-			: base(string.Format(MESSAGE_FORMAT, propertyName))
+			: this(string.Format(MESSAGE_FORMAT, propertyName), propertyName)
 		{
-			PropertyName = propertyName;
+		}
+
+		public PropertyNullException(string message, string? propertyName)
+			: base(message)
+		{
+			PropertyName = message;
 		}
 
 		public string? PropertyName { get; }

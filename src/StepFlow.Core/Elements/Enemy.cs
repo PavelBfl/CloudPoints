@@ -27,8 +27,6 @@ namespace StepFlow.Core.Elements
 
 		public Collided? Vision { get => vision; set => SetComponent(ref vision, value); }
 
-		public Collided GetVisionRequired() => PropertyRequired(Vision, nameof(Vision));
-
 		public Scale Cooldown { get; set; }
 
 		public ItemKind ReleaseItem { get; set; }

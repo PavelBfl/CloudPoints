@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Metrics;
+﻿using System;
+using System.Diagnostics.Metrics;
 using System.Drawing;
 using System.Numerics;
 using StepFlow.Common.Exceptions;
@@ -31,7 +32,12 @@ public sealed class GameHandler
 		Place = placeBounds;
 
 		var builder = new PlaygroundBuilder();
-		PlayMaster = new PlayMaster(builder.CreateState0());
+		PlayMasters = new[]
+		{
+			builder.CreateState0(),
+			builder.CreateState1(),
+		}.ToDictionary(x => x.Name ?? throw new InvalidOperationException(), x => new PlayMaster(x));
+		playMasterName = PlayMasters.Keys.First();
 
 		Meter.CreateObservableGauge("Time", () => PlayMaster.TimeAxis.Current);
 		Meter.CreateObservableGauge("Commands", () => PlayMaster.TimeAxis.Source.Current);
@@ -46,7 +52,30 @@ public sealed class GameHandler
 
 	private TimeSpan Frame { get; set; }
 
-	private PlayMaster PlayMaster { get; }
+	private string? playMasterName;
+
+	private string PlayMasterName
+	{
+		get => playMasterName ?? throw new InvalidOperationException();
+		set
+		{
+			if (string.IsNullOrWhiteSpace(value))
+			{
+				throw new ArgumentException(nameof(value));
+			}
+
+			if (!PlayMasters.ContainsKey(value))
+			{
+				throw new ArgumentOutOfRangeException(nameof(value));
+			}
+			
+			playMasterName = value;
+		}
+	}
+
+	private Dictionary<string, PlayMaster> PlayMasters { get; }
+
+	private PlayMaster PlayMaster => PlayMasters[PlayMasterName];
 
 	private IControl Control { get; }
 
@@ -78,115 +107,7 @@ public sealed class GameHandler
 
 	public void Init()
 	{
-		//CreateRoom(Point.Empty, new(15, 9), Playground.CELL_SIZE_DEFAULT);
-
-		//PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(12, 6), Kind = ItemKind.Fire });
-		//PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(12, 0), Kind = ItemKind.Poison });
-		//PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(1, 1), Kind = ItemKind.Speed });
-		//PlayMaster.CreateItem.Execute(new() { Position = PlaygroundToGlobal(1, 5), Kind = ItemKind.AttackSpeed });
-
-		//PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(8, 0) });
-		//PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(8, 1) });
-		//PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(10, 1) });
-		//PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(10, 2) });
-		//PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(11, 2) });
-		//PlayMaster.CreatePlace.Execute(new() { Bounds = CreateCell(12, 2) });
-
-		//CreateEnemy(CreateCell(10, 6), 300, Strategy.Reflection, CreateRotate(MathF.PI / 4) * 0.02f);
-		//CreateEnemy(CreateCell(0, 0), 150, Strategy.CW, CreateRotate(0) * 0.02f);
-		//CreateEnemy(
-		//	CreateCell(0, 0),
-		//	300,
-		//	new Vector2(0, 0.02f),
-		//	CollisionBehavior.Reflection,
-		//	new StateParameters[]
-		//	{
-		//		new()
-		//		{
-		//			Kind = StateKind.EnemySerpentineForwardState,
-		//			Enable = true,
-		//			Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(4)),
-		//			Arg0 = 0,
-		//			Arg1 = 0.02f,
-		//		},
-		//		new()
-		//		{
-		//			Kind = StateKind.EnemySerpentineForwardStateAttack,
-		//			Enable = true,
-		//			Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(1)),
-		//			Arg0 = 0,
-		//		},
-		//		new()
-		//		{
-		//			Kind = StateKind.EnemySerpentineForwardToBackward,
-		//			Arg0 = 0.04f,
-		//			Arg1 = 0,
-		//		},
-		//		new()
-		//		{
-		//			Kind = StateKind.EnemySerpentineBackwardState,
-		//			Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(3)),
-		//			Arg0 = 0,
-		//			Arg1 = 0.02f,
-		//		},
-		//		new()
-		//		{
-		//			Kind = StateKind.EnemySerpentineBackwardStateAttack,
-		//			Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(1)),
-		//			Arg0 = MathF.PI,
-		//		},
-		//		new()
-		//		{
-		//			Kind = StateKind.EnemySerpentineBackwardToForward,
-		//			Arg0 = -0.04f,
-		//			Arg1 = 0,
-		//		},
-		//	}
-		//);
-
-		//CreateCellObstruction(new Point(3, 0), 50, ObstructionView.Bricks);
-		//CreateCellObstruction(new Point(3, 1), 50, ObstructionView.Bricks);
-		//CreateCellObstruction(new Point(3, 2), 50, ObstructionView.Bricks);
-		//CreateCellObstruction(new Point(3, 3), 50, ObstructionView.Bricks);
-		//CreateCellObstruction(new Point(3, 4), 50, ObstructionView.Bricks);
-		//CreateCellObstruction(new Point(3, 5), 50, ObstructionView.Bricks);
-		//CreateCellObstruction(new Point(3, 6), 50, ObstructionView.Bricks);
-		//CreateCellObstruction(new Point(0, 3), 50, ObstructionView.Bricks);
-		//CreateCellObstruction(new Point(1, 3), 50, ObstructionView.Bricks);
-		//CreateCellObstruction(new Point(2, 3), 50, ObstructionView.Bricks);
-		//CreateCellObstruction(new Point(11, 0), 50, ObstructionView.Bricks);
-		//CreateCellObstruction(new Point(12, 1), 50, ObstructionView.Bricks);
-		//CreateCellObstruction(new Point(8, 3), 50, ObstructionView.Bricks);
-		//CreateCellObstruction(new Point(9, 3), 50, ObstructionView.Bricks);
-		//CreateCellObstruction(new Point(10, 3), 50, ObstructionView.Bricks);
-		//CreateCellObstruction(new Point(11, 3), 50, ObstructionView.Bricks);
-		//CreateCellObstruction(new Point(12, 3), 50, ObstructionView.Bricks);
-		//CreateCellObstruction(new Point(12, 5), 50, ObstructionView.Bricks);
-		//CreateCellObstruction(new Point(11, 6), 50, ObstructionView.Bricks);
-		//CreateCellObstruction(new Point(6, 4), 50, ObstructionView.Bricks);
-		//CreateCellObstruction(new Point(7, 4), 50, ObstructionView.Bricks);
-		//CreateCellObstruction(new Point(8, 4), 50, ObstructionView.Bricks);
-		//CreateCellObstruction(new Point(6, 5), 50, ObstructionView.Bricks);
-		//CreateCellObstruction(new Point(5, 6), 50, ObstructionView.Bricks);
-		//CreateCellObstruction(new Point(6, 6), 50, ObstructionView.Bricks);
-
-		//CreateCellObstruction(new Point(0, 4), 50, ObstructionView.Boards, 1);
-		//CreateCellObstruction(new Point(1, 4), 50, ObstructionView.Boards, 1);
-		//CreateCellObstruction(new Point(2, 4), 50, ObstructionView.Boards, 1);
-		//CreateCellObstruction(new Point(0, 5), 50, ObstructionView.Boards, 1);
-		//CreateCellObstruction(new Point(2, 5), 50, ObstructionView.Boards, 1);
-		//CreateCellObstruction(new Point(0, 6), 50, ObstructionView.Boards, 1);
-		//CreateCellObstruction(new Point(1, 6), 50, ObstructionView.Boards, 1);
-		//CreateCellObstruction(new Point(2, 6), 50, ObstructionView.Boards, 1);
-
-		//CreateCellObstruction(new Point(5, 1), 1000, ObstructionView.Boards, 1);
-		//PlayMaster.PlayerCharacterCreate.Execute(new()
-		//{
-		//	Bounds = CreateCell(5, 0),
-		//	Strength = 100000,
-		//	Speed = 1,
-		//	Cooldown = TimeTick.FromSeconds(1),
-		//});
+		
 	}
 
 	private void CreateRoom(Point location, Size size, int width)
@@ -344,6 +265,13 @@ public sealed class GameHandler
 				UpdateTrack();
 
 				transaction.Commit();
+
+				// TODO Temp
+				if (PlayMaster.NextPlayground is { } nextPlayground)
+				{
+					PlayMasterName = nextPlayground;
+					break;
+				}
 			}
 
 			Frame = sw.Elapsed;
@@ -472,6 +400,11 @@ public sealed class GameHandler
 			CreateTexture(enemy.Body?.Current.Bounds ?? Rectangle.Empty, Texture.Enemy, enemy.Strength);
 			CreateBorder(enemy.Body, Color.Red);
 			CreateBorder(enemy.Vision, Color.Yellow);
+		}
+
+		foreach (var playgroundSwitch in playground.Items.OfType<PlaygroundSwitch>())
+		{
+			CreateTexture(playgroundSwitch.Body?.Current.Bounds ?? Rectangle.Empty, Texture.PoisonPlace);
 		}
 
 		foreach (var trackUnit in TrackUnits.Where(x => x.GetChangeRequired().Thickness > 0))

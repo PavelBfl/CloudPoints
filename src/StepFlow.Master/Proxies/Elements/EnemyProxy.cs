@@ -11,7 +11,7 @@ namespace StepFlow.Master.Proxies.Elements
 {
 	public interface IEnemyProxy : IMaterialProxy<Enemy>
 	{
-		Collided Vision { get; }
+		Collided? Vision { get; }
 	}
 
 	internal sealed class EnemyProxy : MaterialProxy<Enemy>, IEnemyProxy
@@ -20,7 +20,7 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 		}
 
-		public Collided Vision => Target.GetVisionRequired();
+		public Collided? Vision => Target.Vision;
 
 		public Scale Cooldown { get => Target.Cooldown; set => SetValue(value); }
 
@@ -43,8 +43,8 @@ namespace StepFlow.Master.Proxies.Elements
 				var bodyProxy = (ICollidedProxy)Owner.CreateProxy(Body);
 				bodyProxy.Clear();
 				
-				var visionProxy = (ICollidedProxy)Owner.CreateProxy(Vision);
-				visionProxy.Clear();
+				var visionProxy = (ICollidedProxy?)Owner.CreateProxy(Vision);
+				visionProxy?.Clear();
 			}
 			else
 			{
@@ -52,8 +52,8 @@ namespace StepFlow.Master.Proxies.Elements
 
 				var center = Body.Current.Bounds.GetCenter();
 				var visionPlace = RectangleExtensions.Create(center, 100);
-				var visionProxy = (IShapeContainerProxy)Owner.CreateProxy(Vision.Current);
-				visionProxy.Reset(visionPlace);
+				var visionProxy = (IShapeContainerProxy?)Owner.CreateProxy(Vision?.Current);
+				visionProxy?.Reset(visionPlace);
 			}
 		}
 

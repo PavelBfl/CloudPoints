@@ -40,6 +40,8 @@ namespace StepFlow.Core
 
 		public static Place ToPlace(this PlaceDto original, IContext context) => new Place(context, original);
 
+		public static PlaygroundSwitch ToPlaygroundSwitch(this PlaygroundSwitchDto original, IContext context) => new PlaygroundSwitch(context, original);
+
 		public static PlayerCharacter ToPlayerCharacter(this PlayerCharacterDto original, IContext context) => new PlayerCharacter(context, original);
 
 		public static Projectile ToProjectile(this ProjectileDto original, IContext context) => new Projectile(context, original);
@@ -61,6 +63,7 @@ namespace StepFlow.Core
 			PlaceDto place => ToPlace(place, context),
 			PlayerCharacterDto player => ToPlayerCharacter(player, context),
 			ProjectileDto projectile => ToProjectile(projectile, context),
+			PlaygroundSwitchDto playgroundSwitch => ToPlaygroundSwitch(playgroundSwitch, context),
 			null => throw new ArgumentNullException(nameof(original)),
 			_ => throw ExceptionBuilder.CreateUnknownTypeForCopy(original.GetType()),
 		};
