@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Numerics;
 using StepFlow.Common.Exceptions;
-using StepFlow.Core;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.Tracks;
@@ -13,7 +12,6 @@ using StepFlow.Markup.Services;
 using StepFlow.Master;
 using StepFlow.Master.Proxies.Elements;
 using StepFlow.Master.Proxies.Tracks;
-using StepFlow.Master.Scripts;
 
 namespace StepFlow.Markup;
 
@@ -30,52 +28,28 @@ public sealed class GameHandler
 		Place = placeBounds;
 
 		var builder = new PlaygroundBuilder();
-		PlayMasters = new[]
+		PlayMasters = new PlayMasters()
 		{
 			builder.CreateState0(),
 			builder.CreateState1(),
-		}.ToDictionary(x => x.Name ?? throw new InvalidOperationException(), x => new PlayMaster(x));
-		playMasterName = PlayMasters.Keys.First();
+		};
+		PlayMasters.CurrentKey = PlayMasters.Keys.FirstOrDefault();
+		PlayMasters.Current?.PlayerCharacterPush(builder.CreatePlayerCharacter0());
 
-		PlayMaster.PlayerCharacterPush(builder.CreatePlayerCharacter0());
-
-		Meter.CreateObservableGauge("Time", () => PlayMaster.TimeAxis.Current);
-		Meter.CreateObservableGauge("Commands", () => PlayMaster.TimeAxis.Source.Current);
+		Meter.CreateObservableGauge("Time", () => PlayMasters.Current?.TimeAxis.Current ?? 0);
+		Meter.CreateObservableGauge("Commands", () => PlayMasters.Current?.TimeAxis.Source.Current ?? 0);
 		Meter.CreateObservableGauge("Frame", () => Frame.TotalMilliseconds);
-		Meter.CreateObservableGauge("Shapes", () => PlayMaster.Playground.Context.IntersectionContext.Count);
+		Meter.CreateObservableGauge("Shapes", () => PlayMasters.Current?.Playground.Context.IntersectionContext.Count ?? 0);
 		Init();
 
-		TacticPanel = new(Control, Drawer, Place, PlayMaster);
+		TacticPanel = new(Control, Drawer, Place, PlayMasters);
 	}
 
 	private Meter Meter { get; } = new Meter("Game.Gameplay");
 
 	private TimeSpan Frame { get; set; }
 
-	private string? playMasterName;
-
-	private string PlayMasterName
-	{
-		get => playMasterName ?? throw new InvalidOperationException();
-		set
-		{
-			if (string.IsNullOrWhiteSpace(value))
-			{
-				throw new ArgumentException(nameof(value));
-			}
-
-			if (!PlayMasters.ContainsKey(value))
-			{
-				throw new ArgumentOutOfRangeException(nameof(value));
-			}
-			
-			playMasterName = value;
-		}
-	}
-
-	private Dictionary<string, PlayMaster> PlayMasters { get; }
-
-	private PlayMaster PlayMaster => PlayMasters[PlayMasterName];
+	private PlayMasters PlayMasters { get; }
 
 	private IControl Control { get; }
 
@@ -85,100 +59,19 @@ public sealed class GameHandler
 
 	private TacticPanel TacticPanel { get; }
 
-	private static Size CellSize => new(Playground.CELL_SIZE_DEFAULT, Playground.CELL_SIZE_DEFAULT);
-
-	private static int PlaygroundToGlobal(int value) => (value + 1) * Playground.CELL_SIZE_DEFAULT;
-
-	private static Point PlaygroundToGlobal(int x, int y) => new(PlaygroundToGlobal(x), PlaygroundToGlobal(y));
-
-	private static Point PlaygroundToGlobal(Point position) => PlaygroundToGlobal(position.X, position.Y);
-
-	private static Rectangle CreateCell(int x, int y) => new(PlaygroundToGlobal(x, y), CellSize);
-
-	private static Rectangle CreateCell(Point position) => CreateCell(position.X, position.Y);
-
-	private static Vector2 CreateRotate(float radians)
-	{
-		return Vector2.Transform(
-			new Vector2(1, 0),
-			Matrix3x2.CreateRotation(radians)
-		);
-	}
-
 	public void Init()
 	{
 		
 	}
 
-	private void CreateRoom(Point location, Size size, int width)
-	{
-		var top = new Rectangle[size.Width];
-		var bottom = new Rectangle[size.Width];
-		for (var iX = 0; iX < size.Width; iX++)
-		{
-			top[iX] = CreatePixel(new(iX, 0));
-			bottom[iX] = CreatePixel(new(iX, size.Height - 1));
-		}
-
-		var left = new Rectangle[size.Height - 2];
-		var right = new Rectangle[size.Height - 2];
-		for (var iY = 0; iY < size.Height - 2; iY++)
-		{
-			left[iY] = CreatePixel(new(0, iY + 1));
-			right[iY] = CreatePixel(new(size.Width - 1, iY + 1));
-		}
-
-		PlayMaster.CreateObstruction.Execute(new() { Bounds = top, Kind = ObstructionKind.Tiles, View = ObstructionView.DarkWall, Weight = Material.MAX_WEIGHT, });
-		PlayMaster.CreateObstruction.Execute(new() { Bounds = bottom, Kind = ObstructionKind.Tiles, View = ObstructionView.DarkWall, Weight = Material.MAX_WEIGHT, });
-		PlayMaster.CreateObstruction.Execute(new() { Bounds = left, Kind = ObstructionKind.Tiles, View = ObstructionView.DarkWall, Weight = Material.MAX_WEIGHT, });
-		PlayMaster.CreateObstruction.Execute(new() { Bounds = right, Kind = ObstructionKind.Tiles, View = ObstructionView.DarkWall, Weight = Material.MAX_WEIGHT, });
-
-		Rectangle CreatePixel(Point position) => new Rectangle(
-			location.X + position.X * width,
-			location.Y + position.Y * width,
-			width,
-			width
-		);
-	}
-
-	private void CreateCellObstruction(Point position, int? strength, ObstructionView view, int weight = Material.MAX_WEIGHT)
-	{
-		PlayMaster.CreateObstruction.Execute(new()
-		{
-			Bounds = new[] { CreateCell(position) },
-			Strength = strength,
-			Kind = ObstructionKind.Single,
-			View = view,
-			Weight = weight,
-		});
-	}
-
 	private void PlayerCharacterSetCourse(float? course)
 	{
-		PlayMaster.PlayerCharacterSetCourse.Execute(new() { Course = course, });
+		PlayMasters.Current?.PlayerCharacterSetCourse.Execute(new() { Course = course, });
 	}
 
 	private void CreateProjectile(float radians, PlayerAction action)
 	{
-		PlayMaster.PlayerCharacterCreateProjectile.Execute(new() { Radians = radians, Action = action });
-	}
-
-	private void CreateEnemy(Rectangle bounds, int visionSize, Vector2 beginVector, CollisionBehavior collisionBehavior, StateParameters[]? states)
-	{
-		PlayMaster.CreateEnemy.Execute(new()
-		{
-			Bounds = bounds,
-			Vision = Rectangle.FromLTRB(
-				bounds.Left - visionSize,
-				bounds.Top - visionSize,
-				bounds.Right + visionSize,
-				bounds.Bottom + visionSize
-			),
-			ReleaseItem = ItemKind.AddStrength,
-			Course = beginVector,
-			CollisionBehavior = collisionBehavior,
-			States = states
-		});
+		PlayMasters.Current?.PlayerCharacterCreateProjectile.Execute(new() { Radians = radians, Action = action });
 	}
 
 	private const int TIME_TICKS_STEP = 10;
@@ -230,7 +123,7 @@ public sealed class GameHandler
 		{
 			for (var i = 0; i < TimeTick.TICKS_PER_FRAME * 5; i++)
 			{
-				PlayMaster.TimeAxis.Revert();
+				PlayMasters.Current?.TimeAxis.Revert();
 			}
 		}
 		else
@@ -238,10 +131,10 @@ public sealed class GameHandler
 			var sw = System.Diagnostics.Stopwatch.StartNew();
 			for (var i = 0; i < currentTicks; i++)
 			{
-				var transaction = PlayMaster.TimeAxis.BeginTransaction();
+				var transaction = PlayMasters.Current?.TimeAxis.BeginTransaction();
 
 				// TODO
-				if (PlayMaster.Playground.Items.OfType<PlayerCharacter>().Any())
+				if (PlayMasters.Current?.Playground.Items.OfType<PlayerCharacter>().Any() ?? false)
 				{
 					PlayerCharacterSetCourse(Control.GetPlayerCourse());
 
@@ -251,29 +144,29 @@ public sealed class GameHandler
 						{
 							case PlayerAction.Main:
 							case PlayerAction.Auxiliary:
-								var playerCharacter = PlayMaster.Playground.GetPlayerCharacterRequired();
+								var playerCharacter = PlayMasters.Current?.Playground.GetPlayerCharacterRequired();
 								var center = playerCharacter.GetBodyRequired().Current.Bounds.GetCenter();
 								CreateProjectile(Control.GetPlayerRotate(new(center.X, center.Y)), playerAction);
 								break;
 							default: throw EnumNotSupportedException.Create(playerAction);
 						};
-					} 
+					}
 				}
 
-				PlayMaster.TakeStep.Execute(null);
+				PlayMasters.Current?.TakeStep.Execute(null);
 
 				UpdateTrack();
 
 				transaction.Commit();
 
 				// TODO Temp
-				if (PlayMaster.NextPlayground is { } nextPlayground && nextPlayground != PlayMasterName)
+				if (PlayMasters.Current?.NextPlayground is { } nextPlayground && nextPlayground != PlayMasters.CurrentKey)
 				{
-					var playerDto = PlayMaster.PlayerCharacterPop();
-					PlayMasterName = nextPlayground;
+					var playerDto = PlayMasters.Current?.PlayerCharacterPop();
+					PlayMasters.CurrentKey = nextPlayground;
 					if (playerDto is { })
 					{
-						PlayMaster.PlayerCharacterPush(playerDto);
+						PlayMasters.Current?.PlayerCharacterPush(playerDto);
 					}
 					break;
 				}
@@ -289,39 +182,42 @@ public sealed class GameHandler
 
 	private void UpdateTrack()
 	{
-		var trackUnitsProxy = PlayMaster.CreateListProxy(TrackUnits);
-
-		foreach (var material in PlayMaster.Playground.Items)
+		if (PlayMasters.Current is { } playMaster)
 		{
-			var trackBuilderProxy = (ITrackBuilderProxy?)PlayMaster.CreateProxy(material.Track);
+			var trackUnitsProxy = playMaster.CreateListProxy(TrackUnits);
 
-			if (trackBuilderProxy?.GetTrackForBuild() is { } trackChange && material.Body?.Current is { } shape)
+			foreach (var material in playMaster.Playground.Items)
 			{
-				RectangleF bounds = shape.Bounds;
-				var location = (Vector2)bounds.Location;
-				var size = (Vector2)bounds.Size;
-				var radius = size / 2;
-				trackUnitsProxy.Add(new(PlayMaster.Playground.Context)
+				var trackBuilderProxy = (ITrackBuilderProxy?)playMaster.CreateProxy(material.Track);
+
+				if (trackBuilderProxy?.GetTrackForBuild() is { } trackChange && material.Body?.Current is { } shape)
 				{
-					Center = location + radius,
-					Radius = radius,
-					Change = trackBuilderProxy.Change,
-				});
+					RectangleF bounds = shape.Bounds;
+					var location = (Vector2)bounds.Location;
+					var size = (Vector2)bounds.Size;
+					var radius = size / 2;
+					trackUnitsProxy.Add(new(playMaster.Playground.Context)
+					{
+						Center = location + radius,
+						Radius = radius,
+						Change = trackBuilderProxy.Change,
+					});
+				}
 			}
-		}
 
-		var index = 0;
-		while (index < trackUnitsProxy.Count)
-		{
-			var trackUnitProxy = (ITrackUnitProxy)PlayMaster.CreateProxy(trackUnitsProxy[index]);
-			if (trackUnitProxy.Change())
+			var index = 0;
+			while (index < trackUnitsProxy.Count)
 			{
-				index++;
-			}
-			else
-			{
-				trackUnitsProxy.RemoveAt(index);
-			}
+				var trackUnitProxy = (ITrackUnitProxy)playMaster.CreateProxy(trackUnitsProxy[index]);
+				if (trackUnitProxy.Change())
+				{
+					index++;
+				}
+				else
+				{
+					trackUnitsProxy.RemoveAt(index);
+				}
+			} 
 		}
 	}
 
@@ -329,6 +225,12 @@ public sealed class GameHandler
 
 	public void Draw()
 	{
+		var playMaster = PlayMasters.Current;
+		if (playMaster is null)
+		{
+			return;
+		}
+
 		var floorTileSize = new Size(40, 40);
 		for (var iX = 0; iX < Place.Width; iX += floorTileSize.Width)
 		{
@@ -338,7 +240,7 @@ public sealed class GameHandler
 			}
 		}
 
-		var playground = PlayMaster.Playground;
+		var playground = playMaster.Playground;
 
 		foreach (var place in playground.Items.OfType<Place>())
 		{
@@ -346,7 +248,7 @@ public sealed class GameHandler
 		}
 
 		// TODO Temp
-		if (PlayMaster.Playground.Items.OfType<PlayerCharacter>().Any())
+		if (playMaster.Playground.Items.OfType<PlayerCharacter>().Any())
 		{
 			var playerCharacter = playground.GetPlayerCharacterRequired();
 			CreateTexture(playerCharacter?.Body?.Current.Bounds ?? Rectangle.Empty, Texture.Character, playerCharacter?.Strength);

@@ -3,23 +3,22 @@ using StepFlow.Common.Exceptions;
 using StepFlow.Core.Elements;
 using StepFlow.Domains.Elements;
 using StepFlow.Markup.Services;
-using StepFlow.Master;
 using StepFlow.Master.Proxies.Elements;
 
 namespace StepFlow.Markup;
 
-public sealed class TacticPanel
+internal sealed class TacticPanel
 {
-	public TacticPanel(IControl control, IDrawer drawer, RectangleF place, PlayMaster playMaster)
+	public TacticPanel(IControl control, IDrawer drawer, RectangleF place, PlayMasters playMasters)
 	{
 		ArgumentNullException.ThrowIfNull(control);
 		ArgumentNullException.ThrowIfNull(drawer);
-		ArgumentNullException.ThrowIfNull(playMaster);
+		ArgumentNullException.ThrowIfNull(playMasters);
 
 		Control = control;
 		Drawer = drawer;
 		Place = place;
-		PlayMaster = playMaster;
+		PlayMasters = playMasters;
 	}
 
 	private IControl Control { get; }
@@ -28,42 +27,48 @@ public sealed class TacticPanel
 
 	public RectangleF Place { get; }
 
-	public PlayMaster PlayMaster { get; }
+	private PlayMasters PlayMasters { get; }
 
-	private List<SkillButton> Buttoms { get; } = new List<SkillButton>();
+	private List<SkillButton> Buttons { get; } = new List<SkillButton>();
 
 	public void Update()
 	{
-		var skills = Control.OnTactic() ? Enum.GetValues<CharacterSkill>() : Array.Empty<CharacterSkill>();
-
-		while (skills.Length < Buttoms.Count)
+		var playMaster = PlayMasters.Current;
+		if (playMaster is null)
 		{
-			Buttoms.RemoveAt(Buttoms.Count - 1);
+			return;
 		}
 
-		while (skills.Length > Buttoms.Count)
+		var skills = Control.OnTactic() ? Enum.GetValues<CharacterSkill>() : Array.Empty<CharacterSkill>();
+
+		while (skills.Length < Buttons.Count)
 		{
-			Buttoms.Add(new());
+			Buttons.RemoveAt(Buttons.Count - 1);
+		}
+
+		while (skills.Length > Buttons.Count)
+		{
+			Buttons.Add(new());
 		}
 
 		const float SIZE = 50;
 		for (var i = 0; i < skills.Length; i++)
 		{
-			var button = Buttoms[i];
+			var button = Buttons[i];
 			button.Skill = skills[i];
 			button.Bounds = new(Place.X, Place.Y + i * SIZE, SIZE, SIZE);
 		}
 
 		// TODO Temp
-		if (!PlayMaster.Playground.Items.OfType<PlayerCharacter>().Any())
+		if (!playMaster.Playground.Items.OfType<PlayerCharacter>().Any())
 		{
 			return;
 		}
 
-		var playerCharacterGui = (IPlayerCharacterProxy)PlayMaster.CreateProxy(PlayMaster.Playground.GetPlayerCharacterRequired());
+		var playerCharacterGui = (IPlayerCharacterProxy)playMaster.CreateProxy(playMaster.Playground.GetPlayerCharacterRequired());
 		if (Control.FreeSelect() is { } freeSelect)
 		{
-			foreach (var button in Buttoms)
+			foreach (var button in Buttons)
 			{
 				button.IsSelect = button.Bounds.Contains((PointF)freeSelect);
 				if (button.IsSelect)
@@ -85,7 +90,7 @@ public sealed class TacticPanel
 			// TODO Сделать ручное управление
 		}
 
-		foreach (var button in Buttoms)
+		foreach (var button in Buttons)
 		{
 			button.IsMain = button.Skill == playerCharacterGui.MainSkill;
 			button.IsAuxiliary = button.Skill == playerCharacterGui.AuxiliarySkill;
@@ -94,7 +99,7 @@ public sealed class TacticPanel
 
 	public void Draw()
 	{
-		foreach (var button in Buttoms)
+		foreach (var button in Buttons)
 		{
 			Drawer.Button(button.Icon, button.Bounds, button.IsSelect);
 			if (button.IsMain)
