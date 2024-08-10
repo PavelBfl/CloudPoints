@@ -22,5 +22,6 @@
 		ItemAttackSpeed,
 		ItemAddStrength,
 		PoisonPlace,
+		Door,
 	};
 }

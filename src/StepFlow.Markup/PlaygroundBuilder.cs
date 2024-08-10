@@ -20,7 +20,17 @@ internal class PlaygroundBuilder
 
 	private static Point PlaygroundToGlobal(Point position) => PlaygroundToGlobal(position.X, position.Y);
 
-	private static Rectangle CreateCell(int x, int y) => new(PlaygroundToGlobal(x, y), CellSize);
+	private static Rectangle CreateCell(int x, int y, int margin = 0)
+	{
+		var position = PlaygroundToGlobal(x, y);
+		var size = CellSize;
+		return new(
+			position.X + margin,
+			position.Y + margin,
+			size.Width - margin * 2,
+			size.Height - margin * 2
+		);
+	}
 
 	private static Rectangle CreateCell(Point position) => CreateCell(position.X, position.Y);
 
@@ -186,6 +196,63 @@ internal class PlaygroundBuilder
 		};
 	}
 
+	private static WormholeDto CreateWormhole(int x, int y, string destination) => new WormholeDto()
+	{
+		Body = new CollidedDto()
+		{
+			Current = { CreateCell(x, y) },
+		},
+		Destination = destination,
+		Position = (Vector2)(PointF)PlaygroundToGlobal(7, 4)
+	};
+
+	private static IEnumerable<MaterialDto> CreateRoom(string? left, string? top, string? right, string? bottom)
+	{
+		if (left is null)
+		{
+			yield return CreateWall(new(0, 1), new(0, 7));
+		}
+		else
+		{
+			yield return CreateWall(new(0, 1), new(0, 3));
+			yield return CreateWormhole(0, 4, left);
+			yield return CreateWall(new(0, 5), new(0, 7));
+		}
+
+		if (top is null)
+		{
+			yield return CreateWall(new(0, 0), new(14, 0));
+		}
+		else
+		{
+			yield return CreateWall(new(0, 0), new(6, 0));
+			yield return CreateWormhole(7, 0, top);
+			yield return CreateWall(new(8, 0), new(14, 0));
+		}
+
+		if (right is null)
+		{
+			yield return CreateWall(new(14, 1), new(14, 7));
+		}
+		else
+		{
+			yield return CreateWall(new(14, 1), new(14, 3));
+			yield return CreateWormhole(14, 4, right);
+			yield return CreateWall(new(14, 5), new(14, 7));
+		}
+
+		if (bottom is null)
+		{
+			yield return CreateWall(new(0, 8), new(14, 8));
+		}
+		else
+		{
+			yield return CreateWall(new(0, 8), new(6, 8));
+			yield return CreateWormhole(7, 8, bottom);
+			yield return CreateWall(new(8, 8), new(14, 8));
+		}
+	}
+
 	public PlaygroundDto CreateState0()
 	{
 		return new PlaygroundDto()
@@ -236,14 +303,7 @@ internal class PlaygroundBuilder
 				CreateItem(2, 6, ItemKind.AttackSpeed),
 				CreateEnemy(11, 7, 300, CreateRotate(MathF.PI / 4) * 0.02f, CollisionBehavior.Reflection),
 				CreateEnemy(1, 1, 150, CreateRotate(0) * 0.02f, CollisionBehavior.CW),
-				new WormholeDto()
-				{
-					Body = new CollidedDto()
-					{
-						Current = { CreateCell(7, 1) },
-					},
-					Destination = "Boss",
-				},
+				CreateWormhole(7, 1, "Boss"),
 			}
 		};
 	}
@@ -264,6 +324,18 @@ internal class PlaygroundBuilder
 		};
 	}
 
+	public PlaygroundDto CreateState2(string current, string? left, string? top, string? right, string? bottom)
+	{
+		return new()
+		{
+			Name = current,
+			Items =
+			{
+				CreateRoom(left, top, right, bottom),
+			},
+		};
+	}
+
 	public PlayerCharacterDto CreatePlayerCharacter0() => new()
 	{
 		Name = "Player",
@@ -272,7 +344,7 @@ internal class PlaygroundBuilder
 		Speed = 1,
 		Body = new CollidedDto()
 		{
-			Current = { CreateCell(6, 1) },
+			Current = { CreateCell(6, 1, 7) },
 			IsRigid = true,
 		},
 	};

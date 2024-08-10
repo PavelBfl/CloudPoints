@@ -30,8 +30,10 @@ public sealed class GameHandler
 		var builder = new PlaygroundBuilder();
 		PlayMasters = new PlayMasters()
 		{
-			builder.CreateState0(),
-			builder.CreateState1(),
+			builder.CreateState2("P0", null, "P1", null, null),
+			builder.CreateState2("P1", "P2", "P3", null, "P0"),
+			builder.CreateState2("P2", null, null, "P1", null),
+			builder.CreateState2("P3", null, null, null, "P1"),
 		};
 		PlayMasters.CurrentKey = PlayMasters.Keys.FirstOrDefault();
 		PlayMasters.Current?.PlayerCharacterPush(builder.CreatePlayerCharacter0());
@@ -162,10 +164,30 @@ public sealed class GameHandler
 				// TODO Temp
 				if (PlayMasters.Current?.NextPlayground is { } nextPlayground && nextPlayground != PlayMasters.CurrentKey)
 				{
+					var newPosition = new Point((int)PlayMasters.Current.NextPosition.X, (int)PlayMasters.Current.NextPosition.Y);
+					PlayMasters.Current.NextPlayground = null;
 					var playerDto = PlayMasters.Current?.PlayerCharacterPop();
 					PlayMasters.CurrentKey = nextPlayground;
+
 					if (playerDto is { })
 					{
+						var oldPosition = new Point(
+							-playerDto.Body.Current.Min(x => x.X),
+							-playerDto.Body.Current.Min(x => x.Y)
+						);
+
+						if (playerDto.Body is { } body)
+						{
+							body.Next.Clear();
+							for (var iRect = 0; iRect < body.Current.Count; iRect++)
+							{
+								var subRectangle = body.Current[iRect];
+								subRectangle.Offset(oldPosition);
+								subRectangle.Offset(newPosition);
+								body.Current[iRect] = subRectangle;
+							}
+						}
+
 						PlayMasters.Current?.PlayerCharacterPush(playerDto);
 					}
 					break;
@@ -311,7 +333,7 @@ public sealed class GameHandler
 
 		foreach (var playgroundSwitch in playground.Items.OfType<WormholeSwitch>())
 		{
-			CreateTexture(playgroundSwitch.Body?.Current.Bounds ?? Rectangle.Empty, Texture.PoisonPlace);
+			CreateTexture(playgroundSwitch.Body?.Current.Bounds ?? Rectangle.Empty, Texture.Door);
 		}
 
 		foreach (var trackUnit in TrackUnits.Where(x => x.GetChangeRequired().Thickness > 0))

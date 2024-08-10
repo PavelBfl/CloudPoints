@@ -48,6 +48,7 @@ namespace StepFlow.View.Services
 			Sprites.Add(Markup.Services.Texture.ItemAttackSpeed, new(DefaultTiles, new(51, 317, 24, 26)));
 			Sprites.Add(Markup.Services.Texture.ItemAddStrength, new(DefaultTiles, new(339, 573, 10, 9)));
 			Sprites.Add(Markup.Services.Texture.PoisonPlace, new(PlaceTiles, new(352, 736, 32, 32)));
+			Sprites.Add(Markup.Services.Texture.Door, new(DefaultTiles, new(390, 754, 32, 32)));
 
 			Pixel = new(graphicsDevice, 1, 1);
 			Pixel.SetData(new[] { Color.White });
