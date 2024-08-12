@@ -40,7 +40,7 @@ namespace StepFlow.Core
 
 		public static Place ToPlace(this PlaceDto original, IContext context) => new Place(context, original);
 
-		public static WormholeSwitch ToPlaygroundSwitch(this WormholeDto original, IContext context) => new WormholeSwitch(context, original);
+		public static Wormhole ToPlaygroundSwitch(this WormholeDto original, IContext context) => new Wormhole(context, original);
 
 		public static PlayerCharacter ToPlayerCharacter(this PlayerCharacterDto original, IContext context) => new PlayerCharacter(context, original);
 

@@ -78,9 +78,7 @@ namespace StepFlow.Master
 
 		public TransactionAxis TimeAxis { get; } = new TransactionAxis();
 
-		public string? NextPlayground { get; set; }
-
-		public Vector2 NextPosition { get; set; }
+		public WormholeDto? Wormhole { get; set; }
 
 		public PlayerCharacterDto? PlayerCharacterPop()
 		{
@@ -135,7 +133,7 @@ namespace StepFlow.Master
 				TrackBuilder instance => new TrackBuilderProxy(this, instance),
 				TrackUnit instance => new TrackUnitProxy(this, instance),
 				State instance => new StateProxy(this, instance),
-				WormholeSwitch instance => new WormholeProxy(this, instance),
+				Wormhole instance => new WormholeProxy(this, instance),
 				null => null,
 				_ => throw new InvalidOperationException(),
 			};

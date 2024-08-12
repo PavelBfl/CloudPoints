@@ -1,17 +1,18 @@
 ﻿using System.Numerics;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
+using StepFlow.Domains.Elements;
 
 namespace StepFlow.Master.Proxies.Elements
 {
-	public interface IWormholeProxy : IMaterialProxy<WormholeSwitch>
+	public interface IWormholeProxy : IMaterialProxy<Wormhole>
 	{
 		string Destination { get; set; }
 	}
 
-	internal sealed class WormholeProxy : MaterialProxy<WormholeSwitch>, IWormholeProxy
+	internal sealed class WormholeProxy : MaterialProxy<Wormhole>, IWormholeProxy
 	{
-		public WormholeProxy(PlayMaster owner, WormholeSwitch target) : base(owner, target)
+		public WormholeProxy(PlayMaster owner, Wormhole target) : base(owner, target)
 		{
 		}
 
@@ -23,8 +24,7 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			if (otherMaterial is PlayerCharacter && otherCollided.PropertyName == nameof(Collided.Current))
 			{
-				Owner.NextPlayground = Destination;
-				Owner.NextPosition = Position;
+				Owner.Wormhole = (WormholeDto)Target.ToDto();
 			}
 		}
 	}

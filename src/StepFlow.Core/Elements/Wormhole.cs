@@ -4,18 +4,20 @@ using StepFlow.Domains.Elements;
 
 namespace StepFlow.Core.Elements
 {
-	public sealed class WormholeSwitch : Material
+	public sealed class Wormhole : Material
 	{
-		public WormholeSwitch(IContext context)
+		public Wormhole(IContext context)
 			: base(context)
 		{
 		}
 
-		public WormholeSwitch(IContext context, WormholeDto original)
+		public Wormhole(IContext context, WormholeDto original)
 			: base(context, original)
 		{
 			Destination = PropertyCopyRequired(original.Destination, nameof(WormholeDto.Destination));
 			Position = original.Position;
+			Horizontal = original.Horizontal;
+			Vertical = original.Vertical;
 		}
 
 		private string? destination;
@@ -23,6 +25,10 @@ namespace StepFlow.Core.Elements
 		public string Destination { get => PropertyRequired(destination); set => destination = PropertyRequired(value); }
 
 		public Vector2 Position { get; set; }
+
+		public Horizontal Horizontal { get; set; }
+
+		public Vertical Vertical { get; set; }
 
 		public void CopyTo(WormholeDto container)
 		{
@@ -32,6 +38,8 @@ namespace StepFlow.Core.Elements
 
 			container.Destination = Destination;
 			container.Position = Position;
+			container.Horizontal = Horizontal;
+			container.Vertical = Vertical;
 		}
 
 		public override SubjectDto ToDto()

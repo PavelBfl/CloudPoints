@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Metrics;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Metrics;
 using System.Drawing;
 using System.Numerics;
 using StepFlow.Common.Exceptions;
@@ -162,34 +163,23 @@ public sealed class GameHandler
 				transaction.Commit();
 
 				// TODO Temp
-				if (PlayMasters.Current?.NextPlayground is { } nextPlayground && nextPlayground != PlayMasters.CurrentKey)
+				if (TryPopWormhole(out var wormhole, out var player))
 				{
-					var newPosition = new Point((int)PlayMasters.Current.NextPosition.X, (int)PlayMasters.Current.NextPosition.Y);
-					PlayMasters.Current.NextPlayground = null;
-					var playerDto = PlayMasters.Current?.PlayerCharacterPop();
-					PlayMasters.CurrentKey = nextPlayground;
+					PlayMasters.CurrentKey = wormhole.Destination;
 
-					if (playerDto is { })
-					{
-						var oldPosition = new Point(
-							-playerDto.Body.Current.Min(x => x.X),
-							-playerDto.Body.Current.Min(x => x.Y)
-						);
+					var bounds = GetBounds(player.Body?.Current ?? Enumerable.Empty<Rectangle>());
+					var localPosition = GetPosition(bounds.Size, wormhole.Horizontal, wormhole.Vertical);
+					var newPosition = new Point((int)wormhole.Position.X, (int)wormhole.Position.Y);
 
-						if (playerDto.Body is { } body)
-						{
-							body.Next.Clear();
-							for (var iRect = 0; iRect < body.Current.Count; iRect++)
-							{
-								var subRectangle = body.Current[iRect];
-								subRectangle.Offset(oldPosition);
-								subRectangle.Offset(newPosition);
-								body.Current[iRect] = subRectangle;
-							}
-						}
+					var offset = new Point(
+						-bounds.X + newPosition.X - localPosition.X,
+						-bounds.Y + newPosition.Y - localPosition.Y
+					);
 
-						PlayMasters.Current?.PlayerCharacterPush(playerDto);
-					}
+					player.Body.Next.Clear();
+					player.Body.Current.OffsetWith(offset);
+
+					PlayMasters.Current?.PlayerCharacterPush(player);
 					break;
 				}
 			}
@@ -198,6 +188,61 @@ public sealed class GameHandler
 		}
 
 		TacticPanel.Update();
+	}
+
+	private bool TryPopWormhole([MaybeNullWhen(false)] out WormholeDto wormhole, [MaybeNullWhen(false)] out PlayerCharacterDto player)
+	{
+		if (PlayMasters.Current is { } playMaster && playMaster.Wormhole is { } destination && playMaster.PlayerCharacterPop() is { } target)
+		{
+			playMaster.Wormhole = null;
+			wormhole = destination;
+			player = target;
+			return true;
+		}
+		else
+		{
+			wormhole = default;
+			player = default;
+			return false;
+		}
+	}
+
+	private static Point GetPosition(Size size, Horizontal horizontal, Vertical vertical)
+	{
+		return new Point(
+			horizontal switch
+			{
+				Horizontal.Left => 0,
+				Horizontal.Center => size.Width / 2,
+				Horizontal.Right => size.Width,
+				_ => throw EnumNotSupportedException.Create(horizontal),
+			},
+			vertical switch
+			{
+				Vertical.Top => 0,
+				Vertical.Center => size.Height / 2,
+				Vertical.Bottom => size.Height,
+				_ => throw EnumNotSupportedException.Create(vertical),
+			}
+		);
+	}
+
+	private static Rectangle GetBounds(IEnumerable<Rectangle> rectangles)
+	{
+		var result = Rectangle.Empty;
+		foreach (var rect in rectangles)
+		{
+			if (result.IsEmpty)
+			{
+				result = rect;
+			}
+			else
+			{
+				result = Rectangle.Union(result, rect);
+			}
+		}
+
+		return result;
 	}
 
 	private List<TrackUnit> TrackUnits { get; } = new();
@@ -331,7 +376,7 @@ public sealed class GameHandler
 			CreateBorder(enemy.Vision, Color.Yellow);
 		}
 
-		foreach (var playgroundSwitch in playground.Items.OfType<WormholeSwitch>())
+		foreach (var playgroundSwitch in playground.Items.OfType<Wormhole>())
 		{
 			CreateTexture(playgroundSwitch.Body?.Current.Bounds ?? Rectangle.Empty, Texture.Door);
 		}

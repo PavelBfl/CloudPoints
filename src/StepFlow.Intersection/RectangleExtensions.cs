@@ -47,6 +47,16 @@ namespace StepFlow.Intersection
 			}
 		}
 
+		public static void OffsetWith(this IList<Rectangle> rectangles, Point value)
+		{
+			for (var i = 0; i < rectangles.Count; i++)
+			{
+				var rectangle = rectangles[i];
+				rectangle.Offset(value);
+				rectangles[i] = rectangle;
+			}
+		}
+
 		public static IEnumerable<Rectangle> Scale(this IEnumerable<Rectangle> rectangles, Point scale)
 		{
 			if (rectangles is null)

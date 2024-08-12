@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Numerics;
+using StepFlow.Common.Exceptions;
 using StepFlow.Core;
 using StepFlow.Core.Elements;
 using StepFlow.Domains;
@@ -196,15 +197,38 @@ internal class PlaygroundBuilder
 		};
 	}
 
-	private static WormholeDto CreateWormhole(int x, int y, string destination) => new WormholeDto()
+	private static WormholeDto CreateWormhole(Point position, Point positionDestination, Horizontal horizontal, Vertical vertical, string destination) => new WormholeDto()
 	{
 		Body = new CollidedDto()
 		{
-			Current = { CreateCell(x, y) },
+			Current = { CreateCell(position) },
 		},
 		Destination = destination,
-		Position = (Vector2)(PointF)PlaygroundToGlobal(7, 4)
+		Position = (Vector2)(PointF)GetPosition(CreateCell(positionDestination), horizontal, vertical),
+		Horizontal = horizontal,
+		Vertical = vertical,
 	};
+
+	// TODO Temp
+	private static Point GetPosition(Rectangle rectangle, Horizontal horizontal, Vertical vertical)
+	{
+		return new Point(
+			horizontal switch
+			{
+				Horizontal.Left => rectangle.Left,
+				Horizontal.Center => rectangle.X + rectangle.Width / 2,
+				Horizontal.Right => rectangle.Right,
+				_ => throw EnumNotSupportedException.Create(horizontal),
+			},
+			vertical switch
+			{
+				Vertical.Top => rectangle.Top,
+				Vertical.Center => rectangle.Y + rectangle.Height / 2,
+				Vertical.Bottom => rectangle.Bottom,
+				_ => throw EnumNotSupportedException.Create(vertical),
+			}
+		);
+	}
 
 	private static IEnumerable<MaterialDto> CreateRoom(string? left, string? top, string? right, string? bottom)
 	{
@@ -215,7 +239,7 @@ internal class PlaygroundBuilder
 		else
 		{
 			yield return CreateWall(new(0, 1), new(0, 3));
-			yield return CreateWormhole(0, 4, left);
+			yield return CreateWormhole(new(0, 4), new(13, 4), Horizontal.Right, Vertical.Center, left);
 			yield return CreateWall(new(0, 5), new(0, 7));
 		}
 
@@ -226,7 +250,7 @@ internal class PlaygroundBuilder
 		else
 		{
 			yield return CreateWall(new(0, 0), new(6, 0));
-			yield return CreateWormhole(7, 0, top);
+			yield return CreateWormhole(new(7, 0), new(7, 7), Horizontal.Center, Vertical.Bottom, top);
 			yield return CreateWall(new(8, 0), new(14, 0));
 		}
 
@@ -237,7 +261,7 @@ internal class PlaygroundBuilder
 		else
 		{
 			yield return CreateWall(new(14, 1), new(14, 3));
-			yield return CreateWormhole(14, 4, right);
+			yield return CreateWormhole(new(14, 4), new(1, 4), Horizontal.Left, Vertical.Center, right);
 			yield return CreateWall(new(14, 5), new(14, 7));
 		}
 
@@ -248,7 +272,7 @@ internal class PlaygroundBuilder
 		else
 		{
 			yield return CreateWall(new(0, 8), new(6, 8));
-			yield return CreateWormhole(7, 8, bottom);
+			yield return CreateWormhole(new(7, 8), new(7, 1), Horizontal.Center, Vertical.Top, bottom);
 			yield return CreateWall(new(8, 8), new(14, 8));
 		}
 	}
@@ -303,7 +327,6 @@ internal class PlaygroundBuilder
 				CreateItem(2, 6, ItemKind.AttackSpeed),
 				CreateEnemy(11, 7, 300, CreateRotate(MathF.PI / 4) * 0.02f, CollisionBehavior.Reflection),
 				CreateEnemy(1, 1, 150, CreateRotate(0) * 0.02f, CollisionBehavior.CW),
-				CreateWormhole(7, 1, "Boss"),
 			}
 		};
 	}
