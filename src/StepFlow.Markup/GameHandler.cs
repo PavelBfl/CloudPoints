@@ -2,6 +2,7 @@
 using System.Diagnostics.Metrics;
 using System.Drawing;
 using System.Numerics;
+using StepFlow.Common;
 using StepFlow.Common.Exceptions;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
@@ -206,21 +207,21 @@ public sealed class GameHandler
 		}
 	}
 
-	private static Point GetPosition(Size size, Horizontal horizontal, Vertical vertical)
+	private static Point GetPosition(Size size, HorizontalAlign horizontal, VerticalAlign vertical)
 	{
 		return new Point(
 			horizontal switch
 			{
-				Horizontal.Left => 0,
-				Horizontal.Center => size.Width / 2,
-				Horizontal.Right => size.Width,
+				HorizontalAlign.Left => 0,
+				HorizontalAlign.Center => size.Width / 2,
+				HorizontalAlign.Right => size.Width,
 				_ => throw EnumNotSupportedException.Create(horizontal),
 			},
 			vertical switch
 			{
-				Vertical.Top => 0,
-				Vertical.Center => size.Height / 2,
-				Vertical.Bottom => size.Height,
+				VerticalAlign.Top => 0,
+				VerticalAlign.Center => size.Height / 2,
+				VerticalAlign.Bottom => size.Height,
 				_ => throw EnumNotSupportedException.Create(vertical),
 			}
 		);

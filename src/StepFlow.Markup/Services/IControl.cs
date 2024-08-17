@@ -1,5 +1,5 @@
 ﻿using System.Numerics;
-using StepFlow.Domains.Elements;
+using StepFlow.Common;
 using StepFlow.Master.Proxies.Elements;
 
 namespace StepFlow.Markup.Services
@@ -15,7 +15,7 @@ namespace StepFlow.Markup.Services
 	{
 		float? GetPlayerCourse();
 
-		Horizontal GetPlayerCourseHorizontal();
+		HorizontalAlign GetPlayerCourseHorizontal();
 
 		bool GetJump();
 

@@ -27,9 +27,9 @@ namespace StepFlow.Core.Elements
 
 		public Vector2 Position { get; set; }
 
-		public Horizontal Horizontal { get; set; }
+		public HorizontalAlign Horizontal { get; set; }
 
-		public Vertical Vertical { get; set; }
+		public VerticalAlign Vertical { get; set; }
 
 		public void CopyTo(WormholeDto container)
 		{

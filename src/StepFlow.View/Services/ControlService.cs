@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework.Input;
+using StepFlow.Common;
 using StepFlow.Domains.Elements;
 using StepFlow.Markup.Services;
 using StepFlow.Master.Proxies.Elements;
@@ -44,19 +45,19 @@ namespace StepFlow.View.Services
 			};
 		}
 
-		public Horizontal GetPlayerCourseHorizontal()
+		public HorizontalAlign GetPlayerCourseHorizontal()
 		{
 			if (IsKeyDown(Keys.Left))
 			{
-				return Horizontal.Left;
+				return HorizontalAlign.Left;
 			}
 			else if (IsKeyDown(Keys.Right))
 			{
-				return Horizontal.Right;
+				return HorizontalAlign.Right;
 			}
 			else
 			{
-				return Horizontal.Center;
+				return HorizontalAlign.Center;
 			}
 		}
 

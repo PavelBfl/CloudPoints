@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using StepFlow.Common;
 using StepFlow.Common.Exceptions;
 using StepFlow.Markup.Services;
 

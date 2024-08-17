@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using StepFlow.Common;
 using StepFlow.Common.Exceptions;
 using StepFlow.Domains.Elements;
 using StepFlow.Master.Proxies.Elements;
@@ -20,9 +21,9 @@ namespace StepFlow.Master.Scripts
 
 			var x = parameters.Course switch
 			{
-				Horizontal.Left => -SPEED,
-				Horizontal.Center => 0,
-				Horizontal.Right => SPEED,
+				HorizontalAlign.Left => -SPEED,
+				HorizontalAlign.Center => 0,
+				HorizontalAlign.Right => SPEED,
 				_ => throw EnumNotSupportedException.Create(parameters.Course),
 			};
 			var y = parameters.Jump ? -JUMP_FORCE : playerCharacterProxy.Course.Y;
@@ -31,7 +32,7 @@ namespace StepFlow.Master.Scripts
 
 		public struct Parameters
 		{
-			public Horizontal Course { get; set; }
+			public HorizontalAlign Course { get; set; }
 
 			public bool Jump { get; set; }
 		}

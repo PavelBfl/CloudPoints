@@ -1,4 +1,4 @@
-﻿namespace StepFlow.Markup.Services
+﻿namespace StepFlow.Common
 {
 	public enum HorizontalAlign
 	{
