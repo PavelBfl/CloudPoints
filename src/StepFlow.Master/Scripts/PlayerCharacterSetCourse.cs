@@ -1,7 +1,6 @@
 ﻿using System.Numerics;
 using StepFlow.Common;
 using StepFlow.Common.Exceptions;
-using StepFlow.Domains.Elements;
 using StepFlow.Master.Proxies.Elements;
 
 namespace StepFlow.Master.Scripts
