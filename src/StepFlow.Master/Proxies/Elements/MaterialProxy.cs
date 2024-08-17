@@ -39,8 +39,6 @@ namespace StepFlow.Master.Proxies.Elements
 
 		void OnTick();
 
-		void SetCourse(float? radian);
-
 		void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided);
 
 		void CopyFrom(MaterialDto original)
@@ -128,6 +126,9 @@ namespace StepFlow.Master.Proxies.Elements
 						{
 							CreateProjectile(stateProxy.Arg0);
 						}
+						break;
+					case StateKind.Gravity:
+						Course += stateProxy.Vector;
 						break;
 					case StateKind.EnemySerpentineForwardState:
 						if (stateProxy.Cooldown.IsMin())
@@ -317,14 +318,6 @@ namespace StepFlow.Master.Proxies.Elements
 		private static void Positive(ref float value) => value = value >= 0 ? value : -value;
 
 		private static void Negative(ref float value) => value = value <= 0 ? value : -value;
-
-		public void SetCourse(float? radians)
-		{
-			Course = Vector2.Transform(
-				new Vector2(radians is { } ? 0.05f : 0, 0),
-				Matrix3x2.CreateRotation(radians ?? 0)
-			);
-		}
 
 		protected virtual void CreateProjectile(float radians)
 		{

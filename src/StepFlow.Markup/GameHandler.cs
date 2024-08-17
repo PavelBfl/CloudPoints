@@ -67,11 +67,6 @@ public sealed class GameHandler
 		
 	}
 
-	private void PlayerCharacterSetCourse(float? course)
-	{
-		PlayMasters.Current?.PlayerCharacterSetCourse.Execute(new() { Course = course, });
-	}
-
 	private void CreateProjectile(float radians, PlayerAction action)
 	{
 		PlayMasters.Current?.PlayerCharacterCreateProjectile.Execute(new() { Radians = radians, Action = action });
@@ -139,7 +134,11 @@ public sealed class GameHandler
 				// TODO
 				if (PlayMasters.Current?.Playground.Items.OfType<PlayerCharacter>().Any() ?? false)
 				{
-					PlayerCharacterSetCourse(Control.GetPlayerCourse());
+					PlayMasters.Current?.PlayerCharacterSetCourse.Execute(new()
+					{
+						Course = Control.GetPlayerCourseHorizontal(),
+						Jump = Control.GetJump(),
+					});
 
 					if (Control.GetPlayerAction() is { } playerAction)
 					{

@@ -370,6 +370,14 @@ internal class PlaygroundBuilder
 			Current = { CreateCell(6, 1, 7) },
 			IsRigid = true,
 		},
+		States =
+		{
+			new()
+			{
+				Kind = StateKind.Gravity,
+				Arg1 = 0.00001f,
+			},
+		},
 	};
 }
 

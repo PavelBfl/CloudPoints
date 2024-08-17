@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework.Input;
+using StepFlow.Domains.Elements;
 using StepFlow.Markup.Services;
 using StepFlow.Master.Proxies.Elements;
 
@@ -42,6 +43,24 @@ namespace StepFlow.View.Services
 				_ => null,
 			};
 		}
+
+		public Horizontal GetPlayerCourseHorizontal()
+		{
+			if (IsKeyDown(Keys.Left))
+			{
+				return Horizontal.Left;
+			}
+			else if (IsKeyDown(Keys.Right))
+			{
+				return Horizontal.Right;
+			}
+			else
+			{
+				return Horizontal.Center;
+			}
+		}
+
+		public bool GetJump() => IsKeyOnPress(Keys.Up);
 
 		public float GetPlayerRotate(System.Numerics.Vector2 center)
 		{

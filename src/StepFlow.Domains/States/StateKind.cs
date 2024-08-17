@@ -8,6 +8,7 @@
 		Push,
 		Dash,
 		CreatingProjectile,
+		Gravity,
 
 		EnemySerpentineForwardState,
 		EnemySerpentineForwardStateAttack,

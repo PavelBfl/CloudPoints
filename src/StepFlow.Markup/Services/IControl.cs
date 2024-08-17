@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using StepFlow.Domains.Elements;
 using StepFlow.Master.Proxies.Elements;
 
 namespace StepFlow.Markup.Services
@@ -13,6 +14,10 @@ namespace StepFlow.Markup.Services
 	public interface IControl
 	{
 		float? GetPlayerCourse();
+
+		Horizontal GetPlayerCourseHorizontal();
+
+		bool GetJump();
 
 		float GetPlayerRotate(Vector2 center);
 
