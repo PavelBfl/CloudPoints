@@ -1,19 +1,10 @@
-﻿using System.Runtime.CompilerServices;
-using StepFlow.Core.Exceptions;
+﻿using StepFlow.Core.Exceptions;
 using StepFlow.Domains;
 
 namespace StepFlow.Core
 {
 	public abstract class Subject
 	{
-		public static T PropertyRequired<T>(T? value, [CallerMemberName] string? propertyName = null)
-			where T : class
-			=> value ?? throw ExceptionBuilder.CreatePropertyIsNull(propertyName);
-
-		public static T PropertyRequired<T>(T? value, [CallerMemberName] string? propertyName = null)
-			where T : struct
-			=> value ?? throw ExceptionBuilder.CreatePropertyIsNull(propertyName);
-
 		public static T PropertyCopyRequired<T>(T? value, string propertyName)
 			where T : class
 			=> value ?? throw ExceptionBuilder.CreateCopiedPropertyIsNull(propertyName);

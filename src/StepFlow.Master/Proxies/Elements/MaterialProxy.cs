@@ -43,7 +43,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		void CopyFrom(MaterialDto original)
 		{
-			NullValidateExtensions.ThrowIfArgumentNull(original, nameof(original));
+			NullValidate.ThrowIfArgumentNull(original, nameof(original));
 
 			Strength = original.Strength;
 			var collidedProxy = ((ICollidedProxy)Owner.CreateProxy(Body));

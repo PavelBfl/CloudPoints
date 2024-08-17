@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using StepFlow.Common;
 using StepFlow.Core.Components;
 using StepFlow.Core.States;
 using StepFlow.Core.Tracks;
@@ -40,7 +41,7 @@ namespace StepFlow.Core.Elements
 
 		public Collided? Body { get => body; set => SetComponent(ref body, value); }
 
-		public Collided GetBodyRequired() => PropertyRequired(Body, nameof(Body));
+		public Collided GetBodyRequired() => NullValidate.PropertyRequired(Body, nameof(Body));
 
 		public int Speed { get; set; }
 

@@ -35,7 +35,7 @@ namespace StepFlow.Master
 
 		public PlayMaster(PlaygroundDto init)
 		{
-			NullValidateExtensions.ThrowIfArgumentNull(init, nameof(init));
+			NullValidate.ThrowIfArgumentNull(init, nameof(init));
 
 			Playground = new Playground(new Core.Context(), init);
 

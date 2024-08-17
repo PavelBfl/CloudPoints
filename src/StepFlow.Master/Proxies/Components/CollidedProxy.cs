@@ -68,7 +68,7 @@ namespace StepFlow.Master.Proxies.Components
 
 		void CopyFrom(CollidedDto original)
 		{
-			NullValidateExtensions.ThrowIfArgumentNull(original, nameof(original));
+			NullValidate.ThrowIfArgumentNull(original, nameof(original));
 
 			CurrentProxy.Reset(original.Current);
 			NextProxy.Reset(original.Next);

@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using StepFlow.Common;
 using StepFlow.Domains;
 using StepFlow.Domains.Elements;
 
@@ -22,7 +23,7 @@ namespace StepFlow.Core.Elements
 
 		private string? destination;
 
-		public string Destination { get => PropertyRequired(destination); set => destination = PropertyRequired(value); }
+		public string Destination { get => NullValidate.PropertyRequired(destination, nameof(Destination)); set => destination = NullValidate.PropertyRequired(value); }
 
 		public Vector2 Position { get; set; }
 

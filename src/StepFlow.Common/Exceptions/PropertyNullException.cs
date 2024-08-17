@@ -6,7 +6,7 @@ namespace StepFlow.Common.Exceptions
 	{
 		private const string DEFAULT_MESSAGE = "Required property have null value.";
 
-		public PropertyNullException(string propertyName)
+		public PropertyNullException(string? propertyName)
 			: base(DEFAULT_MESSAGE)
 		{
 			PropertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));

@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using StepFlow.Common;
 using StepFlow.Domains;
 using StepFlow.Domains.Tracks;
 
@@ -27,7 +28,7 @@ namespace StepFlow.Core.Tracks
 
 		public TrackChange? Change { get; set; }
 
-		public TrackChange GetChangeRequired() => PropertyRequired(Change, nameof(Change));
+		public TrackChange GetChangeRequired() => NullValidate.PropertyRequired(Change, nameof(Change));
 
 		public override SubjectDto ToDto()
 		{

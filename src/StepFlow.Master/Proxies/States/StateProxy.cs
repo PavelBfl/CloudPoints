@@ -30,7 +30,7 @@ namespace StepFlow.Master.Proxies.States
 
 		void CopyFrom(StateDto original)
 		{
-			NullValidateExtensions.ThrowIfArgumentNull(original, nameof(original));
+			NullValidate.ThrowIfArgumentNull(original, nameof(original));
 
 			Enable = original.Enable;
 			Cooldown = original.Cooldown;

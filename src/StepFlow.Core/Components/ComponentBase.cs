@@ -1,4 +1,5 @@
-﻿using StepFlow.Core.Elements;
+﻿using StepFlow.Common;
+using StepFlow.Core.Elements;
 using StepFlow.Domains.Components;
 
 namespace StepFlow.Core.Components
@@ -18,7 +19,7 @@ namespace StepFlow.Core.Components
 
 		public ElementBase? Element { get; set; }
 
-		public ElementBase GetElementRequired() => PropertyRequired(Element, nameof(Element));
+		public ElementBase GetElementRequired() => NullValidate.PropertyRequired(Element, nameof(Element));
 
 		public void CopyTo(ComponentBaseDto container)
 		{

@@ -38,7 +38,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		void CopyFrom(PlayerCharacterDto original)
 		{
-			NullValidateExtensions.ThrowIfArgumentNull(original, nameof(original));
+			NullValidate.ThrowIfArgumentNull(original, nameof(original));
 
 			((IMaterialProxy<PlayerCharacter>)this).CopyFrom(original);
 			Cooldown = original.Cooldown;
