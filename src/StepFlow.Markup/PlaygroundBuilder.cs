@@ -97,6 +97,15 @@ internal class PlaygroundBuilder
 			Current = { CreateCell(x, y), },
 			IsRigid = true,
 		},
+		CollisionBehavior = CollisionBehavior.Reflection,
+		States =
+		{
+			new()
+			{
+				Kind = StateKind.Gravity,
+				Arg1 = 0.00001f,
+			},
+		},
 	};
 
 	private static ItemDto CreateItem(int x, int y, ItemKind kind) => new ItemDto()
@@ -356,6 +365,7 @@ internal class PlaygroundBuilder
 			Items =
 			{
 				CreateRoom(left, top, right, bottom),
+				CreateBoards(6, 1),
 			},
 		};
 	}

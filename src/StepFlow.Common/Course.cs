@@ -1,4 +1,4 @@
-﻿namespace StepFlow.Core
+﻿namespace StepFlow.Common
 {
 	public enum Course
 	{

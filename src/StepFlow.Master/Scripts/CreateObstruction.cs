@@ -23,7 +23,7 @@ namespace StepFlow.Master.Scripts
 				Weight = parameters.Weight,
 				Body = new Collided(PlayMaster.Playground.Context)
 				{
-					Current = { parameters.Bounds ?? Array.Empty<Rectangle>() },
+					Current = PlayMaster.CreateShape(parameters.Bounds),
 					IsRigid = true,
 				},
 				Strength = parameters.Strength is { } strength ? Scale.CreateByMax(strength) : new Scale(),

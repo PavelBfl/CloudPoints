@@ -5,6 +5,7 @@ using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
+using StepFlow.Intersection;
 
 namespace StepFlow.Master.Proxies
 {
@@ -31,7 +32,7 @@ namespace StepFlow.Master.Proxies
 		{
 			var body = new Collided(Owner.Playground.Context)
 			{
-				Current = { bounds },
+				Current = Owner.CreateShape(bounds),
 				IsRigid = true,
 			};
 			var projectile = new Projectile(Owner.Playground.Context)
@@ -64,7 +65,7 @@ namespace StepFlow.Master.Proxies
 					Kind = ItemKind.Fire,
 					Body = new Collided(Owner.Playground.Context)
 					{
-						Current = { bounds },
+						Current = Owner.CreateShape(bounds),
 						IsRigid = true,
 					},
 					DamageSetting = new Damage()
@@ -78,7 +79,7 @@ namespace StepFlow.Master.Proxies
 					Kind = ItemKind.Poison,
 					Body = new Collided(Owner.Playground.Context)
 					{
-						Current = { bounds },
+						Current = Owner.CreateShape(bounds),
 						IsRigid = true,
 					},
 					DamageSetting = new Damage()
@@ -92,7 +93,7 @@ namespace StepFlow.Master.Proxies
 					Kind = ItemKind.Speed,
 					Body = new Collided(Owner.Playground.Context)
 					{
-						Current = { bounds },
+						Current = Owner.CreateShape(bounds),
 						IsRigid = true,
 					},
 					Speed = 2,
@@ -102,7 +103,7 @@ namespace StepFlow.Master.Proxies
 					Kind = ItemKind.AttackSpeed,
 					Body = new Collided(Owner.Playground.Context)
 					{
-						Current = { bounds },
+						Current = Owner.CreateShape(bounds),
 						IsRigid = true,
 					},
 					AttackCooldown = 3000,
@@ -112,7 +113,7 @@ namespace StepFlow.Master.Proxies
 					Kind = ItemKind.AddStrength,
 					Body = new Collided(Owner.Playground.Context)
 					{
-						Current = { bounds },
+						Current = Owner.CreateShape(bounds),
 						IsRigid = true,
 					},
 					AddStrength = 20,
@@ -129,7 +130,7 @@ namespace StepFlow.Master.Proxies
 			{
 				Body = new Collided(Owner.Playground.Context)
 				{
-					Current = { bounds },
+					Current = Owner.CreateShape(bounds),
 				},
 			};
 

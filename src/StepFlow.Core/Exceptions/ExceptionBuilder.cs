@@ -1,4 +1,5 @@
 ﻿using System;
+using StepFlow.Common.Exceptions;
 
 namespace StepFlow.Core.Exceptions
 {
@@ -8,6 +9,8 @@ namespace StepFlow.Core.Exceptions
 
 		internal static Exception CreateNonuniqueItemForCopy() => new InvalidOperationException();
 
-		internal static Exception CreateCopiedPropertyIsNull(string propertyName) => new PropertyNullException($"Copied property be null. (Property '{propertyName}')", propertyName);
+		internal static Exception CreateCopiedPropertyIsNull(string propertyName) => new PropertyNullException(propertyName);
+
+		internal static Exception CreateUnknownIntersectionContext() => new InvalidOperationException("Unknown intersection context for play ground context.");
 	}
 }

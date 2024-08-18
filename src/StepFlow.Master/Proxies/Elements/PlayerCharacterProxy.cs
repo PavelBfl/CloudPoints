@@ -196,7 +196,7 @@ namespace StepFlow.Master.Proxies.Elements
 				Name = "Projectile",
 				Body = new Collided(Owner.Playground.Context)
 				{
-					Current = { RectangleExtensions.Create(center, radius) },
+					Current = Owner.CreateShape(RectangleExtensions.Create(center, radius)),
 				},
 				Damage = damage,
 				Reusable = ReusableKind.Save,

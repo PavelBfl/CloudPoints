@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using StepFlow.Common;
@@ -261,10 +262,47 @@ namespace StepFlow.Master.Proxies.Elements
 					case CollisionBehavior.None:
 						break;
 					case CollisionBehavior.Stop:
-						StrategyNone();
+						Course = Vector2.Zero;
 						break;
 					case CollisionBehavior.Reflection:
-						StrategyReflection(thisCollided.Collided.Current, otherCollided.Collided.Current);
+						if (Body.GetOffset() is { } sourceOffset && otherCollided.Collided.GetOffset() is { } otherOffset)
+						{
+							var aggregateOffset = new Point(
+								sourceOffset.X - otherOffset.X,
+								sourceOffset.Y - otherOffset.Y
+							);
+
+							if (aggregateOffset.ToCourse() is { } sourceCource)
+							{
+								switch (CollisionPoint(thisCollided.GetShape(), otherCollided.GetShape(), sourceCource))
+								{
+									case Common.Course.Left:
+										Course = new Vector2(MathF.Abs(Course.X), Course.Y);
+										break;
+									case Common.Course.LeftTop:
+										Course = new Vector2(Course.Y, Course.X);
+										break;
+									case Common.Course.Top:
+										Course = new Vector2(Course.X, MathF.Abs(Course.Y));
+										break;
+									case Common.Course.RightTop:
+										Course = new Vector2(Course.Y, Course.X);
+										break;
+									case Common.Course.Right:
+										Course = new Vector2(-MathF.Abs(Course.X), Course.Y);
+										break;
+									case Common.Course.RightBottom:
+										Course = new Vector2(Course.Y, Course.X);
+										break;
+									case Common.Course.Bottom:
+										Course = new Vector2(Course.X, -MathF.Abs(Course.Y));
+										break;
+									case Common.Course.LeftBottom:
+										Course = new Vector2(Course.Y, Course.X);
+										break;
+								} 
+							}
+						}
 						break;
 					case CollisionBehavior.CW:
 						StrategyClock(true);
@@ -275,11 +313,6 @@ namespace StepFlow.Master.Proxies.Elements
 					default: throw EnumNotSupportedException.Create(CollisionBehavior);
 				}
 			}
-		}
-
-		private void StrategyNone()
-		{
-			Course = Vector2.Zero;
 		}
 
 		private void StrategyClock(bool cw)
@@ -317,7 +350,80 @@ namespace StepFlow.Master.Proxies.Elements
 
 		private static void Positive(ref float value) => value = value >= 0 ? value : -value;
 
+		private static float Positive(float value) => value >= 0 ? value : -value;
+
 		private static void Negative(ref float value) => value = value <= 0 ? value : -value;
+
+		private static float Negative(float value) => value <= 0 ? value : -value;
+
+		private static Course? CollisionPoint(ShapeBase source, ShapeBase other, Course sourceCourse)
+		{
+			switch (sourceCourse)
+			{
+				case Common.Course.Left:
+					return Common.Course.Left;
+				case Common.Course.LeftTop:
+					return (IsCollision(source, other, Common.Course.Right), IsCollision(source, other, Common.Course.Bottom)) switch
+					{
+						(true, false) => Common.Course.Top,
+						(false, true) => Common.Course.Left,
+						_ => Common.Course.LeftTop,
+					};
+				case Common.Course.Top:
+					return Common.Course.Top;
+				case Common.Course.RightTop:
+					return (IsCollision(source, other, Common.Course.Left), IsCollision(source, other, Common.Course.Bottom)) switch
+					{
+						(true, false) => Common.Course.Top,
+						(false, true) => Common.Course.Right,
+						_ => Common.Course.RightTop,
+					};
+				case Common.Course.Right:
+					return Common.Course.Right;
+				case Common.Course.RightBottom:
+					return (IsCollision(source, other, Common.Course.Left), IsCollision(source, other, Common.Course.Top)) switch
+					{
+						(true, false) => Common.Course.Bottom,
+						(false, true) => Common.Course.Right,
+						_ => Common.Course.RightBottom,
+					};
+				case Common.Course.Bottom:
+					return Common.Course.Bottom;
+				case Common.Course.LeftBottom:
+					return (IsCollision(source, other, Common.Course.Right), IsCollision(source, other, Common.Course.Top)) switch
+					{
+						(true, false) => Common.Course.Bottom,
+						(false, true) => Common.Course.Left,
+						_ => Common.Course.LeftBottom,
+					};
+				default: throw EnumNotSupportedException.Create(sourceCourse);
+			}
+		}
+
+		private static bool IsCollision(ShapeBase source, ShapeBase other, Course sourceOffset)
+		{
+			var offset = sourceOffset.ToPoint();
+
+			var sourceBounds = source.Bounds;
+			sourceBounds.Offset(offset);
+
+			if (other.Bounds.IntersectsWith(sourceBounds))
+			{
+				foreach (var sourceRectangle in source)
+				{
+					sourceRectangle.Offset(offset);
+					foreach (var otherRectangle in other)
+					{
+						if (sourceRectangle.IntersectsWith(otherRectangle))
+						{
+							return true;
+						}
+					}
+				}
+			}
+
+			return false;
+		}
 
 		protected virtual void CreateProjectile(float radians)
 		{

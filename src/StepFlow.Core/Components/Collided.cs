@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Drawing;
+using System.Linq;
 using System.Numerics;
+using StepFlow.Core.Exceptions;
 using StepFlow.Domains;
 using StepFlow.Domains.Components;
 using StepFlow.Intersection;
@@ -18,7 +21,7 @@ namespace StepFlow.Core.Components
 
 		public Collided Collided { get; }
 
-		public ShapeContainer GetShape() => PropertyName switch
+		public ShapeBase? GetShape() => PropertyName switch
 		{
 			nameof(Collided.Current) => Collided.Current,
 			nameof(Collided.Next) => Collided.Next,
@@ -46,23 +49,41 @@ namespace StepFlow.Core.Components
 			CopyExtensions.ThrowIfContextNull(context);
 			CopyExtensions.ThrowIfOriginalNull(original);
 
-			Current = new ShapeContainer(Context.IntersectionContext);
-			Next = new ShapeContainer(Context.IntersectionContext);
-
-			Current.Attached = new CollidedAttached(nameof(Current), this);
-			Next.Attached = new CollidedAttached(nameof(Next), this);
-
-			Current.Add(original.Current);
-			Next.Add(original.Next);
+			Current = ShapeBase.Create(Context.IntersectionContext, original.Current);
+			Next = ShapeBase.Create(Context.IntersectionContext, original.Next);
 
 			Offset = original.Offset;
 			IsMove = original.IsMove;
 			IsRigid = original.IsRigid;
 		}
 
-		public ShapeContainer Current { get; }
+		private ShapeBase? current;
 
-		public ShapeContainer Next { get; }
+		public ShapeBase? Current { get => current; set => SetShape(ref current, value, nameof(Current)); }
+
+		private ShapeBase? next;
+
+		public ShapeBase? Next { get => next; set => SetShape(ref next, value, nameof(Next)); }
+
+		private void SetShape(ref ShapeBase? shape, ShapeBase? newShape, string propertyName)
+		{
+			if (newShape is { } && newShape.Context != Context.IntersectionContext)
+			{
+				throw ExceptionBuilder.CreateUnknownIntersectionContext();
+			}
+
+			if (shape is { })
+			{
+				shape.Attached = null;
+			}
+
+			shape = newShape;
+
+			if (shape is { })
+			{
+				shape.Attached = new CollidedAttached(propertyName, this);
+			}
+		}
 
 		public Vector2 Offset { get; set; }
 
@@ -70,14 +91,55 @@ namespace StepFlow.Core.Components
 
 		public bool IsRigid { get; set; }
 
+		public Point? GetOffset()
+		{
+			if (!IsMove && Current is { })
+			{
+				return Point.Empty;
+			}
+
+			if (Current is null || Next is null)
+			{
+				return null;
+			}
+
+			if (Current.Count != Next.Count)
+			{
+				return null;
+			}
+
+			var sourceBounds = Current.Bounds;
+			var otherBounds = Next.Bounds;
+
+			if (sourceBounds.Width != otherBounds.Width || sourceBounds.Height != otherBounds.Height)
+			{
+				return null;
+			}
+
+			var result = new Point(
+				otherBounds.X - sourceBounds.X,
+				otherBounds.Y - sourceBounds.Y
+			);
+
+			foreach (var sourceOffset in Current.AsEnumerable().Offset(result))
+			{
+				if (!Next.Contains(sourceOffset))
+				{
+					return null;
+				}
+			}
+
+			return result;
+		}
+
 		public void CopyTo(CollidedDto container)
 		{
 			CopyExtensions.ThrowIfArgumentNull(container, nameof(container));
 
 			base.CopyTo(container);
 
-			container.Current.AddRange(Current);
-			container.Next.AddRange(Next);
+			container.Current.AddRange(Current ?? Enumerable.Empty<Rectangle>());
+			container.Next.AddRange(Next ?? Enumerable.Empty<Rectangle>());
 			container.Offset = Offset;
 			container.IsMove = IsMove;
 			container.IsRigid = IsRigid;
@@ -92,14 +154,14 @@ namespace StepFlow.Core.Components
 
 		public void Begin()
 		{
-			Current.Context.Add(Current);
-			Next.Context.Add(Next);
+			Current?.Enable();
+			Next?.Enable();
 		}
 
 		public void End()
 		{
-			Current.Context.Remove(Current);
-			Next.Context.Remove(Next);
+			Current?.Disable();
+			Next?.Disable();
 		}
 	}
 }

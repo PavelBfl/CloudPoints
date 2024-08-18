@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Linq;
 using System.Numerics;
 using StepFlow.Common;
 using StepFlow.Core.Components;
@@ -12,13 +11,13 @@ namespace StepFlow.Master.Proxies.Components
 {
 	public interface ICollidedProxy : IProxyBase<Collided>
 	{
-		ShapeContainer Current { get; }
+		ShapeBase? Current { get; set; }
 
-		IShapeContainerProxy CurrentProxy => (IShapeContainerProxy)Owner.CreateProxy(Current);
+		IShapeBaseProxy<ShapeBase>? CurrentProxy => (IShapeBaseProxy<ShapeBase>?)Owner.CreateProxy(Current);
 
-		ShapeContainer Next { get; }
+		ShapeBase? Next { get; set; }
 
-		IShapeContainerProxy NextProxy => (IShapeContainerProxy)Owner.CreateProxy(Next);
+		IShapeBaseProxy<ShapeBase>? NextProxy => (IShapeBaseProxy<ShapeBase>?)Owner.CreateProxy(Next);
 
 		bool IsMove { get; set; }
 
@@ -30,52 +29,33 @@ namespace StepFlow.Master.Proxies.Components
 		{
 			if (IsMove)
 			{
-				CurrentProxy.Reset(Next);
-				NextProxy.Clear();
+				var next = Next;
+				Next = null;
+				Current?.Disable();
+				Current = next;
 				IsMove = false;
 			}
 		}
 
 		void Break()
 		{
-			NextProxy.Clear();
+			Next?.Disable();
+			Next = null;
 			IsMove = false;
 		}
 
 		void Clear()
 		{
-			CurrentProxy.Clear();
-			NextProxy.Clear();
+			Current?.Disable();
+			Current = null;
+			Next?.Disable();
+			Next = null;
 			Offset = Vector2.Zero;
 		}
 
-		void SetOffset()
-		{
-			var localOffset = new Point(
-				(int)Offset.X,
-				(int)Offset.Y
-			);
+		void SetOffset();
 
-			if (Math.Abs(localOffset.X) > 0 || Math.Abs(localOffset.Y) > 0)
-			{
-				var next = Current.AsEnumerable().Offset(localOffset);
-				NextProxy.Reset(next);
-				IsMove = true;
-
-				Offset -= new Vector2(localOffset.X, localOffset.Y);
-			}
-		}
-
-		void CopyFrom(CollidedDto original)
-		{
-			NullValidate.ThrowIfArgumentNull(original, nameof(original));
-
-			CurrentProxy.Reset(original.Current);
-			NextProxy.Reset(original.Next);
-			Offset = original.Offset;
-			IsMove = original.IsMove;
-			IsRigid = original.IsRigid;
-		}
+		void CopyFrom(CollidedDto original);
 	}
 
 	internal sealed class CollidedProxy : ProxyBase<Collided>, ICollidedProxy
@@ -84,14 +64,50 @@ namespace StepFlow.Master.Proxies.Components
 		{
 		}
 
-		public ShapeContainer Current { get => Target.Current; }
+		public ShapeBase? Current { get => Target.Current; set => SetValue(value); }
 
-		public ShapeContainer Next { get => Target.Next; }
+		public ShapeBase? Next { get => Target.Next; set => SetValue(value); }
 
 		public Vector2 Offset { get => Target.Offset; set => SetValue(value); }
 
 		public bool IsMove { get => Target.IsMove; set => SetValue(value); }
 
 		public bool IsRigid { get => Target.IsRigid; set => SetValue(value); }
+
+		public void SetOffset()
+		{
+			var localOffset = new Point(
+				(int)Offset.X,
+				(int)Offset.Y
+			);
+
+			var absOffset = new Point(Math.Abs(localOffset.X), Math.Abs(localOffset.Y));
+			if (absOffset.X > 0 || absOffset.Y > 0)
+			{
+				if (absOffset.X <= 1 && absOffset.Y <= 1)
+				{
+
+				}
+
+				var next = Current?.Clone(localOffset);
+				Next = next;
+				Next?.Enable();
+				IsMove = true;
+
+				Offset -= new Vector2(localOffset.X, localOffset.Y);
+			}
+		}
+
+		public void CopyFrom(CollidedDto original)
+		{
+			NullValidate.ThrowIfArgumentNull(original, nameof(original));
+
+			Current = Owner.CreateShape(original.Current);
+			Next = Owner.CreateShape(original.Next);
+
+			Offset = original.Offset;
+			IsMove = original.IsMove;
+			IsRigid = original.IsRigid;
+		}
 	}
 }

@@ -4,6 +4,7 @@ using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
+using StepFlow.Intersection;
 using StepFlow.Master.Proxies;
 
 namespace StepFlow.Master.Scripts
@@ -22,12 +23,12 @@ namespace StepFlow.Master.Scripts
 			{
 				Body = new Collided(PlayMaster.Playground.Context)
 				{
-					Current = { parameters.Bounds },
+					Current = PlayMaster.CreateShape(parameters.Bounds),
 					IsRigid = true,
 				},
 				Vision = new Collided(PlayMaster.Playground.Context)
 				{
-					Current = { parameters.Vision },
+					Current = PlayMaster.CreateShape(parameters.Vision),
 				},
 				Cooldown = Scale.CreateByMax(10000),
 				Strength = Scale.CreateByMax(100),

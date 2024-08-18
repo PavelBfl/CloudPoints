@@ -57,6 +57,22 @@ namespace StepFlow.Intersection
 			}
 		}
 
+		public static bool IntersectWith(this IEnumerable<Rectangle> source, IEnumerable<Rectangle> other)
+		{
+			foreach (var sourceRectangle in source)
+			{
+				foreach (var otherRectangle in other)
+				{
+					if (sourceRectangle.IntersectsWith(otherRectangle))
+					{
+						return true;
+					}
+				}
+			}
+
+			return false;
+		}
+
 		public static IEnumerable<Rectangle> Scale(this IEnumerable<Rectangle> rectangles, Point scale)
 		{
 			if (rectangles is null)

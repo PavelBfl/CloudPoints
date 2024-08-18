@@ -113,6 +113,12 @@ namespace StepFlow.Master
 
 		public Playground Playground { get; }
 
+		[return: NotNullIfNotNull("rectangles")]
+		public ShapeBase? CreateShape(IEnumerable<Rectangle>? rectangles)
+			=> rectangles is null ? null : ShapeBase.Create(Playground.Context.IntersectionContext, rectangles);
+
+		public ShapeBase CreateShape(Rectangle rectangle) => ShapeBase.Create(Playground.Context.IntersectionContext, rectangle);
+
 		[return: NotNullIfNotNull("value")]
 		public object? CreateProxy(object? value)
 		{
@@ -191,7 +197,7 @@ namespace StepFlow.Master
 				Name = "Projectile",
 				Body = new Collided(Playground.Context)
 				{
-					Current = { RectangleExtensions.Create(center, radius) },
+					Current = CreateShape(RectangleExtensions.Create(center, radius)),
 				},
 				Damage = damage,
 				Reusable = reusable,

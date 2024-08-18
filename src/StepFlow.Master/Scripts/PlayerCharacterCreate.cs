@@ -16,7 +16,7 @@ namespace StepFlow.Master.Scripts
 		{
 			var body = new Collided(PlayMaster.Playground.Context)
 			{
-				Current = { parameters.Bounds },
+				Current = PlayMaster.CreateShape(parameters.Bounds),
 				IsRigid = true,
 			};
 

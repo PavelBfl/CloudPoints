@@ -38,6 +38,8 @@ namespace StepFlow.Intersection
 
 		public override int Count => 1;
 
+		public override bool Contains(Rectangle rectangle) => Border == rectangle;
+
 		public override IEnumerator<Rectangle> GetEnumerator() => new[] { Border }.AsEnumerable().GetEnumerator();
 
 		public override void Offset(Point value) => border.Offset(value);

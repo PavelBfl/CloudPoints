@@ -85,7 +85,7 @@ namespace StepFlow.Intersection
 			Reset();
 		}
 
-		public bool Contains(Rectangle item) => SubRectangles.Contains(item);
+		public override bool Contains(Rectangle item) => SubRectangles.Contains(item);
 
 		public void CopyTo(Rectangle[] array, int arrayIndex) => SubRectangles.CopyTo(array, arrayIndex);
 
