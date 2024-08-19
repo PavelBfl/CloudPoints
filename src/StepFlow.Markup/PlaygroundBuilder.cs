@@ -86,8 +86,9 @@ internal class PlaygroundBuilder
 		},
 	};
 
-	private static ObstructionDto CreateBoards(int x, int y) => new ObstructionDto()
+	private static ObstructionDto CreateBoards(int x, int y, float xCourse = 0) => new ObstructionDto()
 	{
+		Name = "Boards",
 		Kind = ObstructionKind.Single,
 		View = ObstructionView.Boards,
 		Strength = Scale.CreateByMax(50),
@@ -97,6 +98,7 @@ internal class PlaygroundBuilder
 			Current = { CreateCell(x, y), },
 			IsRigid = true,
 		},
+		Course = new Vector2(xCourse, 0),
 		CollisionBehavior = CollisionBehavior.Reflection,
 		States =
 		{
@@ -365,7 +367,9 @@ internal class PlaygroundBuilder
 			Items =
 			{
 				CreateRoom(left, top, right, bottom),
-				CreateBoards(6, 1),
+				CreateBoards(6, 1, 0.01f),
+				CreateBoards(6, 4, -0.02f),
+				CreateBoards(7, 4, 0.03f),
 			},
 		};
 	}

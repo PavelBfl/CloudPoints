@@ -255,8 +255,6 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			if (Target != otherMaterial && otherCollided.Collided.IsRigid && thisCollided.Collided.IsRigid)
 			{
-				((ICollidedProxy)Owner.CreateProxy(Body)).Break();
-
 				switch (CollisionBehavior)
 				{
 					case CollisionBehavior.None:
@@ -312,6 +310,8 @@ namespace StepFlow.Master.Proxies.Elements
 						break;
 					default: throw EnumNotSupportedException.Create(CollisionBehavior);
 				}
+
+				((ICollidedProxy)Owner.CreateProxy(Body)).Break();
 			}
 		}
 
