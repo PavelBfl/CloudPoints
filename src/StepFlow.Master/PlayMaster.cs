@@ -176,7 +176,7 @@ namespace StepFlow.Master
 					var rightMaterial = (IMaterialProxy<Material>)CreateProxy(rightCollided.Collided.GetElementRequired());
 
 					leftMaterial.Collision(leftCollided, rightMaterial.Target, rightCollided);
-					rightMaterial.Collision(rightCollided, leftMaterial.Target, leftCollided);
+					//rightMaterial.Collision(rightCollided, leftMaterial.Target, leftCollided);
 				}
 			}
 

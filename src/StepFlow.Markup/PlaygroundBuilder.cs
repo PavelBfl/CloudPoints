@@ -65,6 +65,7 @@ internal class PlaygroundBuilder
 			Kind = ObstructionKind.Tiles,
 			View = ObstructionView.DarkWall,
 			Weight = Material.MAX_WEIGHT,
+			Elasticity = 0.1f,
 			Body = new CollidedDto()
 			{
 				Current = { tiles },
@@ -93,6 +94,7 @@ internal class PlaygroundBuilder
 		View = ObstructionView.Boards,
 		Strength = Scale.CreateByMax(50),
 		Weight = 1,
+		Elasticity = 0.9f,
 		Body = new CollidedDto()
 		{
 			Current = { CreateCell(x, y), },
@@ -367,9 +369,9 @@ internal class PlaygroundBuilder
 			Items =
 			{
 				CreateRoom(left, top, right, bottom),
+				CreateBoards(1, 6, 0.10f),
 				CreateBoards(6, 1, 0.01f),
-				CreateBoards(6, 4, -0.02f),
-				CreateBoards(7, 4, 0.03f),
+				CreateBoards(7, 4, -0.05f),
 			},
 		};
 	}

@@ -30,6 +30,8 @@ namespace StepFlow.Master.Proxies.Elements
 
 		int Weight { get; set; }
 
+		float Elasticity { get; set; }
+
 		Vector2 Course { get; set; }
 
 		ICollection<State> States { get; }
@@ -270,35 +272,39 @@ namespace StepFlow.Master.Proxies.Elements
 								sourceOffset.Y - otherOffset.Y
 							);
 
-							if (aggregateOffset.ToCourse() is { } sourceCource)
+							if (aggregateOffset.ToCourse() is { } sourceCourse)
 							{
-								switch (CollisionPoint(thisCollided.GetShape(), otherCollided.GetShape(), sourceCource))
+								var isHorizontal = sourceCourse == Common.Course.Top ||
+									sourceCourse == Common.Course.RightTop ||
+									sourceCourse == Common.Course.Bottom ||
+									sourceCourse == Common.Course.LeftBottom;
+
+								var factor = (Elasticity + otherMaterial.Elasticity) / 2;
+
+								if (isHorizontal)
 								{
-									case Common.Course.Left:
-										Course = new Vector2(MathF.Abs(Course.X), Course.Y);
-										break;
-									case Common.Course.LeftTop:
-										Course = new Vector2(Course.Y, Course.X);
-										break;
-									case Common.Course.Top:
-										Course = new Vector2(Course.X, MathF.Abs(Course.Y));
-										break;
-									case Common.Course.RightTop:
-										Course = new Vector2(Course.Y, Course.X);
-										break;
-									case Common.Course.Right:
-										Course = new Vector2(-MathF.Abs(Course.X), Course.Y);
-										break;
-									case Common.Course.RightBottom:
-										Course = new Vector2(Course.Y, Course.X);
-										break;
-									case Common.Course.Bottom:
-										Course = new Vector2(Course.X, -MathF.Abs(Course.Y));
-										break;
-									case Common.Course.LeftBottom:
-										Course = new Vector2(Course.Y, Course.X);
-										break;
-								} 
+									(var u1, var u2) = Collision(
+										Target.Weight,
+										otherMaterial.Weight,
+										Target.Course.Y,
+										otherMaterial.Course.Y
+									);
+
+									Course = new Vector2(Course.X, u1) * factor;
+									otherMaterial.Course = new Vector2(otherMaterial.Course.X, u2) * factor;
+								}
+								else
+								{
+									(var u1, var u2) = Collision(
+										Target.Weight,
+										otherMaterial.Weight,
+										Target.Course.X,
+										otherMaterial.Course.X
+									);
+
+									Course = new Vector2(u1, Course.Y) * factor;
+									otherMaterial.Course = new Vector2(u2, otherMaterial.Course.Y) * factor;
+								}
 							}
 						}
 						break;
@@ -313,6 +319,14 @@ namespace StepFlow.Master.Proxies.Elements
 
 				((ICollidedProxy)Owner.CreateProxy(Body)).Break();
 			}
+		}
+
+		private static (float u1, float u2) Collision(float m1, float m2, float u1, float u2)
+		{
+			return (
+				((m1 - m2) * u1 + 2 * m2 * u2) / (m1 + m2),
+				((m2 - m1) * u2 + 2 * m1 * u1) / (m1 + m2)
+			);
 		}
 
 		private void StrategyClock(bool cw)
@@ -448,6 +462,8 @@ namespace StepFlow.Master.Proxies.Elements
 				SetValue(value);
 			}
 		}
+
+		public float Elasticity { get => Target.Elasticity; set => SetValue(value); }
 
 		public ICollection<State> States => Target.States;
 

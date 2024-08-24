@@ -29,6 +29,7 @@ namespace StepFlow.Core.Elements
 			Body = original.Body?.ToCollided(context);
 			Speed = original.Speed;
 			Weight = original.Weight;
+			Elasticity = original.Elasticity;
 			Course = original.Course;
 			CollisionBehavior = original.CollisionBehavior;
 			States.AddUniqueRange(original.States.Select(x => x.ToState(Context)));
@@ -46,6 +47,8 @@ namespace StepFlow.Core.Elements
 		public int Speed { get; set; }
 
 		public int Weight { get; set; }
+
+		public float Elasticity { get; set; }
 
 		public Vector2 Course { get; set; }
 
@@ -65,6 +68,7 @@ namespace StepFlow.Core.Elements
 			container.Body = (CollidedDto?)Body?.ToDto();
 			container.Speed = Speed;
 			container.Weight = Weight;
+			container.Elasticity = Elasticity;
 			container.Course = Course;
 			container.CollisionBehavior = CollisionBehavior;
 		}

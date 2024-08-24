@@ -21,6 +21,8 @@ namespace StepFlow.Domains.Elements
 
 		public int Weight { get; set; }
 
+		public float Elasticity { get; set; }
+
 		public Vector2 Course { get; set; }
 
 		public CollisionBehavior CollisionBehavior { get; set; }
