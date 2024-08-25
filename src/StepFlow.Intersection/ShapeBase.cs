@@ -3,10 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using StepFlow.Common;
 
 namespace StepFlow.Intersection
 {
-	public abstract class ShapeBase : IReadOnlyCollection<Rectangle>, ICloneable
+	public abstract class ShapeBase : IReadOnlyCollection<Rectangle>, ICloneable, IEnabled
 	{
 		public static ShapeBase Create(Context context, Rectangle rectangle) => new ShapeCell(context, rectangle);
 
@@ -41,8 +42,6 @@ namespace StepFlow.Intersection
 			{
 				throw new ArgumentNullException(nameof(original));
 			}
-
-			Attached = original.Attached;
 		}
 
 		public object? Attached { get; set; }

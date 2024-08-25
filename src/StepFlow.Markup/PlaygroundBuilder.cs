@@ -369,9 +369,9 @@ internal class PlaygroundBuilder
 			Items =
 			{
 				CreateRoom(left, top, right, bottom),
-				CreateBoards(1, 6, 0.10f),
-				CreateBoards(6, 1, 0.01f),
-				CreateBoards(7, 4, -0.05f),
+				CreateBoards(5, 7),
+				//CreateBoards(4, 4, -0.10f),
+				//CreateBoards(7, 4, -0.05f),
 			},
 		};
 	}
@@ -384,9 +384,12 @@ internal class PlaygroundBuilder
 		Speed = 1,
 		Body = new CollidedDto()
 		{
-			Current = { CreateCell(6, 1, 7) },
+			Current = { CreateCell(8, 1, 7) },
 			IsRigid = true,
 		},
+		CollisionBehavior = CollisionBehavior.Reflection,
+		Weight = 1,
+		Elasticity = 1,
 		States =
 		{
 			new()

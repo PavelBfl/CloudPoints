@@ -12,5 +12,7 @@ namespace StepFlow.Core.Exceptions
 		internal static Exception CreateCopiedPropertyIsNull(string propertyName) => new PropertyNullException(propertyName);
 
 		internal static Exception CreateUnknownIntersectionContext() => new InvalidOperationException("Unknown intersection context for play ground context.");
+
+		internal static Exception CreateShapeHasOwner() => new InvalidOperationException("Shape has owner.");
 	}
 }

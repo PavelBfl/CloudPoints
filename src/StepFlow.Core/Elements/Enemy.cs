@@ -48,18 +48,18 @@ namespace StepFlow.Core.Elements
 			container.ReleaseItem = ReleaseItem;
 		}
 
-		public override void Begin()
+		public override void Enable()
 		{
-			base.Begin();
+			base.Enable();
 
-			Vision?.Begin();
+			Vision?.Enable();
 		}
 
-		public override void End()
+		public override void Disable()
 		{
-			base.End();
+			base.Disable();
 
-			Vision?.End();
+			Vision?.Disable();
 		}
 	}
 }

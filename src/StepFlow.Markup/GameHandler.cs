@@ -38,7 +38,7 @@ public sealed class GameHandler
 			builder.CreateState2("P3", null, null, null, "P1"),
 		};
 		PlayMasters.CurrentKey = PlayMasters.Keys.FirstOrDefault();
-		//PlayMasters.Current?.PlayerCharacterPush(builder.CreatePlayerCharacter0());
+		PlayMasters.Current?.PlayerCharacterPush(builder.CreatePlayerCharacter0());
 
 		Meter.CreateObservableGauge("Time", () => PlayMasters.Current?.TimeAxis.Current ?? 0);
 		Meter.CreateObservableGauge("Commands", () => PlayMasters.Current?.TimeAxis.Source.Current ?? 0);

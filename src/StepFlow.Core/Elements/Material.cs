@@ -10,7 +10,7 @@ using StepFlow.Domains.Elements;
 
 namespace StepFlow.Core.Elements
 {
-	public abstract class Material : ElementBase
+	public abstract class Material : ElementBase, IEnabled
 	{
 		public const string SHEDULER_CONTROL_NAME = "Control";
 		public const string SHEDULER_INERTIA_NAME = "Inertia";
@@ -73,14 +73,18 @@ namespace StepFlow.Core.Elements
 			container.CollisionBehavior = CollisionBehavior;
 		}
 
-		public virtual void Begin()
+		public bool IsEnable { get; private set; }
+
+		public virtual void Enable()
 		{
-			Body?.Begin();
+			Body?.Enable(); 
+			IsEnable = true;
 		}
 
-		public virtual void End()
+		public virtual void Disable()
 		{
-			Body?.End();
+			Body?.Disable();
+			IsEnable = false;
 		}
 	}
 }

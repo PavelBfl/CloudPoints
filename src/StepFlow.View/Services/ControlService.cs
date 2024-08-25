@@ -46,11 +46,11 @@ namespace StepFlow.View.Services
 
 		public HorizontalAlign GetPlayerCourseHorizontal()
 		{
-			if (IsKeyDown(Keys.Left))
+			if (IsKeyDown(Keys.A))
 			{
 				return HorizontalAlign.Left;
 			}
-			else if (IsKeyDown(Keys.Right))
+			else if (IsKeyDown(Keys.D))
 			{
 				return HorizontalAlign.Right;
 			}
@@ -60,7 +60,7 @@ namespace StepFlow.View.Services
 			}
 		}
 
-		public bool GetJump() => IsKeyOnPress(Keys.Up);
+		public bool GetJump() => IsKeyOnPress(Keys.W);
 
 		public float GetPlayerRotate(System.Numerics.Vector2 center)
 		{

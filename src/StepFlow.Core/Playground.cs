@@ -56,7 +56,7 @@ namespace StepFlow.Core
 			{
 				if (Source.Add(item))
 				{
-					item.Begin();
+					item.Enable();
 				}
 			}
 
@@ -64,7 +64,7 @@ namespace StepFlow.Core
 			{
 				foreach (var item in this)
 				{
-					item.End();
+					item.Disable();
 				}
 
 				Source.Clear();
@@ -81,7 +81,7 @@ namespace StepFlow.Core
 				var removed = Source.Remove(item);
 				if (removed)
 				{
-					item.End();
+					item.Disable();
 				}
 
 				return removed;

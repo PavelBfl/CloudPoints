@@ -31,7 +31,6 @@ namespace StepFlow.Master.Proxies.Components
 			{
 				var next = Next;
 				Next = null;
-				Current?.Disable();
 				Current = next;
 				IsMove = false;
 			}
@@ -39,16 +38,13 @@ namespace StepFlow.Master.Proxies.Components
 
 		void Break()
 		{
-			Next?.Disable();
 			Next = null;
 			IsMove = false;
 		}
 
 		void Clear()
 		{
-			Current?.Disable();
 			Current = null;
-			Next?.Disable();
 			Next = null;
 			Offset = Vector2.Zero;
 		}
@@ -84,14 +80,7 @@ namespace StepFlow.Master.Proxies.Components
 			var absOffset = new Point(Math.Abs(localOffset.X), Math.Abs(localOffset.Y));
 			if (absOffset.X > 0 || absOffset.Y > 0)
 			{
-				if (absOffset.X <= 1 && absOffset.Y <= 1)
-				{
-
-				}
-
-				var next = Current?.Clone(localOffset);
-				Next = next;
-				Next?.Enable();
+				Next = Current?.Clone(localOffset);
 				IsMove = true;
 
 				Offset -= new Vector2(localOffset.X, localOffset.Y);

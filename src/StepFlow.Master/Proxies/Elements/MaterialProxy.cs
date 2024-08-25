@@ -267,6 +267,12 @@ namespace StepFlow.Master.Proxies.Elements
 					case CollisionBehavior.Reflection:
 						if (Body.GetOffset() is { } sourceOffset && otherCollided.Collided.GetOffset() is { } otherOffset)
 						{
+							var names = new[] { Target.Name, otherMaterial.Name };
+							if (names.Contains("Boards") && names.Contains("Player"))
+							{
+
+							}
+
 							var aggregateOffset = new Point(
 								sourceOffset.X - otherOffset.X,
 								sourceOffset.Y - otherOffset.Y
@@ -281,6 +287,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 								var factor = (Elasticity + otherMaterial.Elasticity) / 2;
 
+								var otherMaterialProxy = (IMaterialProxy<Material>)Owner.CreateProxy(otherMaterial);
 								if (isHorizontal)
 								{
 									(var u1, var u2) = Collision(
@@ -291,7 +298,7 @@ namespace StepFlow.Master.Proxies.Elements
 									);
 
 									Course = new Vector2(Course.X, u1) * factor;
-									otherMaterial.Course = new Vector2(otherMaterial.Course.X, u2) * factor;
+									otherMaterialProxy.Course = new Vector2(otherMaterial.Course.X, u2) * factor;
 								}
 								else
 								{
@@ -303,7 +310,7 @@ namespace StepFlow.Master.Proxies.Elements
 									);
 
 									Course = new Vector2(u1, Course.Y) * factor;
-									otherMaterial.Course = new Vector2(u2, otherMaterial.Course.Y) * factor;
+									otherMaterialProxy.Course = new Vector2(u2, otherMaterial.Course.Y) * factor;
 								}
 							}
 						}
@@ -333,110 +340,6 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			var rotate = Matrix3x2.CreateRotation(MathF.PI / (cw ? 2 : -2));
 			Course = Vector2.Transform(Course, rotate);
-		}
-
-		private void StrategyReflection(ShapeContainer shape, ShapeContainer otherShape)
-		{
-			var newCourse = Course;
-			if (shape.Bounds.Right <= otherShape.Bounds.Left)
-			{
-				Negative(ref newCourse.X);
-			}
-			else if (shape.Bounds.Left >= otherShape.Bounds.Right)
-			{
-				Positive(ref newCourse.X);
-			}
-			else if (shape.Bounds.Top >= otherShape.Bounds.Bottom)
-			{
-				Positive(ref newCourse.Y);
-			}
-			else if (shape.Bounds.Bottom <= otherShape.Bounds.Top)
-			{
-				Negative(ref newCourse.Y);
-			}
-			else
-			{
-				throw new InvalidOperationException();
-			}
-
-			Course = newCourse;
-		}
-
-		private static void Positive(ref float value) => value = value >= 0 ? value : -value;
-
-		private static float Positive(float value) => value >= 0 ? value : -value;
-
-		private static void Negative(ref float value) => value = value <= 0 ? value : -value;
-
-		private static float Negative(float value) => value <= 0 ? value : -value;
-
-		private static Course? CollisionPoint(ShapeBase source, ShapeBase other, Course sourceCourse)
-		{
-			switch (sourceCourse)
-			{
-				case Common.Course.Left:
-					return Common.Course.Left;
-				case Common.Course.LeftTop:
-					return (IsCollision(source, other, Common.Course.Right), IsCollision(source, other, Common.Course.Bottom)) switch
-					{
-						(true, false) => Common.Course.Top,
-						(false, true) => Common.Course.Left,
-						_ => Common.Course.LeftTop,
-					};
-				case Common.Course.Top:
-					return Common.Course.Top;
-				case Common.Course.RightTop:
-					return (IsCollision(source, other, Common.Course.Left), IsCollision(source, other, Common.Course.Bottom)) switch
-					{
-						(true, false) => Common.Course.Top,
-						(false, true) => Common.Course.Right,
-						_ => Common.Course.RightTop,
-					};
-				case Common.Course.Right:
-					return Common.Course.Right;
-				case Common.Course.RightBottom:
-					return (IsCollision(source, other, Common.Course.Left), IsCollision(source, other, Common.Course.Top)) switch
-					{
-						(true, false) => Common.Course.Bottom,
-						(false, true) => Common.Course.Right,
-						_ => Common.Course.RightBottom,
-					};
-				case Common.Course.Bottom:
-					return Common.Course.Bottom;
-				case Common.Course.LeftBottom:
-					return (IsCollision(source, other, Common.Course.Right), IsCollision(source, other, Common.Course.Top)) switch
-					{
-						(true, false) => Common.Course.Bottom,
-						(false, true) => Common.Course.Left,
-						_ => Common.Course.LeftBottom,
-					};
-				default: throw EnumNotSupportedException.Create(sourceCourse);
-			}
-		}
-
-		private static bool IsCollision(ShapeBase source, ShapeBase other, Course sourceOffset)
-		{
-			var offset = sourceOffset.ToPoint();
-
-			var sourceBounds = source.Bounds;
-			sourceBounds.Offset(offset);
-
-			if (other.Bounds.IntersectsWith(sourceBounds))
-			{
-				foreach (var sourceRectangle in source)
-				{
-					sourceRectangle.Offset(offset);
-					foreach (var otherRectangle in other)
-					{
-						if (sourceRectangle.IntersectsWith(otherRectangle))
-						{
-							return true;
-						}
-					}
-				}
-			}
-
-			return false;
 		}
 
 		protected virtual void CreateProjectile(float radians)

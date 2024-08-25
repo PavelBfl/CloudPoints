@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using StepFlow.Common;
 using StepFlow.Core.Exceptions;
 using StepFlow.Domains;
 using StepFlow.Domains.Components;
@@ -31,16 +32,11 @@ namespace StepFlow.Core.Components
 		public override string ToString() => PropertyName + ": " + GetShape();
 	}
 
-	public sealed class Collided : ComponentBase
+	public sealed class Collided : ComponentBase, IEnabled
 	{
 		public Collided(IContext context)
 			: base(context)
 		{
-			Current = new ShapeContainer(Context.IntersectionContext);
-			Next = new ShapeContainer(Context.IntersectionContext);
-
-			Current.Attached = new CollidedAttached(nameof(Current), this);
-			Next.Attached = new CollidedAttached(nameof(Next), this);
 		}
 
 		public Collided(IContext context, CollidedDto original)
@@ -72,8 +68,14 @@ namespace StepFlow.Core.Components
 				throw ExceptionBuilder.CreateUnknownIntersectionContext();
 			}
 
+			if (newShape?.Attached is { })
+			{
+				throw ExceptionBuilder.CreateShapeHasOwner();
+			}
+
 			if (shape is { })
 			{
+				shape.Disable();
 				shape.Attached = null;
 			}
 
@@ -82,6 +84,14 @@ namespace StepFlow.Core.Components
 			if (shape is { })
 			{
 				shape.Attached = new CollidedAttached(propertyName, this);
+				if (IsEnable)
+				{
+					shape.Enable();
+				}
+				else
+				{
+					shape.Disable();
+				}
 			}
 		}
 
@@ -152,16 +162,26 @@ namespace StepFlow.Core.Components
 			return result;
 		}
 
-		public void Begin()
+		public bool IsEnable { get; private set; }
+
+		public void Enable()
 		{
-			Current?.Enable();
-			Next?.Enable();
+			if (!IsEnable)
+			{
+				Current?.Enable();
+				Next?.Enable();
+				IsEnable = true;
+			}
 		}
 
-		public void End()
+		public void Disable()
 		{
-			Current?.Disable();
-			Next?.Disable();
+			if (IsEnable)
+			{
+				Current?.Disable();
+				Next?.Disable(); 
+				IsEnable = false;
+			}
 		}
 	}
 }
