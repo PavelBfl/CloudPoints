@@ -1,12 +1,8 @@
-﻿using System.Linq;
-using System.Numerics;
+﻿using System.Numerics;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
-using StepFlow.Core.States;
 using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
-using StepFlow.Domains.States;
-using StepFlow.Master.Proxies.States;
 
 namespace StepFlow.Master.Proxies.Elements
 {

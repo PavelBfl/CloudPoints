@@ -13,8 +13,6 @@ namespace StepFlow.Markup.Services
 
 	public interface IControl
 	{
-		float? GetPlayerCourse();
-
 		HorizontalAlign GetPlayerCourseHorizontal();
 
 		bool GetJump();

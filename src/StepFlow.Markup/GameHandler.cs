@@ -65,11 +65,19 @@ public sealed class GameHandler
 		
 	}
 
-	private void CreateProjectile(float radians, PlayerAction action)
-	{
-		PlayMasters.Current?.PlayerCharacterCreateProjectile.Execute(new() { Radians = radians, Action = action });
-	}
+	#region Debug
+	private bool IsDebug { get; set; } = false;
 
+	private void DebugHandle()
+	{
+		if (Control.OnSwitchDebug())
+		{
+			IsDebug = !IsDebug;
+		}
+	}
+	#endregion
+
+	#region Ticks
 	private const int TIME_TICKS_STEP = 10;
 
 	private int currentTicks = TimeTick.TICKS_PER_FRAME;
@@ -92,15 +100,8 @@ public sealed class GameHandler
 		}
 	}
 
-	public void Update()
+	private int TicksHandle()
 	{
-		if (Control.OnSwitchDebug())
-		{
-			IsDebug = !IsDebug;
-		}
-
-		var currentTicks = Control.OnTactic() ? 0 : CurrentTicks;
-
 		var timeOffset = Control.GetTimeOffset();
 		switch (timeOffset)
 		{
@@ -115,6 +116,97 @@ public sealed class GameHandler
 			default: throw EnumNotSupportedException.Create(timeOffset);
 		}
 
+		return Control.OnTactic() ? 0 : CurrentTicks;
+	}
+	#endregion
+
+	#region Game play
+	public void GamePlay()
+	{
+		var currentTicks = TicksHandle();
+
+		for (var i = 0; i < currentTicks; i++)
+		{
+			if (PlayMasters.Current is { } master)
+			{
+				var switchMaster = GamePlay(master);
+				if (switchMaster)
+				{
+					return;
+				}
+			}
+		}
+	}
+
+	public bool GamePlay(PlayMaster master)
+	{
+		var transaction = master.TimeAxis.BeginTransaction();
+
+		// TODO
+		if (master.Playground.GetPlayerCharacter() is { } playerCharacter)
+		{
+			GamePlay(master, playerCharacter);
+		}
+
+		master.TakeStep.Execute(null);
+
+		UpdateTrack();
+
+		transaction.Commit();
+
+		// TODO Temp
+		if (TryPopWormhole(out var wormhole, out var player))
+		{
+			PlayMasters.CurrentKey = wormhole.Destination;
+
+			var bounds = GetBounds(player.Body?.Current ?? Enumerable.Empty<Rectangle>());
+			var localPosition = GetPosition(bounds.Size, wormhole.Horizontal, wormhole.Vertical);
+			var newPosition = new Point((int)wormhole.Position.X, (int)wormhole.Position.Y);
+
+			var offset = new Point(
+				-bounds.X + newPosition.X - localPosition.X,
+				-bounds.Y + newPosition.Y - localPosition.Y
+			);
+
+			player.Body.Next.Clear();
+			player.Body.Current.OffsetWith(offset);
+
+			PlayMasters.Current?.PlayerCharacterPush(player);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public void GamePlay(PlayMaster master, PlayerCharacter character)
+	{
+		master.PlayerCharacterSetCourse.Execute(new()
+		{
+			Course = Control.GetPlayerCourseHorizontal(),
+			Jump = Control.GetJump(),
+		});
+
+		if (Control.GetPlayerAction() is { } playerAction)
+		{
+			switch (playerAction)
+			{
+				case PlayerAction.Main:
+				case PlayerAction.Auxiliary:
+					var center = character.GetBodyRequired().Current.Bounds.GetCenter();
+					master.PlayerCharacterCreateProjectile.Execute(new() { Radians = Control.GetPlayerRotate(new(center.X, center.Y)), Action = playerAction });
+					break;
+				default: throw EnumNotSupportedException.Create(playerAction);
+			};
+		}
+	}
+	#endregion
+
+	public void Update()
+	{
+		DebugHandle();
+
 		if (Control.IsUndo())
 		{
 			for (var i = 0; i < TimeTick.TICKS_PER_FRAME * 5; i++)
@@ -125,61 +217,8 @@ public sealed class GameHandler
 		else
 		{
 			var sw = System.Diagnostics.Stopwatch.StartNew();
-			for (var i = 0; i < currentTicks; i++)
-			{
-				var transaction = PlayMasters.Current?.TimeAxis.BeginTransaction();
 
-				// TODO
-				if (PlayMasters.Current?.Playground.Items.OfType<PlayerCharacter>().Any() ?? false)
-				{
-					PlayMasters.Current?.PlayerCharacterSetCourse.Execute(new()
-					{
-						Course = Control.GetPlayerCourseHorizontal(),
-						Jump = Control.GetJump(),
-					});
-
-					if (Control.GetPlayerAction() is { } playerAction)
-					{
-						switch (playerAction)
-						{
-							case PlayerAction.Main:
-							case PlayerAction.Auxiliary:
-								var playerCharacter = PlayMasters.Current?.Playground.GetPlayerCharacterRequired();
-								var center = playerCharacter.GetBodyRequired().Current.Bounds.GetCenter();
-								CreateProjectile(Control.GetPlayerRotate(new(center.X, center.Y)), playerAction);
-								break;
-							default: throw EnumNotSupportedException.Create(playerAction);
-						};
-					}
-				}
-
-				PlayMasters.Current?.TakeStep.Execute(null);
-
-				UpdateTrack();
-
-				transaction.Commit();
-
-				// TODO Temp
-				if (TryPopWormhole(out var wormhole, out var player))
-				{
-					PlayMasters.CurrentKey = wormhole.Destination;
-
-					var bounds = GetBounds(player.Body?.Current ?? Enumerable.Empty<Rectangle>());
-					var localPosition = GetPosition(bounds.Size, wormhole.Horizontal, wormhole.Vertical);
-					var newPosition = new Point((int)wormhole.Position.X, (int)wormhole.Position.Y);
-
-					var offset = new Point(
-						-bounds.X + newPosition.X - localPosition.X,
-						-bounds.Y + newPosition.Y - localPosition.Y
-					);
-
-					player.Body.Next.Clear();
-					player.Body.Current.OffsetWith(offset);
-
-					PlayMasters.Current?.PlayerCharacterPush(player);
-					break;
-				}
-			}
+			GamePlay();
 
 			Frame = sw.Elapsed;
 		}
@@ -284,8 +323,6 @@ public sealed class GameHandler
 			} 
 		}
 	}
-
-	private bool IsDebug { get; set; } = false;
 
 	public void Draw()
 	{

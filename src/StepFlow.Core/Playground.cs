@@ -24,6 +24,8 @@ namespace StepFlow.Core
 			Items.AddUniqueRange(original.Items.Select(x => x.ToMaterial(Context)));
 		}
 
+		public PlayerCharacter? GetPlayerCharacter() => Items.OfType<PlayerCharacter>().SingleOrDefault();
+
 		public PlayerCharacter GetPlayerCharacterRequired() => Items.OfType<PlayerCharacter>().Single();
 
 		public ICollection<Material> Items { get; } = new ItemsCollection();

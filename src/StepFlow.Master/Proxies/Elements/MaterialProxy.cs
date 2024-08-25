@@ -13,7 +13,6 @@ using StepFlow.Core.Tracks;
 using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
 using StepFlow.Domains.States;
-using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
 using StepFlow.Master.Proxies.States;
 

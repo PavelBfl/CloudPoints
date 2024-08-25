@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Domains.Components;
