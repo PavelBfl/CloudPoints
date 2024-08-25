@@ -76,6 +76,7 @@ internal class PlaygroundBuilder
 
 	private static ObstructionDto CreateBricks(int x, int y) => new ObstructionDto()
 	{
+		Name = ObstructionView.Bricks.ToString(),
 		Kind = ObstructionKind.Single,
 		View = ObstructionView.Bricks,
 		Strength = Scale.CreateByMax(50),
@@ -85,22 +86,23 @@ internal class PlaygroundBuilder
 			Current = { CreateCell(x, y), },
 			IsRigid = true,
 		},
+		CollisionBehavior = CollisionBehavior.Reflection,
 	};
 
-	private static ObstructionDto CreateBoards(int x, int y, float xCourse = 0) => new ObstructionDto()
+	private static ObstructionDto CreateBoards(int x, int y) => new ObstructionDto()
 	{
-		Name = "Boards",
+		Name = ObstructionView.Boards.ToString(),
 		Kind = ObstructionKind.Single,
 		View = ObstructionView.Boards,
 		Strength = Scale.CreateByMax(50),
-		Weight = 1,
+		Weight = 100,
 		Elasticity = 0.9f,
 		Body = new CollidedDto()
 		{
 			Current = { CreateCell(x, y), },
 			IsRigid = true,
 		},
-		Course = new Vector2(xCourse, 0),
+		Course = new Vector2(0, 0),
 		CollisionBehavior = CollisionBehavior.Reflection,
 		States =
 		{
@@ -369,9 +371,22 @@ internal class PlaygroundBuilder
 			Items =
 			{
 				CreateRoom(left, top, right, bottom),
+				CreateBoards(5, 5),
+				CreateBoards(6, 5),
+				CreateBoards(7, 5),
+				CreateBoards(5, 6),
+				CreateBoards(6, 6),
+				CreateBoards(7, 6),
 				CreateBoards(5, 7),
-				//CreateBoards(4, 4, -0.10f),
-				//CreateBoards(7, 4, -0.05f),
+				CreateBoards(6, 7),
+				CreateBoards(7, 7),
+
+				CreateBricks(11, 4),
+				CreateBricks(12, 4),
+				CreateBricks(13, 4),
+
+				CreateItem(13, 3, ItemKind.Poison),
+				CreateItem(1, 7, ItemKind.Fire),
 			},
 		};
 	}
@@ -389,7 +404,7 @@ internal class PlaygroundBuilder
 		},
 		CollisionBehavior = CollisionBehavior.Reflection,
 		Weight = 1,
-		Elasticity = 1,
+		Elasticity = 0,
 		States =
 		{
 			new()

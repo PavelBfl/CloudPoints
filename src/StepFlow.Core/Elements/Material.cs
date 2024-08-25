@@ -15,7 +15,7 @@ namespace StepFlow.Core.Elements
 		public const string SHEDULER_CONTROL_NAME = "Control";
 		public const string SHEDULER_INERTIA_NAME = "Inertia";
 
-		public const int MAX_WEIGHT = 1000;
+		public const int MAX_WEIGHT = 100000;
 
 		public Material(IContext context)
 			: base(context)

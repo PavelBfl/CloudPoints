@@ -32,10 +32,7 @@ public sealed class GameHandler
 		var builder = new PlaygroundBuilder();
 		PlayMasters = new PlayMasters()
 		{
-			builder.CreateState2("P0", null, "P1", null, null),
-			builder.CreateState2("P1", "P2", "P3", null, "P0"),
-			builder.CreateState2("P2", null, null, "P1", null),
-			builder.CreateState2("P3", null, null, null, "P1"),
+			builder.CreateState2("P0", null, null, null, null),
 		};
 		PlayMasters.CurrentKey = PlayMasters.Keys.FirstOrDefault();
 		PlayMasters.Current?.PlayerCharacterPush(builder.CreatePlayerCharacter0());

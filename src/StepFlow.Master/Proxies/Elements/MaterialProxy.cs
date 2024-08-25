@@ -267,12 +267,6 @@ namespace StepFlow.Master.Proxies.Elements
 					case CollisionBehavior.Reflection:
 						if (Body.GetOffset() is { } sourceOffset && otherCollided.Collided.GetOffset() is { } otherOffset)
 						{
-							var names = new[] { Target.Name, otherMaterial.Name };
-							if (names.Contains("Boards") && names.Contains("Player"))
-							{
-
-							}
-
 							var aggregateOffset = new Point(
 								sourceOffset.X - otherOffset.X,
 								sourceOffset.Y - otherOffset.Y
@@ -280,7 +274,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 							if (aggregateOffset.ToCourse() is { } sourceCourse)
 							{
-								var isHorizontal = sourceCourse == Common.Course.Top ||
+								var isVertical = sourceCourse == Common.Course.Top ||
 									sourceCourse == Common.Course.RightTop ||
 									sourceCourse == Common.Course.Bottom ||
 									sourceCourse == Common.Course.LeftBottom;
@@ -288,7 +282,7 @@ namespace StepFlow.Master.Proxies.Elements
 								var factor = (Elasticity + otherMaterial.Elasticity) / 2;
 
 								var otherMaterialProxy = (IMaterialProxy<Material>)Owner.CreateProxy(otherMaterial);
-								if (isHorizontal)
+								if (isVertical)
 								{
 									(var u1, var u2) = Collision(
 										Target.Weight,

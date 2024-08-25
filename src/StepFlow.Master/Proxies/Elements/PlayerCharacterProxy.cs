@@ -158,7 +158,7 @@ namespace StepFlow.Master.Proxies.Elements
 							center,
 							SIZE,
 							courseVector,
-							new Damage() { Push = courseVector },
+							new Damage() { Push = courseVector * 0.01f },
 							TimeTick.FromSeconds(0.1f),
 							Target,
 							ReusableKind.NotSave

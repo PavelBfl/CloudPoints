@@ -32,25 +32,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 				if (Damage.Push != Vector2.Zero && otherMaterial.Weight < Material.MAX_WEIGHT)
 				{
-					var totalCooldown = TimeTick.FromSeconds(1);
-					if (otherMaterial.States.SingleOrDefault(x => x.Kind == StateKind.Push) is { } pushState)
-					{
-						var pushStateProxy = (IStateProxy)Owner.CreateProxy(pushState);
-						pushStateProxy.TotalCooldown = totalCooldown;
-						pushStateProxy.Vector = Damage.Push;
-					}
-					else
-					{
-						pushState = new State(Owner.Playground.Context)
-						{
-							Kind = StateKind.Push,
-							TotalCooldown = totalCooldown,
-							Arg0 = Damage.Push.X,
-							Arg1 = Damage.Push.Y,
-						};
-						var statesProxy = Owner.CreateCollectionProxy(otherMaterial.States);
-						statesProxy.Add(pushState);
-					}
+					otherMaterialProxy.Course += Damage.Push;
 				}
 
 				switch (Target.Reusable)
