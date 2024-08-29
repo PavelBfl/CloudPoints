@@ -15,7 +15,7 @@ namespace StepFlow.Common
 			where T : struct
 			=> propertyValue is { } ? propertyValue.Value : throw new PropertyNullException(propertyName);
 
-		public static void ThrowIfArgumentNull(object? value, string? name)
+		public static void ThrowIfArgumentNull([NotNull] object? value, string? name)
 		{
 			if (value is null)
 			{

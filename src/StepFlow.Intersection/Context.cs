@@ -1,11 +1,27 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using StepFlow.Common;
 
 namespace StepFlow.Intersection
 {
 	public sealed class Context : ICollection<ShapeBase>
 	{
+		private void ValidateShape(ShapeBase? shape, bool expectEnable)
+		{
+			NullValidate.ThrowIfArgumentNull(shape, nameof(shape));
+
+			if (shape.Context != this)
+			{
+				throw ExceptionBuilder.CreateUnknownContext();
+			}
+
+			if (shape.IsEnable != expectEnable)
+			{
+				throw ExceptionBuilder.CreateUnexpectedEnable();
+			}
+		}
+
 		private List<List<Relation>> Relations { get; } = new List<List<Relation>>();
 
 		private List<ShapeBase> Shapes { get; } = new List<ShapeBase>();
@@ -16,20 +32,7 @@ namespace StepFlow.Intersection
 
 		internal void Reset(ShapeBase shape)
 		{
-			if (shape is null)
-			{
-				throw new ArgumentNullException(nameof(shape));
-			}
-
-			if (shape.Context != this)
-			{
-				throw new InvalidOperationException();
-			}
-
-			if (shape.Index < 0)
-			{
-				return;
-			}
+			ValidateShape(shape, true);
 
 			if (shape.Index > 0)
 			{
@@ -52,10 +55,7 @@ namespace StepFlow.Intersection
 
 		public void Add(ShapeBase shape)
 		{
-			if (shape is null)
-			{
-				throw new ArgumentNullException(nameof(shape));
-			}
+			ValidateShape(shape, false);
 
 			shape.Index = Shapes.Count;
 			Shapes.Add(shape);
@@ -75,10 +75,7 @@ namespace StepFlow.Intersection
 
 		public bool Remove(ShapeBase shape)
 		{
-			if (shape is null)
-			{
-				throw new ArgumentNullException(nameof(shape));
-			}
+			ValidateShape(shape, true);
 
 			if (shape.Index < 0)
 			{
@@ -156,5 +153,53 @@ namespace StepFlow.Intersection
 		public IEnumerator<ShapeBase> GetEnumerator() => Shapes.GetEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+		public CollisionInfo GetCollisionInfo(ShapeBase shape)
+		{
+			ValidateShape(shape, true);
+
+			return new CollisionInfo(this, shape);
+		}
+
+		public sealed class CollisionInfo
+		{
+			public CollisionInfo(Context context, ShapeBase shape)
+			{
+				NullValidate.ThrowIfArgumentNull(context, nameof(context));
+				NullValidate.ThrowIfArgumentNull(shape, nameof(shape));
+
+				Context = context;
+				Current = shape;
+			}
+
+			public Context Context { get; }
+
+			public ShapeBase Current { get; }
+
+			public IEnumerable<ShapeBase> GetCollisions()
+			{
+				for (var i = 0; i < Context.Shapes.Count; i++)
+				{
+					if (i < Current.Index)
+					{
+						var relations = Context.Relations[Current.Index - 1];
+						var relation = relations[i];
+						if (relation.IsCollision)
+						{
+							yield return relation.Left == Current ? relation.Right : relation.Left;
+						}
+					}
+					else if (i > Current.Index)
+					{
+						var relations = Context.Relations[i - 1];
+						var relation = relations[Current.Index];
+						if (relation.IsCollision)
+						{
+							yield return relation.Left == Current ? relation.Right : relation.Left;
+						}
+					}
+				}
+			}
+		}
 	}
 }

@@ -72,7 +72,13 @@ namespace StepFlow.Intersection
 
 		public abstract Rectangle Bounds { get; }
 
-		protected virtual void Reset() => Context.Reset(this);
+		protected virtual void Reset()
+		{
+			if (IsEnable)
+			{
+				Context.Reset(this); 
+			}
+		}
 
 		public abstract void Offset(Point value);
 

@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StepFlow.Intersection", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StepFlow.Domains", "src\StepFlow.Domains\StepFlow.Domains.csproj", "{A9EF2FC8-99A6-41A9-9EBC-FBB184CE6E1B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StepFlow.Intersection.Test", "test\StepFlow.Intersection.Test\StepFlow.Intersection.Test.csproj", "{2EA5DDB5-0B10-4748-AE84-8A444D402110}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,10 @@ Global
 		{A9EF2FC8-99A6-41A9-9EBC-FBB184CE6E1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9EF2FC8-99A6-41A9-9EBC-FBB184CE6E1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9EF2FC8-99A6-41A9-9EBC-FBB184CE6E1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EA5DDB5-0B10-4748-AE84-8A444D402110}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EA5DDB5-0B10-4748-AE84-8A444D402110}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EA5DDB5-0B10-4748-AE84-8A444D402110}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EA5DDB5-0B10-4748-AE84-8A444D402110}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -95,6 +101,7 @@ Global
 		{918AADD2-8F0D-4ECC-B148-100549B8D687} = {1F837992-33AA-4744-B791-90BB3FDC2D4E}
 		{1D7F2D2C-F779-4ADE-AADB-888D5604B17B} = {1F837992-33AA-4744-B791-90BB3FDC2D4E}
 		{A9EF2FC8-99A6-41A9-9EBC-FBB184CE6E1B} = {1F837992-33AA-4744-B791-90BB3FDC2D4E}
+		{2EA5DDB5-0B10-4748-AE84-8A444D402110} = {02A612D4-2756-4509-8A1A-02FB900E5C4E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {52553761-5033-48FA-B06E-D149C927B957}
