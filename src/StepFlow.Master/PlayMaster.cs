@@ -114,10 +114,10 @@ namespace StepFlow.Master
 		public Playground Playground { get; }
 
 		[return: NotNullIfNotNull("rectangles")]
-		public ShapeBase? CreateShape(IEnumerable<Rectangle>? rectangles)
-			=> rectangles is null ? null : ShapeBase.Create(Playground.Context.IntersectionContext, rectangles);
+		public Shape? CreateShape(IEnumerable<Rectangle>? rectangles)
+			=> rectangles is null ? null : Shape.Create(Playground.Context.IntersectionContext, rectangles);
 
-		public ShapeBase CreateShape(Rectangle rectangle) => ShapeBase.Create(Playground.Context.IntersectionContext, rectangle);
+		public Shape CreateShape(Rectangle rectangle) => Shape.Create(Playground.Context.IntersectionContext, rectangle);
 
 		[return: NotNullIfNotNull("value")]
 		public object? CreateProxy(object? value)
@@ -132,8 +132,7 @@ namespace StepFlow.Master
 				Enemy instance => new EnemyProxy(this, instance),
 				Collided instance => new CollidedProxy(this, instance),
 				Intersection.Context instance => new ContextProxy(this, instance),
-				ShapeCell instance => new ShapeCellProxy(this, instance),
-				ShapeContainer instance => new ShapeContainerProxy(this, instance),
+				Shape instance => new ShapeProxy(this, instance),
 				Place instance => new PlaceProxy(this, instance),
 				Track instance => new TrackProxy(this, instance),
 				TrackBuilder instance => new TrackBuilderProxy(this, instance),

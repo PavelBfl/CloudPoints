@@ -11,13 +11,13 @@ namespace StepFlow.Master.Proxies.Components
 {
 	public interface ICollidedProxy : IProxyBase<Collided>
 	{
-		ShapeBase? Current { get; set; }
+		Shape? Current { get; set; }
 
-		IShapeBaseProxy<ShapeBase>? CurrentProxy => (IShapeBaseProxy<ShapeBase>?)Owner.CreateProxy(Current);
+		IShapeProxy? CurrentProxy => (IShapeProxy?)Owner.CreateProxy(Current);
 
-		ShapeBase? Next { get; set; }
+		Shape? Next { get; set; }
 
-		IShapeBaseProxy<ShapeBase>? NextProxy => (IShapeBaseProxy<ShapeBase>?)Owner.CreateProxy(Next);
+		IShapeProxy? NextProxy => (IShapeProxy?)Owner.CreateProxy(Next);
 
 		bool IsMove { get; set; }
 
@@ -60,9 +60,9 @@ namespace StepFlow.Master.Proxies.Components
 		{
 		}
 
-		public ShapeBase? Current { get => Target.Current; set => SetValue(value); }
+		public Shape? Current { get => Target.Current; set => SetValue(value); }
 
-		public ShapeBase? Next { get => Target.Next; set => SetValue(value); }
+		public Shape? Next { get => Target.Next; set => SetValue(value); }
 
 		public Vector2 Offset { get => Target.Offset; set => SetValue(value); }
 

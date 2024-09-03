@@ -5,9 +5,9 @@ using StepFlow.Common;
 
 namespace StepFlow.Intersection
 {
-	public sealed class Context : ICollection<ShapeBase>
+	public sealed class Context : ICollection<Shape>
 	{
-		private void ValidateShape(ShapeBase? shape, bool expectEnable)
+		private void ValidateShape(Shape? shape, bool expectEnable)
 		{
 			NullValidate.ThrowIfArgumentNull(shape, nameof(shape));
 
@@ -24,13 +24,13 @@ namespace StepFlow.Intersection
 
 		private List<List<Relation>> Relations { get; } = new List<List<Relation>>();
 
-		private List<ShapeBase> Shapes { get; } = new List<ShapeBase>();
+		private List<Shape> Shapes { get; } = new List<Shape>();
 
 		public int Count => Shapes.Count;
 
 		public bool IsReadOnly => false;
 
-		internal void Reset(ShapeBase shape)
+		internal void Reset(Shape shape)
 		{
 			ValidateShape(shape, true);
 
@@ -53,7 +53,7 @@ namespace StepFlow.Intersection
 			Collisions = null;
 		}
 
-		public void Add(ShapeBase shape)
+		public void Add(Shape shape)
 		{
 			ValidateShape(shape, false);
 
@@ -73,7 +73,7 @@ namespace StepFlow.Intersection
 			Collisions = null;
 		}
 
-		public bool Remove(ShapeBase shape)
+		public bool Remove(Shape shape)
 		{
 			ValidateShape(shape, true);
 
@@ -146,15 +146,15 @@ namespace StepFlow.Intersection
 			Shapes.Clear();
 		}
 
-		public bool Contains(ShapeBase item) => Shapes.Contains(item);
+		public bool Contains(Shape item) => Shapes.Contains(item);
 
-		public void CopyTo(ShapeBase[] array, int arrayIndex) => Shapes.CopyTo(array, arrayIndex);
+		public void CopyTo(Shape[] array, int arrayIndex) => Shapes.CopyTo(array, arrayIndex);
 
-		public IEnumerator<ShapeBase> GetEnumerator() => Shapes.GetEnumerator();
+		public IEnumerator<Shape> GetEnumerator() => Shapes.GetEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-		public CollisionInfo GetCollisionInfo(ShapeBase shape)
+		public CollisionInfo GetCollisionInfo(Shape shape)
 		{
 			ValidateShape(shape, true);
 
@@ -163,7 +163,7 @@ namespace StepFlow.Intersection
 
 		public sealed class CollisionInfo
 		{
-			public CollisionInfo(Context context, ShapeBase shape)
+			public CollisionInfo(Context context, Shape shape)
 			{
 				NullValidate.ThrowIfArgumentNull(context, nameof(context));
 				NullValidate.ThrowIfArgumentNull(shape, nameof(shape));
@@ -174,9 +174,9 @@ namespace StepFlow.Intersection
 
 			public Context Context { get; }
 
-			public ShapeBase Current { get; }
+			public Shape Current { get; }
 
-			public IEnumerable<ShapeBase> GetCollisions()
+			public IEnumerable<Shape> GetCollisions()
 			{
 				for (var i = 0; i < Context.Shapes.Count; i++)
 				{

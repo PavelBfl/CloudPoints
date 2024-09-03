@@ -52,7 +52,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 				var center = Body.Current.Bounds.GetCenter();
 				var visionPlace = RectangleExtensions.Create(center, 100);
-				var visionProxy = (IShapeContainerProxy?)Owner.CreateProxy(Vision?.Current);
+				var visionProxy = (IShapeProxy?)Owner.CreateProxy(Vision?.Current);
 				visionProxy?.Reset(visionPlace);
 			}
 		}

@@ -22,7 +22,7 @@ namespace StepFlow.Core.Components
 
 		public Collided Collided { get; }
 
-		public ShapeBase? GetShape() => PropertyName switch
+		public Shape? GetShape() => PropertyName switch
 		{
 			nameof(Collided.Current) => Collided.Current,
 			nameof(Collided.Next) => Collided.Next,
@@ -45,23 +45,23 @@ namespace StepFlow.Core.Components
 			CopyExtensions.ThrowIfContextNull(context);
 			CopyExtensions.ThrowIfOriginalNull(original);
 
-			Current = ShapeBase.Create(Context.IntersectionContext, original.Current);
-			Next = ShapeBase.Create(Context.IntersectionContext, original.Next);
+			Current = Shape.Create(Context.IntersectionContext, original.Current);
+			Next = Shape.Create(Context.IntersectionContext, original.Next);
 
 			Offset = original.Offset;
 			IsMove = original.IsMove;
 			IsRigid = original.IsRigid;
 		}
 
-		private ShapeBase? current;
+		private Shape? current;
 
-		public ShapeBase? Current { get => current; set => SetShape(ref current, value, nameof(Current)); }
+		public Shape? Current { get => current; set => SetShape(ref current, value, nameof(Current)); }
 
-		private ShapeBase? next;
+		private Shape? next;
 
-		public ShapeBase? Next { get => next; set => SetShape(ref next, value, nameof(Next)); }
+		public Shape? Next { get => next; set => SetShape(ref next, value, nameof(Next)); }
 
-		private void SetShape(ref ShapeBase? shape, ShapeBase? newShape, string propertyName)
+		private void SetShape(ref Shape? shape, Shape? newShape, string propertyName)
 		{
 			if (newShape is { } && newShape.Context != Context.IntersectionContext)
 			{

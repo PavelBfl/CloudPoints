@@ -7,13 +7,13 @@ namespace StepFlow.Master.Proxies.Intersection
 {
 	public sealed class ShapeOffsetCommand : ICommand
 	{
-		public ShapeOffsetCommand(ShapeBase shape, Point value)
+		public ShapeOffsetCommand(Shape shape, Point value)
 		{
 			Shape = shape ?? throw new ArgumentNullException(nameof(shape));
 			Value = value;
 		}
 
-		public ShapeBase Shape { get; }
+		public Shape Shape { get; }
 
 		public Point Value { get; }
 

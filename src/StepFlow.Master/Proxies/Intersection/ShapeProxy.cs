@@ -1,13 +1,19 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using StepFlow.Intersection;
+using StepFlow.Master.Proxies.Collections;
 
 namespace StepFlow.Master.Proxies.Intersection
 {
-	public interface IShapeContainerProxy : IShapeBaseProxy<ShapeContainer>, ICollection<Rectangle>
+	public interface IShapeProxy : IProxyBase<Shape>, ICollection<Rectangle>
 	{
+		Rectangle Bounds { get; }
+
+		void Offset(Point value);
+
 		void Reset(Rectangle rectangle, bool force = false)
 		{
 			if (force || !Equal(new[] { rectangle }))
@@ -58,25 +64,20 @@ namespace StepFlow.Master.Proxies.Intersection
 		}
 	}
 
-	internal sealed class ShapeContainerProxy : ShapeBaseProxy<ShapeContainer>, IShapeContainerProxy
+	internal sealed class ShapeProxy : CollectionProxy<Rectangle, Shape>, IShapeProxy
 	{
-		public ShapeContainerProxy(PlayMaster owner, ShapeContainer target) : base(owner, target)
+		public ShapeProxy(PlayMaster owner, Shape target) : base(owner, target)
 		{
-			ItemsProxy = Owner.CreateCollectionProxy(Target);
 		}
 
-		private ICollection<Rectangle> ItemsProxy { get; }
+		public Rectangle Bounds => Target.Bounds;
 
-		public bool IsReadOnly => ItemsProxy.IsReadOnly;
+		public int Count => Target.Count;
 
-		public void Add(Rectangle item) => ItemsProxy.Add(item);
+		public void Offset(Point value) => Owner.TimeAxis.Add(new ShapeOffsetCommand(Target, value));
 
-		public void Clear() => ItemsProxy.Clear();
+		public IEnumerator<Rectangle> GetEnumerator() => Target.GetEnumerator();
 
-		public bool Contains(Rectangle item) => ItemsProxy.Contains(item);
-
-		public void CopyTo(Rectangle[] array, int arrayIndex) => ItemsProxy.CopyTo(array, arrayIndex);
-
-		public bool Remove(Rectangle item) => ItemsProxy.Remove(item);
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}
 }
