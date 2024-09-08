@@ -21,7 +21,6 @@ using StepFlow.Master.Proxies;
 using StepFlow.Master.Proxies.Collections;
 using StepFlow.Master.Proxies.Components;
 using StepFlow.Master.Proxies.Elements;
-using StepFlow.Master.Proxies.Intersection;
 using StepFlow.Master.Proxies.States;
 using StepFlow.Master.Proxies.Tracks;
 using StepFlow.Master.Scripts;

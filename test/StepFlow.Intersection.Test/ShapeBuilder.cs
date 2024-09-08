@@ -5,8 +5,6 @@ namespace StepFlow.Intersection.Test;
 
 public readonly record struct ShapeBuilder(ImmutableArray<Rectangle> Rectangles)
 {
-	public Shape Create(Context context) => Shape.Create(context, Rectangles);
-
 	public bool Intersect(IEnumerable<Rectangle> other)
 	{
 		foreach (var rectangle in Rectangles)

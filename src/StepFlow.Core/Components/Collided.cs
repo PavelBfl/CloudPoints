@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
@@ -24,12 +27,76 @@ namespace StepFlow.Core.Components
 
 		public Shape? GetShape() => PropertyName switch
 		{
-			nameof(Collided.Current) => Collided.Current,
-			nameof(Collided.Next) => Collided.Next,
+			nameof(Collided.Current) => Collided.CurrentShape,
+			nameof(Collided.Next) => Collided.NextShape,
 			_ => throw new InvalidOperationException(),
 		};
 
 		public override string ToString() => PropertyName + ": " + GetShape();
+	}
+
+	public sealed class ShapeControl : IReadOnlyList<Rectangle>
+	{
+		public ShapeControl(Intersection.Context context, IEnumerable<Rectangle> rectangles)
+		{
+			NullValidate.ThrowIfArgumentNull(context, nameof(context));
+
+			Context = context;
+			Rectangles = rectangles.ToArray();
+		}
+
+		public Intersection.Context Context { get; }
+
+		private object? state;
+
+		public object? State
+		{
+			get => state;
+			set
+			{
+				state = value;
+				if (Shape is { })
+				{
+					Shape.State = State;
+				}
+			}
+		}
+
+		private Rectangle[] Rectangles { get; set; } = Array.Empty<Rectangle>();
+
+		public Shape? Shape { get; private set; }
+
+		private IReadOnlyList<Rectangle> Container => (IReadOnlyList<Rectangle>?)Shape ?? Rectangles;
+
+		public bool IsEnable => Shape is { };
+
+		public int Count => Container.Count;
+
+		public Rectangle this[int index] => Container[index];
+
+		public void Enable()
+		{
+			if (!IsEnable)
+			{
+				Shape = Context.CreateShape(Rectangles);
+				Shape.State = State;
+				Rectangles = Array.Empty<Rectangle>();
+			}
+		}
+
+		public void Disable()
+		{
+			if (IsEnable)
+			{
+				Rectangles = Shape.ToArray();
+				Shape.Disable();
+				Shape = null;
+			}
+		}
+
+		public IEnumerator<Rectangle> GetEnumerator() => Container.GetEnumerator();
+
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}
 
 	public sealed class Collided : ComponentBase, IEnabled
@@ -45,45 +112,48 @@ namespace StepFlow.Core.Components
 			CopyExtensions.ThrowIfContextNull(context);
 			CopyExtensions.ThrowIfOriginalNull(original);
 
-			Current = Shape.Create(Context.IntersectionContext, original.Current);
-			Next = Shape.Create(Context.IntersectionContext, original.Next);
+			Current = Context.IntersectionContext.CreateShape(original.Current);
+			Next = Context.IntersectionContext.CreateShape(original.Next);
 
 			Offset = original.Offset;
 			IsMove = original.IsMove;
 			IsRigid = original.IsRigid;
 		}
 
-		private Shape? current;
+		private ShapeControl? current;
 
-		public Shape? Current { get => current; set => SetShape(ref current, value, nameof(Current)); }
+		public IEnumerable<Rectangle>? Current { get => current; set => SetShape(ref current, value, nameof(Current)); }
 
-		private Shape? next;
+		public Shape? CurrentShape => current?.Shape;
 
-		public Shape? Next { get => next; set => SetShape(ref next, value, nameof(Next)); }
+		private ShapeControl? next;
 
-		private void SetShape(ref Shape? shape, Shape? newShape, string propertyName)
+		public IEnumerable<Rectangle>? Next { get => next; set => SetShape(ref next, value, nameof(Next)); }
+
+		public Shape? NextShape => next?.Shape;
+
+		private void SetShape(ref ShapeControl? shape, IEnumerable<Rectangle>? newShape, string propertyName)
 		{
-			if (newShape is { } && newShape.Context != Context.IntersectionContext)
-			{
-				throw ExceptionBuilder.CreateUnknownIntersectionContext();
-			}
-
-			if (newShape?.Attached is { })
-			{
-				throw ExceptionBuilder.CreateShapeHasOwner();
-			}
-
 			if (shape is { })
 			{
 				shape.Disable();
-				shape.Attached = null;
+				shape.State = null;
 			}
 
-			shape = newShape;
+			if (newShape is { })
+			{
+				shape = new ShapeControl(Context.IntersectionContext, newShape ?? Array.Empty<Rectangle>())
+				{
+					State = new CollidedAttached(propertyName, this),
+				};
+			}
+			else
+			{
+				shape = null;
+			}
 
 			if (shape is { })
 			{
-				shape.Attached = new CollidedAttached(propertyName, this);
 				if (IsEnable)
 				{
 					shape.Enable();
@@ -103,23 +173,23 @@ namespace StepFlow.Core.Components
 
 		public Point? GetOffset()
 		{
-			if (!IsMove && Current is { })
+			if (!IsMove && CurrentShape is { })
 			{
 				return Point.Empty;
 			}
 
-			if (Current is null || Next is null)
+			if (CurrentShape is null || NextShape is null)
 			{
 				return null;
 			}
 
-			if (Current.Count != Next.Count)
+			if (CurrentShape.Count != NextShape.Count)
 			{
 				return null;
 			}
 
-			var sourceBounds = Current.Bounds;
-			var otherBounds = Next.Bounds;
+			var sourceBounds = CurrentShape.Bounds;
+			var otherBounds = NextShape.Bounds;
 
 			if (sourceBounds.Width != otherBounds.Width || sourceBounds.Height != otherBounds.Height)
 			{
@@ -168,8 +238,8 @@ namespace StepFlow.Core.Components
 		{
 			if (!IsEnable)
 			{
-				Current?.Enable();
-				Next?.Enable();
+				current?.Enable();
+				next?.Enable();
 				IsEnable = true;
 			}
 		}
@@ -178,8 +248,8 @@ namespace StepFlow.Core.Components
 		{
 			if (IsEnable)
 			{
-				Current?.Disable();
-				Next?.Disable(); 
+				current?.Disable();
+				next?.Disable(); 
 				IsEnable = false;
 			}
 		}

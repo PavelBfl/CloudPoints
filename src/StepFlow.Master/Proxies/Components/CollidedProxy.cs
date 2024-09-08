@@ -1,23 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using StepFlow.Common;
 using StepFlow.Core.Components;
 using StepFlow.Domains.Components;
 using StepFlow.Intersection;
-using StepFlow.Master.Proxies.Intersection;
 
 namespace StepFlow.Master.Proxies.Components
 {
 	public interface ICollidedProxy : IProxyBase<Collided>
 	{
-		Shape? Current { get; set; }
+		IEnumerable<Rectangle>? Current { get; set; }
 
-		IShapeProxy? CurrentProxy => (IShapeProxy?)Owner.CreateProxy(Current);
+		Shape? CurrentShape { get; }
 
-		Shape? Next { get; set; }
+		IEnumerable<Rectangle>? Next { get; set; }
 
-		IShapeProxy? NextProxy => (IShapeProxy?)Owner.CreateProxy(Next);
+		Shape? NextShape { get; }
 
 		bool IsMove { get; set; }
 
@@ -60,9 +60,13 @@ namespace StepFlow.Master.Proxies.Components
 		{
 		}
 
-		public Shape? Current { get => Target.Current; set => SetValue(value); }
+		public IEnumerable<Rectangle>? Current { get => Target.Current; set => SetValue(value); }
 
-		public Shape? Next { get => Target.Next; set => SetValue(value); }
+		public Shape? CurrentShape => Target.CurrentShape;
+
+		public IEnumerable<Rectangle>? Next { get => Target.Next; set => SetValue(value); }
+
+		public Shape? NextShape => Target.NextShape;
 
 		public Vector2 Offset { get => Target.Offset; set => SetValue(value); }
 
@@ -80,7 +84,7 @@ namespace StepFlow.Master.Proxies.Components
 			var absOffset = new Point(Math.Abs(localOffset.X), Math.Abs(localOffset.Y));
 			if (absOffset.X > 0 || absOffset.Y > 0)
 			{
-				Next = Current?.Clone(localOffset);
+				Next = Current?.Offset(localOffset);
 				IsMove = true;
 
 				Offset -= new Vector2(localOffset.X, localOffset.Y);
