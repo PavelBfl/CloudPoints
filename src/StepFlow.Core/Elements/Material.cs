@@ -77,7 +77,7 @@ namespace StepFlow.Core.Elements
 
 		public virtual void Enable()
 		{
-			Body?.Enable(); 
+			Body?.Enable();
 			IsEnable = true;
 		}
 

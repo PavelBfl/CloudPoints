@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using StepFlow.Common;
@@ -11,13 +10,9 @@ namespace StepFlow.Master.Proxies.Components
 {
 	public interface ICollidedProxy : IProxyBase<Collided>
 	{
-		IEnumerable<Rectangle>? Current { get; set; }
+		Shape? Current { get; set; }
 
-		Shape? CurrentShape { get; }
-
-		IEnumerable<Rectangle>? Next { get; set; }
-
-		Shape? NextShape { get; }
+		Shape? Next { get; set; }
 
 		bool IsMove { get; set; }
 
@@ -60,13 +55,9 @@ namespace StepFlow.Master.Proxies.Components
 		{
 		}
 
-		public IEnumerable<Rectangle>? Current { get => Target.Current; set => SetValue(value); }
+		public Shape? Current { get => Target.Current; set => SetValue(value); }
 
-		public Shape? CurrentShape => Target.CurrentShape;
-
-		public IEnumerable<Rectangle>? Next { get => Target.Next; set => SetValue(value); }
-
-		public Shape? NextShape => Target.NextShape;
+		public Shape? Next { get => Target.Next; set => SetValue(value); }
 
 		public Vector2 Offset { get => Target.Offset; set => SetValue(value); }
 
@@ -84,7 +75,7 @@ namespace StepFlow.Master.Proxies.Components
 			var absOffset = new Point(Math.Abs(localOffset.X), Math.Abs(localOffset.Y));
 			if (absOffset.X > 0 || absOffset.Y > 0)
 			{
-				Next = Current?.Offset(localOffset);
+				Next = Current?.Offset(localOffset) is { } rectangles ? Shape.Create(rectangles) : null;
 				IsMove = true;
 
 				Offset -= new Vector2(localOffset.X, localOffset.Y);

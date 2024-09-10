@@ -5,7 +5,6 @@ using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
-using StepFlow.Master.Proxies.Intersection;
 
 namespace StepFlow.Master.Proxies.Elements
 {
@@ -42,7 +41,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 				var bodyProxy = (ICollidedProxy)Owner.CreateProxy(Body);
 				bodyProxy.Clear();
-				
+
 				var visionProxy = (ICollidedProxy?)Owner.CreateProxy(Vision);
 				visionProxy?.Clear();
 			}
@@ -52,8 +51,11 @@ namespace StepFlow.Master.Proxies.Elements
 
 				var center = Body.Current.Bounds.GetCenter();
 				var visionPlace = RectangleExtensions.Create(center, 100);
-				var visionProxy = (IShapeProxy?)Owner.CreateProxy(Vision?.Current);
-				visionProxy?.Reset(visionPlace);
+
+				if ((ICollidedProxy?)Owner.CreateProxy(Vision) is { } visionProxy)
+				{
+					visionProxy.Current = Shape.Create(new[] { visionPlace });
+				}
 			}
 		}
 

@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using StepFlow.Common;
 
@@ -30,28 +29,32 @@ namespace StepFlow.Intersection
 		public virtual void RemoveAt(int index)
 		{
 			Common.RemoveAt(index);
-			CommonReset();
-		}
 
-		public virtual Shape Add(ShapeRaw shapeRaw)
-		{
-			CommonReset();
-
-			var result = new Shape(this, Common.Count, shapeRaw);
-			Common.Add(result);
-			return result;
-		}
-
-		public bool TryAdd(ShapeRaw shapeRaw, [MaybeNullWhen(false)] out Shape shape)
-		{
-			if (Bounds.Contains(shapeRaw.Bounds))
+			for (var i = index; i < Common.Count; i++)
 			{
-				shape = Add(shapeRaw);
+				Common[i].Index = i;
+			}
+
+			CommonReset();
+		}
+
+		public virtual void Add(Shape shape)
+		{
+			CommonReset();
+
+			shape.SetOwner(this, Common.Count);
+			Common.Add(shape);
+		}
+
+		public bool TryAdd(Shape shape)
+		{
+			if (Bounds.Contains(shape.Bounds))
+			{
+				Add(shape);
 				return true;
 			}
 			else
 			{
-				shape = null;
 				return false;
 			}
 		}

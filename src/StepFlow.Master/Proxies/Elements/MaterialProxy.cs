@@ -250,6 +250,26 @@ namespace StepFlow.Master.Proxies.Elements
 			var bodyProxy = (ICollidedProxy)Owner.CreateProxy(Body);
 			bodyProxy.Offset += Course + additionalCourse;
 			bodyProxy.SetOffset();
+
+			if (Body.Current is { } current)
+			{
+				var thishAttached = (CollidedAttached)current.State;
+				foreach (var shape in current.GetCollisions())
+				{
+					var otherAttached = (CollidedAttached)shape.State;
+					Collision(thishAttached, (Material)otherAttached.Collided.GetElementRequired(), otherAttached);
+				}
+			}
+
+			if (Body.Next is { } next)
+			{
+				var thishAttached = (CollidedAttached)next.State;
+				foreach (var shape in next.GetCollisions())
+				{
+					var otherAttached = (CollidedAttached)shape.State;
+					Collision(thishAttached, (Material)otherAttached.Collided.GetElementRequired(), otherAttached);
+				}
+			}
 		}
 
 		public virtual void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)

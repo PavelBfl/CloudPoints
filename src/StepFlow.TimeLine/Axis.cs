@@ -46,7 +46,7 @@ namespace StepFlow.TimeLine
 			}
 			else
 			{
-				Execute(); 
+				Execute();
 			}
 		}
 
@@ -54,7 +54,7 @@ namespace StepFlow.TimeLine
 		{
 			var firstPlanedIndex = Current + 1;
 			var canExecute = firstPlanedIndex < Commands.Count;
-			
+
 			if (canExecute)
 			{
 				Commands[firstPlanedIndex].Execute();

@@ -114,9 +114,9 @@ namespace StepFlow.Master
 
 		[return: NotNullIfNotNull("rectangles")]
 		public Shape? CreateShape(IEnumerable<Rectangle>? rectangles)
-			=> rectangles is null ? null : Shape.Create(Playground.Context.IntersectionContext, rectangles);
+			=> rectangles is null ? null : Shape.Create(rectangles);
 
-		public Shape CreateShape(Rectangle rectangle) => Shape.Create(Playground.Context.IntersectionContext, rectangle);
+		public Shape CreateShape(Rectangle rectangle) => Shape.Create(rectangle);
 
 		[return: NotNullIfNotNull("value")]
 		public object? CreateProxy(object? value)
@@ -130,8 +130,6 @@ namespace StepFlow.Master
 				Item instance => new ItemProxy(this, instance),
 				Enemy instance => new EnemyProxy(this, instance),
 				Collided instance => new CollidedProxy(this, instance),
-				Intersection.Context instance => new ContextProxy(this, instance),
-				Shape instance => new ShapeProxy(this, instance),
 				Place instance => new PlaceProxy(this, instance),
 				Track instance => new TrackProxy(this, instance),
 				TrackBuilder instance => new TrackBuilderProxy(this, instance),
@@ -162,21 +160,21 @@ namespace StepFlow.Master
 				collision.OnTick();
 			}
 
-			var collisions = Playground.Context.IntersectionContext.GetCollisions();
-			foreach (var collision in collisions)
-			{
-				if (collision.Left.Attached is { } leftAttached && collision.Right.Attached is { } rightAttached)
-				{
-					var leftCollided = (CollidedAttached)leftAttached;
-					var leftMaterial = (IMaterialProxy<Material>)CreateProxy(leftCollided.Collided.GetElementRequired());
+			//var collisions = Playground.Context.IntersectionContext.GetCollisions();
+			//foreach (var collision in collisions)
+			//{
+			//	if (collision.Left.Attached is { } leftAttached && collision.Right.Attached is { } rightAttached)
+			//	{
+			//		var leftCollided = (CollidedAttached)leftAttached;
+			//		var leftMaterial = (IMaterialProxy<Material>)CreateProxy(leftCollided.Collided.GetElementRequired());
 
-					var rightCollided = (CollidedAttached)rightAttached;
-					var rightMaterial = (IMaterialProxy<Material>)CreateProxy(rightCollided.Collided.GetElementRequired());
+			//		var rightCollided = (CollidedAttached)rightAttached;
+			//		var rightMaterial = (IMaterialProxy<Material>)CreateProxy(rightCollided.Collided.GetElementRequired());
 
-					leftMaterial.Collision(leftCollided, rightMaterial.Target, rightCollided);
-					//rightMaterial.Collision(rightCollided, leftMaterial.Target, leftCollided);
-				}
-			}
+			//		leftMaterial.Collision(leftCollided, rightMaterial.Target, rightCollided);
+			//		//rightMaterial.Collision(rightCollided, leftMaterial.Target, leftCollided);
+			//	}
+			//}
 
 			foreach (var collision in Playground.Items
 				.Select(x => x.Body)

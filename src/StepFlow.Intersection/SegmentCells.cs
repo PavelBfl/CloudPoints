@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using StepFlow.Common;
 
 namespace StepFlow.Intersection
 {
@@ -36,15 +37,13 @@ namespace StepFlow.Intersection
 			RightBottom.CommonReset();
 		}
 
-		public override Shape Add(ShapeRaw shapeRaw)
+		public override void Add(Shape shape)
 		{
-			if (LeftTop.TryAdd(shapeRaw, out var shape) ||
-				RightTop.TryAdd(shapeRaw, out shape) ||
-				LeftBottom.TryAdd(shapeRaw, out shape) ||
-				RightBottom.TryAdd(shapeRaw, out shape))
+			NullValidate.ThrowIfArgumentNull(shape, nameof(shape));
+
+			if (LeftTop.TryAdd(shape) || RightTop.TryAdd(shape) || LeftBottom.TryAdd(shape) || RightBottom.TryAdd(shape))
 			{
 				CommonReset();
-				return shape;
 			}
 			else
 			{
@@ -52,7 +51,7 @@ namespace StepFlow.Intersection
 				RightTop.CommonReset();
 				LeftBottom.CommonReset();
 				RightBottom.CommonReset();
-				return base.Add(shapeRaw);
+				base.Add(shape);
 			}
 		}
 

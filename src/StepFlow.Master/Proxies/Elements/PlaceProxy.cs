@@ -9,7 +9,7 @@ namespace StepFlow.Master.Proxies.Elements
 {
 	public interface IPlaceProxy : IMaterialProxy<Place>
 	{
-		
+
 	}
 
 	internal class PlaceProxy : MaterialProxy<Place>, IPlaceProxy

@@ -40,7 +40,6 @@ public sealed class GameHandler
 		Meter.CreateObservableGauge("Time", () => PlayMasters.Current?.TimeAxis.Current ?? 0);
 		Meter.CreateObservableGauge("Commands", () => PlayMasters.Current?.TimeAxis.Source.Current ?? 0);
 		Meter.CreateObservableGauge("Frame", () => Frame.TotalMilliseconds);
-		Meter.CreateObservableGauge("Shapes", () => PlayMasters.Current?.Playground.Context.IntersectionContext.Count ?? 0);
 		Init();
 
 		TacticPanel = new(Control, Drawer, Place, PlayMasters);
@@ -62,7 +61,7 @@ public sealed class GameHandler
 
 	public void Init()
 	{
-		
+
 	}
 
 	#region Debug
@@ -320,7 +319,7 @@ public sealed class GameHandler
 				{
 					trackUnitsProxy.RemoveAt(index);
 				}
-			} 
+			}
 		}
 	}
 
@@ -353,7 +352,7 @@ public sealed class GameHandler
 		{
 			var playerCharacter = playground.GetPlayerCharacterRequired();
 			CreateTexture(playerCharacter?.Body?.Current.Bounds ?? Rectangle.Empty, Texture.Character, playerCharacter?.Strength);
-			CreateBorder(playerCharacter?.Body, Color.Red); 
+			CreateBorder(playerCharacter?.Body, Color.Red);
 		}
 
 		foreach (var barrier in playground.Items.OfType<Obstruction>())

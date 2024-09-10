@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using StepFlow.Common;
@@ -10,20 +9,39 @@ namespace StepFlow.Intersection
 {
 	public sealed class Shape : IReadOnlyList<Rectangle>
 	{
+		public static Shape Create(IEnumerable<Rectangle> rectangles)
+		{
+			NullValidate.ThrowIfArgumentNull(rectangles, nameof(rectangles));
+
+			return new Shape(rectangles);
+		}
+
+		public static Shape Create(params Rectangle[] rectangles)
+		{
+			NullValidate.ThrowIfArgumentNull(rectangles, nameof(rectangles));
+
+			return new Shape(rectangles);
+		}
+
 		private const int UNKNOWN_INDEX = -1;
 
-		internal Shape(Segment owner, int index, ShapeRaw shapeRaw)
+		private static Rectangle CreateBounds(Rectangle[] rectangles)
 		{
-			NullValidate.ThrowIfArgumentNull(owner, nameof(owner));
-			if (index < 0)
+			Rectangle? result = null;
+			foreach (var rectangle in rectangles)
 			{
-				throw new ArgumentOutOfRangeException(nameof(index));
+				result = result.HasValue ? Rectangle.Union(result.GetValueOrDefault(), rectangle) : rectangle;
 			}
 
-			Owner = owner;
-			Index = index;
-			Rectangles = shapeRaw.Rectangles;
-			Bounds = shapeRaw.Bounds;
+			return result ?? Rectangle.Empty;
+		}
+
+		private Shape(IEnumerable<Rectangle> rectangles)
+		{
+			NullValidate.ThrowIfArgumentNull(rectangles, nameof(rectangles));
+
+			Rectangles = rectangles.ToArray();
+			Bounds = CreateBounds(Rectangles);
 		}
 
 		public object? State { get; set; }
@@ -32,9 +50,9 @@ namespace StepFlow.Intersection
 
 		public int Count => Rectangles.Length;
 
-		private Segment Owner { get; }
+		internal Segment? Owner { get; private set; }
 
-		private int Index { get; set; }
+		internal int Index { get; set; }
 
 		public Rectangle Bounds { get; }
 
@@ -66,10 +84,15 @@ namespace StepFlow.Intersection
 			collisions = null;
 		}
 
-		private ReadOnlyCollection<Shape>? collisions;
+		private IReadOnlyList<Shape>? collisions;
 
-		public ReadOnlyCollection<Shape> GetCollisions()
+		public IReadOnlyList<Shape> GetCollisions()
 		{
+			if (Owner is null)
+			{
+				return Array.Empty<Shape>();
+			}
+
 			if (collisions is null)
 			{
 				var container = new List<Shape>(Owner.Count);
@@ -88,13 +111,29 @@ namespace StepFlow.Intersection
 			return collisions;
 		}
 
-		public bool IsEnable => Index != UNKNOWN_INDEX;
+		internal void SetOwner(Segment owner, int index)
+		{
+			NullValidate.ThrowIfArgumentNull(owner, nameof(owner));
+			if (index < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(index));
+			}
+
+			if (Owner is { })
+			{
+				throw ExceptionBuilder.CreateShapeAlreadyContext();
+			}
+
+			Owner = owner;
+			Index = index;
+		}
 
 		public void Disable()
 		{
-			if (IsEnable)
+			if (Owner is { })
 			{
 				Owner.RemoveAt(Index);
+				Owner = null;
 				Reset();
 				Index = UNKNOWN_INDEX;
 			}
