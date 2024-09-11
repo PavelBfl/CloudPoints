@@ -81,7 +81,7 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 		}
 
-		public override void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
+		protected override void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
 		{
 			if (otherMaterial is Item item)
 			{
@@ -113,7 +113,7 @@ namespace StepFlow.Master.Proxies.Elements
 					_ => throw EnumNotSupportedException.Create(action),
 				};
 
-				var center = Body.Current.Bounds.GetCenter();
+				var center = Body.GetCurrentRequired().Bounds.GetCenter();
 				var matrixRotation = Matrix3x2.CreateRotation(radians);
 				var courseVector = Vector2.Transform(new Vector2(0.05f, 0), matrixRotation);
 

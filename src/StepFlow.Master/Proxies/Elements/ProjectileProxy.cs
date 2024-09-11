@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Xml.XPath;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Domains.Components;
@@ -19,7 +20,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public Damage Damage { get => Target.Damage; set => SetValue(value); }
 
-		public override void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
+		protected override void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
 		{
 			if (!Target.Immunity.Contains(otherMaterial) && otherCollided.Collided.IsRigid)
 			{

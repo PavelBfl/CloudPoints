@@ -18,7 +18,7 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 		}
 
-		public override void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
+		protected override void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
 		{
 			if (otherMaterial.Body == otherCollided.Collided && otherCollided.PropertyName == nameof(Collided.Current))
 			{

@@ -20,7 +20,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public Vector2 Position { get => Target.Position; set => SetValue(value); }
 
-		public override void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
+		protected override void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
 		{
 			if (otherMaterial is PlayerCharacter && otherCollided.PropertyName == nameof(Collided.Current))
 			{

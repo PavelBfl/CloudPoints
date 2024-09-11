@@ -32,7 +32,7 @@ namespace StepFlow.Master.Proxies.Elements
 				var items = Owner.CreateCollectionProxy(Owner.Playground.Items);
 				items.Remove(Target);
 
-				var itemPosition = Body.Current.Bounds.GetCenter();
+				var itemPosition = Body.GetCurrentRequired().Bounds.GetCenter();
 				Owner.CreateItem.Execute(new Scripts.CreateItem.Parameters()
 				{
 					Position = itemPosition,
@@ -49,7 +49,7 @@ namespace StepFlow.Master.Proxies.Elements
 			{
 				Cooldown--;
 
-				var center = Body.Current.Bounds.GetCenter();
+				var center = Body.GetCurrentRequired().Bounds.GetCenter();
 				var visionPlace = RectangleExtensions.Create(center, 100);
 
 				if ((ICollidedProxy?)Owner.CreateProxy(Vision) is { } visionProxy)
@@ -69,7 +69,7 @@ namespace StepFlow.Master.Proxies.Elements
 			CreateProjectile(course);
 		}
 
-		public override void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
+		protected override void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
 		{
 			base.Collision(thisCollided, otherMaterial, otherCollided);
 
@@ -84,7 +84,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		private static Vector2 GetCenter(Material material)
 		{
-			var bounds = material.GetBodyRequired().Current.Bounds;
+			var bounds = material.GetBodyRequired().GetCurrentRequired().Bounds;
 
 			return new Vector2(
 				bounds.X + bounds.Width / 2f,
@@ -104,7 +104,7 @@ namespace StepFlow.Master.Proxies.Elements
 				course = Vector2.Normalize(course) * 0.05f;
 
 				Owner.CreateProjectile(
-					Body.Current.Bounds.GetCenter(),
+					Body.GetCurrentRequired().Bounds.GetCenter(),
 					SIZE,
 					course,
 					new Damage() { Value = 10, },
@@ -124,7 +124,7 @@ namespace StepFlow.Master.Proxies.Elements
 			course = Vector2.Normalize(course) * 0.05f;
 
 			Owner.CreateProjectile(
-				Body.Current.Bounds.GetCenter(),
+				Body.GetCurrentRequired().Bounds.GetCenter(),
 				SIZE,
 				course,
 				new Damage() { Value = 10, },

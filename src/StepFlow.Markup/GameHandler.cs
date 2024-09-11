@@ -167,8 +167,9 @@ public sealed class GameHandler
 				-bounds.Y + newPosition.Y - localPosition.Y
 			);
 
-			player.Body.Next.Clear();
-			player.Body.Current.OffsetWith(offset);
+			var body = NullValidate.PropertyRequired(player.Body, nameof(MaterialDto.Body));
+			body.Next.Clear();
+			body.Current.OffsetWith(offset);
 
 			PlayMasters.Current?.PlayerCharacterPush(player);
 			return true;
@@ -193,7 +194,7 @@ public sealed class GameHandler
 			{
 				case PlayerAction.Main:
 				case PlayerAction.Auxiliary:
-					var center = character.GetBodyRequired().Current.Bounds.GetCenter();
+					var center = character.GetBodyRequired().GetCurrentRequired().Bounds.GetCenter();
 					master.PlayerCharacterCreateProjectile.Execute(new() { Radians = Control.GetPlayerRotate(new(center.X, center.Y)), Action = playerAction });
 					break;
 				default: throw EnumNotSupportedException.Create(playerAction);
@@ -344,14 +345,14 @@ public sealed class GameHandler
 
 		foreach (var place in playground.Items.OfType<Place>())
 		{
-			CreateTexture(place.Body?.Current.Bounds ?? Rectangle.Empty, Texture.PoisonPlace, null);
+			CreateTexture(place.Body?.GetCurrentRequired().Bounds ?? Rectangle.Empty, Texture.PoisonPlace, null);
 		}
 
 		// TODO Temp
 		if (playMaster.Playground.Items.OfType<PlayerCharacter>().Any())
 		{
 			var playerCharacter = playground.GetPlayerCharacterRequired();
-			CreateTexture(playerCharacter?.Body?.Current.Bounds ?? Rectangle.Empty, Texture.Character, playerCharacter?.Strength);
+			CreateTexture(playerCharacter?.Body?.GetCurrentRequired().Bounds ?? Rectangle.Empty, Texture.Character, playerCharacter?.Strength);
 			CreateBorder(playerCharacter?.Body, Color.Red);
 		}
 
@@ -361,7 +362,7 @@ public sealed class GameHandler
 			switch (barrier.Kind)
 			{
 				case ObstructionKind.Single:
-					CreateTexture(barrier.Body?.Current.Bounds ?? Rectangle.Empty, textureView, barrier.Strength);
+					CreateTexture(barrier.Body?.GetCurrentRequired().Bounds ?? Rectangle.Empty, textureView, barrier.Strength);
 					break;
 				case ObstructionKind.Tiles:
 					foreach (var bounds in barrier.Body?.Current ?? Enumerable.Empty<Rectangle>())
@@ -384,7 +385,7 @@ public sealed class GameHandler
 				_ => Texture.Projectile,
 			};
 
-			CreateTexture(projectile.Body?.Current.Bounds ?? Rectangle.Empty, textureName, null);
+			CreateTexture(projectile.Body?.GetCurrentRequired().Bounds ?? Rectangle.Empty, textureName, null);
 		}
 
 		foreach (var item in playground.Items.OfType<Item>())
@@ -399,19 +400,19 @@ public sealed class GameHandler
 				_ => Texture.ItemUnknown,
 			};
 
-			CreateTexture(item.Body?.Current.Bounds ?? Rectangle.Empty, textureName, null);
+			CreateTexture(item.Body?.GetCurrentRequired().Bounds ?? Rectangle.Empty, textureName, null);
 		}
 
 		foreach (var enemy in playground.Items.OfType<Enemy>())
 		{
-			CreateTexture(enemy.Body?.Current.Bounds ?? Rectangle.Empty, Texture.Enemy, enemy.Strength);
+			CreateTexture(enemy.Body?.GetCurrentRequired().Bounds ?? Rectangle.Empty, Texture.Enemy, enemy.Strength);
 			CreateBorder(enemy.Body, Color.Red);
 			CreateBorder(enemy.Vision, Color.Yellow);
 		}
 
 		foreach (var playgroundSwitch in playground.Items.OfType<Wormhole>())
 		{
-			CreateTexture(playgroundSwitch.Body?.Current.Bounds ?? Rectangle.Empty, Texture.Door);
+			CreateTexture(playgroundSwitch.Body?.GetCurrentRequired().Bounds ?? Rectangle.Empty, Texture.Door);
 		}
 
 		foreach (var trackUnit in TrackUnits.Where(x => x.GetChangeRequired().Thickness > 0))
@@ -483,7 +484,7 @@ public sealed class GameHandler
 	{
 		if (collided is { } && IsDebug)
 		{
-			var bounds = collided.Current.Bounds;
+			var bounds = collided.GetCurrentRequired().Bounds;
 			Drawer.Polygon(
 				new PointF[]
 				{

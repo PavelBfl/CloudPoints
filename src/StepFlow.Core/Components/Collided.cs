@@ -57,9 +57,13 @@ namespace StepFlow.Core.Components
 
 		public Shape? Current { get => current; set => SetShape(ref current, value, nameof(Current)); }
 
+		public Shape GetCurrentRequired() => NullValidate.PropertyRequired(Current, nameof(Current));
+
 		private Shape? next;
 
 		public Shape? Next { get => next; set => SetShape(ref next, value, nameof(Next)); }
+
+		public Shape GetNextRequired() => NullValidate.PropertyRequired(Next, nameof(Next));
 
 		private void SetShape(ref Shape? shape, Shape? newShape, string propertyName)
 		{

@@ -13,6 +13,7 @@ using StepFlow.Core.Tracks;
 using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
 using StepFlow.Domains.States;
+using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
 using StepFlow.Master.Proxies.States;
 
@@ -40,8 +41,6 @@ namespace StepFlow.Master.Proxies.Elements
 		TrackBuilder? Track { get; set; }
 
 		void OnTick();
-
-		void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided);
 
 		void CopyFrom(MaterialDto original)
 		{
@@ -251,28 +250,24 @@ namespace StepFlow.Master.Proxies.Elements
 			bodyProxy.Offset += Course + additionalCourse;
 			bodyProxy.SetOffset();
 
-			if (Body.Current is { } current)
-			{
-				var thishAttached = (CollidedAttached)current.State;
-				foreach (var shape in current.GetCollisions())
-				{
-					var otherAttached = (CollidedAttached)shape.State;
-					Collision(thishAttached, (Material)otherAttached.Collided.GetElementRequired(), otherAttached);
-				}
-			}
+			Collision(Body.Current);
+			Collision(Body.Next);
+		}
 
-			if (Body.Next is { } next)
+		private void Collision(Shape? shape)
+		{
+			if (shape is { })
 			{
-				var thishAttached = (CollidedAttached)next.State;
-				foreach (var shape in next.GetCollisions())
+				var thishAttached = (CollidedAttached)NullValidate.PropertyRequired(shape.State, nameof(Shape.State));
+				foreach (var otherShape in shape.GetCollisions())
 				{
-					var otherAttached = (CollidedAttached)shape.State;
+					var otherAttached = (CollidedAttached)NullValidate.PropertyRequired(otherShape.State, nameof(Shape.State));
 					Collision(thishAttached, (Material)otherAttached.Collided.GetElementRequired(), otherAttached);
 				}
 			}
 		}
 
-		public virtual void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
+		protected virtual void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
 		{
 			if (Target != otherMaterial && otherCollided.Collided.IsRigid && thisCollided.Collided.IsRigid)
 			{
