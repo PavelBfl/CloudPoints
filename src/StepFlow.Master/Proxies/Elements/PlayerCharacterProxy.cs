@@ -51,6 +51,8 @@ namespace StepFlow.Master.Proxies.Elements
 				itemsProxy.Add(new Item(Owner.Playground.Context, item));
 			}
 		}
+
+		bool CanJump();
 	}
 
 	internal sealed class PlayerCharacterProxy : MaterialProxy<PlayerCharacter>, IPlayerCharacterProxy
@@ -248,6 +250,26 @@ namespace StepFlow.Master.Proxies.Elements
 				Push = push,
 				Kind = kind,
 			};
+		}
+
+		public bool CanJump()
+		{
+			var currentBody = Body.GetCurrentRequired();
+			var grip = Shape.Create(currentBody.Offset(new Point(0, 1)));
+
+			foreach (var intersectShape in Target.Context.IntersectionContext.GetCollisions(grip))
+			{
+				if (intersectShape != currentBody)
+				{
+					var collided = (CollidedAttached)NullValidate.PropertyRequired(intersectShape.State, nameof(Shape.State));
+					if (collided.Collided.IsRigid && collided.PropertyName == nameof(Collided.Current))
+					{
+						return true;
+					} 
+				}
+			}
+
+			return false;
 		}
 	}
 }

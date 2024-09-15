@@ -57,6 +57,17 @@ namespace StepFlow.Intersection
 
 		public override int Count => Common.Count + LeftTop.Count + RightTop.Count + LeftBottom.Count + RightBottom.Count;
 
+		public override IEnumerable<Shape> GetCollisions(Shape other)
+		{
+			NullValidate.ThrowIfArgumentNull(other, nameof(other));
+
+			return LeftTop.TryGetCollision(other) ??
+				RightTop.TryGetCollision(other) ??
+				LeftBottom.TryGetCollision(other) ??
+				RightBottom.TryGetCollision(other) ??
+				base.GetCollisions(other);
+		}
+
 		public override IEnumerator<Shape> GetEnumerator()
 			=> Common.Concat(LeftTop).Concat(RightTop).Concat(LeftBottom).Concat(RightBottom).GetEnumerator();
 	}

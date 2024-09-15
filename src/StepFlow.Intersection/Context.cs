@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using StepFlow.Common;
 
 namespace StepFlow.Intersection
@@ -22,6 +23,13 @@ namespace StepFlow.Intersection
 			}
 
 			Main.Add(shape);
+		}
+
+		public IEnumerable<Shape> GetCollisions(Shape shape)
+		{
+			NullValidate.ThrowIfArgumentNull(shape, nameof(shape));
+
+			return Main.GetCollisions(shape);
 		}
 	}
 }

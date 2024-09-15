@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using StepFlow.Common;
 
@@ -59,11 +60,38 @@ namespace StepFlow.Intersection
 			}
 		}
 
+		public IEnumerable<Shape>? TryGetCollision(Shape shape)
+		{
+			NullValidate.ThrowIfArgumentNull(shape, nameof(shape));
+
+			if (Bounds.Contains(shape.Bounds))
+			{
+				return GetCollisions(shape);
+			}
+			else
+			{
+				return null;
+			}
+		}
+
 		public void CommonReset()
 		{
 			foreach (var shape in Common)
 			{
 				shape.Reset();
+			}
+		}
+
+		public virtual IEnumerable<Shape> GetCollisions(Shape other)
+		{
+			NullValidate.ThrowIfArgumentNull(other, nameof(other));
+
+			foreach (var shape in this)
+			{
+				if (shape.IntersectsWith(other))
+				{
+					yield return shape;
+				}
 			}
 		}
 

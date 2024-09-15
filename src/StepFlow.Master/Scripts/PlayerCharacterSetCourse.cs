@@ -25,7 +25,8 @@ namespace StepFlow.Master.Scripts
 				HorizontalAlign.Right => SPEED,
 				_ => throw EnumNotSupportedException.Create(parameters.Course),
 			};
-			var y = parameters.Jump ? -JUMP_FORCE : playerCharacterProxy.Course.Y;
+
+			var y = parameters.Jump && playerCharacterProxy.CanJump() ? -JUMP_FORCE : playerCharacterProxy.Course.Y;
 			playerCharacterProxy.Course = new Vector2(x, y);
 		}
 
