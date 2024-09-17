@@ -279,7 +279,10 @@ namespace StepFlow.Master.Proxies.Elements
 						Course = Vector2.Zero;
 						break;
 					case CollisionBehavior.Reflection:
-						if (Body.GetOffset() is { } sourceOffset && otherCollided.Collided.GetOffset() is { } otherOffset)
+						if ((!Target.IsFixed || !otherMaterial.IsFixed) && 
+							Body.GetOffset() is { } sourceOffset &&
+							otherCollided.Collided.GetOffset() is { } otherOffset
+						)
 						{
 							var aggregateOffset = new Point(
 								sourceOffset.X - otherOffset.X,
@@ -305,8 +308,15 @@ namespace StepFlow.Master.Proxies.Elements
 										otherMaterial.Course.Y
 									);
 
-									Course = new Vector2(Course.X, u1) * factor;
-									otherMaterialProxy.Course = new Vector2(otherMaterial.Course.X, u2) * factor;
+									if (!Target.IsFixed)
+									{
+										Course = new Vector2(Course.X, u1) * factor; 
+									}
+
+									if (!otherMaterial.IsFixed)
+									{
+										otherMaterialProxy.Course = new Vector2(otherMaterial.Course.X, u2) * factor; 
+									}
 								}
 								else
 								{
@@ -317,8 +327,15 @@ namespace StepFlow.Master.Proxies.Elements
 										otherMaterial.Course.X
 									);
 
-									Course = new Vector2(u1, Course.Y) * factor;
-									otherMaterialProxy.Course = new Vector2(u2, otherMaterial.Course.Y) * factor;
+									if (!Target.IsFixed)
+									{
+										Course = new Vector2(u1, Course.Y) * factor; 
+									}
+
+									if (!otherMaterial.IsFixed)
+									{
+										otherMaterialProxy.Course = new Vector2(u2, otherMaterial.Course.Y) * factor; 
+									}
 								}
 							}
 						}

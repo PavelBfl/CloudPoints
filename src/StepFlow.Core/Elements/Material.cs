@@ -31,6 +31,7 @@ namespace StepFlow.Core.Elements
 			Weight = original.Weight;
 			Elasticity = original.Elasticity;
 			Course = original.Course;
+			IsFixed = original.IsFixed;
 			CollisionBehavior = original.CollisionBehavior;
 			States.AddUniqueRange(original.States.Select(x => x.ToState(Context)));
 			Track = original.Track?.ToTrackBuilder(Context);
@@ -51,6 +52,8 @@ namespace StepFlow.Core.Elements
 		public float Elasticity { get; set; }
 
 		public Vector2 Course { get; set; }
+
+		public bool IsFixed { get; set; }
 
 		public CollisionBehavior CollisionBehavior { get; set; }
 

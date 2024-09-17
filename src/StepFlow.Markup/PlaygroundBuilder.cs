@@ -66,6 +66,7 @@ internal class PlaygroundBuilder
 			View = ObstructionView.DarkWall,
 			Weight = Material.MAX_WEIGHT,
 			Elasticity = 0.1f,
+			IsFixed = true,
 			Body = new CollidedDto()
 			{
 				Current = { tiles },

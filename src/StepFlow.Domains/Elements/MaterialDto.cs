@@ -25,6 +25,8 @@ namespace StepFlow.Domains.Elements
 
 		public Vector2 Course { get; set; }
 
+		public bool IsFixed { get; set; }
+
 		public CollisionBehavior CollisionBehavior { get; set; }
 
 		public ICollection<StateDto> States { get; } = new HashSet<StateDto>();
