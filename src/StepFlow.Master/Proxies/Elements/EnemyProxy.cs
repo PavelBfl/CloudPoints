@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using StepFlow.Common;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Domains.Components;
@@ -57,6 +58,19 @@ namespace StepFlow.Master.Proxies.Elements
 					visionProxy.Current = Shape.Create(new[] { visionPlace });
 				}
 			}
+
+			if (Vision?.Current is { } vision)
+			{
+				foreach (var otherShape in vision.GetCollisions())
+				{
+					var otherAttached = (CollidedAttached)NullValidate.PropertyRequired(otherShape.State, nameof(Shape.State));
+
+					if (otherAttached.Collided.Element is PlayerCharacter playerCharacter)
+					{
+						CreateProjectile(playerCharacter);
+					}
+				}
+			}
 		}
 
 		protected override void CreateProjectile(float radians)
@@ -67,19 +81,6 @@ namespace StepFlow.Master.Proxies.Elements
 			);
 
 			CreateProjectile(course);
-		}
-
-		protected override void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
-		{
-			base.Collision(thisCollided, otherMaterial, otherCollided);
-
-			if (Target != otherMaterial)
-			{
-				if (thisCollided.Collided == Vision && otherMaterial is PlayerCharacter)
-				{
-					CreateProjectile(otherMaterial);
-				}
-			}
 		}
 
 		private static Vector2 GetCenter(Material material)
