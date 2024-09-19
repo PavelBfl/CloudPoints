@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Numerics;
-using StepFlow.Domains.Components;
 using StepFlow.Domains.States;
 using StepFlow.Domains.Tracks;
 
@@ -13,9 +13,19 @@ namespace StepFlow.Domains.Elements
 
 		public const int MAX_WEIGHT = 1000;
 
-		public Scale Strength { get; set; }
+		#region Body
+		public IList<Rectangle> Current { get; } = new List<Rectangle>();
 
-		public CollidedDto? Body { get; set; }
+		public IList<Rectangle> Next { get; } = new List<Rectangle>();
+
+		public Vector2 Offset { get; set; }
+
+		public bool IsMove { get; set; } 
+		#endregion
+
+		public bool IsRigid { get; set; }
+
+		public Scale Strength { get; set; }
 
 		public int Speed { get; set; }
 

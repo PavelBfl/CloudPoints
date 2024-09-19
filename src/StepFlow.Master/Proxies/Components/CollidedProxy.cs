@@ -2,13 +2,13 @@
 using System.Drawing;
 using System.Numerics;
 using StepFlow.Common;
-using StepFlow.Core.Components;
-using StepFlow.Domains.Components;
+using StepFlow.Core.Elements;
+using StepFlow.Domains.Elements;
 using StepFlow.Intersection;
 
 namespace StepFlow.Master.Proxies.Components
 {
-	public interface ICollidedProxy : IProxyBase<Collided>
+	public interface ICollidedProxy : IProxyBase<Material.Collided>
 	{
 		Shape? Current { get; set; }
 
@@ -46,12 +46,12 @@ namespace StepFlow.Master.Proxies.Components
 
 		void SetOffset();
 
-		void CopyFrom(CollidedDto original);
+		void CopyFrom(MaterialDto original);
 	}
 
-	internal sealed class CollidedProxy : ProxyBase<Collided>, ICollidedProxy
+	internal sealed class CollidedProxy : ProxyBase<Material.Collided>, ICollidedProxy
 	{
-		public CollidedProxy(PlayMaster owner, Collided target) : base(owner, target)
+		public CollidedProxy(PlayMaster owner, Material.Collided target) : base(owner, target)
 		{
 		}
 
@@ -82,7 +82,7 @@ namespace StepFlow.Master.Proxies.Components
 			}
 		}
 
-		public void CopyFrom(CollidedDto original)
+		public void CopyFrom(MaterialDto original)
 		{
 			NullValidate.ThrowIfArgumentNull(original, nameof(original));
 

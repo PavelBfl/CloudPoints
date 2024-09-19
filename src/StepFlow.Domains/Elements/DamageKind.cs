@@ -1,4 +1,4 @@
-﻿namespace StepFlow.Domains.Components
+﻿namespace StepFlow.Domains.Elements
 {
 	public enum DamageKind
 	{

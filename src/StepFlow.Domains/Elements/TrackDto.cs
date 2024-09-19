@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using StepFlow.Domains.Components;
 
 namespace StepFlow.Domains.Elements
 {

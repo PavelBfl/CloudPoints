@@ -6,11 +6,9 @@ using System.Numerics;
 using StepFlow.Common;
 using StepFlow.Common.Exceptions;
 using StepFlow.Core;
-using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.States;
 using StepFlow.Core.Tracks;
-using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
 using StepFlow.Domains.States;
 using StepFlow.Domains.Tracks;
@@ -262,7 +260,7 @@ namespace StepFlow.Master.Proxies.Elements
 				if (intersectShape != currentBody)
 				{
 					var collided = (CollidedAttached)NullValidate.PropertyRequired(intersectShape.State, nameof(Shape.State));
-					if (collided.Collided.IsRigid && collided.PropertyName == nameof(Collided.Current))
+					if (collided.Material.Body.IsRigid && collided.Name == nameof(Material.Collided.Current))
 					{
 						return true;
 					} 

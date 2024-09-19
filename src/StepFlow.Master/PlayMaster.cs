@@ -12,7 +12,6 @@ using StepFlow.Core.Elements;
 using StepFlow.Core.States;
 using StepFlow.Core.Tracks;
 using StepFlow.Domains;
-using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
 using StepFlow.Domains.States;
 using StepFlow.Domains.Tracks;

@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using StepFlow.Common;
-using StepFlow.Core.Components;
+using StepFlow.Core.Exceptions;
 using StepFlow.Core.States;
 using StepFlow.Core.Tracks;
-using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
+using StepFlow.Intersection;
 
 namespace StepFlow.Core.Elements
 {
@@ -20,13 +21,22 @@ namespace StepFlow.Core.Elements
 		public Material(IContext context)
 			: base(context)
 		{
+			Body = new Collided(this);
 		}
 
 		public Material(IContext context, MaterialDto original)
 			: base(context, original)
 		{
+			Body = new Collided(this)
+			{
+				Current = Shape.Create(original.Current),
+				Next = Shape.Create(original.Next),
+				IsMove = original.IsMove,
+				IsRigid = original.IsRigid,
+				Offset = original.Offset,
+			};
+
 			Strength = original.Strength;
-			Body = original.Body?.ToCollided(context);
 			Speed = original.Speed;
 			Weight = original.Weight;
 			Elasticity = original.Elasticity;
@@ -37,13 +47,57 @@ namespace StepFlow.Core.Elements
 			Track = original.Track?.ToTrackBuilder(Context);
 		}
 
+		protected void SetShape(ref Shape? shape, Shape? newShape, string name)
+		{
+			if (newShape?.State is { })
+			{
+				throw ExceptionBuilder.CreateShapeHasOwner();
+			}
+
+			if (shape is { })
+			{
+				shape.Disable();
+				shape.State = null;
+			}
+
+			if (newShape is { })
+			{
+				shape = newShape;
+				shape.State = new CollidedAttached(name, this);
+			}
+			else
+			{
+				shape = null;
+			}
+
+			if (shape is { })
+			{
+				if (IsEnable)
+				{
+					Context.IntersectionContext.Add(shape);
+				}
+				else
+				{
+					shape.Disable();
+				}
+			}
+		}
+
+		public virtual Shape? GetShape(string name)
+		{
+			NullValidate.ThrowIfArgumentNull(name, nameof(name));
+
+			return name switch
+			{
+				nameof(Collided.Current) => Body.Current,
+				nameof(Collided.Next) => Body.Next,
+				_ => null,
+			};
+		}
+
 		public Scale Strength { get; set; }
 
-		private Collided? body;
-
-		public Collided? Body { get => body; set => SetComponent(ref body, value); }
-
-		public Collided GetBodyRequired() => NullValidate.PropertyRequired(Body, nameof(Body));
+		public Collided Body { get; }
 
 		public int Speed { get; set; }
 
@@ -67,8 +121,9 @@ namespace StepFlow.Core.Elements
 
 			base.CopyTo(container);
 
+			Body.CopyTo(container);
+
 			container.Strength = Strength;
-			container.Body = (CollidedDto?)Body?.ToDto();
 			container.Speed = Speed;
 			container.Weight = Weight;
 			container.Elasticity = Elasticity;
@@ -80,14 +135,121 @@ namespace StepFlow.Core.Elements
 
 		public virtual void Enable()
 		{
-			Body?.Enable();
+			Body.Enable();
 			IsEnable = true;
 		}
 
 		public virtual void Disable()
 		{
-			Body?.Disable();
+			Body.Disable();
 			IsEnable = false;
+		}
+
+		public sealed class Collided
+		{
+			public Collided(Material owner)
+			{
+				NullValidate.ThrowIfArgumentNull(owner, nameof(owner));
+
+				Owner = owner;
+			}
+
+			public Material Owner { get; }
+
+			private Shape? current;
+
+			public Shape? Current { get => current; set => Owner.SetShape(ref current, value, nameof(Current)); }
+
+			public Shape GetCurrentRequired() => NullValidate.PropertyRequired(Current, nameof(Current));
+
+			private Shape? next;
+
+			public Shape? Next { get => next; set => Owner.SetShape(ref next, value, nameof(Next)); }
+
+			public Shape GetNextRequired() => NullValidate.PropertyRequired(Next, nameof(Next));
+
+			public Vector2 Offset { get; set; }
+
+			public bool IsMove { get; set; }
+
+			public bool IsRigid { get; set; }
+
+			public Point? GetOffset()
+			{
+				if (!IsMove && Current is { })
+				{
+					return Point.Empty;
+				}
+
+				if (Current is null || Next is null)
+				{
+					return null;
+				}
+
+				if (Current.Count != Next.Count)
+				{
+					return null;
+				}
+
+				var sourceBounds = Current.Bounds;
+				var otherBounds = Next.Bounds;
+
+				if (sourceBounds.Width != otherBounds.Width || sourceBounds.Height != otherBounds.Height)
+				{
+					return null;
+				}
+
+				var result = new Point(
+					otherBounds.X - sourceBounds.X,
+					otherBounds.Y - sourceBounds.Y
+				);
+
+				foreach (var sourceOffset in Current.AsEnumerable().Offset(result))
+				{
+					if (!Next.Contains(sourceOffset))
+					{
+						return null;
+					}
+				}
+
+				return result;
+			}
+
+			public void CopyTo(MaterialDto material)
+			{
+				CopyExtensions.ThrowIfArgumentNull(material, nameof(material));
+
+				material.Current.Reset(Current);
+				material.Next.Reset(Next);
+				material.Offset = Offset;
+				material.IsMove = IsMove;
+				material.IsRigid = IsRigid;
+			}
+
+			public void Enable()
+			{
+				if (!Owner.IsEnable)
+				{
+					if (Current is { } current)
+					{
+						Owner.Context.IntersectionContext.Add(current);
+					}
+
+					if (Next is { } next)
+					{
+						Owner.Context.IntersectionContext.Add(next);
+					}
+				}
+			}
+
+			public void Disable()
+			{
+				if (Owner.IsEnable)
+				{
+					current?.Disable();
+					next?.Disable();
+				}
+			}
 		}
 	}
 }

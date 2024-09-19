@@ -1,5 +1,4 @@
 ﻿using StepFlow.Domains;
-using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
 
 namespace StepFlow.Core.Elements

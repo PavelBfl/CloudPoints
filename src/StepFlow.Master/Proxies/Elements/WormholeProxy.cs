@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Domains.Elements;
 
@@ -22,7 +21,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		protected override void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
 		{
-			if (otherMaterial is PlayerCharacter && otherCollided.PropertyName == nameof(Collided.Current))
+			if (otherMaterial is PlayerCharacter && otherCollided.Name == nameof(Collided.Current))
 			{
 				Owner.Wormhole = (WormholeDto)Target.ToDto();
 			}

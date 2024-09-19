@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.Exceptions;
 using StepFlow.Core.States;
 using StepFlow.Core.Tracks;
 using StepFlow.Domains;
-using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
 using StepFlow.Domains.States;
 using StepFlow.Domains.Tracks;
@@ -15,15 +13,6 @@ namespace StepFlow.Core
 {
 	public static class CopyExtensions
 	{
-		public static Collided ToCollided(this CollidedDto original, IContext context) => new Collided(context, original);
-
-		public static ComponentBase ToComponent(this ComponentBaseDto original, IContext context) => original switch
-		{
-			CollidedDto collided => ToCollided(collided, context),
-			null => throw new ArgumentNullException(nameof(original)),
-			_ => throw ExceptionBuilder.CreateUnknownTypeForCopy(original.GetType()),
-		};
-
 		public static TrackChange ToTrackChange(this TrackChangeDto original, IContext context) => new TrackChange(context, original);
 
 		public static TrackUnit ToTrackUnit(this TrackUnitDto original, IContext context) => new TrackUnit(context, original);
@@ -70,11 +59,23 @@ namespace StepFlow.Core
 
 		public static Subject ToSubject(this SubjectDto original, IContext context) => original switch
 		{
-			ComponentBaseDto component => ToComponent(component, context),
 			ElementBaseDto element => ToElementBase(element, context),
 			null => throw new ArgumentNullException(nameof(original)),
 			_ => throw ExceptionBuilder.CreateUnknownTypeForCopy(original.GetType()),
 		};
+
+		public static void Reset<T>(this ICollection<T> container, IEnumerable<T>? items)
+		{
+			container.Clear();
+
+			if (items is { })
+			{
+				foreach (var item in items)
+				{
+					container.Add(item);
+				}
+			}
+		}
 
 		public static void AddRange<T>(this ICollection<T> container, IEnumerable<T> items)
 		{

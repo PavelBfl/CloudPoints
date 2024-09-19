@@ -6,11 +6,9 @@ using System.Numerics;
 using StepFlow.Common;
 using StepFlow.Common.Exceptions;
 using StepFlow.Core;
-using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.States;
 using StepFlow.Core.Tracks;
-using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
 using StepFlow.Domains.States;
 using StepFlow.Intersection;
@@ -24,7 +22,7 @@ namespace StepFlow.Master.Proxies.Elements
 	{
 		Scale Strength { get; set; }
 
-		Collided Body { get; }
+		Material.Collided Body { get; }
 
 		int Speed { get; set; }
 
@@ -46,16 +44,10 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			NullValidate.ThrowIfArgumentNull(original, nameof(original));
 
-			Strength = original.Strength;
 			var collidedProxy = ((ICollidedProxy)Owner.CreateProxy(Body));
-			if (original.Body is { })
-			{
-				collidedProxy.CopyFrom(original.Body);
-			}
-			else
-			{
-				collidedProxy.Clear();
-			}
+			collidedProxy.CopyFrom(original);
+
+			Strength = original.Strength;
 			Speed = original.Speed;
 			Weight = original.Weight;
 			Course = original.Course;
@@ -79,7 +71,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public Scale Strength { get => Target.Strength; set => SetValue(value); }
 
-		public Collided Body { get => Target.GetBodyRequired(); }
+		public Material.Collided Body { get => Target.Body; }
 
 		public virtual void OnTick()
 		{
@@ -262,14 +254,14 @@ namespace StepFlow.Master.Proxies.Elements
 				foreach (var otherShape in shape.GetCollisions())
 				{
 					var otherAttached = (CollidedAttached)NullValidate.PropertyRequired(otherShape.State, nameof(Shape.State));
-					Collision(thishAttached, (Material)otherAttached.Collided.GetElementRequired(), otherAttached);
+					Collision(thishAttached, otherAttached.Material, otherAttached);
 				}
 			}
 		}
 
 		protected virtual void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
 		{
-			if (Target != otherMaterial && otherCollided.Collided.IsRigid && thisCollided.Collided.IsRigid)
+			if (Target != otherMaterial && otherCollided.Material.Body.IsRigid && thisCollided.Material.Body.IsRigid)
 			{
 				switch (CollisionBehavior)
 				{
@@ -281,7 +273,7 @@ namespace StepFlow.Master.Proxies.Elements
 					case CollisionBehavior.Reflection:
 						if ((!Target.IsFixed || !otherMaterial.IsFixed) && 
 							Body.GetOffset() is { } sourceOffset &&
-							otherCollided.Collided.GetOffset() is { } otherOffset
+							otherCollided.Material.Body.GetOffset() is { } otherOffset
 						)
 						{
 							var aggregateOffset = new Point(

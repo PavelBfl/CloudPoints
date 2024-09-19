@@ -1,6 +1,4 @@
-﻿using StepFlow.Domains.Components;
-
-namespace StepFlow.Domains.Elements
+﻿namespace StepFlow.Domains.Elements
 {
 	public sealed class ItemDto : MaterialDto
 	{

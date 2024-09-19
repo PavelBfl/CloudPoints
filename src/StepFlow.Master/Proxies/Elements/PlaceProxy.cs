@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.States;
 using StepFlow.Domains.States;
@@ -20,7 +19,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		protected override void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
 		{
-			if (otherMaterial.Body == otherCollided.Collided && otherCollided.PropertyName == nameof(Collided.Current))
+			if (otherMaterial.Body == otherCollided.Material && otherCollided.Name == nameof(Collided.Current))
 			{
 				if (otherMaterial.States.SingleOrDefault(x => x.Kind == StateKind.Poison) is { } poisonState)
 				{

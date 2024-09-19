@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using StepFlow.Domains.Components;
 
 namespace StepFlow.Domains.Elements
 {

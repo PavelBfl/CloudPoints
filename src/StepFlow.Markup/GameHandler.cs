@@ -4,10 +4,8 @@ using System.Drawing;
 using System.Numerics;
 using StepFlow.Common;
 using StepFlow.Common.Exceptions;
-using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.Tracks;
-using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
 using StepFlow.Intersection;
 using StepFlow.Markup.Services;
@@ -158,7 +156,7 @@ public sealed class GameHandler
 		{
 			PlayMasters.CurrentKey = wormhole.Destination;
 
-			var bounds = GetBounds(player.Body?.Current ?? Enumerable.Empty<Rectangle>());
+			var bounds = GetBounds(player.Current);
 			var localPosition = GetPosition(bounds.Size, wormhole.Horizontal, wormhole.Vertical);
 			var newPosition = new Point((int)wormhole.Position.X, (int)wormhole.Position.Y);
 
@@ -167,9 +165,8 @@ public sealed class GameHandler
 				-bounds.Y + newPosition.Y - localPosition.Y
 			);
 
-			var body = NullValidate.PropertyRequired(player.Body, nameof(MaterialDto.Body));
-			body.Next.Clear();
-			body.Current.OffsetWith(offset);
+			player.Next.Clear();
+			player.Current.OffsetWith(offset);
 
 			PlayMasters.Current?.PlayerCharacterPush(player);
 			return true;
@@ -194,7 +191,7 @@ public sealed class GameHandler
 			{
 				case PlayerAction.Main:
 				case PlayerAction.Auxiliary:
-					var center = character.GetBodyRequired().GetCurrentRequired().Bounds.GetCenter();
+					var center = character.Body.GetCurrentRequired().Bounds.GetCenter();
 					master.PlayerCharacterCreateProjectile.Execute(new() { Radians = Control.GetPlayerRotate(new(center.X, center.Y)), Action = playerAction });
 					break;
 				default: throw EnumNotSupportedException.Create(playerAction);

@@ -1,8 +1,6 @@
 ﻿using System.Numerics;
 using StepFlow.Common;
-using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
-using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
@@ -11,7 +9,7 @@ namespace StepFlow.Master.Proxies.Elements
 {
 	public interface IEnemyProxy : IMaterialProxy<Enemy>
 	{
-		Collided? Vision { get; }
+		Shape? Vision { get; }
 	}
 
 	internal sealed class EnemyProxy : MaterialProxy<Enemy>, IEnemyProxy
@@ -20,7 +18,7 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 		}
 
-		public Collided? Vision => Target.Vision;
+		public Shape? Vision => Target.Vision;
 
 		public Scale Cooldown { get => Target.Cooldown; set => SetValue(value); }
 
@@ -59,13 +57,13 @@ namespace StepFlow.Master.Proxies.Elements
 				}
 			}
 
-			if (Vision?.Current is { } vision)
+			if (Vision is { } vision)
 			{
 				foreach (var otherShape in vision.GetCollisions())
 				{
 					var otherAttached = (CollidedAttached)NullValidate.PropertyRequired(otherShape.State, nameof(Shape.State));
 
-					if (otherAttached.Collided.Element is PlayerCharacter playerCharacter)
+					if (otherAttached.Material is PlayerCharacter playerCharacter)
 					{
 						CreateProjectile(playerCharacter);
 					}
@@ -85,7 +83,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		private static Vector2 GetCenter(Material material)
 		{
-			var bounds = material.GetBodyRequired().GetCurrentRequired().Bounds;
+			var bounds = material.Body.GetCurrentRequired().Bounds;
 
 			return new Vector2(
 				bounds.X + bounds.Width / 2f,

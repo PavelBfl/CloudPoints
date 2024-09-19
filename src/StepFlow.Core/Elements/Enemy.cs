@@ -1,7 +1,6 @@
-﻿using StepFlow.Core.Components;
-using StepFlow.Domains;
-using StepFlow.Domains.Components;
+﻿using StepFlow.Domains;
 using StepFlow.Domains.Elements;
+using StepFlow.Intersection;
 
 namespace StepFlow.Core.Elements
 {
@@ -17,14 +16,14 @@ namespace StepFlow.Core.Elements
 		{
 			CopyExtensions.ThrowIfOriginalNull(original);
 
-			Vision = original.Vision?.ToCollided(context);
+			Vision = Shape.Create(original.Vision);
 			Cooldown = original.Cooldown;
 			ReleaseItem = original.ReleaseItem;
 		}
 
-		private Collided? vision;
+		private Shape? vision;
 
-		public Collided? Vision { get => vision; set => SetComponent(ref vision, value); }
+		public Shape? Vision { get => vision; set => SetShape(ref vision, value, nameof(Vision)); }
 
 		public Scale Cooldown { get; set; }
 
@@ -43,7 +42,7 @@ namespace StepFlow.Core.Elements
 
 			base.CopyTo(container);
 
-			container.Vision = (CollidedDto?)Vision?.ToDto();
+			container.Vision.Reset(Vision);
 			container.Cooldown = Cooldown;
 			container.ReleaseItem = ReleaseItem;
 		}
@@ -52,7 +51,13 @@ namespace StepFlow.Core.Elements
 		{
 			base.Enable();
 
-			Vision?.Enable();
+			if (!IsEnable)
+			{
+				if (Vision is { })
+				{
+					Context.IntersectionContext.Add(Vision); 
+				}
+			}
 		}
 
 		public override void Disable()

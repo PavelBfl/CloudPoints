@@ -1,10 +1,11 @@
-﻿using StepFlow.Domains.Components;
+﻿using System.Collections.Generic;
+using System.Drawing;
 
 namespace StepFlow.Domains.Elements
 {
 	public sealed class EnemyDto : MaterialDto
 	{
-		public CollidedDto? Vision { get; set; }
+		public IList<Rectangle> Vision { get; } = new List<Rectangle>();
 
 		public Scale Cooldown { get; set; }
 

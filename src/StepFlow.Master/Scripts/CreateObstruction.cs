@@ -1,7 +1,6 @@
 ﻿using System.Drawing;
 using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
-using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
 
 namespace StepFlow.Master.Scripts

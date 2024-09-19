@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 using StepFlow.Common;
 using StepFlow.Core.States;
-using StepFlow.Domains.Components;
+using StepFlow.Domains.Elements;
 using StepFlow.Domains.States;
 
 namespace StepFlow.Master.Proxies.States

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using StepFlow.Domains;
-using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
 
 namespace StepFlow.Core.Elements
