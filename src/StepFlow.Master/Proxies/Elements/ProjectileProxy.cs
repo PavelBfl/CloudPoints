@@ -20,7 +20,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		protected override void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
 		{
-			if (!Target.Immunity.Contains(otherMaterial) && otherCollided.Material.IsRigid)
+			if (!Target.Immunity.Contains(otherMaterial) && otherCollided.Material.Body.IsRigid)
 			{
 				var otherMaterialProxy = (IMaterialProxy<Material>)Owner.CreateProxy(otherMaterial);
 				otherMaterialProxy.Strength -= Damage.Value;

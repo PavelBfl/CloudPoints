@@ -19,7 +19,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		protected override void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
 		{
-			if (otherMaterial.Body == otherCollided.Material && otherCollided.Name == nameof(Collided.Current))
+			if (otherMaterial == otherCollided.Material && otherCollided.Name == nameof(Material.Collided.Current))
 			{
 				if (otherMaterial.States.SingleOrDefault(x => x.Kind == StateKind.Poison) is { } poisonState)
 				{

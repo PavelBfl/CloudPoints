@@ -21,7 +21,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		protected override void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
 		{
-			if (otherMaterial is PlayerCharacter && otherCollided.Name == nameof(Collided.Current))
+			if (otherMaterial is PlayerCharacter && otherCollided.Name == nameof(Material.Collided.Current))
 			{
 				Owner.Wormhole = (WormholeDto)Target.ToDto();
 			}

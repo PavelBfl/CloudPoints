@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Domains.Elements;
 
@@ -19,7 +18,7 @@ namespace StepFlow.Master.Scripts
 				Kind = parameters.Kind,
 				View = parameters.View,
 				Weight = parameters.Weight,
-				Body = new Collided(PlayMaster.Playground.Context)
+				Body =
 				{
 					Current = PlayMaster.CreateShape(parameters.Bounds),
 					IsRigid = true,

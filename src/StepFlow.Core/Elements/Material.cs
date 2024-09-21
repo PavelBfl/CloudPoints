@@ -29,11 +29,11 @@ namespace StepFlow.Core.Elements
 		{
 			Body = new Collided(this)
 			{
-				Current = Shape.Create(original.Current),
-				Next = Shape.Create(original.Next),
-				IsMove = original.IsMove,
+				Current = Shape.Create(original.BodyCurrent),
+				Next = Shape.Create(original.BodyNext),
+				IsMove = original.BodyIsMove,
 				IsRigid = original.IsRigid,
-				Offset = original.Offset,
+				Offset = original.BodyOffset,
 			};
 
 			Strength = original.Strength;
@@ -219,10 +219,10 @@ namespace StepFlow.Core.Elements
 			{
 				CopyExtensions.ThrowIfArgumentNull(material, nameof(material));
 
-				material.Current.Reset(Current);
-				material.Next.Reset(Next);
-				material.Offset = Offset;
-				material.IsMove = IsMove;
+				material.BodyCurrent.Reset(Current);
+				material.BodyNext.Reset(Next);
+				material.BodyOffset = Offset;
+				material.BodyIsMove = IsMove;
 				material.IsRigid = IsRigid;
 			}
 

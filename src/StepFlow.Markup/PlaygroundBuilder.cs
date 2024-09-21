@@ -5,7 +5,6 @@ using StepFlow.Common.Exceptions;
 using StepFlow.Core;
 using StepFlow.Core.Elements;
 using StepFlow.Domains;
-using StepFlow.Domains.Components;
 using StepFlow.Domains.Elements;
 using StepFlow.Domains.States;
 using StepFlow.Master;
@@ -67,11 +66,9 @@ internal class PlaygroundBuilder
 			Weight = Material.MAX_WEIGHT,
 			Elasticity = 0.1f,
 			IsFixed = true,
-			Body = new CollidedDto()
-			{
-				Current = { tiles },
-				IsRigid = true,
-			},
+
+			BodyCurrent = { tiles },
+			IsRigid = true,
 		};
 	}
 
@@ -82,11 +79,8 @@ internal class PlaygroundBuilder
 		View = ObstructionView.Bricks,
 		Strength = Scale.CreateByMax(50),
 		Weight = Material.MAX_WEIGHT,
-		Body = new CollidedDto()
-		{
-			Current = { CreateCell(x, y), },
-			IsRigid = true,
-		},
+		BodyCurrent = { CreateCell(x, y), },
+		IsRigid = true,
 		CollisionBehavior = CollisionBehavior.Reflection,
 	};
 
@@ -98,11 +92,8 @@ internal class PlaygroundBuilder
 		Strength = Scale.CreateByMax(50),
 		Weight = 100,
 		Elasticity = 0.9f,
-		Body = new CollidedDto()
-		{
-			Current = { CreateCell(x, y), },
-			IsRigid = true,
-		},
+		BodyCurrent = { CreateCell(x, y), },
+		IsRigid = true,
 		Course = new Vector2(0, 0),
 		CollisionBehavior = CollisionBehavior.Reflection,
 		States =
@@ -118,11 +109,8 @@ internal class PlaygroundBuilder
 	private static ItemDto CreateItem(int x, int y, ItemKind kind) => new ItemDto()
 	{
 		Kind = kind,
-		Body = new CollidedDto()
-		{
-			Current = { CreateCell(x, y), },
-			IsRigid = true,
-		},
+		BodyCurrent = { CreateCell(x, y), },
+		IsRigid = true,
 	};
 
 	private static EnemyDto CreateEnemy(int x, int y, int visionSize, Vector2 course, CollisionBehavior collisionBehavior)
@@ -130,22 +118,16 @@ internal class PlaygroundBuilder
 		var bounds = CreateCell(x, y);
 		return new()
 		{
-			Body = new CollidedDto()
+			BodyCurrent = { bounds, },
+			IsRigid = true,
+			Vision =
 			{
-				Current = { bounds, },
-				IsRigid = true,
-			},
-			Vision = new CollidedDto()
-			{
-				Current =
-				{
-					Rectangle.FromLTRB(
-						bounds.Left - visionSize,
-						bounds.Top - visionSize,
-						bounds.Right + visionSize,
-						bounds.Bottom + visionSize
-					),
-				},
+				Rectangle.FromLTRB(
+					bounds.Left - visionSize,
+					bounds.Top - visionSize,
+					bounds.Right + visionSize,
+					bounds.Bottom + visionSize
+				),
 			},
 			Strength = Scale.CreateByMax(50),
 			ReleaseItem = ItemKind.AddStrength,
@@ -159,11 +141,8 @@ internal class PlaygroundBuilder
 	{
 		return new()
 		{
-			Body = new CollidedDto()
-			{
-				Current = { CreateCell(x, y) },
-				IsRigid = true,
-			},
+			BodyCurrent = { CreateCell(x, y) },
+			IsRigid = true,
 			Strength = Scale.CreateByMax(50),
 			Course = course,
 			CollisionBehavior = CollisionBehavior.Reflection,
@@ -216,10 +195,7 @@ internal class PlaygroundBuilder
 
 	private static WormholeDto CreateWormhole(Point position, Point positionDestination, HorizontalAlign horizontal, VerticalAlign vertical, string destination) => new WormholeDto()
 	{
-		Body = new CollidedDto()
-		{
-			Current = { CreateCell(position) },
-		},
+		BodyCurrent = { CreateCell(position) },
 		Destination = destination,
 		Position = (Vector2)(PointF)GetPosition(CreateCell(positionDestination), horizontal, vertical),
 		Horizontal = horizontal,
@@ -372,24 +348,24 @@ internal class PlaygroundBuilder
 			Items =
 			{
 				CreateRoom(left, top, right, bottom),
-				//CreateBoards(5, 5),
-				//CreateBoards(6, 5),
-				//CreateBoards(7, 5),
-				//CreateBoards(5, 6),
-				//CreateBoards(6, 6),
-				//CreateBoards(7, 6),
-				//CreateBoards(5, 7),
-				//CreateBoards(6, 7),
-				//CreateBoards(7, 7),
+				CreateBoards(5, 5),
+				CreateBoards(6, 5),
+				CreateBoards(7, 5),
+				CreateBoards(5, 6),
+				CreateBoards(6, 6),
+				CreateBoards(7, 6),
+				CreateBoards(5, 7),
+				CreateBoards(6, 7),
+				CreateBoards(7, 7),
 
-				//CreateBricks(11, 4),
-				//CreateBricks(12, 4),
-				//CreateBricks(13, 4),
+				CreateBricks(11, 4),
+				CreateBricks(12, 4),
+				CreateBricks(13, 4),
 
-				//CreateItem(13, 3, ItemKind.Poison),
-				//CreateItem(1, 7, ItemKind.Fire),
+				CreateItem(13, 3, ItemKind.Poison),
+				CreateItem(1, 7, ItemKind.Fire),
 
-				CreateEnemy(1, 7, 150, CreateRotate(0) * 0.02f, CollisionBehavior.CW),
+				//CreateEnemy(1, 7, 150, CreateRotate(0) * 0.02f, CollisionBehavior.CW),
 			},
 		};
 	}
@@ -400,11 +376,8 @@ internal class PlaygroundBuilder
 		Strength = Scale.CreateByMax(100000),
 		Cooldown = Scale.CreateByMin(TimeTick.FromSeconds(1)),
 		Speed = 1,
-		Body = new CollidedDto()
-		{
-			Current = { CreateCell(8, 1, 7) },
-			IsRigid = true,
-		},
+		BodyCurrent = { CreateCell(8, 1, 7) },
+		IsRigid = true,
 		CollisionBehavior = CollisionBehavior.Reflection,
 		Weight = 1,
 		Elasticity = 0,

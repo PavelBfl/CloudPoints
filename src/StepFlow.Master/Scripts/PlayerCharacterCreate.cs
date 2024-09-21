@@ -13,18 +13,16 @@ namespace StepFlow.Master.Scripts
 
 		public override void Execute(Parameters parameters)
 		{
-			var body = new Collided(PlayMaster.Playground.Context)
-			{
-				Current = PlayMaster.CreateShape(parameters.Bounds),
-				IsRigid = true,
-			};
-
 			var playerCharacter = new PlayerCharacter(PlayMaster.Playground.Context)
 			{
 				Name = "Player",
 				Strength = Scale.CreateByMax(parameters.Strength),
 				Cooldown = Scale.CreateByMin(parameters.Cooldown),
-				Body = body,
+				Body =
+				{
+					Current = PlayMaster.CreateShape(parameters.Bounds),
+					IsRigid = true,
+				},
 				Speed = parameters.Speed,
 				Course = new Vector2(0.05f, 0),
 			};

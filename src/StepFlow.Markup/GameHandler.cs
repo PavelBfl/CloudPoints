@@ -156,7 +156,7 @@ public sealed class GameHandler
 		{
 			PlayMasters.CurrentKey = wormhole.Destination;
 
-			var bounds = GetBounds(player.Current);
+			var bounds = GetBounds(player.BodyCurrent);
 			var localPosition = GetPosition(bounds.Size, wormhole.Horizontal, wormhole.Vertical);
 			var newPosition = new Point((int)wormhole.Position.X, (int)wormhole.Position.Y);
 
@@ -165,8 +165,8 @@ public sealed class GameHandler
 				-bounds.Y + newPosition.Y - localPosition.Y
 			);
 
-			player.Next.Clear();
-			player.Current.OffsetWith(offset);
+			player.BodyNext.Clear();
+			player.BodyCurrent.OffsetWith(offset);
 
 			PlayMasters.Current?.PlayerCharacterPush(player);
 			return true;
@@ -349,8 +349,8 @@ public sealed class GameHandler
 		if (playMaster.Playground.Items.OfType<PlayerCharacter>().Any())
 		{
 			var playerCharacter = playground.GetPlayerCharacterRequired();
-			CreateTexture(playerCharacter?.Body?.GetCurrentRequired().Bounds ?? Rectangle.Empty, Texture.Character, playerCharacter?.Strength);
-			CreateBorder(playerCharacter?.Body, Color.Red);
+			CreateTexture(playerCharacter.Body.Current?.Bounds ?? Rectangle.Empty, Texture.Character, playerCharacter.Strength);
+			CreateBorder(playerCharacter.Body?.Current, Color.Red);
 		}
 
 		foreach (var barrier in playground.Items.OfType<Obstruction>())
@@ -403,7 +403,7 @@ public sealed class GameHandler
 		foreach (var enemy in playground.Items.OfType<Enemy>())
 		{
 			CreateTexture(enemy.Body?.GetCurrentRequired().Bounds ?? Rectangle.Empty, Texture.Enemy, enemy.Strength);
-			CreateBorder(enemy.Body, Color.Red);
+			CreateBorder(enemy.Body?.Current, Color.Red);
 			CreateBorder(enemy.Vision, Color.Yellow);
 		}
 
@@ -477,11 +477,11 @@ public sealed class GameHandler
 		);
 	}
 
-	private void CreateBorder(Collided? collided, Color color)
+	private void CreateBorder(Shape? shape, Color color)
 	{
-		if (collided is { } && IsDebug)
+		if (shape is { } && IsDebug)
 		{
-			var bounds = collided.GetCurrentRequired().Bounds;
+			var bounds = shape.Bounds;
 			Drawer.Polygon(
 				new PointF[]
 				{

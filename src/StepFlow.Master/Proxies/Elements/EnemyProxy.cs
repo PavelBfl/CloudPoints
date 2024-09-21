@@ -9,7 +9,7 @@ namespace StepFlow.Master.Proxies.Elements
 {
 	public interface IEnemyProxy : IMaterialProxy<Enemy>
 	{
-		Shape? Vision { get; }
+		Shape? Vision { get; set; }
 	}
 
 	internal sealed class EnemyProxy : MaterialProxy<Enemy>, IEnemyProxy
@@ -18,7 +18,7 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 		}
 
-		public Shape? Vision => Target.Vision;
+		public Shape? Vision { get => Target.Vision; set => SetValue(value); }
 
 		public Scale Cooldown { get => Target.Cooldown; set => SetValue(value); }
 
@@ -50,11 +50,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 				var center = Body.GetCurrentRequired().Bounds.GetCenter();
 				var visionPlace = RectangleExtensions.Create(center, 100);
-
-				if ((ICollidedProxy?)Owner.CreateProxy(Vision) is { } visionProxy)
-				{
-					visionProxy.Current = Shape.Create(new[] { visionPlace });
-				}
+				Vision = Shape.Create(new[] { visionPlace });
 			}
 
 			if (Vision is { } vision)

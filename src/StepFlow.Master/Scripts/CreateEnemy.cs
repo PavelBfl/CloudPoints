@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using System.Numerics;
-using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Domains.Elements;
 using StepFlow.Master.Proxies;
@@ -19,15 +18,12 @@ namespace StepFlow.Master.Scripts
 
 			var enemy = new Enemy(PlayMaster.Playground.Context)
 			{
-				Body = new Collided(PlayMaster.Playground.Context)
+				Body =
 				{
 					Current = PlayMaster.CreateShape(parameters.Bounds),
 					IsRigid = true,
 				},
-				Vision = new Collided(PlayMaster.Playground.Context)
-				{
-					Current = PlayMaster.CreateShape(parameters.Vision),
-				},
+				Vision = PlayMaster.CreateShape(parameters.Vision),
 				Cooldown = Scale.CreateByMax(10000),
 				Strength = Scale.CreateByMax(100),
 				ReleaseItem = parameters.ReleaseItem,

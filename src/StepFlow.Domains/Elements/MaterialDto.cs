@@ -14,13 +14,13 @@ namespace StepFlow.Domains.Elements
 		public const int MAX_WEIGHT = 1000;
 
 		#region Body
-		public IList<Rectangle> Current { get; } = new List<Rectangle>();
+		public IList<Rectangle> BodyCurrent { get; } = new List<Rectangle>();
 
-		public IList<Rectangle> Next { get; } = new List<Rectangle>();
+		public IList<Rectangle> BodyNext { get; } = new List<Rectangle>();
 
-		public Vector2 Offset { get; set; }
+		public Vector2 BodyOffset { get; set; }
 
-		public bool IsMove { get; set; } 
+		public bool BodyIsMove { get; set; } 
 		#endregion
 
 		public bool IsRigid { get; set; }

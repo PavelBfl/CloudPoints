@@ -86,11 +86,11 @@ namespace StepFlow.Master.Proxies.Components
 		{
 			NullValidate.ThrowIfArgumentNull(original, nameof(original));
 
-			Current = Owner.CreateShape(original.Current);
-			Next = Owner.CreateShape(original.Next);
+			Current = Owner.CreateShape(original.BodyCurrent);
+			Next = Owner.CreateShape(original.BodyNext);
 
-			Offset = original.Offset;
-			IsMove = original.IsMove;
+			Offset = original.BodyOffset;
+			IsMove = original.BodyIsMove;
 			IsRigid = original.IsRigid;
 		}
 	}

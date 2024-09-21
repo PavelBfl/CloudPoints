@@ -7,7 +7,6 @@ using System.Numerics;
 using StepFlow.Common;
 using StepFlow.Core;
 using StepFlow.Core.Commands.Accessors;
-using StepFlow.Core.Components;
 using StepFlow.Core.Elements;
 using StepFlow.Core.States;
 using StepFlow.Core.Tracks;
@@ -128,7 +127,7 @@ namespace StepFlow.Master
 				Projectile instance => new ProjectileProxy(this, instance),
 				Item instance => new ItemProxy(this, instance),
 				Enemy instance => new EnemyProxy(this, instance),
-				Collided instance => new CollidedProxy(this, instance),
+				Material.Collided instance => new CollidedProxy(this, instance),
 				Place instance => new PlaceProxy(this, instance),
 				Track instance => new TrackProxy(this, instance),
 				TrackBuilder instance => new TrackBuilderProxy(this, instance),
@@ -190,10 +189,6 @@ namespace StepFlow.Master
 			var projectile = new Projectile(Playground.Context)
 			{
 				Name = "Projectile",
-				Body = new Collided(Playground.Context)
-				{
-					Current = CreateShape(RectangleExtensions.Create(center, radius)),
-				},
 				Damage = damage,
 				Reusable = reusable,
 				Speed = 100,
@@ -217,6 +212,7 @@ namespace StepFlow.Master
 					},
 				},
 			};
+			projectile.Body.Current = CreateShape(RectangleExtensions.Create(center, radius));
 
 			if (creator is { })
 			{
