@@ -215,6 +215,21 @@ namespace StepFlow.Core.Elements
 				return result;
 			}
 
+			public Point? GetAggregateOffset(Collided other)
+			{
+				if (GetOffset() is { } thisOffset && other.GetOffset() is { } otherOffset)
+				{
+					return new Point(
+						thisOffset.X - otherOffset.X,
+						thisOffset.Y - otherOffset.Y
+					);
+				}
+				else
+				{
+					return null;
+				}
+			}
+
 			public void CopyTo(MaterialDto material)
 			{
 				CopyExtensions.ThrowIfArgumentNull(material, nameof(material));

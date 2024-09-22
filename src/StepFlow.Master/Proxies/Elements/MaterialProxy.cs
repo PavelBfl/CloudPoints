@@ -271,62 +271,54 @@ namespace StepFlow.Master.Proxies.Elements
 						break;
 					case CollisionBehavior.Reflection:
 						if ((!Target.IsFixed || !otherMaterial.IsFixed) && 
-							Body.GetOffset() is { } sourceOffset &&
-							otherCollided.Material.Body.GetOffset() is { } otherOffset
+							Body.GetAggregateOffset(otherCollided.Material.Body) is { } aggregateOffset &&
+							aggregateOffset.ToCourse() is { } sourceCourse
 						)
 						{
-							var aggregateOffset = new Point(
-								sourceOffset.X - otherOffset.X,
-								sourceOffset.Y - otherOffset.Y
-							);
+							var isVertical = sourceCourse == Common.Course.Top ||
+								sourceCourse == Common.Course.RightTop ||
+								sourceCourse == Common.Course.Bottom ||
+								sourceCourse == Common.Course.LeftBottom;
 
-							if (aggregateOffset.ToCourse() is { } sourceCourse)
+							var factor = (Elasticity + otherMaterial.Elasticity) / 2;
+
+							var otherMaterialProxy = (IMaterialProxy<Material>)Owner.CreateProxy(otherMaterial);
+							if (isVertical)
 							{
-								var isVertical = sourceCourse == Common.Course.Top ||
-									sourceCourse == Common.Course.RightTop ||
-									sourceCourse == Common.Course.Bottom ||
-									sourceCourse == Common.Course.LeftBottom;
+								(var u1, var u2) = Collision(
+									Target.Weight,
+									otherMaterial.Weight,
+									Target.Course.Y,
+									otherMaterial.Course.Y
+								);
 
-								var factor = (Elasticity + otherMaterial.Elasticity) / 2;
-
-								var otherMaterialProxy = (IMaterialProxy<Material>)Owner.CreateProxy(otherMaterial);
-								if (isVertical)
+								if (!Target.IsFixed)
 								{
-									(var u1, var u2) = Collision(
-										Target.Weight,
-										otherMaterial.Weight,
-										Target.Course.Y,
-										otherMaterial.Course.Y
-									);
-
-									if (!Target.IsFixed)
-									{
-										Course = new Vector2(Course.X, u1) * factor; 
-									}
-
-									if (!otherMaterial.IsFixed)
-									{
-										otherMaterialProxy.Course = new Vector2(otherMaterial.Course.X, u2) * factor; 
-									}
+									Course = new Vector2(Course.X, u1) * factor;
 								}
-								else
+
+								if (!otherMaterial.IsFixed)
 								{
-									(var u1, var u2) = Collision(
-										Target.Weight,
-										otherMaterial.Weight,
-										Target.Course.X,
-										otherMaterial.Course.X
-									);
+									otherMaterialProxy.Course = new Vector2(otherMaterial.Course.X, u2) * factor; 
+								}
+							}
+							else
+							{
+								(var u1, var u2) = Collision(
+									Target.Weight,
+									otherMaterial.Weight,
+									Target.Course.X,
+									otherMaterial.Course.X
+								);
 
-									if (!Target.IsFixed)
-									{
-										Course = new Vector2(u1, Course.Y) * factor; 
-									}
+								if (!Target.IsFixed)
+								{
+									Course = new Vector2(u1, Course.Y) * factor; 
+								}
 
-									if (!otherMaterial.IsFixed)
-									{
-										otherMaterialProxy.Course = new Vector2(u2, otherMaterial.Course.Y) * factor; 
-									}
+								if (!otherMaterial.IsFixed)
+								{
+									otherMaterialProxy.Course = new Vector2(u2, otherMaterial.Course.Y) * factor; 
 								}
 							}
 						}
