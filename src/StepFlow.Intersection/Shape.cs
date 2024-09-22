@@ -50,6 +50,8 @@ namespace StepFlow.Intersection
 
 		public int Count => Rectangles.Length;
 
+		public Context? Context => Owner?.Context;
+
 		internal Segment? Owner { get; private set; }
 
 		internal int Index { get; set; }

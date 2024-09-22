@@ -251,9 +251,8 @@ namespace StepFlow.Master.Proxies.Elements
 			if (shape is { })
 			{
 				var thishAttached = (CollidedAttached)NullValidate.PropertyRequired(shape.State, nameof(Shape.State));
-				foreach (var otherShape in shape.GetCollisions())
+				foreach (var otherAttached in shape.GetCollisions().Select(x => x.State).OfType<CollidedAttached>())
 				{
-					var otherAttached = (CollidedAttached)NullValidate.PropertyRequired(otherShape.State, nameof(Shape.State));
 					Collision(thishAttached, otherAttached.Material, otherAttached);
 				}
 			}
