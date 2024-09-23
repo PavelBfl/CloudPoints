@@ -9,12 +9,5 @@
 		Dash,
 		CreatingProjectile,
 		Gravity,
-
-		EnemySerpentineForwardState,
-		EnemySerpentineForwardStateAttack,
-		EnemySerpentineForwardToBackward,
-		EnemySerpentineBackwardState,
-		EnemySerpentineBackwardStateAttack,
-		EnemySerpentineBackwardToForward,
 	}
 }

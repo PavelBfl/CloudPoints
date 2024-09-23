@@ -250,24 +250,6 @@ namespace StepFlow.Master.Proxies.Elements
 			};
 		}
 
-		public bool CanJump()
-		{
-			var currentBody = Body.GetCurrentRequired();
-			var grip = Shape.Create(currentBody.Offset(new Point(0, 1)));
-
-			foreach (var intersectShape in Target.Context.IntersectionContext.GetCollisions(grip))
-			{
-				if (intersectShape != currentBody)
-				{
-					var collided = (CollidedAttached)NullValidate.PropertyRequired(intersectShape.State, nameof(Shape.State));
-					if (collided.Material.Body.IsRigid && collided.Name == nameof(Material.Collided.Current))
-					{
-						return true;
-					} 
-				}
-			}
-
-			return false;
-		}
+		public bool CanJump() => RigidExists(new Point(0, 1));
 	}
 }

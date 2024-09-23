@@ -1,4 +1,6 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Drawing;
+using System.Numerics;
 using StepFlow.Common;
 using StepFlow.Core.Elements;
 using StepFlow.Domains.Elements;
@@ -26,7 +28,7 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			base.OnTick();
 
-			if (Strength.Value == 0)
+			if (Strength.IsMin())
 			{
 				var items = Owner.CreateCollectionProxy(Owner.Playground.Items);
 				items.Remove(Target);
@@ -51,18 +53,27 @@ namespace StepFlow.Master.Proxies.Elements
 				var center = Body.GetCurrentRequired().Bounds.GetCenter();
 				var visionPlace = RectangleExtensions.Create(center, 100);
 				Vision = Shape.Create(new[] { visionPlace });
-			}
 
-			if (Vision is { } vision)
-			{
-				foreach (var otherShape in vision.GetCollisions())
+				if (Vision is { } vision)
 				{
-					var otherAttached = (CollidedAttached)NullValidate.PropertyRequired(otherShape.State, nameof(Shape.State));
-
-					if (otherAttached.Material is PlayerCharacter playerCharacter)
+					foreach (var otherShape in vision.GetCollisions())
 					{
-						CreateProjectile(playerCharacter);
+						var otherAttached = (CollidedAttached)NullValidate.PropertyRequired(otherShape.State, nameof(Shape.State));
+
+						if (otherAttached.Material is PlayerCharacter playerCharacter)
+						{
+							CreateProjectile(playerCharacter);
+						}
 					}
+				}
+
+				if (RigidExists(new Point(1, 0)))
+				{
+					Course = new Vector2(-MathF.Abs(Course.X), Course.Y);
+				}
+				else if (RigidExists(new Point(-1, 0)))
+				{
+					Course = new Vector2(MathF.Abs(Course.X), Course.Y);
 				}
 			}
 		}

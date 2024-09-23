@@ -42,7 +42,6 @@ namespace StepFlow.Core.Elements
 			Elasticity = original.Elasticity;
 			Course = original.Course;
 			IsFixed = original.IsFixed;
-			CollisionBehavior = original.CollisionBehavior;
 			States.AddUniqueRange(original.States.Select(x => x.ToState(Context)));
 			Track = original.Track?.ToTrackBuilder(Context);
 		}
@@ -109,8 +108,6 @@ namespace StepFlow.Core.Elements
 
 		public bool IsFixed { get; set; }
 
-		public CollisionBehavior CollisionBehavior { get; set; }
-
 		public ICollection<State> States { get; } = new HashSet<State>();
 
 		public TrackBuilder? Track { get; set; }
@@ -128,7 +125,6 @@ namespace StepFlow.Core.Elements
 			container.Weight = Weight;
 			container.Elasticity = Elasticity;
 			container.Course = Course;
-			container.CollisionBehavior = CollisionBehavior;
 		}
 
 		public bool IsEnable { get; private set; }

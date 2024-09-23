@@ -37,8 +37,6 @@ namespace StepFlow.Domains.Elements
 
 		public bool IsFixed { get; set; }
 
-		public CollisionBehavior CollisionBehavior { get; set; }
-
 		public ICollection<StateDto> States { get; } = new HashSet<StateDto>();
 
 		public TrackBuilderDto? Track { get; set; }

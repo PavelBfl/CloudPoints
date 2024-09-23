@@ -81,7 +81,6 @@ internal class PlaygroundBuilder
 		Weight = Material.MAX_WEIGHT,
 		BodyCurrent = { CreateCell(x, y), },
 		IsRigid = true,
-		CollisionBehavior = CollisionBehavior.Reflection,
 	};
 
 	private static ObstructionDto CreateBoards(int x, int y) => new ObstructionDto()
@@ -95,7 +94,6 @@ internal class PlaygroundBuilder
 		BodyCurrent = { CreateCell(x, y), },
 		IsRigid = true,
 		Course = new Vector2(0, 0),
-		CollisionBehavior = CollisionBehavior.Reflection,
 		States =
 		{
 			new()
@@ -113,7 +111,7 @@ internal class PlaygroundBuilder
 		IsRigid = true,
 	};
 
-	private static EnemyDto CreateEnemy(int x, int y, int visionSize, Vector2 course, CollisionBehavior collisionBehavior)
+	private static EnemyDto CreateEnemy(int x, int y, int visionSize, Vector2 course)
 	{
 		var bounds = CreateCell(x, y);
 		return new()
@@ -130,11 +128,19 @@ internal class PlaygroundBuilder
 				),
 			},
 			Elasticity = 1,
+			IsFixed = true,
 			Strength = Scale.CreateByMax(50),
 			ReleaseItem = ItemKind.AddStrength,
 			Course = course,
-			CollisionBehavior = collisionBehavior,
 			Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(1)),
+			States =
+			{
+				new()
+				{
+					Kind = StateKind.Gravity,
+					Arg1 = 0.00001f,
+				}
+			}
 		};
 	}
 
@@ -146,51 +152,7 @@ internal class PlaygroundBuilder
 			IsRigid = true,
 			Strength = Scale.CreateByMax(50),
 			Course = course,
-			CollisionBehavior = CollisionBehavior.Reflection,
 			Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(1)),
-			States =
-			{
-				new()
-				{
-					Kind = StateKind.EnemySerpentineForwardState,
-					Enable = true,
-					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(4)),
-					Arg0 = 0,
-					Arg1 = 0.02f,
-				},
-				new()
-				{
-					Kind = StateKind.EnemySerpentineForwardStateAttack,
-					Enable = true,
-					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(1)),
-					Arg0 = 0,
-				},
-				new()
-				{
-					Kind = StateKind.EnemySerpentineForwardToBackward,
-					Arg0 = 0.04f,
-					Arg1 = 0,
-				},
-				new()
-				{
-					Kind = StateKind.EnemySerpentineBackwardState,
-					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(3)),
-					Arg0 = 0,
-					Arg1 = 0.02f,
-				},
-				new()
-				{
-					Kind = StateKind.EnemySerpentineBackwardStateAttack,
-					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(1)),
-					Arg0 = MathF.PI,
-				},
-				new()
-				{
-					Kind = StateKind.EnemySerpentineBackwardToForward,
-					Arg0 = -0.04f,
-					Arg1 = 0,
-				},
-			},
 		};
 	}
 
@@ -319,8 +281,8 @@ internal class PlaygroundBuilder
 				CreateItem(13, 1, ItemKind.Poison),
 				CreateItem(2, 2, ItemKind.Speed),
 				CreateItem(2, 6, ItemKind.AttackSpeed),
-				CreateEnemy(11, 7, 300, CreateRotate(MathF.PI / 4) * 0.02f, CollisionBehavior.Reflection),
-				CreateEnemy(1, 1, 150, CreateRotate(0) * 0.02f, CollisionBehavior.CW),
+				CreateEnemy(11, 7, 300, CreateRotate(MathF.PI / 4) * 0.02f),
+				CreateEnemy(1, 1, 150, CreateRotate(0) * 0.02f),
 			}
 		};
 	}
@@ -349,24 +311,31 @@ internal class PlaygroundBuilder
 			Items =
 			{
 				CreateRoom(left, top, right, bottom),
-				CreateBoards(5, 5),
-				CreateBoards(6, 5),
-				CreateBoards(7, 5),
-				CreateBoards(5, 6),
-				CreateBoards(6, 6),
-				CreateBoards(7, 6),
-				CreateBoards(5, 7),
-				CreateBoards(6, 7),
-				CreateBoards(7, 7),
+				//CreateBoards(5, 5),
+				//CreateBoards(6, 5),
+				//CreateBoards(7, 5),
+				//CreateBoards(5, 6),
+				//CreateBoards(6, 6),
+				//CreateBoards(7, 6),
+				//CreateBoards(5, 7),
+				//CreateBoards(6, 7),
+				//CreateBoards(7, 7),
 
-				CreateBricks(11, 4),
-				CreateBricks(12, 4),
-				CreateBricks(13, 4),
+				//CreateBricks(11, 4),
+				//CreateBricks(12, 4),
+				//CreateBricks(13, 4),
 
-				CreateItem(13, 3, ItemKind.Poison),
-				CreateItem(1, 7, ItemKind.Fire),
+				//CreateItem(13, 3, ItemKind.Poison),
+				//CreateItem(1, 7, ItemKind.Fire),
 
-				//CreateEnemy(1, 7, 150, CreateRotate(0) * 0.02f, CollisionBehavior.Reflection),
+				CreateEnemy(1, 5, 150, CreateRotate(0) * 0.02f),
+
+				CreateBoards(1, 7),
+				CreateBoards(1, 6),
+				CreateBoards(2, 7),
+				CreateBoards(3, 7),
+				CreateBoards(4, 7),
+				CreateBoards(4, 6),
 			},
 		};
 	}
@@ -379,7 +348,6 @@ internal class PlaygroundBuilder
 		Speed = 1,
 		BodyCurrent = { CreateCell(8, 1, 7) },
 		IsRigid = true,
-		CollisionBehavior = CollisionBehavior.Reflection,
 		Weight = 1,
 		Elasticity = 0,
 		States =

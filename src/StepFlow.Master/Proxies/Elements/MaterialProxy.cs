@@ -34,8 +34,6 @@ namespace StepFlow.Master.Proxies.Elements
 
 		ICollection<State> States { get; }
 
-		CollisionBehavior CollisionBehavior { get; set; }
-
 		TrackBuilder? Track { get; set; }
 
 		void OnTick();
@@ -51,7 +49,6 @@ namespace StepFlow.Master.Proxies.Elements
 			Speed = original.Speed;
 			Weight = original.Weight;
 			Course = original.Course;
-			CollisionBehavior = original.CollisionBehavior;
 			var statesProxy = Owner.CreateCollectionProxy(States);
 			statesProxy.Clear();
 			foreach (var state in original.States)
@@ -121,90 +118,9 @@ namespace StepFlow.Master.Proxies.Elements
 						}
 						break;
 					case StateKind.Gravity:
-						Course += stateProxy.Vector;
-						break;
-					case StateKind.EnemySerpentineForwardState:
-						if (stateProxy.Cooldown.IsMin())
+						if (!RigidExists(new Point(0, 1)))
 						{
-							stateProxy.Enable = false;
-
-							var enemySerpentineForwardToBackwardState = Target.States.Single(x => x.Kind == StateKind.EnemySerpentineForwardToBackward);
-							var enemySerpentineForwardToBackwardStateProxy = (IStateProxy)Owner.CreateProxy(enemySerpentineForwardToBackwardState);
-							enemySerpentineForwardToBackwardStateProxy.Enable = true;
-							enemySerpentineForwardToBackwardStateProxy.Cooldown = default;
-							Course = enemySerpentineForwardToBackwardStateProxy.Vector;
-
-							var enemySerpentineForwardStateAttack = Target.States.Single(x => x.Kind == StateKind.EnemySerpentineForwardStateAttack);
-							var enemySerpentineForwardStateAttackProxy = (IStateProxy)Owner.CreateProxy(enemySerpentineForwardStateAttack);
-							enemySerpentineForwardStateAttackProxy.Enable = false;
-
-							CollisionBehavior = CollisionBehavior.Stop;
-						}
-						break;
-					case StateKind.EnemySerpentineForwardStateAttack:
-						if (stateProxy.Cooldown.IsMin())
-						{
-							CreateProjectile(stateProxy.Arg0);
-						}
-						break;
-					case StateKind.EnemySerpentineForwardToBackward:
-						if (Course == Vector2.Zero)
-						{
-							stateProxy.Enable = false;
-
-							var enemySerpentineForwardToBackwardState = Target.States.Single(x => x.Kind == StateKind.EnemySerpentineBackwardState);
-							var enemySerpentineForwardToBackwardStateProxy = (IStateProxy)Owner.CreateProxy(enemySerpentineForwardToBackwardState);
-							enemySerpentineForwardToBackwardStateProxy.Enable = true;
-							enemySerpentineForwardToBackwardStateProxy.Cooldown = enemySerpentineForwardToBackwardStateProxy.Cooldown.SetMax();
-							Course = enemySerpentineForwardToBackwardStateProxy.Vector;
-
-							var enemySerpentineBackwardStateAttack = Target.States.Single(x => x.Kind == StateKind.EnemySerpentineBackwardStateAttack);
-							var enemySerpentineBackwardStateAttackProxy = (IStateProxy)Owner.CreateProxy(enemySerpentineBackwardStateAttack);
-							enemySerpentineBackwardStateAttackProxy.Enable = true;
-
-							CollisionBehavior = CollisionBehavior.Reflection;
-						}
-						break;
-					case StateKind.EnemySerpentineBackwardState:
-						if (stateProxy.Cooldown.IsMin())
-						{
-							stateProxy.Enable = false;
-
-							var enemySerpentineForwardToBackwardState = Target.States.Single(x => x.Kind == StateKind.EnemySerpentineBackwardToForward);
-							var enemySerpentineForwardToBackwardStateProxy = (IStateProxy)Owner.CreateProxy(enemySerpentineForwardToBackwardState);
-							enemySerpentineForwardToBackwardStateProxy.Enable = true;
-							enemySerpentineForwardToBackwardStateProxy.Cooldown = default;
-							Course = enemySerpentineForwardToBackwardStateProxy.Vector;
-
-							var enemySerpentineBackwardStateAttack = Target.States.Single(x => x.Kind == StateKind.EnemySerpentineBackwardStateAttack);
-							var enemySerpentineBackwardStateAttackProxy = (IStateProxy)Owner.CreateProxy(enemySerpentineBackwardStateAttack);
-							enemySerpentineBackwardStateAttackProxy.Enable = false;
-
-							CollisionBehavior = CollisionBehavior.Stop;
-						}
-						break;
-					case StateKind.EnemySerpentineBackwardStateAttack:
-						if (stateProxy.Cooldown.IsMin())
-						{
-							CreateProjectile(stateProxy.Arg0);
-						}
-						break;
-					case StateKind.EnemySerpentineBackwardToForward:
-						if (Course == Vector2.Zero)
-						{
-							stateProxy.Enable = false;
-
-							var enemySerpentineForwardToBackwardState = Target.States.Single(x => x.Kind == StateKind.EnemySerpentineForwardState);
-							var enemySerpentineForwardToBackwardStateProxy = (IStateProxy)Owner.CreateProxy(enemySerpentineForwardToBackwardState);
-							enemySerpentineForwardToBackwardStateProxy.Enable = true;
-							enemySerpentineForwardToBackwardStateProxy.Cooldown = enemySerpentineForwardToBackwardStateProxy.Cooldown.SetMax();
-							Course = enemySerpentineForwardToBackwardStateProxy.Vector;
-
-							var enemySerpentineForwardStateAttack = Target.States.Single(x => x.Kind == StateKind.EnemySerpentineForwardStateAttack);
-							var enemySerpentineForwardStateAttackProxy = (IStateProxy)Owner.CreateProxy(enemySerpentineForwardStateAttack);
-							enemySerpentineForwardStateAttackProxy.Enable = true;
-
-							CollisionBehavior = CollisionBehavior.Reflection;
+							Course += stateProxy.Vector;
 						}
 						break;
 					default: throw EnumNotSupportedException.Create(state.Kind);
@@ -262,74 +178,57 @@ namespace StepFlow.Master.Proxies.Elements
 		{
 			if (Target != otherMaterial && otherCollided.Material.Body.IsRigid && thisCollided.Material.Body.IsRigid)
 			{
-				switch (CollisionBehavior)
+				if ((!Target.IsFixed || !otherMaterial.IsFixed) && 
+					Body.GetAggregateOffset(otherCollided.Material.Body) is { } aggregateOffset &&
+					aggregateOffset.ToCourse() is { } sourceCourse
+				)
 				{
-					case CollisionBehavior.None:
-						break;
-					case CollisionBehavior.Stop:
-						Course = Vector2.Zero;
-						break;
-					case CollisionBehavior.Reflection:
-						if ((!Target.IsFixed || !otherMaterial.IsFixed) && 
-							Body.GetAggregateOffset(otherCollided.Material.Body) is { } aggregateOffset &&
-							aggregateOffset.ToCourse() is { } sourceCourse
-						)
+					var isVertical = sourceCourse == Common.Course.Top ||
+						sourceCourse == Common.Course.RightTop ||
+						sourceCourse == Common.Course.Bottom ||
+						sourceCourse == Common.Course.LeftBottom;
+
+					var factor = (Elasticity + otherMaterial.Elasticity) / 2;
+
+					var otherMaterialProxy = (IMaterialProxy<Material>)Owner.CreateProxy(otherMaterial);
+					if (isVertical)
+					{
+						(var u1, var u2) = Collision(
+							Target.Weight,
+							otherMaterial.Weight,
+							Target.Course.Y,
+							otherMaterial.Course.Y
+						);
+
+						if (!Target.IsFixed)
 						{
-							var isVertical = sourceCourse == Common.Course.Top ||
-								sourceCourse == Common.Course.RightTop ||
-								sourceCourse == Common.Course.Bottom ||
-								sourceCourse == Common.Course.LeftBottom;
-
-							var factor = (Elasticity + otherMaterial.Elasticity) / 2;
-
-							var otherMaterialProxy = (IMaterialProxy<Material>)Owner.CreateProxy(otherMaterial);
-							if (isVertical)
-							{
-								(var u1, var u2) = Collision(
-									Target.Weight,
-									otherMaterial.Weight,
-									Target.Course.Y,
-									otherMaterial.Course.Y
-								);
-
-								if (!Target.IsFixed)
-								{
-									Course = new Vector2(Course.X, u1) * factor;
-								}
-
-								if (!otherMaterial.IsFixed)
-								{
-									otherMaterialProxy.Course = new Vector2(otherMaterial.Course.X, u2) * factor; 
-								}
-							}
-							else
-							{
-								(var u1, var u2) = Collision(
-									Target.Weight,
-									otherMaterial.Weight,
-									Target.Course.X,
-									otherMaterial.Course.X
-								);
-
-								if (!Target.IsFixed)
-								{
-									Course = new Vector2(u1, Course.Y) * factor; 
-								}
-
-								if (!otherMaterial.IsFixed)
-								{
-									otherMaterialProxy.Course = new Vector2(u2, otherMaterial.Course.Y) * factor; 
-								}
-							}
+							Course = new Vector2(Course.X, u1) * factor;
 						}
-						break;
-					case CollisionBehavior.CW:
-						StrategyClock(true);
-						break;
-					case CollisionBehavior.CCW:
-						StrategyClock(false);
-						break;
-					default: throw EnumNotSupportedException.Create(CollisionBehavior);
+
+						if (!otherMaterial.IsFixed)
+						{
+							otherMaterialProxy.Course = new Vector2(otherMaterial.Course.X, u2) * factor; 
+						}
+					}
+					else
+					{
+						(var u1, var u2) = Collision(
+							Target.Weight,
+							otherMaterial.Weight,
+							Target.Course.X,
+							otherMaterial.Course.X
+						);
+
+						if (!Target.IsFixed)
+						{
+							Course = new Vector2(u1, Course.Y) * factor; 
+						}
+
+						if (!otherMaterial.IsFixed)
+						{
+							otherMaterialProxy.Course = new Vector2(u2, otherMaterial.Course.Y) * factor; 
+						}
+					}
 				}
 
 				((ICollidedProxy)Owner.CreateProxy(Body)).Break();
@@ -344,12 +243,6 @@ namespace StepFlow.Master.Proxies.Elements
 			);
 		}
 
-		private void StrategyClock(bool cw)
-		{
-			var rotate = Matrix3x2.CreateRotation(MathF.PI / (cw ? 2 : -2));
-			Course = Vector2.Transform(Course, rotate);
-		}
-
 		protected virtual void CreateProjectile(float radians)
 		{
 		}
@@ -357,8 +250,6 @@ namespace StepFlow.Master.Proxies.Elements
 		public int Speed { get => Target.Speed; set => SetValue(value); }
 
 		public Vector2 Course { get => Target.Course; set => SetValue(value); }
-
-		public CollisionBehavior CollisionBehavior { get => Target.CollisionBehavior; set => SetValue(value); }
 
 		public int Weight
 		{
@@ -379,5 +270,25 @@ namespace StepFlow.Master.Proxies.Elements
 		public ICollection<State> States => Target.States;
 
 		public TrackBuilder? Track { get => Target.Track; set => SetValue(value); }
+
+		public bool RigidExists(Point offset)
+		{
+			var currentBody = Body.GetCurrentRequired();
+			var grip = Shape.Create(currentBody.Offset(offset));
+
+			foreach (var intersectShape in Target.Context.IntersectionContext.GetCollisions(grip))
+			{
+				if (intersectShape != currentBody)
+				{
+					var collided = (CollidedAttached)NullValidate.PropertyRequired(intersectShape.State, nameof(Shape.State));
+					if (collided.Material.Body.IsRigid && collided.Name == nameof(Material.Collided.Current))
+					{
+						return true;
+					}
+				}
+			}
+
+			return false;
+		}
 	}
 }
