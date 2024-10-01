@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
@@ -6,7 +8,9 @@ using StepFlow.Common;
 using StepFlow.Core.Exceptions;
 using StepFlow.Core.States;
 using StepFlow.Core.Tracks;
+using StepFlow.Domains;
 using StepFlow.Domains.Elements;
+using StepFlow.Domains.Tracks;
 using StepFlow.Intersection;
 
 namespace StepFlow.Core.Elements
