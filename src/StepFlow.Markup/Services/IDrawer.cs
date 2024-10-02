@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using StepFlow.Common;
+using StepFlow.Domains.Tracks;
 
 namespace StepFlow.Markup.Services
 {
@@ -19,6 +20,6 @@ namespace StepFlow.Markup.Services
 
 		void Draw(Texture texture, RectangleF rectangle, Color? color = null);
 
-		void Curve(PointF begin, PointF end, PointF anchor, int count, Color color, float thickness = 2);
+		void Curve(Curve curve, Color color, int count = 10, float thickness = 2);
 	}
 }

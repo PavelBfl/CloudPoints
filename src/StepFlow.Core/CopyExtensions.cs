@@ -19,6 +19,8 @@ namespace StepFlow.Core
 
 		public static TrackBuilder ToTrackBuilder(this TrackBuilderDto original, IContext context) => new TrackBuilder(context, original);
 
+		public static Route ToRoute(this RouteDto original, IContext context) => new Route(context, original);
+
 		public static State ToState(this StateDto original, IContext context) => new State(context, original);
 
 		public static Enemy ToEnemy(this EnemyDto original, IContext context) => new Enemy(context, original);

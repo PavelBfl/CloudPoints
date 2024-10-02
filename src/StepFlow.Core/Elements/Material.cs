@@ -47,6 +47,7 @@ namespace StepFlow.Core.Elements
 			Course = original.Course;
 			IsFixed = original.IsFixed;
 			States.AddUniqueRange(original.States.Select(x => x.ToState(Context)));
+			Route = original.Route?.ToRoute(context);
 			Track = original.Track?.ToTrackBuilder(Context);
 		}
 
@@ -113,6 +114,8 @@ namespace StepFlow.Core.Elements
 		public bool IsFixed { get; set; }
 
 		public ICollection<State> States { get; } = new HashSet<State>();
+
+		public Route? Route { get; set; }
 
 		public TrackBuilder? Track { get; set; }
 

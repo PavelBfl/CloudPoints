@@ -39,6 +39,8 @@ namespace StepFlow.Domains.Elements
 
 		public ICollection<StateDto> States { get; } = new HashSet<StateDto>();
 
+		public RouteDto? Route { get; set; }
+
 		public TrackBuilderDto? Track { get; set; }
 	}
 }

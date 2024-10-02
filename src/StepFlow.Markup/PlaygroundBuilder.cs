@@ -336,6 +336,32 @@ internal class PlaygroundBuilder
 				CreateBoards(3, 7),
 				CreateBoards(4, 7),
 				CreateBoards(4, 6),
+
+				new ObstructionDto()
+				{
+					Name = ObstructionView.Boards.ToString(),
+					Kind = ObstructionKind.Single,
+					View = ObstructionView.Boards,
+					Strength = Scale.CreateByMax(50),
+					Weight = 100,
+					Elasticity = 0.9f,
+					BodyCurrent = { CreateCell(2, 2), },
+					IsRigid = true,
+					Course = new Vector2(0, 0),
+					Route = new Domains.Tracks.RouteDto()
+					{
+						Path =
+						{
+							new Domains.Tracks.Curve()
+							{
+								Begin = new Vector2(CellSize.Width * 2, CellSize.Height * 2),
+								BeginControl = new Vector2(CellSize.Width * 3, CellSize.Height * 2),
+								EndControl = new Vector2(CellSize.Width * 3, CellSize.Height * 4),
+								End = new Vector2(CellSize.Width * 4, CellSize.Height * 4),
+							},
+						},
+					},
+				}
 			},
 		};
 	}

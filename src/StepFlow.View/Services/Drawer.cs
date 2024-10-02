@@ -104,23 +104,14 @@ namespace StepFlow.View.Services
 			}
 		}
 
-		public void Curve(System.Drawing.PointF begin, System.Drawing.PointF end, System.Drawing.PointF anchor, int count, System.Drawing.Color color, float thickness = 2f)
+		public void Curve(Domains.Tracks.Curve curve, System.Drawing.Color color, int count = 10, float thickness = 2f)
 		{
-			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count);
-
-			var beginVector = begin.ToVector2();
-			var endVector = end.ToVector2();
-			var anchorVector = anchor.ToVector2();
-
-			var prev = beginVector;
-			for (var i = 0; i <= count; i++)
+			var prev = curve.Begin;
+			for (var i = 1; i <= count; i++)
 			{
-				var offset = (float)i / count;
-				var beginToAnchor = System.Numerics.Vector2.Lerp(beginVector, anchorVector, offset);
-				var AnchorToEnd = System.Numerics.Vector2.Lerp(anchorVector, endVector, offset);
-				var current = System.Numerics.Vector2.Lerp(beginToAnchor, AnchorToEnd, offset);
+				var current = curve.GetPoint((float)i / count);
 
-				Line(new(prev), new(current), color, thickness);
+				Line(new(prev.X, prev.Y), new(current.X, current.Y), color, thickness);
 
 				prev = current;
 			}
