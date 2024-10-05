@@ -20,7 +20,7 @@ namespace StepFlow.Domains.Tracks
 			var beginControlToEndControl = Vector2.Lerp(BeginControl, EndControl, amount);
 			var endControlToEnd = Vector2.Lerp(EndControl, End, amount);
 
-			return GetPoint(beginToBeginControl, beginControlToEndControl, endControlToEnd, amount);
+			return GetPoint(beginToBeginControl, endControlToEnd, beginControlToEndControl, amount);
 		}
 
 		public readonly IEnumerable<Line> GetLines()
