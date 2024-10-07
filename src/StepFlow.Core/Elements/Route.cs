@@ -23,6 +23,7 @@ namespace StepFlow.Core.Elements
 
 			Path.AddRange(source.Path);
 			Offset = source.Offset;
+			Speed = source.Speed;
 		}
 
 		private readonly CurvesContainer path = new CurvesContainer();
@@ -30,6 +31,10 @@ namespace StepFlow.Core.Elements
 		public IList<Curve> Path => path;
 
 		public float Offset { get; set; }
+
+		public float Speed { get; set; }
+
+		public float Length => path.Length;
 
 		public Vector2 GetPoint() => path.GetPoint(Offset);
 
@@ -39,6 +44,7 @@ namespace StepFlow.Core.Elements
 
 			container.Path.AddRange(Path);
 			container.Offset = Offset;
+			container.Speed = Speed;
 		}
 
 		public override SubjectDto ToDto()
@@ -100,6 +106,8 @@ namespace StepFlow.Core.Elements
 						var amount = (offset - prev) / segmentLength;
 						return Vector2.Lerp(segment.Begin, segment.End, amount);
 					}
+
+					prev = current;
 				}
 
 				throw new InvalidOperationException();

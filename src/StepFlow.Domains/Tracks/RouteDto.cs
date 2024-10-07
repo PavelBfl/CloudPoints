@@ -7,5 +7,7 @@ namespace StepFlow.Domains.Tracks
 		public IList<Curve> Path { get; } = new List<Curve>();
 
 		public float Offset { get; set; }
+
+		public float Speed { get; set; }
 	}
 }

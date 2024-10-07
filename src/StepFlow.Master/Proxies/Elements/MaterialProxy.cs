@@ -160,6 +160,31 @@ namespace StepFlow.Master.Proxies.Elements
 
 			Collision(Body.Current);
 			Collision(Body.Next);
+			MoveByRoute();
+		}
+
+		private void MoveByRoute()
+		{
+			if (Target.Route is null)
+			{
+				return;
+			}
+
+			var routeProxy = (IRouteProxy)Owner.CreateProxy(Target.Route);
+			routeProxy.Offset += routeProxy.Speed;
+
+			if (Target.Body.Current is { } current)
+			{
+				var location = current.Bounds.Location;
+				var newLocation = Target.Route.GetPoint();
+				
+				var bodyProxy = (ICollidedProxy)Owner.CreateProxy(Body);
+				bodyProxy.Next = Shape.Create(current.Offset(new Point(
+					(int)(newLocation.X - location.X),
+					(int)(newLocation.Y - location.Y)
+				)));
+				bodyProxy.IsMove = true;
+			}
 		}
 
 		private void Collision(Shape? shape)

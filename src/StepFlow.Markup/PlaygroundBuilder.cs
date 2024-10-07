@@ -360,6 +360,7 @@ internal class PlaygroundBuilder
 								End = new Vector2(CellSize.Width * 4, CellSize.Height * 4),
 							},
 						},
+						Speed = 0.001f,
 					},
 				}
 			},

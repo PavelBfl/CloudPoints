@@ -134,6 +134,7 @@ namespace StepFlow.Master
 				TrackUnit instance => new TrackUnitProxy(this, instance),
 				State instance => new StateProxy(this, instance),
 				Wormhole instance => new WormholeProxy(this, instance),
+				Route instance => new RouteProxy(this, instance),
 				null => null,
 				_ => throw new InvalidOperationException(),
 			};
