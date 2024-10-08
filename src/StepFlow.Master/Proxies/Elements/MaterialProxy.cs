@@ -118,10 +118,7 @@ namespace StepFlow.Master.Proxies.Elements
 						}
 						break;
 					case StateKind.Gravity:
-						if (!RigidExists(new Point(0, 1)))
-						{
-							Course += stateProxy.Vector;
-						}
+						Course += stateProxy.Vector;
 						break;
 					default: throw EnumNotSupportedException.Create(state.Kind);
 				}
