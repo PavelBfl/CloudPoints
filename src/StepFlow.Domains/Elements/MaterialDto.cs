@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using StepFlow.Domains.States;
@@ -35,6 +36,7 @@ namespace StepFlow.Domains.Elements
 
 		public Vector2 Course { get; set; }
 
+		[Obsolete]
 		public bool IsFixed { get; set; }
 
 		public ICollection<StateDto> States { get; } = new HashSet<StateDto>();

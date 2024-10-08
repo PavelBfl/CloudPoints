@@ -19,6 +19,7 @@ namespace StepFlow.Core.Elements
 			Vision = Shape.Create(original.Vision);
 			Cooldown = original.Cooldown;
 			ReleaseItem = original.ReleaseItem;
+			PatrolSpeed = original.PatrolSpeed;
 		}
 
 		private Shape? vision;
@@ -28,6 +29,8 @@ namespace StepFlow.Core.Elements
 		public Scale Cooldown { get; set; }
 
 		public ItemKind ReleaseItem { get; set; }
+
+		public float? PatrolSpeed { get; set; }
 
 		public override SubjectDto ToDto()
 		{
@@ -45,6 +48,7 @@ namespace StepFlow.Core.Elements
 			container.Vision.Reset(Vision);
 			container.Cooldown = Cooldown;
 			container.ReleaseItem = ReleaseItem;
+			container.PatrolSpeed = PatrolSpeed;
 		}
 
 		public override void Enable()

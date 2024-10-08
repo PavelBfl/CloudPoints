@@ -101,7 +101,7 @@ namespace StepFlow.Intersection
 
 				foreach (var otherShape in Owner)
 				{
-					if (this != otherShape && IntersectsWith(otherShape))
+					if (!ReferenceEquals(this, otherShape) && IntersectsWith(otherShape))
 					{
 						container.Add(otherShape);
 					}

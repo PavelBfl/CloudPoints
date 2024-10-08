@@ -277,7 +277,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public int Speed { get => Target.Speed; set => SetValue(value); }
 
-		public Vector2 Course { get => Target.Course; set => SetValue(value); }
+		public virtual Vector2 Course { get => Target.Course; set => SetValue(value); }
 
 		public int Weight
 		{
@@ -306,7 +306,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 			foreach (var intersectShape in Target.Context.IntersectionContext.GetCollisions(grip))
 			{
-				if (intersectShape != currentBody)
+				if (!ReferenceEquals(intersectShape, currentBody))
 				{
 					var collided = (CollidedAttached)NullValidate.PropertyRequired(intersectShape.State, nameof(Shape.State));
 					if (collided.Material.Body.IsRigid && collided.Name == nameof(Material.Collided.Current))

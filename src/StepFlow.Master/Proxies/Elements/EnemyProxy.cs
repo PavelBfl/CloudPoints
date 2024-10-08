@@ -24,6 +24,14 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public Scale Cooldown { get => Target.Cooldown; set => SetValue(value); }
 
+		public override Vector2 Course
+		{
+			get => base.Course;
+			set => base.Course = new Vector2(Target.PatrolSpeed ?? value.X, value.Y);
+		}
+
+		public float? PatrolSpeed { get => Target.PatrolSpeed; set => SetValue(value); }
+
 		public override void OnTick()
 		{
 			base.OnTick();
@@ -67,13 +75,16 @@ namespace StepFlow.Master.Proxies.Elements
 					}
 				}
 
-				if (RigidExists(new Point(1, 0)))
+				if (PatrolSpeed is { } patrolSpeed)
 				{
-					Course = new Vector2(-MathF.Abs(Course.X), Course.Y);
-				}
-				else if (RigidExists(new Point(-1, 0)))
-				{
-					Course = new Vector2(MathF.Abs(Course.X), Course.Y);
+					if (RigidExists(new Point(1, 0)))
+					{
+						PatrolSpeed = -MathF.Abs(patrolSpeed);
+					}
+					else if (RigidExists(new Point(-1, 0)))
+					{
+						PatrolSpeed = MathF.Abs(patrolSpeed);
+					} 
 				}
 			}
 		}
