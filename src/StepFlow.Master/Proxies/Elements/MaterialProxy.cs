@@ -174,7 +174,19 @@ namespace StepFlow.Master.Proxies.Elements
 			{
 				var bodyProxy = (ICollidedProxy)Owner.CreateProxy(Body);
 				var newLocation = Target.Route.GetPoint();
-				bodyProxy.SetNextPosition(newLocation);
+				bodyProxy.SetNextPosition(newLocation + Target.Route.Pivot);
+			}
+			else
+			{
+				switch (Target.Route.Complete)
+				{
+					case RouteComplete.None:
+						break;
+					case RouteComplete.Remove:
+						Owner.GetPlaygroundItemsProxy().Remove(Target);
+						break;
+					default: throw EnumNotSupportedException.Create(Target.Route.Complete);
+				};
 			}
 		}
 

@@ -209,12 +209,13 @@ namespace StepFlow.Master.Proxies.Elements
 
 		private void CreateRoute(Point center, int radius, Curve curve, Damage damage, Subject? creator)
 		{
+			var body = Owner.CreateShape(RectangleExtensions.Create(center, radius));
 			var projectile = new Projectile(Owner.Playground.Context)
 			{
 				Name = "Projectile",
 				Body =
 				{
-					Current = Owner.CreateShape(RectangleExtensions.Create(center, radius)),
+					Current = body,
 				},
 				Damage = damage,
 				Reusable = ReusableKind.Save,
@@ -222,7 +223,9 @@ namespace StepFlow.Master.Proxies.Elements
 				Route = new Route(Owner.Playground.Context)
 				{
 					Path = { curve },
-					Speed = 0.01f,
+					Speed = 0.1f,
+					Pivot = new Vector2(body.Bounds.Width / -2f, body.Bounds.Height / -2f),
+					Complete = RouteComplete.Remove,
 				},
 				Track = new TrackBuilder(Owner.Playground.Context)
 				{

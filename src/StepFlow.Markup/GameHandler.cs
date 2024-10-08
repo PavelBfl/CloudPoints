@@ -424,18 +424,21 @@ public sealed class GameHandler
 			CreateTexture(bounds, Texture.Circle);
 		}
 
-		foreach (var route in playMaster.Playground.Items.Select(x => x.Route))
+		if (IsDebug)
 		{
-			if (route is { })
+			foreach (var route in playMaster.Playground.Items.Select(x => x.Route))
 			{
-				foreach (var segment in route.Path)
+				if (route is { })
 				{
-					Drawer.Curve(segment, Color.Green);
-					Drawer.Line(new(segment.Begin.X, segment.Begin.Y), new(segment.BeginControl.X, segment.BeginControl.Y), Color.Red);
-					Drawer.Line(new(segment.BeginControl.X, segment.BeginControl.Y), new(segment.EndControl.X, segment.EndControl.Y), Color.Red);
-					Drawer.Line(new(segment.EndControl.X, segment.EndControl.Y), new(segment.End.X, segment.End.Y), Color.Red);
+					foreach (var segment in route.Path)
+					{
+						Drawer.Curve(segment, Color.Green);
+						Drawer.Line(new(segment.Begin.X, segment.Begin.Y), new(segment.BeginControl.X, segment.BeginControl.Y), Color.Red);
+						Drawer.Line(new(segment.BeginControl.X, segment.BeginControl.Y), new(segment.EndControl.X, segment.EndControl.Y), Color.Red);
+						Drawer.Line(new(segment.EndControl.X, segment.EndControl.Y), new(segment.End.X, segment.End.Y), Color.Red);
+					}
 				}
-			}
+			} 
 		}
 
 		TacticPanel.Draw();

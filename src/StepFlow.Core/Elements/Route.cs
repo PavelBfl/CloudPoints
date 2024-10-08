@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using StepFlow.Common;
 using StepFlow.Domains;
+using StepFlow.Domains.Elements;
 using StepFlow.Domains.Tracks;
 
 namespace StepFlow.Core.Elements
@@ -24,6 +25,8 @@ namespace StepFlow.Core.Elements
 			Path.AddRange(source.Path);
 			Offset = source.Offset;
 			Speed = source.Speed;
+			Pivot = source.Pivot;
+			Complete = source.Complete;
 		}
 
 		private readonly CurvesContainer path = new CurvesContainer();
@@ -33,6 +36,10 @@ namespace StepFlow.Core.Elements
 		public float Offset { get; set; }
 
 		public float Speed { get; set; }
+
+		public Vector2 Pivot { get; set; }
+
+		public RouteComplete Complete { get; set; }
 
 		public float Length => path.Length;
 
@@ -45,6 +52,8 @@ namespace StepFlow.Core.Elements
 			container.Path.AddRange(Path);
 			container.Offset = Offset;
 			container.Speed = Speed;
+			container.Pivot = Pivot;
+			container.Complete = Complete;
 		}
 
 		public override SubjectDto ToDto()
