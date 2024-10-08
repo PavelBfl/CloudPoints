@@ -173,17 +173,11 @@ namespace StepFlow.Master.Proxies.Elements
 			var routeProxy = (IRouteProxy)Owner.CreateProxy(Target.Route);
 			routeProxy.Offset += routeProxy.Speed;
 
-			if (Target.Body.Current is { } current)
+			if (0 <= routeProxy.Offset && routeProxy.Offset <= routeProxy.Target.Length)
 			{
-				var location = current.Bounds.Location;
-				var newLocation = Target.Route.GetPoint();
-				
 				var bodyProxy = (ICollidedProxy)Owner.CreateProxy(Body);
-				bodyProxy.Next = Shape.Create(current.Offset(new Point(
-					(int)(newLocation.X - location.X),
-					(int)(newLocation.Y - location.Y)
-				)));
-				bodyProxy.IsMove = true;
+				var newLocation = Target.Route.GetPoint();
+				bodyProxy.SetNextPosition(newLocation);
 			}
 		}
 

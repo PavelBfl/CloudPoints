@@ -311,58 +311,58 @@ internal class PlaygroundBuilder
 			Items =
 			{
 				CreateRoom(left, top, right, bottom),
-				//CreateBoards(5, 5),
-				//CreateBoards(6, 5),
-				//CreateBoards(7, 5),
-				//CreateBoards(5, 6),
-				//CreateBoards(6, 6),
-				//CreateBoards(7, 6),
-				//CreateBoards(5, 7),
-				//CreateBoards(6, 7),
-				//CreateBoards(7, 7),
+				CreateBoards(5, 5),
+				CreateBoards(6, 5),
+				CreateBoards(7, 5),
+				CreateBoards(5, 6),
+				CreateBoards(6, 6),
+				CreateBoards(7, 6),
+				CreateBoards(5, 7),
+				CreateBoards(6, 7),
+				CreateBoards(7, 7),
 
-				//CreateBricks(11, 4),
-				//CreateBricks(12, 4),
-				//CreateBricks(13, 4),
+				CreateBricks(11, 4),
+				CreateBricks(12, 4),
+				CreateBricks(13, 4),
 
-				//CreateItem(13, 3, ItemKind.Poison),
-				//CreateItem(1, 7, ItemKind.Fire),
+				CreateItem(13, 3, ItemKind.Poison),
+				CreateItem(1, 7, ItemKind.Fire),
 
-				CreateEnemy(1, 5, 150, CreateRotate(0) * 0.02f),
+				//CreateEnemy(1, 5, 150, CreateRotate(0) * 0.02f),
 
-				CreateBoards(1, 7),
-				CreateBoards(1, 6),
-				CreateBoards(2, 7),
-				CreateBoards(3, 7),
-				CreateBoards(4, 7),
-				CreateBoards(4, 6),
+				//CreateBoards(1, 7),
+				//CreateBoards(1, 6),
+				//CreateBoards(2, 7),
+				//CreateBoards(3, 7),
+				//CreateBoards(4, 7),
+				//CreateBoards(4, 6),
 
-				new ObstructionDto()
-				{
-					Name = ObstructionView.Boards.ToString(),
-					Kind = ObstructionKind.Single,
-					View = ObstructionView.Boards,
-					Strength = Scale.CreateByMax(50),
-					Weight = 100,
-					Elasticity = 0.9f,
-					BodyCurrent = { CreateCell(2, 2), },
-					IsRigid = true,
-					Course = new Vector2(0, 0),
-					Route = new Domains.Tracks.RouteDto()
-					{
-						Path =
-						{
-							new Domains.Tracks.Curve()
-							{
-								Begin = new Vector2(CellSize.Width * 2, CellSize.Height * 2),
-								BeginControl = new Vector2(CellSize.Width * 3, CellSize.Height * 2),
-								EndControl = new Vector2(CellSize.Width * 3, CellSize.Height * 4),
-								End = new Vector2(CellSize.Width * 4, CellSize.Height * 4),
-							},
-						},
-						Speed = 0.001f,
-					},
-				}
+				//new ObstructionDto()
+				//{
+				//	Name = ObstructionView.Boards.ToString(),
+				//	Kind = ObstructionKind.Single,
+				//	View = ObstructionView.Boards,
+				//	Strength = Scale.CreateByMax(50),
+				//	Weight = 100,
+				//	Elasticity = 0.9f,
+				//	BodyCurrent = { CreateCell(2, 2), },
+				//	IsRigid = true,
+				//	Course = new Vector2(0, 0),
+				//	Route = new Domains.Tracks.RouteDto()
+				//	{
+				//		Path =
+				//		{
+				//			new Domains.Tracks.Curve()
+				//			{
+				//				Begin = new Vector2(CellSize.Width * 2, CellSize.Height * 2),
+				//				BeginControl = new Vector2(CellSize.Width * 2, CellSize.Height * 4),
+				//				EndControl = new Vector2(CellSize.Width * 4, CellSize.Height * 4),
+				//				End = new Vector2(CellSize.Width * 4, CellSize.Height * 2),
+				//			},
+				//		},
+				//		Speed = 0.001f,
+				//	},
+				//}
 			},
 		};
 	}

@@ -131,6 +131,24 @@ namespace StepFlow.Master.Proxies.Elements
 						);
 						break;
 					case CharacterSkill.Arc:
+						CreateRoute(
+							center,
+							SIZE,
+							new Curve()
+							{
+								Begin = Vector2.Zero,
+								BeginControl = new Vector2(1, -1),
+								EndControl = new Vector2(1, 1),
+								End = Vector2.Zero,
+							}.Transform(
+								Matrix3x2.CreateScale(100) *
+								Matrix3x2.CreateRotation(radians) *
+								Matrix3x2.CreateTranslation(center.X, center.Y)
+							),
+							AggregateDamage(value: 10),
+							Target
+						);
+						break;
 						var arcDuration = TimeTick.FromSeconds(0.2f);
 						var arcRadius = 40;
 						var arcSpeed = 0.05f;
@@ -187,6 +205,43 @@ namespace StepFlow.Master.Proxies.Elements
 
 				Cooldown = Cooldown.SetMax();
 			}
+		}
+
+		private void CreateRoute(Point center, int radius, Curve curve, Damage damage, Subject? creator)
+		{
+			var projectile = new Projectile(Owner.Playground.Context)
+			{
+				Name = "Projectile",
+				Body =
+				{
+					Current = Owner.CreateShape(RectangleExtensions.Create(center, radius)),
+				},
+				Damage = damage,
+				Reusable = ReusableKind.Save,
+				Speed = 100,
+				Route = new Route(Owner.Playground.Context)
+				{
+					Path = { curve },
+					Speed = 0.01f,
+				},
+				Track = new TrackBuilder(Owner.Playground.Context)
+				{
+					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(0.01f)),
+					Change = new TrackChange(Owner.Playground.Context)
+					{
+						Thickness = 2,
+						Size = new Vector2(-0.005f),
+						View = TrackView.None,
+					},
+				},
+			};
+
+			if (creator is { })
+			{
+				projectile.Immunity.Add(creator);
+			}
+
+			Owner.GetPlaygroundItemsProxy().Add(projectile);
 		}
 
 		private void CreateArc(Point center, int radius, Vector2 course, Damage damage, int duration, Subject? creator)

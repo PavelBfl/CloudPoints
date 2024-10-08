@@ -7,7 +7,7 @@ using StepFlow.Common;
 
 namespace StepFlow.Intersection
 {
-	public sealed class Shape : IReadOnlyList<Rectangle>
+	public sealed class Shape : IReadOnlyList<Rectangle>, IEquatable<Shape>
 	{
 		public static Shape Create(IEnumerable<Rectangle> rectangles)
 		{
@@ -144,5 +144,69 @@ namespace StepFlow.Intersection
 		public IEnumerator<Rectangle> GetEnumerator() => Rectangles.AsEnumerable().GetEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+		public bool Equals(Shape? other)
+		{
+			if (ReferenceEquals(this, other))
+			{
+				return true;
+			}
+			else if (other is null)
+			{
+				return false;
+			}
+			else
+			{
+				if (Context != other.Context || Count != other.Count)
+				{
+					return false;
+				}
+
+				for (var i = 0; i < Count; i++)
+				{
+					if (this[i] != other[i])
+					{
+						return false;
+					}
+				}
+
+				return true;
+			}
+		}
+
+		public override bool Equals(object obj)
+		{
+			return obj is Shape other && Equals(other);
+		}
+
+		public override int GetHashCode()
+		{
+			var result = new HashCode();
+
+			foreach (var rectangle in this)
+			{
+				result.Add(rectangle);
+			}
+
+			return result.ToHashCode();
+		}
+
+		public static bool operator ==(Shape? a, Shape? b)
+		{
+			if (a is { })
+			{
+				return a.Equals(b);
+			}
+			else if (b is { })
+			{
+				return b.Equals(a);
+			}
+			else
+			{
+				return true;
+			}
+		}
+
+		public static bool operator !=(Shape? a, Shape? b) => !(a == b);
 	}
 }

@@ -47,6 +47,14 @@ namespace StepFlow.Domains.Tracks
 
 		public Vector2 EndControl { get; set; }
 
+		public Curve Transform(Matrix3x2 matrix) => new Curve()
+		{
+			Begin = Vector2.Transform(Begin, matrix),
+			BeginControl = Vector2.Transform(BeginControl, matrix),
+			EndControl = Vector2.Transform(EndControl, matrix),
+			End = Vector2.Transform(End, matrix),
+		};
+
 		public readonly bool Equals(Curve other)
 			=> Begin == other.Begin && End == other.End && BeginControl == other.BeginControl && EndControl == other.EndControl;
 

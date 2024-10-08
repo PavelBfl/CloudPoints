@@ -44,6 +44,37 @@ namespace StepFlow.Master.Proxies.Components
 			Offset = Vector2.Zero;
 		}
 
+		bool SetNextPosition(Vector2 position)
+		{
+			if (Current is { })
+			{
+				var currentPosition = Current.Bounds.Location;
+				var newPosition = new Point(
+					(int)position.X,
+					(int)position.Y
+				);
+
+				if (currentPosition != newPosition)
+				{
+					Next = Shape.Create(Current.Offset(new Point(newPosition.X - currentPosition.X, newPosition.Y - currentPosition.Y)));
+					IsMove = true;
+				}
+				else
+				{
+					Next = null;
+					IsMove = false;
+				}
+
+				Offset = position - new Vector2(newPosition.X, newPosition.Y);
+
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
 		void SetOffset();
 
 		void CopyFrom(MaterialDto original);

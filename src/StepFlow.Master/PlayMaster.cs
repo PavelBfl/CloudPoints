@@ -151,29 +151,14 @@ namespace StepFlow.Master
 		private void TakeStepInner()
 		{
 			var materials = Playground.Items
-				.Select(x => (IMaterialProxy<Material>)CreateProxy(x))
+				.Select(CreateProxy)
+				.Cast<IMaterialProxy<Material>>()
 				.ToArray();
 
 			foreach (var collision in materials)
 			{
 				collision.OnTick();
 			}
-
-			//var collisions = Playground.Context.IntersectionContext.GetCollisions();
-			//foreach (var collision in collisions)
-			//{
-			//	if (collision.Left.Attached is { } leftAttached && collision.Right.Attached is { } rightAttached)
-			//	{
-			//		var leftCollided = (CollidedAttached)leftAttached;
-			//		var leftMaterial = (IMaterialProxy<Material>)CreateProxy(leftCollided.Collided.GetElementRequired());
-
-			//		var rightCollided = (CollidedAttached)rightAttached;
-			//		var rightMaterial = (IMaterialProxy<Material>)CreateProxy(rightCollided.Collided.GetElementRequired());
-
-			//		leftMaterial.Collision(leftCollided, rightMaterial.Target, rightCollided);
-			//		//rightMaterial.Collision(rightCollided, leftMaterial.Target, leftCollided);
-			//	}
-			//}
 
 			foreach (var collision in Playground.Items
 				.Select(x => x.Body)
