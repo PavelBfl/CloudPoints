@@ -204,7 +204,11 @@ namespace StepFlow.Master.Proxies.Elements
 
 		protected virtual void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
 		{
-			if (Target != otherMaterial && otherCollided.Material.Body.IsRigid && thisCollided.Material.Body.IsRigid)
+			if (Target != otherMaterial &&
+				(thisCollided.Name == nameof(Material.Collided.Current) || thisCollided.Name == nameof(Material.Collided.Next)) &&
+				(otherCollided.Name == nameof(Material.Collided.Current) || otherCollided.Name == nameof(Material.Collided.Next)) &&
+				otherCollided.Material.Body.IsRigid &&
+				thisCollided.Material.Body.IsRigid)
 			{
 				if ((!Target.IsFixed || !otherMaterial.IsFixed) && 
 					Body.GetAggregateOffset(otherCollided.Material.Body) is { } aggregateOffset &&

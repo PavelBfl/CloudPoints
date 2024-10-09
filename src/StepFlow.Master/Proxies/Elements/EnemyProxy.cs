@@ -51,8 +51,7 @@ namespace StepFlow.Master.Proxies.Elements
 				var bodyProxy = (ICollidedProxy)Owner.CreateProxy(Body);
 				bodyProxy.Clear();
 
-				var visionProxy = (ICollidedProxy?)Owner.CreateProxy(Vision);
-				visionProxy?.Clear();
+				Vision = null;
 			}
 			else
 			{
