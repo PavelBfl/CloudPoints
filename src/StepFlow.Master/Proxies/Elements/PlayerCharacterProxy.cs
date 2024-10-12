@@ -145,7 +145,7 @@ namespace StepFlow.Master.Proxies.Elements
 								Matrix3x2.CreateRotation(radians) *
 								Matrix3x2.CreateTranslation(center.X, center.Y)
 							),
-							AggregateDamage(value: 10),
+							AggregateDamage(value: 10, push: new Vector2(0, -0.05f)),
 							Target
 						);
 						break;
