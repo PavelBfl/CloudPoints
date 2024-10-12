@@ -12,5 +12,7 @@ namespace StepFlow.Domains.Elements
 		public ItemKind ReleaseItem { get; set; }
 
 		public float? PatrolSpeed { get; set; }
+
+		public Scale StunCooldown { get; set; }
 	}
 }

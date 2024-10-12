@@ -20,7 +20,7 @@ namespace StepFlow.Master.Proxies.Elements
 
 		protected override void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
 		{
-			if (!Target.Immunity.Contains(otherMaterial) && otherCollided.Material.Body.IsRigid)
+			if (otherCollided.IsBody && !Target.Immunity.Contains(otherMaterial) && otherCollided.Material.Body.IsRigid)
 			{
 				var otherMaterialProxy = (IMaterialProxy<Material>)Owner.CreateProxy(otherMaterial);
 				otherMaterialProxy.Strength -= Damage.Value;
@@ -28,6 +28,12 @@ namespace StepFlow.Master.Proxies.Elements
 				if (Damage.Push != Vector2.Zero && otherMaterial.Weight < Material.MAX_WEIGHT)
 				{
 					otherMaterialProxy.Course += Damage.Push;
+				}
+
+				if (otherMaterial is Enemy enemy)
+				{
+					var enemyProxy = (IEnemyProxy)Owner.CreateProxy(enemy);
+					enemyProxy.StunCooldown = Scale.CreateByMax(TimeTick.FromSeconds(1));
 				}
 
 				switch (Target.Reusable)

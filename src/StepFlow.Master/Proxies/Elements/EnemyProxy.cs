@@ -12,6 +12,7 @@ namespace StepFlow.Master.Proxies.Elements
 	public interface IEnemyProxy : IMaterialProxy<Enemy>
 	{
 		Shape? Vision { get; set; }
+		Scale StunCooldown { get; set; }
 	}
 
 	internal sealed class EnemyProxy : MaterialProxy<Enemy>, IEnemyProxy
@@ -31,6 +32,8 @@ namespace StepFlow.Master.Proxies.Elements
 		}
 
 		public float? PatrolSpeed { get => Target.PatrolSpeed; set => SetValue(value); }
+
+		public Scale StunCooldown { get => Target.StunCooldown; set => SetValue(value); }
 
 		public override void OnTick()
 		{
@@ -56,33 +59,37 @@ namespace StepFlow.Master.Proxies.Elements
 			else
 			{
 				Cooldown--;
+				StunCooldown--;
 
-				var center = Body.GetCurrentRequired().Bounds.GetCenter();
-				var visionPlace = RectangleExtensions.Create(center, 100);
-				Vision = Shape.Create(new[] { visionPlace });
-
-				if (Vision is { } vision)
+				if (StunCooldown.Value == 0)
 				{
-					foreach (var otherShape in vision.GetCollisions())
-					{
-						var otherAttached = (CollidedAttached)NullValidate.PropertyRequired(otherShape.State, nameof(Shape.State));
+					var center = Body.GetCurrentRequired().Bounds.GetCenter();
+					var visionPlace = RectangleExtensions.Create(center, 100);
+					Vision = Shape.Create(new[] { visionPlace });
 
-						if (otherAttached.Material is PlayerCharacter playerCharacter)
+					if (Vision is { } vision)
+					{
+						foreach (var otherShape in vision.GetCollisions())
 						{
-							CreateProjectile(playerCharacter);
+							var otherAttached = (CollidedAttached)NullValidate.PropertyRequired(otherShape.State, nameof(Shape.State));
+
+							if (otherAttached.Material is PlayerCharacter playerCharacter)
+							{
+								CreateProjectile(playerCharacter);
+							}
 						}
 					}
-				}
 
-				if (PatrolSpeed is { } patrolSpeed)
-				{
-					if (RigidExists(new Point(1, 0)))
+					if (PatrolSpeed is { } patrolSpeed)
 					{
-						PatrolSpeed = -MathF.Abs(patrolSpeed);
-					}
-					else if (RigidExists(new Point(-1, 0)))
-					{
-						PatrolSpeed = MathF.Abs(patrolSpeed);
+						if (RigidExists(new Point(1, 0)))
+						{
+							PatrolSpeed = -MathF.Abs(patrolSpeed);
+						}
+						else if (RigidExists(new Point(-1, 0)))
+						{
+							PatrolSpeed = MathF.Abs(patrolSpeed);
+						}
 					} 
 				}
 			}

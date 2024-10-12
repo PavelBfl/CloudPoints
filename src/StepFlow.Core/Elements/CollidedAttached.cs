@@ -20,6 +20,8 @@ namespace StepFlow.Core.Elements
 
 		public Shape? GetShape() => Material.GetShape(Name);
 
+		public bool IsBody => Name == nameof(Material.Collided.Current) || Name == nameof(Material.Collided.Next);
+
 		public override string ToString() => Name + ": " + GetShape();
 	}
 }
