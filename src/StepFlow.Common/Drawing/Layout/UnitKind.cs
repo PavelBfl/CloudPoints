@@ -1,4 +1,4 @@
-﻿namespace StepFlow.View.Sketch
+﻿namespace StepFlow.Common.Drawing.Layout
 {
 	public enum UnitKind
 	{

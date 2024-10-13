@@ -128,8 +128,30 @@ namespace StepFlow.View.Services
 
 		public System.Numerics.Vector2? FreeSelect() => Mouse.GetState().Position.ToVector2().ToNumerics();
 
-		public bool SelectMain() => LeftButtonOnPress;
+		public SelectCourse CourseSelect()
+		{
+			if (IsKeyOnPress(Keys.Left))
+			{
+				return SelectCourse.Left;
+			}
+			else if (IsKeyOnPress(Keys.Up))
+			{
+				return SelectCourse.Up;
+			}
+			else if (IsKeyOnPress(Keys.Right))
+			{
+				return SelectCourse.Right;
+			}
+			else if (IsKeyOnPress(Keys.Down))
+			{
+				return SelectCourse.Down;
+			}
+			else
+			{
+				return SelectCourse.None;
+			}
+		}
 
-		public bool SelectAuxiliary() => RightButtonOnPress;
+		public bool IsSelect() => LeftButtonOnPress;
 	}
 }

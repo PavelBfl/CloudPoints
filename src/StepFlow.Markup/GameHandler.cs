@@ -40,7 +40,10 @@ public sealed class GameHandler
 		Meter.CreateObservableGauge("Frame", () => Frame.TotalMilliseconds);
 		Init();
 
-		TacticPanel = new(Control, Drawer, Place, PlayMasters);
+		TacticPanel = new(Control, Drawer, PlayMasters)
+		{
+			Bounds = Place,
+		};
 	}
 
 	private Meter Meter { get; } = new Meter("Game.Gameplay");

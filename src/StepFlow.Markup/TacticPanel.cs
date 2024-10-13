@@ -1,5 +1,5 @@
 ﻿using System.Drawing;
-using StepFlow.Common.Exceptions;
+using System.Numerics;
 using StepFlow.Core.Elements;
 using StepFlow.Domains.Elements;
 using StepFlow.Markup.Services;
@@ -7,31 +7,25 @@ using StepFlow.Master.Proxies.Elements;
 
 namespace StepFlow.Markup;
 
-internal sealed class TacticPanel
+internal sealed class TacticPanel : Panel
 {
-	public TacticPanel(IControl control, IDrawer drawer, RectangleF place, PlayMasters playMasters)
+	public TacticPanel(IControl control, IDrawer drawer, PlayMasters playMasters)
+		: base(control, drawer)
 	{
 		ArgumentNullException.ThrowIfNull(control);
 		ArgumentNullException.ThrowIfNull(drawer);
 		ArgumentNullException.ThrowIfNull(playMasters);
 
-		Control = control;
-		Drawer = drawer;
-		Place = place;
 		PlayMasters = playMasters;
 	}
 
-	private IControl Control { get; }
-
-	public IDrawer Drawer { get; }
-
-	public RectangleF Place { get; }
-
 	private PlayMasters PlayMasters { get; }
 
-	private List<SkillButton> Buttons { get; } = new List<SkillButton>();
+	private List<Button> Buttons { get; } = new List<Button>();
 
-	public void Update()
+	private Vector2? PrevFreeSelect { get; set; }
+
+	public override void Update()
 	{
 		var playMaster = PlayMasters.Current;
 		if (playMaster is null)
@@ -48,15 +42,16 @@ internal sealed class TacticPanel
 
 		while (skills.Length > Buttons.Count)
 		{
-			Buttons.Add(new());
+			Buttons.Add(new(Control, Drawer));
 		}
 
 		const float SIZE = 50;
 		for (var i = 0; i < skills.Length; i++)
 		{
 			var button = Buttons[i];
-			button.Skill = skills[i];
-			button.Bounds = new(Place.X, Place.Y + i * SIZE, SIZE, SIZE);
+			button.Content = Texture.ItemFire;
+			button.ContentMargin = 5;
+			button.Bounds = new(Bounds.X, Bounds.Y + i * SIZE, SIZE, SIZE);
 		}
 
 		// TODO Temp
@@ -66,73 +61,42 @@ internal sealed class TacticPanel
 		}
 
 		var playerCharacterGui = (IPlayerCharacterProxy)playMaster.CreateProxy(playMaster.Playground.GetPlayerCharacterRequired());
-		if (Control.FreeSelect() is { } freeSelect)
+
+		var currentFreeSelect = Control.FreeSelect();
+		if (PrevFreeSelect != currentFreeSelect && currentFreeSelect is { } freeSelect)
 		{
 			foreach (var button in Buttons)
 			{
 				button.IsSelect = button.Bounds.Contains((PointF)freeSelect);
-				if (button.IsSelect)
-				{
-					if (Control.SelectMain())
-					{
-						playerCharacterGui.MainSkill = button.Skill;
-					}
-
-					if (Control.SelectAuxiliary())
-					{
-						playerCharacterGui.AuxiliarySkill = button.Skill;
-					}
-				}
 			}
 		}
-		else
+		else if (Control.CourseSelect() is { } courseSelect && courseSelect != SelectCourse.None)
 		{
-			// TODO Сделать ручное управление
-		}
-
-		foreach (var button in Buttons)
-		{
-			button.IsMain = button.Skill == playerCharacterGui.MainSkill;
-			button.IsAuxiliary = button.Skill == playerCharacterGui.AuxiliarySkill;
-		}
-	}
-
-	public void Draw()
-	{
-		foreach (var button in Buttons)
-		{
-			Drawer.Button(button.Icon, button.Bounds, button.IsSelect);
-			if (button.IsMain)
+			var selectIndex = Buttons.FindIndex(x => x.IsSelect);
+			var nextSelectButtonIndex = selectIndex >= 0 ? (selectIndex + 1) % Buttons.Count : 0;
+			for (var i = 0; i < Buttons.Count; i++)
 			{
-				Drawer.Draw(new RectangleF(button.Bounds.Location, new SizeF(10, 10)), Color.Red);
+				Buttons[i].IsSelect = nextSelectButtonIndex == i;
 			}
+		}
 
-			if (button.IsAuxiliary)
+		PrevFreeSelect = currentFreeSelect;
+
+		if (Control.IsSelect())
+		{
+			var selectButton = Buttons.FindIndex(x => x.IsSelect);
+			for (var i = 0; i < Buttons.Count; i++)
 			{
-				Drawer.Draw(new RectangleF(new PointF(button.Bounds.Right - 10, button.Bounds.Y), new SizeF(10, 10)), Color.Red);
+				Buttons[i].IsCheck = selectButton == i;
 			}
 		}
 	}
 
-	private sealed class SkillButton
+	public override void Draw()
 	{
-		public CharacterSkill Skill { get; set; }
-
-		public RectangleF Bounds { get; set; }
-
-		public bool IsSelect { get; set; }
-
-		public bool IsMain { get; set; }
-
-		public bool IsAuxiliary { get; set; }
-
-		public Texture Icon => Skill switch
+		foreach (var button in Buttons)
 		{
-			CharacterSkill.Projectile => Texture.ItemFire,
-			CharacterSkill.Arc => Texture.ItemPoison,
-			CharacterSkill.Push => Texture.ItemSpeed,
-			CharacterSkill.Dash => Texture.ItemUnknown,
-			_ => throw EnumNotSupportedException.Create(Skill),
-		};
+			button.Draw();
+		}
 	}
 }

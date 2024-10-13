@@ -11,6 +11,15 @@ namespace StepFlow.Markup.Services
 		Down,
 	}
 
+	public enum SelectCourse
+	{
+		None,
+		Left,
+		Up,
+		Right,
+		Down,
+	}
+
 	public interface IControl
 	{
 		HorizontalAlign GetPlayerCourseHorizontal();
@@ -29,10 +38,12 @@ namespace StepFlow.Markup.Services
 
 		bool OnTactic();
 
+		#region Panel
 		Vector2? FreeSelect();
 
-		bool SelectMain();
+		SelectCourse CourseSelect();
 
-		bool SelectAuxiliary();
+		bool IsSelect(); 
+		#endregion
 	}
 }
