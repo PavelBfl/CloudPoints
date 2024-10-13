@@ -28,7 +28,17 @@ namespace StepFlow.Master.Proxies.Elements
 		public override Vector2 Course
 		{
 			get => base.Course;
-			set => base.Course = new Vector2(Target.PatrolSpeed ?? value.X, value.Y);
+			set
+			{
+				if (StunCooldown.Value == 0)
+				{
+					base.Course = new Vector2(Target.PatrolSpeed ?? value.X, value.Y);
+				}
+				else
+				{
+					base.Course = value;
+				}
+			}
 		}
 
 		public float? PatrolSpeed { get => Target.PatrolSpeed; set => SetValue(value); }

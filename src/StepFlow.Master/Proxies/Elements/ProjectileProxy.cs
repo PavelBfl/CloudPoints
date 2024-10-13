@@ -25,15 +25,15 @@ namespace StepFlow.Master.Proxies.Elements
 				var otherMaterialProxy = (IMaterialProxy<Material>)Owner.CreateProxy(otherMaterial);
 				otherMaterialProxy.Strength -= Damage.Value;
 
-				if (Damage.Push != Vector2.Zero && otherMaterial.Weight < Material.MAX_WEIGHT)
-				{
-					otherMaterialProxy.Course += Damage.Push;
-				}
-
 				if (otherMaterial is Enemy enemy)
 				{
 					var enemyProxy = (IEnemyProxy)Owner.CreateProxy(enemy);
 					enemyProxy.StunCooldown = Scale.CreateByMax(TimeTick.FromSeconds(1));
+				}
+
+				if (Damage.Push != Vector2.Zero && otherMaterial.Weight < Material.MAX_WEIGHT)
+				{
+					otherMaterialProxy.Course += Damage.Push;
 				}
 
 				switch (Target.Reusable)
