@@ -39,11 +39,13 @@ namespace StepFlow.Markup.Services
 		bool OnTactic();
 
 		#region Panel
-		Vector2? FreeSelect();
+		System.Drawing.Point FreeSelect();
+
+		System.Drawing.Point FreeOffset();
 
 		SelectCourse CourseSelect();
 
-		bool IsSelect(); 
+		bool IsSelect();
 		#endregion
 	}
 }

@@ -126,7 +126,9 @@ namespace StepFlow.View.Services
 
 		public bool OnTactic() => IsKeyDown(Keys.Space);
 
-		public System.Numerics.Vector2? FreeSelect() => Mouse.GetState().Position.ToVector2().ToNumerics();
+		public System.Drawing.Point FreeSelect() => Mouse.GetState().Position.ToDrawing();
+
+		public System.Drawing.Point FreeOffset() => (Mouse.GetState().Position - PrevMouseState.Position).ToDrawing();
 
 		public SelectCourse CourseSelect()
 		{

@@ -23,8 +23,6 @@ internal sealed class TacticPanel : Panel
 
 	private List<Button> Buttons { get; } = new List<Button>();
 
-	private Vector2? PrevFreeSelect { get; set; }
-
 	public override void Update()
 	{
 		var playMaster = PlayMasters.Current;
@@ -62,8 +60,7 @@ internal sealed class TacticPanel : Panel
 
 		var playerCharacterGui = (IPlayerCharacterProxy)playMaster.CreateProxy(playMaster.Playground.GetPlayerCharacterRequired());
 
-		var currentFreeSelect = Control.FreeSelect();
-		if (PrevFreeSelect != currentFreeSelect && currentFreeSelect is { } freeSelect)
+		if (Control.FreeOffset() != Point.Empty && Control.FreeSelect() is { } freeSelect)
 		{
 			foreach (var button in Buttons)
 			{
@@ -79,8 +76,6 @@ internal sealed class TacticPanel : Panel
 				Buttons[i].IsSelect = nextSelectButtonIndex == i;
 			}
 		}
-
-		PrevFreeSelect = currentFreeSelect;
 
 		if (Control.IsSelect())
 		{
