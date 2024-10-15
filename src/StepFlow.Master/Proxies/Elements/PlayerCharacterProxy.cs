@@ -1,38 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using StepFlow.Common;
-using StepFlow.Common.Exceptions;
 using StepFlow.Core;
 using StepFlow.Core.Elements;
-using StepFlow.Core.States;
-using StepFlow.Core.Tracks;
 using StepFlow.Domains.Elements;
-using StepFlow.Domains.States;
-using StepFlow.Domains.Tracks;
-using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
-using StepFlow.Master.Proxies.States;
 
 namespace StepFlow.Master.Proxies.Elements
 {
-	public enum PlayerAction
-	{
-		Main,
-		Auxiliary,
-	}
-
 	public interface IPlayerCharacterProxy : IMaterialProxy<PlayerCharacter>
 	{
-		CharacterSkill MainSkill { get; set; }
-
-		CharacterSkill AuxiliarySkill { get; set; }
 		Scale Cooldown { get; set; }
-		IList<Item> Items { get; }
 
-		void CreateProjectile(float radians, PlayerAction action);
+		IList<ItemKind> Items { get; }
+
+		void CreateProjectile(float radians);
 
 		void CopyFrom(PlayerCharacterDto original)
 		{
@@ -40,14 +24,9 @@ namespace StepFlow.Master.Proxies.Elements
 
 			((IMaterialProxy<PlayerCharacter>)this).CopyFrom(original);
 			Cooldown = original.Cooldown;
-			MainSkill = original.MainSkill;
-			AuxiliarySkill = original.AuxiliarySkill;
 			var itemsProxy = Owner.CreateListProxy(Items);
 			itemsProxy.Clear();
-			foreach (var item in original.Items)
-			{
-				itemsProxy.Add(new Item(Owner.Playground.Context, item));
-			}
+			itemsProxy.AddRange(original.Items);
 		}
 
 		bool CanJump();
@@ -61,11 +40,9 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public Scale Cooldown { get => Target.Cooldown; set => SetValue(value); }
 
-		public CharacterSkill MainSkill { get => Target.MainSkill; set => SetValue(value); }
+		public int ActiveTarget { get => Target.ActiveTarget; set => SetValue(value); }
 
-		public CharacterSkill AuxiliarySkill { get => Target.AuxiliarySkill; set => SetValue(value); }
-
-		public IList<Item> Items => Target.Items;
+		public IList<ItemKind> Items => Target.Items;
 
 		public override void OnTick()
 		{
@@ -88,7 +65,7 @@ namespace StepFlow.Master.Proxies.Elements
 				Owner.GetPlaygroundItemsProxy().Remove(item);
 				var itemBody = (ICollidedProxy?)Owner.CreateProxy(item.Body);
 				itemBody?.Clear();
-				Owner.CreateListProxy(Target.Items).Add(item);
+				Owner.CreateListProxy(Target.Items).Add(item.Kind);
 
 				Speed += item.Speed;
 				Cooldown = Scale.CreateByMin(Cooldown.Max - item.AttackCooldown);
@@ -100,212 +77,26 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 		}
 
-		public void CreateProjectile(float radians, PlayerAction action)
+		public void CreateProjectile(float radians)
 		{
 			const int SIZE = 10;
 
 			if (Cooldown.Value == 0)
 			{
-				var skill = action switch
+				var currentSkillKind = Items[ActiveTarget];
+				// TODO
+				var currentSkill = Target.Context.Items[currentSkillKind];
+				foreach (var projectileSource in currentSkill.Projectiles)
 				{
-					PlayerAction.Main => MainSkill,
-					PlayerAction.Auxiliary => AuxiliarySkill,
-					_ => throw EnumNotSupportedException.Create(action),
-				};
-
-				var center = Body.GetCurrentRequired().Bounds.GetCenter();
-				var matrixRotation = Matrix3x2.CreateRotation(radians);
-				var courseVector = Vector2.Transform(new Vector2(0.05f, 0), matrixRotation);
-
-				switch (skill)
-				{
-					case CharacterSkill.Projectile:
-						Owner.CreateProjectile(
-							center,
-							SIZE,
-							courseVector,
-							AggregateDamage(value: 10),
-							TimeTick.FromSeconds(1),
-							Target,
-							ReusableKind.None
-						);
-						break;
-					case CharacterSkill.Arc:
-						CreateRoute(
-							center,
-							SIZE,
-							new Curve()
-							{
-								Begin = Vector2.Zero,
-								BeginControl = new Vector2(1, -1),
-								EndControl = new Vector2(1, 1),
-								End = Vector2.Zero,
-							}.Transform(
-								Matrix3x2.CreateScale(100) *
-								Matrix3x2.CreateRotation(radians) *
-								Matrix3x2.CreateTranslation(center.X, center.Y)
-							),
-							AggregateDamage(value: 10, push: new Vector2(0, -0.05f)),
-							Target
-						);
-						break;
-						var arcDuration = TimeTick.FromSeconds(0.2f);
-						var arcRadius = 40;
-						var arcSpeed = 0.05f;
-						var arcRouteDistance = arcDuration.Ticks * arcSpeed;
-
-						var m = Matrix3x2.CreateTranslation(0, -arcRadius) *
-							Matrix3x2.CreateRotation(MathF.PI / 2) *
-							Matrix3x2.CreateRotation(-(arcRouteDistance / arcRadius / 2)) *
-							Matrix3x2.CreateRotation(radians) *
-							Matrix3x2.CreateTranslation(center.X, center.Y);
-
-						var arcPosition = Vector2.Transform(Vector2.Zero, m);
-						var arcCourse = Vector2.Transform(new Vector2(arcSpeed, 0), m);
-						CreateArc(
-							new Point((int)arcPosition.X, (int)arcPosition.Y),
-							SIZE,
-							arcCourse - arcPosition,
-							AggregateDamage(value: 10),
-							arcDuration,
-							Target
-						);
-						break;
-					case CharacterSkill.Push:
-						Owner.CreateProjectile(
-							center,
-							SIZE,
-							courseVector,
-							new Damage() { Push = courseVector * 0.01f },
-							TimeTick.FromSeconds(0.1f),
-							Target,
-							ReusableKind.NotSave
-						);
-						break;
-					case CharacterSkill.Dash:
-						if (Target.States.SingleOrDefault(x => x.Kind == StateKind.Dash) is { } dashState)
-						{
-							var dashStateProxy = (IStateProxy)Owner.CreateProxy(dashState);
-							dashStateProxy.Vector = courseVector;
-						}
-						else
-						{
-							var statesProxy = Owner.CreateCollectionProxy(Target.States);
-							statesProxy.Add(new State(Owner.Playground.Context)
-							{
-								Kind = StateKind.Dash,
-								TotalCooldown = TimeTick.FromSeconds(0.1f),
-								Arg0 = courseVector.X * 5,
-								Arg1 = courseVector.Y * 5,
-							});
-						}
-						break;
-					default: throw EnumNotSupportedException.Create(skill);
+					var projectile = new Projectile(Target.Context, projectileSource)
+					{
+						Immunity = { Target },
+					};
+					Owner.GetPlaygroundItemsProxy().Add(projectile);
 				}
 
-				Cooldown = Cooldown.SetMax();
+				Cooldown = Scale.CreateByMax(currentSkill.AttackCooldown);
 			}
-		}
-
-		private void CreateRoute(Point center, int radius, Curve curve, Damage damage, Subject? creator)
-		{
-			var body = Owner.CreateShape(RectangleExtensions.Create(center, radius));
-			var projectile = new Projectile(Owner.Playground.Context)
-			{
-				Name = "Projectile",
-				Body =
-				{
-					Current = body,
-				},
-				Damage = damage,
-				Reusable = ReusableKind.Save,
-				Speed = 100,
-				Route = new Route(Owner.Playground.Context)
-				{
-					Path = { curve },
-					Speed = 0.1f,
-					Pivot = new Vector2(body.Bounds.Width / -2f, body.Bounds.Height / -2f),
-					Complete = RouteComplete.Remove,
-				},
-				Track = new TrackBuilder(Owner.Playground.Context)
-				{
-					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(0.01f)),
-					Change = new TrackChange(Owner.Playground.Context)
-					{
-						Thickness = 2,
-						Size = new Vector2(-0.005f),
-						View = TrackView.None,
-					},
-				},
-			};
-
-			if (creator is { })
-			{
-				projectile.Immunity.Add(creator);
-			}
-
-			Owner.GetPlaygroundItemsProxy().Add(projectile);
-		}
-
-		private void CreateArc(Point center, int radius, Vector2 course, Damage damage, int duration, Subject? creator)
-		{
-			var projectile = new Projectile(Owner.Playground.Context)
-			{
-				Name = "Projectile",
-				Body =
-				{
-					Current = Owner.CreateShape(RectangleExtensions.Create(center, radius)),
-				},
-				Damage = damage,
-				Reusable = ReusableKind.Save,
-				Speed = 100,
-				Course = course,
-				States =
-				{
-					new State(Owner.Playground.Context)
-					{
-						Kind = StateKind.Remove,
-						TotalCooldown = duration,
-					},
-					new State(Owner.Playground.Context)
-					{
-						Kind = StateKind.Arc,
-					},
-				},
-				Track = new TrackBuilder(Owner.Playground.Context)
-				{
-					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(0.01f)),
-					Change = new TrackChange(Owner.Playground.Context)
-					{
-						Thickness = 2,
-						Size = new Vector2(-0.005f),
-						View = TrackView.None,
-					},
-				},
-			};
-
-			if (creator is { })
-			{
-				projectile.Immunity.Add(creator);
-			}
-
-			Owner.GetPlaygroundItemsProxy().Add(projectile);
-		}
-
-		private Damage AggregateDamage(int value = 0, DamageKind kind = DamageKind.None, Vector2 push = default)
-		{
-			foreach (var settings in Target.Items.Select(x => x.DamageSetting))
-			{
-				value += settings.Value;
-				kind |= settings.Kind;
-			}
-
-			return new Damage()
-			{
-				Value = value,
-				Push = push,
-				Kind = kind,
-			};
 		}
 
 		public bool CanJump() => RigidExists(new Point(0, 1));

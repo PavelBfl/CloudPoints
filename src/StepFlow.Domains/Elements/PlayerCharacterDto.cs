@@ -6,10 +6,8 @@ namespace StepFlow.Domains.Elements
 	{
 		public Scale Cooldown { get; set; }
 
-		public CharacterSkill MainSkill { get; set; }
+		public int ActiveTarget { get; set; }
 
-		public CharacterSkill AuxiliarySkill { get; set; }
-
-		public IList<ItemDto> Items { get; } = new List<ItemDto>();
+		public IList<ItemKind> Items { get; } = new List<ItemKind>();
 	}
 }

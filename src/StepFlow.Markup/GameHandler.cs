@@ -188,17 +188,10 @@ public sealed class GameHandler
 			Jump = Control.GetJump(),
 		});
 
-		if (Control.GetPlayerAction() is { } playerAction)
+		if (Control.GetPlayerAction())
 		{
-			switch (playerAction)
-			{
-				case PlayerAction.Main:
-				case PlayerAction.Auxiliary:
-					var center = character.Body.GetCurrentRequired().Bounds.GetCenter();
-					master.PlayerCharacterCreateProjectile.Execute(new() { Radians = Control.GetPlayerRotate(new(center.X, center.Y)), Action = playerAction });
-					break;
-				default: throw EnumNotSupportedException.Create(playerAction);
-			};
+			var center = character.Body.GetCurrentRequired().Bounds.GetCenter();
+			master.PlayerCharacterCreateProjectile.Execute(new() { Radians = Control.GetPlayerRotate(new(center.X, center.Y)) });
 		}
 	}
 	#endregion

@@ -28,8 +28,6 @@ namespace StepFlow.Markup.Services
 
 		float GetPlayerRotate(Vector2 center);
 
-		PlayerAction? GetPlayerAction();
-
 		bool IsUndo();
 
 		TimeOffset GetTimeOffset();
@@ -46,6 +44,7 @@ namespace StepFlow.Markup.Services
 		SelectCourse CourseSelect();
 
 		bool IsSelect();
+		bool GetPlayerAction();
 		#endregion
 	}
 }

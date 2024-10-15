@@ -7,8 +7,6 @@ namespace StepFlow.Master.Proxies.Elements
 	{
 		ItemKind Kind { get; set; }
 
-		Damage? DamageSettings { get; set; }
-
 		int AttackCooldown { get; set; }
 
 		int AddStrength { get; set; }
@@ -21,8 +19,6 @@ namespace StepFlow.Master.Proxies.Elements
 		}
 
 		public ItemKind Kind { get => Target.Kind; set => SetValue(value); }
-
-		public Damage? DamageSettings { get => Target.DamageSetting; set => SetValue(value); }
 
 		public int AttackCooldown { get => Target.AttackCooldown; set => SetValue(value); }
 

@@ -74,21 +74,7 @@ namespace StepFlow.View.Services
 			return result;
 		}
 
-		public PlayerAction? GetPlayerAction()
-		{
-			if (LeftButtonOnPress)
-			{
-				return PlayerAction.Main;
-			}
-			else if (RightButtonOnPress)
-			{
-				return PlayerAction.Auxiliary;
-			}
-			else
-			{
-				return null;
-			}
-		}
+		public bool GetPlayerAction() => LeftButtonOnPress;
 
 		public bool IsUndo() => IsKeyDown(Keys.LeftShift);
 

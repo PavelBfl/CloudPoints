@@ -34,7 +34,48 @@ namespace StepFlow.Master
 		{
 			NullValidate.ThrowIfArgumentNull(init, nameof(init));
 
-			Playground = new Playground(new Core.Context(), init);
+			Playground = new Playground(
+				new Core.Context()
+				{
+					Items =
+					{
+						{
+							ItemKind.Projectile,
+							new ItemDto()
+							{
+								Name = "Item" + ItemKind.Projectile,
+								Projectiles =
+								{
+									new ProjectileDto()
+									{
+										Name = "Projectile",
+										BodyCurrent = { RectangleExtensions.Create(Point.Empty, 10) },
+										Damage = new Damage()
+										{
+											Value = 10,
+										},
+										Reusable = ReusableKind.None,
+										Speed = 100,
+										Route = new RouteDto()
+										{
+											Path =
+											{
+												new Curve()
+												{
+													Begin = Vector2.Zero,
+													End = new Vector2(100, 0),
+												},
+											},
+										},
+									},
+								},
+								
+							}
+						},
+					},
+				},
+				init
+			);
 
 			AddExecutor(TakeStep = new EmptyExecutor(TAKE_STEP_CALL, TakeStepInner));
 			AddExecutor(PlayerCharacterCreate = new PlayerCharacterCreate(this));

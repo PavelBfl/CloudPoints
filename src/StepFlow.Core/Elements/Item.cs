@@ -1,4 +1,6 @@
-﻿using StepFlow.Domains;
+﻿using System.Collections.Generic;
+using System.Linq;
+using StepFlow.Domains;
 using StepFlow.Domains.Elements;
 
 namespace StepFlow.Core.Elements
@@ -16,14 +18,14 @@ namespace StepFlow.Core.Elements
 			CopyExtensions.ThrowIfOriginalNull(original);
 
 			Kind = original.Kind;
-			DamageSetting = original.DamageSetting;
+			Projectiles.AddRange(original.Projectiles.Select(x => x.ToProjectile(context)));
 			AttackCooldown = original.AttackCooldown;
 			AddStrength = original.AddStrength;
 		}
 
 		public ItemKind Kind { get; set; }
 
-		public Damage DamageSetting { get; set; }
+		public IList<Projectile> Projectiles { get; } = new List<Projectile>();
 
 		public int AttackCooldown { get; set; }
 
@@ -43,7 +45,7 @@ namespace StepFlow.Core.Elements
 			base.CopyTo(container);
 
 			container.Kind = Kind;
-			container.DamageSetting = DamageSetting;
+			container.Projectiles.AddRange(Projectiles.Select(x => (ProjectileDto)x.ToDto()));
 			container.AttackCooldown = AttackCooldown;
 			container.AddStrength = AddStrength;
 		}

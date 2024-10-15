@@ -61,11 +61,6 @@ namespace StepFlow.Master.Proxies
 						Current = Owner.CreateShape(bounds),
 						IsRigid = true,
 					},
-					DamageSetting = new Damage()
-					{
-						Value = 10,
-						Kind = DamageKind.Fire,
-					},
 				},
 				ItemKind.Poison => new Item(Owner.Playground.Context)
 				{
@@ -74,11 +69,6 @@ namespace StepFlow.Master.Proxies
 					{
 						Current = Owner.CreateShape(bounds),
 						IsRigid = true,
-					},
-					DamageSetting = new Damage()
-					{
-						Value = 10,
-						Kind = DamageKind.Poison,
 					},
 				},
 				ItemKind.Speed => new Item(Owner.Playground.Context)

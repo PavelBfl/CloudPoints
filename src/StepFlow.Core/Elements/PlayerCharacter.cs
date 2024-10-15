@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using StepFlow.Domains;
 using StepFlow.Domains.Elements;
 
@@ -18,18 +17,15 @@ namespace StepFlow.Core.Elements
 			CopyExtensions.ThrowIfOriginalNull(original);
 
 			Cooldown = original.Cooldown;
-			MainSkill = original.MainSkill;
-			AuxiliarySkill = original.AuxiliarySkill;
-			Items.AddRange(original.Items.Select(x => CopyExtensions.ToItem(x, Context)));
+			ActiveTarget = original.ActiveTarget;
+			Items.AddRange(original.Items);
 		}
 
 		public Scale Cooldown { get; set; }
 
-		public CharacterSkill MainSkill { get; set; }
+		public int ActiveTarget { get; set; }
 
-		public CharacterSkill AuxiliarySkill { get; set; }
-
-		public IList<Item> Items { get; } = new List<Item>();
+		public IList<ItemKind> Items { get; } = new List<ItemKind>();
 
 		public override SubjectDto ToDto()
 		{
@@ -45,9 +41,8 @@ namespace StepFlow.Core.Elements
 			base.CopyTo(container);
 
 			container.Cooldown = Cooldown;
-			container.MainSkill = MainSkill;
-			container.AuxiliarySkill = AuxiliarySkill;
-			container.Items.AddRange(Items.Select(x => x.ToDto()).Cast<ItemDto>());
+			container.ActiveTarget = ActiveTarget;
+			container.Items.AddRange(Items);
 		}
 	}
 }

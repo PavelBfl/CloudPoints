@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Linq;
 using System.Numerics;
 using StepFlow.Core.Elements;
 using StepFlow.Domains.Elements;
@@ -31,31 +32,31 @@ internal sealed class TacticPanel : Panel
 			return;
 		}
 
-		var skills = Control.OnTactic() ? Enum.GetValues<CharacterSkill>() : Array.Empty<CharacterSkill>();
+		var player = playMaster.Playground.Items.OfType<PlayerCharacter>().SingleOrDefault();
+		if (player is null)
+		{
+			return;
+		}
 
-		while (skills.Length < Buttons.Count)
+		var skills = player.Items;
+
+		while (skills.Count < Buttons.Count)
 		{
 			Buttons.RemoveAt(Buttons.Count - 1);
 		}
 
-		while (skills.Length > Buttons.Count)
+		while (skills.Count > Buttons.Count)
 		{
 			Buttons.Add(new(Control, Drawer));
 		}
 
 		const float SIZE = 50;
-		for (var i = 0; i < skills.Length; i++)
+		for (var i = 0; i < skills.Count; i++)
 		{
 			var button = Buttons[i];
 			button.Content = Texture.ItemFire;
 			button.ContentMargin = 5;
 			button.Bounds = new(Bounds.X, Bounds.Y + i * SIZE, SIZE, SIZE);
-		}
-
-		// TODO Temp
-		if (!playMaster.Playground.Items.OfType<PlayerCharacter>().Any())
-		{
-			return;
 		}
 
 		var playerCharacterGui = (IPlayerCharacterProxy)playMaster.CreateProxy(playMaster.Playground.GetPlayerCharacterRequired());
