@@ -85,6 +85,54 @@ namespace StepFlow.Master
 								AttackCooldown = TimeTick.FromSeconds(1),
 							}
 						},
+						{
+							ItemKind.Poison,
+							new ItemDto()
+							{
+								Name = "Item" + ItemKind.Poison,
+								Projectiles =
+								{
+									new ProjectileDto()
+									{
+										Name = "Projectile",
+										BodyCurrent = { RectangleExtensions.Create(Point.Empty, 10) },
+										Damage = new Damage()
+										{
+											Value = 10,
+										},
+										Reusable = ReusableKind.Save,
+										Speed = 100,
+										Route = new RouteDto()
+										{
+											Path =
+											{
+												new Curve()
+												{
+													Begin = Vector2.Zero,
+													BeginControl = new Vector2(100, -100),
+													EndControl = new Vector2(100, 100),
+													End = Vector2.Zero,
+												},
+											},
+											Pivot = new Vector2(-10),
+											Speed = 0.1f,
+											Complete = RouteComplete.Remove,
+										},
+										Track = new TrackBuilderDto()
+										{
+											Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(0.01f)),
+											Change = new TrackChangeDto()
+											{
+												Thickness = 3,
+												Size = new Vector2(-0.01f),
+												View = TrackView.None,
+											},
+										},
+									},
+								},
+								AttackCooldown = TimeTick.FromSeconds(1),
+							}
+						},
 					},
 				},
 				init
