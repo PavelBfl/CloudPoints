@@ -63,9 +63,8 @@ internal sealed class TacticPanel : Panel
 			button.Content = Texture.ItemFire;
 			button.ContentMargin = 5;
 			button.Bounds = new(Bounds.X, Bounds.Y + i * SIZE, SIZE, SIZE);
+			button.IsCheck = player.ActiveTarget == i;
 		}
-
-		var playerCharacterGui = (IPlayerCharacterProxy)playMaster.CreateProxy(playMaster.Playground.GetPlayerCharacterRequired());
 
 		if (Control.FreeOffset() != Point.Empty && Control.FreeSelect() is { } freeSelect)
 		{
@@ -86,10 +85,15 @@ internal sealed class TacticPanel : Panel
 
 		if (Control.IsSelect())
 		{
-			var selectButton = Buttons.FindIndex(x => x.IsSelect);
+			var playerCharacterProxy = (IPlayerCharacterProxy)playMaster.CreateProxy(player);
 			for (var i = 0; i < Buttons.Count; i++)
 			{
-				Buttons[i].IsCheck = selectButton == i;
+				var button = Buttons[i];
+				button.IsCheck = button.IsSelect;
+				if (button.IsCheck)
+				{
+					playerCharacterProxy.ActiveTarget = i;
+				}
 			}
 		}
 	}

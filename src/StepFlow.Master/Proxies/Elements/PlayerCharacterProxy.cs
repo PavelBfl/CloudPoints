@@ -17,6 +17,7 @@ namespace StepFlow.Master.Proxies.Elements
 		Scale Cooldown { get; set; }
 
 		IList<ItemKind> Items { get; }
+		int ActiveTarget { get; set; }
 
 		void CreateProjectile(float radians);
 
