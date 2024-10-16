@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using StepFlow.Common.Exceptions;
 using StepFlow.Core.Elements;
 using StepFlow.Domains.Elements;
 using StepFlow.Markup.Services;
@@ -11,6 +12,13 @@ namespace StepFlow.Markup;
 
 internal sealed class TacticPanel : Panel
 {
+	private static Texture GetTexture(ItemKind item) => item switch
+	{
+		ItemKind.Fire => Texture.ItemFire,
+		ItemKind.Poison => Texture.ItemPoison,
+		_ => throw EnumNotSupportedException.Create(item),
+	};
+
 	public TacticPanel(IControl control, IDrawer drawer, PlayMasters playMasters)
 		: base(control, drawer)
 	{
@@ -60,7 +68,7 @@ internal sealed class TacticPanel : Panel
 		for (var i = 0; i < skills.Count; i++)
 		{
 			var button = Buttons[i];
-			button.Content = Texture.ItemFire;
+			button.Content = GetTexture(skills[i]);
 			button.ContentMargin = 5;
 			button.Bounds = new(Bounds.X, Bounds.Y + i * SIZE, SIZE, SIZE);
 			button.IsCheck = player.ActiveTarget == i;
