@@ -66,8 +66,19 @@ namespace StepFlow.Master
 													End = new Vector2(100, 0),
 												},
 											},
+											Pivot = new Vector2(-10),
 											Speed = 0.01f,
 											Complete = RouteComplete.Remove,
+										},
+										Track = new TrackBuilderDto()
+										{
+											Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(0.05f)),
+											Change = new TrackChangeDto()
+											{
+												Thickness = 3,
+												Size = new Vector2(-0.003f),
+												View = TrackView.None,
+											},
 										},
 									},
 								},

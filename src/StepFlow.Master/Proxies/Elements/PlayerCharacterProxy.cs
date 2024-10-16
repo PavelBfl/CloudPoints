@@ -84,7 +84,6 @@ namespace StepFlow.Master.Proxies.Elements
 			if (Cooldown.Value == 0)
 			{
 				var currentSkillKind = Items[ActiveTarget];
-				// TODO
 				var currentSkill = Target.Context.Items[currentSkillKind];
 				var center = Target.Body.GetCurrentRequired().Bounds.GetCenter();
 				foreach (var projectileSource in currentSkill.Projectiles)
