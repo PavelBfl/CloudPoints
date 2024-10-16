@@ -327,7 +327,7 @@ internal class PlaygroundBuilder
 				CreateBricks(13, 4),
 
 				CreateItem(13, 7, ItemKind.Poison),
-				CreateItem(1, 7, ItemKind.Fire),
+				CreateItem(1, 7, ItemKind.Speed),
 
 				//CreateEnemy(1, 5, 150, CreateRotate(0) * 0.02f),
 

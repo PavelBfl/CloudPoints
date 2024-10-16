@@ -43,7 +43,7 @@ namespace StepFlow.Master
 							ItemKind.Fire,
 							new ItemDto()
 							{
-								Name = "Item" + ItemKind.Projectile,
+								Name = "Item" + ItemKind.Fire,
 								Projectiles =
 								{
 									new ProjectileDto()
@@ -128,6 +128,24 @@ namespace StepFlow.Master
 												View = TrackView.None,
 											},
 										},
+									},
+								},
+								AttackCooldown = TimeTick.FromSeconds(1),
+							}
+						},
+						{
+							ItemKind.Speed,
+							new ItemDto()
+							{
+								Name = "Item" + ItemKind.Speed,
+								StatesSettings =
+								{
+									new StateDto()
+									{
+										Kind = StateKind.Dash,
+										TotalCooldown = TimeTick.FromSeconds(0.5f),
+										Arg0 = 0.01f,
+										Arg1 = 0,
 									},
 								},
 								AttackCooldown = TimeTick.FromSeconds(1),

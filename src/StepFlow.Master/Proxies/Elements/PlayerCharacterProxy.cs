@@ -4,7 +4,9 @@ using System.Numerics;
 using StepFlow.Common;
 using StepFlow.Core;
 using StepFlow.Core.Elements;
+using StepFlow.Core.States;
 using StepFlow.Domains.Elements;
+using StepFlow.Domains.States;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
 
@@ -103,6 +105,23 @@ namespace StepFlow.Master.Proxies.Elements
 					}
 
 					Owner.GetPlaygroundItemsProxy().Add(projectile);
+				}
+
+				var statesProxy = Owner.CreateCollectionProxy(States);
+				foreach (var stateDto in currentSkill.StatesSettings)
+				{
+					var state = new State(Target.Context, stateDto);
+					switch (state.Kind)
+					{
+						case StateKind.Dash:
+							var dashCourse = new Vector2(state.Arg0, state.Arg1);
+							dashCourse = Vector2.Transform(dashCourse, Matrix3x2.CreateRotation(radians));
+							state.Arg0 = dashCourse.X;
+							state.Arg1 = dashCourse.Y;
+							break;
+					}
+
+					statesProxy.Add(state);
 				}
 
 				Cooldown = Scale.CreateByMax(currentSkill.AttackCooldown);

@@ -9,7 +9,5 @@
 
 		AttackSpeed,
 		AddStrength,
-
-		Projectile,
 	}
 }
