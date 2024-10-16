@@ -329,7 +329,7 @@ internal class PlaygroundBuilder
 				CreateItem(13, 3, ItemKind.Poison),
 				CreateItem(1, 7, ItemKind.Fire),
 
-				CreateEnemy(1, 5, 150, CreateRotate(0) * 0.02f),
+				//CreateEnemy(1, 5, 150, CreateRotate(0) * 0.02f),
 
 				//CreateBoards(1, 7),
 				//CreateBoards(1, 6),

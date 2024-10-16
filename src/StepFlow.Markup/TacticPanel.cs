@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using StepFlow.Core.Elements;
@@ -26,6 +27,11 @@ internal sealed class TacticPanel : Panel
 
 	public override void Update()
 	{
+		if (!Control.OnTactic())
+		{
+			return;
+		}
+
 		var playMaster = PlayMasters.Current;
 		if (playMaster is null)
 		{
@@ -90,6 +96,11 @@ internal sealed class TacticPanel : Panel
 
 	public override void Draw()
 	{
+		if (!Control.OnTactic())
+		{
+			return;
+		}
+
 		foreach (var button in Buttons)
 		{
 			button.Draw();

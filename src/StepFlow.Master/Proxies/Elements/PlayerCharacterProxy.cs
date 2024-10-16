@@ -6,6 +6,8 @@ using StepFlow.Common;
 using StepFlow.Core;
 using StepFlow.Core.Elements;
 using StepFlow.Domains.Elements;
+using StepFlow.Domains.Tracks;
+using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
 
 namespace StepFlow.Master.Proxies.Elements
@@ -79,19 +81,29 @@ namespace StepFlow.Master.Proxies.Elements
 
 		public void CreateProjectile(float radians)
 		{
-			const int SIZE = 10;
-
 			if (Cooldown.Value == 0)
 			{
 				var currentSkillKind = Items[ActiveTarget];
 				// TODO
 				var currentSkill = Target.Context.Items[currentSkillKind];
+				var center = Target.Body.GetCurrentRequired().Bounds.GetCenter();
 				foreach (var projectileSource in currentSkill.Projectiles)
 				{
 					var projectile = new Projectile(Target.Context, projectileSource)
 					{
 						Immunity = { Target },
 					};
+
+					projectile.Body.Current = Owner.CreateShape(projectile.Body.GetCurrentRequired().Offset(center));
+					if (projectile.Route is { } route)
+					{
+						var matrixTransform = Matrix3x2.CreateRotation(radians) * Matrix3x2.CreateTranslation(center.X, center.Y);
+						for (var i = 0; i < route.Path.Count; i++)
+						{
+							route.Path[i] = route.Path[i].Transform(matrixTransform);
+						}
+					}
+
 					Owner.GetPlaygroundItemsProxy().Add(projectile);
 				}
 

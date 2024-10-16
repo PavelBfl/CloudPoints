@@ -40,7 +40,7 @@ namespace StepFlow.Master
 					Items =
 					{
 						{
-							ItemKind.Projectile,
+							ItemKind.Fire,
 							new ItemDto()
 							{
 								Name = "Item" + ItemKind.Projectile,
@@ -66,10 +66,12 @@ namespace StepFlow.Master
 													End = new Vector2(100, 0),
 												},
 											},
+											Speed = 0.01f,
+											Complete = RouteComplete.Remove,
 										},
 									},
 								},
-								
+								AttackCooldown = TimeTick.FromSeconds(1),
 							}
 						},
 					},
