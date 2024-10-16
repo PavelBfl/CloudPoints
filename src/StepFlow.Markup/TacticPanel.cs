@@ -1,7 +1,4 @@
-﻿using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
-using System.Numerics;
+﻿using System.Drawing;
 using StepFlow.Common.Exceptions;
 using StepFlow.Core.Elements;
 using StepFlow.Domains.Elements;

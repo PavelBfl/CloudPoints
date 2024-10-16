@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Input;
 using StepFlow.Common;
 using StepFlow.Markup.Services;
-using StepFlow.Master.Proxies.Elements;
 
 namespace StepFlow.View.Services
 {

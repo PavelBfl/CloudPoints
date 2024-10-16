@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Numerics;
 using StepFlow.Common;
 using StepFlow.Core;
 using StepFlow.Core.Elements;
 using StepFlow.Domains.Elements;
-using StepFlow.Domains.Tracks;
 using StepFlow.Intersection;
 using StepFlow.Master.Proxies.Components;
 

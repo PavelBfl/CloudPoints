@@ -10,7 +10,6 @@ using StepFlow.Domains.Elements;
 using StepFlow.Intersection;
 using StepFlow.Markup.Services;
 using StepFlow.Master;
-using StepFlow.Master.Proxies.Elements;
 using StepFlow.Master.Proxies.Tracks;
 
 namespace StepFlow.Markup;

@@ -1,8 +1,8 @@
-﻿using StepFlow.Common;
+﻿using System.Collections.Generic;
+using System.Numerics;
+using StepFlow.Common;
 using StepFlow.Domains.Elements;
 using StepFlow.Domains.Tracks;
-using System.Collections.Generic;
-using System.Numerics;
 
 namespace StepFlow.Domains.Descriptions.Elements
 {
