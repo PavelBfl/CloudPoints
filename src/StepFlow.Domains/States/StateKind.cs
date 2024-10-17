@@ -4,10 +4,7 @@
 	{
 		Remove,
 		Poison,
-		Arc,
-		Push,
 		Dash,
-		CreatingProjectile,
 		Gravity,
 	}
 }

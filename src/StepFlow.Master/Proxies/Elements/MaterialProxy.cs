@@ -93,29 +93,8 @@ namespace StepFlow.Master.Proxies.Elements
 					case StateKind.Poison:
 						Strength--;
 						break;
-					case StateKind.Arc:
-						Course = Vector2.Transform(
-							Course,
-							Matrix3x2.CreateRotation(MathF.PI / 2400)
-						);
-						break;
-					case StateKind.Push:
-						var pushVector = stateProxy.Vector;
-						additionalCourse += pushVector;
-						var factor = 1f - (Weight / (float)Material.MAX_WEIGHT);
-						stateProxy.Vector = Vector2.Transform(
-							pushVector,
-							Matrix3x2.CreateScale(factor)
-						);
-						break;
 					case StateKind.Dash:
 						additionalCourse += stateProxy.Vector;
-						break;
-					case StateKind.CreatingProjectile:
-						if (state.Cooldown.IsMin())
-						{
-							CreateProjectile(stateProxy.Arg0);
-						}
 						break;
 					case StateKind.Gravity:
 						Course += stateProxy.Vector;
@@ -205,8 +184,8 @@ namespace StepFlow.Master.Proxies.Elements
 		protected virtual void Collision(CollidedAttached thisCollided, Material otherMaterial, CollidedAttached otherCollided)
 		{
 			if (Target != otherMaterial &&
-				(thisCollided.Name == nameof(Material.Collided.Current) || thisCollided.Name == nameof(Material.Collided.Next)) &&
-				(otherCollided.Name == nameof(Material.Collided.Current) || otherCollided.Name == nameof(Material.Collided.Next)) &&
+				thisCollided.IsBody &&
+				otherCollided.IsBody &&
 				otherCollided.Material.Body.IsRigid &&
 				thisCollided.Material.Body.IsRigid)
 			{
@@ -273,10 +252,6 @@ namespace StepFlow.Master.Proxies.Elements
 				((m1 - m2) * u1 + 2 * m2 * u2) / (m1 + m2),
 				((m2 - m1) * u2 + 2 * m1 * u1) / (m1 + m2)
 			);
-		}
-
-		protected virtual void CreateProjectile(float radians)
-		{
 		}
 
 		public int Speed { get => Target.Speed; set => SetValue(value); }

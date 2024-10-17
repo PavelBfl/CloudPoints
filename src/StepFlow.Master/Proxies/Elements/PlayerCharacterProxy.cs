@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
 using StepFlow.Common;
 using StepFlow.Core;
@@ -87,6 +88,8 @@ namespace StepFlow.Master.Proxies.Elements
 				var currentSkillKind = Items[ActiveTarget];
 				var currentSkill = Target.Context.Items[currentSkillKind];
 				var center = Target.Body.GetCurrentRequired().Bounds.GetCenter();
+
+				var projectiles = new List<Projectile>();
 				foreach (var projectileSource in currentSkill.Projectiles)
 				{
 					var projectile = new Projectile(Target.Context, projectileSource)
@@ -102,6 +105,16 @@ namespace StepFlow.Master.Proxies.Elements
 						{
 							route.Path[i] = route.Path[i].Transform(matrixTransform);
 						}
+					}
+
+					projectiles.Add(projectile);
+				}
+
+				foreach (var projectile in projectiles)
+				{
+					foreach (var otherProjectile in projectiles.Where(x => x != projectile))
+					{
+						projectile.Immunity.Add(otherProjectile);
 					}
 
 					Owner.GetPlaygroundItemsProxy().Add(projectile);

@@ -30,6 +30,42 @@ namespace StepFlow.Master
 	{
 		public const string TAKE_STEP_CALL = "TakeStep";
 
+		[Obsolete("Use for debug. Later need remove.")]
+		private static ProjectileDto CreateDummyProjectile(float radians)
+		{
+			return new ProjectileDto()
+			{
+				Name = "Projectile",
+				BodyCurrent = { RectangleExtensions.Create(Point.Empty, 10) },
+				IsRigid = true,
+				States =
+				{
+					new StateDto()
+					{
+						Kind = StateKind.Remove,
+						TotalCooldown = TimeTick.FromSeconds(0.2f),
+					},
+				},
+				Damage = new Damage()
+				{
+					Value = 5,
+				},
+				Reusable = ReusableKind.None,
+				Speed = 100,
+				Course = Vector2.Transform(new Vector2(0.08f, 0), Matrix3x2.CreateRotation(radians)),
+				Weight = 1000,
+				Track = new TrackBuilderDto()
+				{
+					Cooldown = Scale.CreateByMax(TimeTick.FromSeconds(0.01f)),
+					Change = new TrackChangeDto()
+					{
+						Thickness = 3,
+						Size = new Vector2(-0.005f),
+					},
+				},
+			};
+		}
+
 		public PlayMaster(PlaygroundDto init)
 		{
 			NullValidate.ThrowIfArgumentNull(init, nameof(init));
@@ -143,10 +179,29 @@ namespace StepFlow.Master
 									new StateDto()
 									{
 										Kind = StateKind.Dash,
-										TotalCooldown = TimeTick.FromSeconds(0.5f),
-										Arg0 = 0.01f,
+										TotalCooldown = TimeTick.FromSeconds(0.1f),
+										Arg0 = 0.5f,
 										Arg1 = 0,
 									},
+								},
+								AttackCooldown = TimeTick.FromSeconds(1),
+							}
+						},
+						{
+							ItemKind.Explosion,
+							new ItemDto()
+							{
+								Name = "Item" + ItemKind.Explosion,
+								Projectiles =
+								{
+									CreateDummyProjectile(MathF.PI / 4 * 0),
+									CreateDummyProjectile(MathF.PI / 4 * 1),
+									CreateDummyProjectile(MathF.PI / 4 * 2),
+									CreateDummyProjectile(MathF.PI / 4 * 3),
+									CreateDummyProjectile(MathF.PI / 4 * 4),
+									CreateDummyProjectile(MathF.PI / 4 * 5),
+									CreateDummyProjectile(MathF.PI / 4 * 6),
+									CreateDummyProjectile(MathF.PI / 4 * 7),
 								},
 								AttackCooldown = TimeTick.FromSeconds(1),
 							}

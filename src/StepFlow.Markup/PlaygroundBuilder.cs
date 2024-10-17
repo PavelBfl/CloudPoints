@@ -312,22 +312,24 @@ internal class PlaygroundBuilder
 			Items =
 			{
 				CreateRoom(left, top, right, bottom),
-				//CreateBoards(5, 5),
-				//CreateBoards(6, 5),
-				//CreateBoards(7, 5),
-				//CreateBoards(5, 6),
-				//CreateBoards(6, 6),
-				//CreateBoards(7, 6),
-				//CreateBoards(5, 7),
-				//CreateBoards(6, 7),
-				//CreateBoards(7, 7),
+				CreateBoards(5, 5),
+				CreateBoards(6, 5),
+				CreateBoards(7, 5),
+				CreateBoards(5, 6),
+				CreateBoards(6, 6),
+				CreateBoards(7, 6),
+				CreateBoards(5, 7),
+				CreateBoards(6, 7),
+				CreateBoards(7, 7),
 
 				CreateBricks(11, 4),
 				CreateBricks(12, 4),
 				CreateBricks(13, 4),
 
-				CreateItem(13, 7, ItemKind.Poison),
+				CreateItem(13, 7, ItemKind.Fire),
+				CreateItem(13, 3, ItemKind.Poison),
 				CreateItem(1, 7, ItemKind.Speed),
+				CreateItem(1, 1, ItemKind.Explosion),
 
 				//CreateEnemy(1, 5, 150, CreateRotate(0) * 0.02f),
 

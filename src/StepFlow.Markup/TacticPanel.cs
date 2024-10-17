@@ -14,6 +14,7 @@ internal sealed class TacticPanel : Panel
 		ItemKind.Fire => Texture.ItemFire,
 		ItemKind.Poison => Texture.ItemPoison,
 		ItemKind.Speed => Texture.ItemSpeed,
+		ItemKind.Explosion => Texture.Explosion,
 		_ => throw EnumNotSupportedException.Create(item),
 	};
 

@@ -105,16 +105,6 @@ namespace StepFlow.Master.Proxies.Elements
 			}
 		}
 
-		protected override void CreateProjectile(float radians)
-		{
-			var course = Vector2.Transform(
-				new Vector2(1, 0),
-				Matrix3x2.CreateRotation(radians)
-			);
-
-			CreateProjectile(course);
-		}
-
 		private static Vector2 GetCenter(Material material)
 		{
 			var bounds = material.Body.GetCurrentRequired().Bounds;

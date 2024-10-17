@@ -23,5 +23,6 @@
 		ItemAddStrength,
 		PoisonPlace,
 		Door,
+		Explosion,
 	};
 }
